@@ -3,11 +3,148 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Java: Zero to Advanced</title>
-<meta http-equiv="refresh" content="0; url=Java.html">
-<link rel="canonical" href="Java.html">
+<title>Zero to Advanced · all courses</title>
+<meta name="description" content="The one entry page: every course in this folder (Java, SQL, and the ones added later), each with its own lessons, labs, quizzes and mock interview.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+/* hub v1: self-contained (loads no course script) so it can never break when a course changes; same tokens as course.css */
+:root{--bg:#f7f8fb;--surface:#fff;--soft:#f1f3f8;--text:#0f172a;--muted:#5b6474;--line:#e3e7ef;--accent:#4f46e5;--accent-2:#9333ea;--accent-soft:#eef0ff;
+  --accent-fill:#4f46e5;--accent-2-fill:#9333ea;--hi:rgba(255,255,255,.6);--shadow:0 1px 2px rgba(15,23,42,.04),0 6px 20px rgba(15,23,42,.06);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0c12;--surface:#11141c;--soft:#181c26;--text:#e6e9f0;--muted:#8b93a7;--line:#232836;
+  --accent:#8b8cf8;--accent-2:#c084fc;--accent-soft:#1c1e3a;--hi:rgba(255,255,255,.06);--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.28);color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0a0c12;--surface:#11141c;--soft:#181c26;--text:#e6e9f0;--muted:#8b93a7;--line:#232836;
+  --accent:#8b8cf8;--accent-2:#c084fc;--accent-soft:#1c1e3a;--hi:rgba(255,255,255,.06);--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.28);color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:16px/1.65 Inter,system-ui,-apple-system,Segoe UI,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:radial-gradient(55% 60% at 10% 0%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 70%),radial-gradient(45% 50% at 92% 10%,color-mix(in srgb,var(--accent-2) 14%,transparent),transparent 70%)}
+.wrap{max-width:960px;margin:0 auto;padding:0 20px}
+header{padding:88px 0 40px}
+.tag{font:600 12px/1 Inter,sans-serif;letter-spacing:.14em;color:var(--muted);margin-bottom:18px}
+h1{font:800 clamp(38px,6vw,64px)/1.05 "Inter Tight",Inter,sans-serif;letter-spacing:-.03em;margin:0 0 16px}
+h1 .grad{background:linear-gradient(92deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:18px;color:var(--muted);max-width:620px;margin:0 0 26px}
+.cta{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;border:1px solid color-mix(in srgb,var(--line) 70%,var(--muted) 30%);background:var(--surface);color:var(--text);font-weight:600;text-decoration:none;box-shadow:0 1px 2px rgba(15,23,42,.06),inset 0 1px 0 var(--hi);transition:transform .15s,box-shadow .15s,background .15s}
+.btn:hover{transform:translateY(-1px);background:var(--soft)}
+.btn.pri{color:#fff;background:linear-gradient(180deg,color-mix(in srgb,var(--accent-fill) 86%,#fff),var(--accent-fill) 55%,color-mix(in srgb,var(--accent-fill) 78%,var(--accent-2-fill)));border-color:color-mix(in srgb,var(--accent-fill) 82%,#000);box-shadow:inset 0 1px 0 rgba(255,255,255,.22),0 1px 2px rgba(0,0,0,.18),0 8px 20px -10px var(--accent-fill)}
+.btn.pri:hover{background:linear-gradient(180deg,color-mix(in srgb,var(--accent-fill) 80%,#fff),var(--accent-fill) 55%,color-mix(in srgb,var(--accent-fill) 78%,var(--accent-2-fill)))}
+.btn[hidden]{display:none}
+.courses .course .go{color:var(--text);opacity:.65}
+.courses .course:hover .go{color:var(--c);opacity:1}
+.courses{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;padding:0 0 56px}
+.course{position:relative;display:flex;flex-direction:column;gap:12px;padding:26px 26px 22px;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--shadow);color:inherit;text-decoration:none;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
+.course:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--c) 45%,var(--line))}
+.course::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,var(--c),var(--c2))}
+.course .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font:800 24px/1 "Inter Tight",Inter,sans-serif;color:#fff;background:linear-gradient(135deg,var(--c),var(--c2));box-shadow:0 6px 16px color-mix(in srgb,var(--c) 35%,transparent)}
+.course b{font:700 24px/1.15 "Inter Tight",Inter,sans-serif;letter-spacing:-.02em}
+.course p{margin:0;color:var(--muted);font-size:15px}
+.course .st{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--muted);margin-top:auto;padding-top:10px}
+.course .st span b{font:600 13px/1 "JetBrains Mono",ui-monospace,monospace;color:var(--text);letter-spacing:0}
+.course .go{position:absolute;right:22px;top:26px;font-size:22px;color:var(--c);opacity:.7;transition:transform .2s,opacity .2s}
+.course:hover .go{transform:translateX(4px);opacity:1}
+.course .pill{position:absolute;right:22px;top:24px;font:600 11px/1 Inter,sans-serif;letter-spacing:.08em;padding:6px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.course.soon{border-style:dashed;box-shadow:none;background:transparent}
+.course.soon .ic{background:var(--soft);color:var(--muted);box-shadow:none}
+.course.soon::before{display:none}
+.course.java{--c:#f97316;--c2:#ef4444}
+.course.sql{--c:#0ea5e9;--c2:#6366f1}
+footer{padding:0 0 40px;color:var(--muted);font-size:13px}
+footer a{color:inherit}
+@media (prefers-reduced-motion:reduce){.btn,.course,.course .go{transition:none}}
+@media (max-width:480px){header{padding-top:56px}.course{padding:22px 20px 18px}}
+/* nav: the same brand as every course page: logo + course dropdown (pick Java or SQL to open that course) */
+nav{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:2px;align-items:center;padding-top:9px;padding-bottom:9px}
+nav .brand{display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none}
+nav .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#fff;font:700 .68rem "JetBrains Mono",ui-monospace,monospace;font-style:normal}
+.csw{position:relative;margin:0 auto 0 -2px}
+.csw-b{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 6px 0 8px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--text);font:700 .85rem Inter,sans-serif;cursor:pointer;transition:background .15s,border-color .15s}
+.csw-b svg{width:14px;height:14px;color:var(--muted);transition:transform .2s}
+.csw-b:hover,.csw-b[aria-expanded="true"]{background:var(--soft);border-color:var(--line)}
+.csw-b[aria-expanded="true"] svg{transform:rotate(180deg)}
+.csw-b:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.csw-m{position:absolute;left:0;top:calc(100% + 8px);min-width:260px;white-space:nowrap;padding:6px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:0 20px 50px -16px rgba(0,0,0,.4),0 2px 10px rgba(0,0,0,.08);z-index:70;transform-origin:top left;animation:csw-in .16s cubic-bezier(.2,.8,.2,1)}
+.csw-m[hidden]{display:none}
+@keyframes csw-in{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+.csw-m a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:9px;color:var(--text);text-decoration:none}
+.csw-m a:hover,.csw-m a:focus-visible{background:var(--soft);outline:none}
+.csw-m a i{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font:700 .8rem "JetBrains Mono",ui-monospace,monospace;font-style:normal;color:#fff;background:linear-gradient(135deg,var(--accent-fill),var(--accent-2-fill))}
+.csw-m a i.k-sql{background:linear-gradient(135deg,#0f766e,#1d4ed8)}
+.csw-m a span{display:flex;flex-direction:column;line-height:1.25}
+.csw-m a b{font:600 .86rem Inter,sans-serif}
+.csw-m a small{font:500 .72rem Inter,sans-serif;color:var(--muted)}
+nav .gh{font-size:.84rem;color:var(--muted);text-decoration:none;padding:5px 11px;border-radius:8px}
+nav .gh:hover{color:var(--text);background:var(--soft)}
+@media (prefers-reduced-motion:reduce){.csw-m{animation:none}}
+</style>
 </head>
 <body>
-<p>Opening the course… If nothing happens, <a href="Java.html">open Java: Zero to Advanced</a>.</p>
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><i>Z</i></a>
+  <div class="csw" id="courseSel">
+    <button type="button" class="csw-b" aria-haspopup="menu" aria-expanded="false" aria-label="Open a course"><span>Courses</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="csw-m" role="menu" hidden>
+      <a role="menuitem" tabindex="-1" data-c="java" href="java/index.html"><i class="k-java">J</i><span><b>Java</b><small>Zero to Advanced · 8 lessons</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="sql" href="sql/index.html"><i class="k-sql">S</i><span><b>SQL</b><small>Zero to Advanced · S00 live</small></span></a>
+    </div>
+  </div>
+  <a class="gh" href="https://github.com/bhanu3447/javaHtml">GitHub</a>
+</div></nav>
+<div class="wrap">
+<header>
+  <div class="tag">INTERVIEW PREPARATION · ZERO TO ADVANCED</div>
+  <h1>Pick a <span class="grad">course</span></h1>
+  <p class="lead">Every course lives in this one place and works the same way: short lessons, interactive labs for each concept, verified code you can run, quizzes, recall prompts and a mock interview.</p>
+  <div class="cta">
+    <a class="btn pri" id="cont" href="java/index.html" hidden>Continue <span id="contName">Java</span> <span aria-hidden="true">→</span></a>
+    <a class="btn" href="java/index.html">Java</a>
+    <a class="btn" href="sql/index.html">SQL</a>
+  </div>
+</header>
+
+<section class="courses" aria-label="Courses">
+  <a class="course java" href="java/index.html">
+    <span class="ic" aria-hidden="true">J</span>
+    <b>Java: Zero to Advanced</b>
+    <p>JVM and bytecode, Strings and their internals, arrays, OOP, every interview sort, the Collections Framework. A 10-level roadmap with Exceptions, modern Java, concurrency and Spring next.</p>
+    <span class="st"><span><b>8</b> lessons</span><span><b>136</b> sections</span><span><b>131</b> programs</span><span><b>193</b> interview Q&amp;A</span><span><b>84</b> visual labs</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
+  <a class="course sql" href="sql/index.html">
+    <span class="ic" aria-hidden="true">S</span>
+    <b>SQL: Zero to Advanced</b>
+    <p>Tables and keys as a filing cabinet, your first SELECT built by clicking, the order a query really runs in. Every query runs live in the page on one car-dealership database. Filtering, joins and more lessons are planned.</p>
+    <span class="st"><span><b>1</b> lesson live</span><span><b>10</b> planned</span><span><b>5</b> visual labs</span><span><b>5</b> live editors</span><span><b>12</b> quiz questions</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
+  <div class="course soon" aria-hidden="true">
+    <span class="ic">+</span>
+    <b>Next course</b>
+    <p>New courses get their own folder next to <code>java/</code> and <code>sql/</code>, share the same assets, and are listed here.</p>
+    <span class="pill">COMING</span>
+  </div>
+</section>
+
+<footer>Zero to Advanced · <a href="https://github.com/bhanu3447/javaHtml">source</a> · every Java program was run on JDK 25, every SQL query in SQLite</footer>
+</div>
+<script>
+/* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
+(function(){try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
+  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"){var a=document.getElementById("cont");a.href=c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":"Java";a.hidden=false;}}catch(e){}
+  /* course menu: the same control as the nav of every course page (button + menu, Esc / arrows / click outside) */
+  var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m"),items=function(){return Array.prototype.slice.call(m.querySelectorAll("a"));};
+  function open(o){m.hidden=!o;bt.setAttribute("aria-expanded",String(o));if(o)items()[0].focus();}
+  bt.onclick=function(){open(m.hidden);};
+  m.addEventListener("click",function(e){var a=e.target.closest("a[data-c]");if(a){try{localStorage.setItem("js1-course",a.dataset.c);}catch(x){}}});
+  document.addEventListener("click",function(e){if(!m.hidden&&!w.contains(e.target))open(false);});
+  w.addEventListener("keydown",function(e){var it=items(),i=it.indexOf(document.activeElement);
+    if(e.key==="Escape"){open(false);bt.focus();}
+    else if(e.key==="ArrowDown"){e.preventDefault();if(m.hidden)open(true);else it[(i+1)%it.length].focus();}
+    else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
+  w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
+</script>
 </body>
 </html>

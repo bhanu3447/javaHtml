@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQL: Zero to Advanced</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../assets/css/course.css">
+</head>
+<body data-page="home" data-course="sql" data-name="SQL home" data-short="SQL">
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><i>S</i><span>SQL</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top">
+  <div class="tag">THE SQL COURSE · ZERO TO ADVANCED · LESSON S00 LIVE, S01–S10 COMING</div>
+  <h1>Master <span class="grad">SQL</span></h1>
+  <p class="lead">The same method as the Java course: <b>the visuals teach, the text captions</b>. Start with <a href="00-foundations.html">what a database is</a>: tables and keys as a filing cabinet, your first <code>SELECT</code> built by clicking, and the order a query really runs in. Every query runs <b>for real in your browser</b> (SQLite through WebAssembly) on one small car-dealership database that every lesson shares. Then joins, aggregation, subqueries, window functions, modelling, indexes, transactions and the classic interview problems, one lesson at a time. Use the <b>Java ▾ / SQL</b> switch in the top bar to move between the two courses.</p>
+  <div class="cta"><a class="btn pri big" href="00-foundations.html">Start learning <span aria-hidden="true">→</span></a><a class="btn big" href="00-foundations.html#s-order">How a query runs</a><a class="btn big ghost" href="../java/index.html">Java course</a></div>
+  <div class="meta"><span><b>1</b> lesson live</span><span><b>6</b> sections</span><span><b>5</b> labs</span><span><b>8</b> interview questions</span><span><b>12</b> quiz questions</span><span><b>6</b> tables · <b>59</b> rows</span><span><b>10</b> lessons planned</span></div>
+  <div class="lessons">
+    <a class="lcard" href="00-foundations.html" data-l="s00"><span class="ln">SQL 00</span><b>Databases and SQL foundations</b><span class="d">Tables, rows and columns; primary and foreign keys; <code>SELECT … FROM</code>; the logical order of a query; NULL and the rules the database enforces.</span><i>6 sections · 5 labs · live queries</i><span class="go" aria-hidden="true">→</span></a>
+    <a class="lcard soon"><span class="ln">SQL 01</span><b>Filtering and sorting</b><span class="d">WHERE, LIKE, IN, BETWEEN, three-valued logic with NULL, ORDER BY, LIMIT/OFFSET, DISTINCT.</span><i>planned</i></a>
+    <a class="lcard soon"><span class="ln">SQL 02</span><b>Joins</b><span class="d">INNER, LEFT, RIGHT, FULL, CROSS and self joins; semi and anti joins; the N+1 trap.</span><i>planned</i></a>
+    <a class="lcard soon"><span class="ln">SQL 03</span><b>Aggregation</b><span class="d">COUNT, SUM, AVG, MIN, MAX; GROUP BY; HAVING; grouping sets.</span><i>planned</i></a>
+    <a class="lcard soon"><span class="ln">SQL 04</span><b>Subqueries and CTEs</b><span class="d">Scalar, IN, correlated, EXISTS; WITH; recursive CTEs for trees.</span><i>planned</i></a>
+    <a class="lcard soon"><span class="ln">SQL 05</span><b>Window functions</b><span class="d">ROW_NUMBER, RANK, DENSE_RANK, LAG/LEAD, running totals, frames.</span><i>planned</i></a>
+    <a class="lcard soon"><span class="ln">SQL 06</span><b>Modelling and normalisation</b><span class="d">ER basics, 1NF to BCNF, constraints, when to denormalise.</span><i>planned</i></a>
+    <a class="lcard soon"><span class="ln">SQL 07</span><b>Indexes and performance</b><span class="d">B-trees, composite and covering indexes, selectivity, EXPLAIN.</span><i>planned</i></a>
+    <a class="lcard soon"><span class="ln">SQL 08</span><b>Transactions and concurrency</b><span class="d">ACID, isolation levels and their anomalies, locks, deadlocks, MVCC.</span><i>planned</i></a>
+    <a class="lcard soon"><span class="ln">SQL 09</span><b>DDL, DML and modern SQL</b><span class="d">CREATE/ALTER, upsert, MERGE, RETURNING, JSON, keyset pagination.</span><i>planned</i></a>
+    <a class="lcard soon"><span class="ln">SQL 10</span><b>The classic interview problems</b><span class="d">Nth highest salary, top-N per group, gaps and islands, dedupe, running balance…</span><i>planned</i></a>
+  </div>
+  <details class="roadmap">
+    <summary>Course roadmap: 7 levels, and what is covered so far</summary>
+    <ol class="rmap">
+      <li><span>1</span><b>Foundations</b><em>Tables, keys, SELECT, the logical order, NULL</em><span class="st on">Lesson S00</span></li>
+      <li><span>2</span><b>Filtering, joins and aggregation</b><em>WHERE, every join, GROUP BY and HAVING</em><span class="st">Next: S01–S03</span></li>
+      <li><span>3</span><b>Subqueries and window functions</b><em>CTEs, correlated subqueries, OVER and frames</em><span class="st">Planned</span></li>
+      <li><span>4</span><b>Modelling</b><em>Normalisation, constraints, ER design</em><span class="st">Planned</span></li>
+      <li><span>5</span><b>Performance</b><em>Indexes, plans, when indexes hurt</em><span class="st">Planned</span></li>
+      <li><span>6</span><b>Transactions</b><em>ACID, isolation, locks, MVCC</em><span class="st">Planned</span></li>
+      <li><span>7</span><b>Interview readiness</b><em>The classic 20 problems, each as a live editor</em><span class="st">Planned</span></li>
+    </ol>
+  </details>
+</header>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>SQL: Zero to Advanced · every query runs in your browser on SQLite (sql.js)</footer>
+</div>
+
+<script src="../assets/data/sql-index.js"></script>
+<script src="../assets/data/quiz-data.js"></script>
+<script src="../assets/js/course.js"></script>
+<script src="../assets/js/effects.js"></script>
+<script src="../assets/data/sql-seed.js"></script>
+<script src="../assets/labs/labs-sql.js"></script>
+</body>
+</html>

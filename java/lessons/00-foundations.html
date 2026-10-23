@@ -7,12 +7,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="../assets/course.css">
+<link rel="stylesheet" href="../../assets/css/course.css">
 </head>
 <body data-page="l00" data-name="Lesson 00 · Foundations" data-short="L00">
 
 <nav><div class="wrap">
-  <a class="brand" href="../Java.html"><i>J</i><span>Java</span></a>
+  <a class="brand" href="../index.html"><i>J</i><span>Java</span></a>
   <div class="links"></div>
   <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
 </div><div id="prog"></div></nav>
@@ -35,20 +35,13 @@
 <!-- F1 -->
 <section id="f-platform">
   <span class="num">F1</span><h2>The Java platform: JDK, JRE, JVM and bytecode</h2>
-  <div class="tldr"><b>In 30 seconds</b> You write <code>.java</code> text. <code>javac</code> compiles it <b>once</b> into <code>.class</code> files full of <b>bytecode</b>, which is the same on every OS. The <b>JVM</b> loads that bytecode and runs it: first by interpreting it, then by compiling the hot parts to native machine code (the <b>JIT</b>). The <b>JDK</b> is everything a developer needs; the <b>JRE</b> is what a program needs to run.</div>
-  <div class="note"><b>Why it exists:</b> C and C++ compile to machine code for one CPU and one OS, so you rebuild for each platform. Java compiles to bytecode for a <i>virtual</i> machine instead. Each platform has its own JVM, so the same <code>.class</code> file runs on Windows, Linux and macOS: "write once, run anywhere".</div>
-  <div class="note"><b>Analogy:</b> bytecode is sheet music. <code>javac</code> is the composer who writes it down once. Each JVM is a musician who can read sheet music and plays it on their own instrument (the CPU). A musician who plays the same piece often learns it by heart (the JIT) and plays it faster.</div>
-  <div class="tw"><table>
-    <tr><th>Name</th><th>What it is</th><th>Contains</th><th>Who needs it</th></tr>
-    <tr><td><b>JVM</b></td><td>Java Virtual Machine: runs bytecode</td><td>Class loader, bytecode verifier, interpreter, JIT compiler, garbage collector</td><td>Every running Java program</td></tr>
-    <tr><td><b>JRE</b></td><td>Java Runtime Environment</td><td>JVM + the standard class library (<code>java.lang</code>, <code>java.util</code>…)</td><td>Users who only run programs</td></tr>
-    <tr><td><b>JDK</b></td><td>Java Development Kit</td><td>JRE + tools: <code>javac</code>, <code>java</code>, <code>javap</code>, <code>jshell</code>, <code>jar</code>, <code>jcmd</code>…</td><td>Developers</td></tr>
-  </table></div>
-  <p class="small muted">Since Java 11, Oracle no longer ships a separate JRE (some vendors, such as Eclipse Temurin, still publish JRE builds), and <code>jlink</code> can build a trimmed runtime for deployment. The idea "JRE = JVM + libraries" is still how interviewers phrase it.</p>
-<figure class="fig" id="fig-pipeline">
-  <div class="sv"><svg viewBox="0 0 760 350" role="img" aria-label="Compile time: Hello.java goes through javac to Hello.class bytecode. Run time: the JVM's class loader loads it, the verifier checks it, the interpreter runs it and the JIT compiles hot methods to native code, using the heap, stacks, Metaspace and PC registers"><defs><marker id="fcg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mg"/></marker><marker id="fca" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ma"/></marker><marker id="fcn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mn"/></marker></defs><rect x="10" y="10" width="740" height="110" rx="12" class="zone"/><text x="24" y="30" class="zl" text-anchor="start">COMPILE TIME · ONCE, WITH THE JDK</text><rect x="30" y="44" width="170" height="56" rx="8" class="var"/><text x="115" y="68" class="ft" text-anchor="middle">Hello.java</text><text x="115" y="88" class="fs" text-anchor="middle">source code (text)</text><line x1="200" y1="72" x2="267" y2="72" class="a ac" marker-end="url(#fca)"/><rect x="270" y="44" width="170" height="56" rx="8" class="obj acc"/><text x="355" y="68" class="ft" text-anchor="middle">javac</text><text x="355" y="88" class="fs" text-anchor="middle">compiler: checks types</text><line x1="440" y1="72" x2="507" y2="72" class="a ac" marker-end="url(#fca)"/><rect x="510" y="44" width="220" height="56" rx="8" class="obj"/><text x="620" y="68" class="ft" text-anchor="middle">Hello.class</text><text x="620" y="88" class="fs" text-anchor="middle">bytecode · same on every OS</text><path d="M620 100 L620 130 L105 130 L105 161" class="a g" marker-end="url(#fcg)"/><rect x="10" y="140" width="740" height="200" rx="12" class="zone"/><text x="24" y="158" class="zl" text-anchor="start">RUN TIME · java Hello · THE JVM</text><rect x="30" y="164" width="150" height="56" rx="8" class="var"/><text x="105" y="188" class="ft" text-anchor="middle">Class loader</text><text x="105" y="208" class="fs" text-anchor="middle">finds and loads .class</text><line x1="180" y1="192" x2="207" y2="192" class="a g" marker-end="url(#fcg)"/><rect x="210" y="164" width="140" height="56" rx="8" class="var"/><text x="280" y="188" class="ft" text-anchor="middle">Verifier</text><text x="280" y="208" class="fs" text-anchor="middle">checks bytecode</text><line x1="350" y1="192" x2="377" y2="192" class="a g" marker-end="url(#fcg)"/><rect x="380" y="164" width="150" height="56" rx="8" class="obj"/><text x="455" y="188" class="ft" text-anchor="middle">Interpreter</text><text x="455" y="208" class="fs" text-anchor="middle">executes bytecode</text><line x1="530" y1="192" x2="557" y2="192" class="a ac" marker-end="url(#fca)"/><rect x="560" y="164" width="170" height="56" rx="8" class="obj acc"/><text x="645" y="188" class="ft" text-anchor="middle">JIT compiler</text><text x="645" y="208" class="fs" text-anchor="middle">hot methods → native code</text><text x="24" y="244" class="zl" text-anchor="start">RUNTIME DATA AREAS</text><rect x="30" y="254" width="160" height="70" rx="8" class="cell sh"/><text x="110" y="282" class="ft" text-anchor="middle">Heap</text><text x="110" y="302" class="fs" text-anchor="middle">objects · arrays · GC</text><rect x="210" y="254" width="160" height="70" rx="8" class="cell"/><text x="290" y="282" class="ft" text-anchor="middle">Stacks</text><text x="290" y="302" class="fs" text-anchor="middle">one per thread · frames</text><rect x="390" y="254" width="160" height="70" rx="8" class="cell"/><text x="470" y="282" class="ft" text-anchor="middle">Metaspace</text><text x="470" y="302" class="fs" text-anchor="middle">class metadata</text><rect x="570" y="254" width="160" height="70" rx="8" class="cell"/><text x="650" y="282" class="ft" text-anchor="middle">PC registers</text><text x="650" y="302" class="fs" text-anchor="middle">next instruction per thread</text></svg></div>
-  <figcaption><b>From source to running code.</b> <code>javac</code> runs once and writes bytecode. Every time you run the program, the JVM loads the classes it needs (lazily, on first use), verifies them, and starts interpreting. HotSpot counts how often each method runs; hot methods are compiled to native code by the JIT (C1 quickly, then C2 with heavy optimisation). While running, objects live on the <b>heap</b>, each thread has its own <b>stack</b> of method frames, and class metadata sits in <b>Metaspace</b> (Java 8+, it replaced PermGen). This is the HotSpot model; other JVMs differ in details.</figcaption>
-</figure>
+  <div class="tldr"><b>In 30 seconds</b> You write <code>Hello.java</code>. <code>javac</code> turns it <b>once</b> into <code>Hello.class</code>: <b>bytecode</b>. That one file runs on Windows, Linux and macOS, because each has its own <b>JVM</b> that reads bytecode. The JVM starts by <b>interpreting</b> it, then <b>compiles the hot parts</b> to machine code (the JIT). <b>JDK</b> = the tools to write Java · <b>JRE</b> = what is needed to run it · <b>JVM</b> = the engine inside both.</div>
+  <div class="viz ol fd" id="fdPipe"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span>Bytecode is <b>sheet music</b>. <code>javac</code> writes it down once. Every JVM is a musician who reads the same sheet on their own instrument (the CPU), and a piece played often is learned <b>by heart</b>: that is the JIT.</span></div>
+  <h3>Three names, one picture</h3>
+  <div class="viz ol fd" id="fdKit"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <h3>Try it: your first program</h3>
+  <p>Type it, save it as <code>Add.java</code> (the file name must match the <code>public</code> class), then run it:</p>
 <script type="text/x-java" data-file="Add.java" data-hl="8-10">
 public class Add {
 
@@ -63,13 +56,13 @@ public class Add {
     }
 }
 </script>
-  <p>Compile and run it in two steps, or in one (JDK 11+):</p>
-<pre class="diagram"><span class="cm"># two steps: produce Add.class, then run the class (no .class suffix)</span>
+<pre class="diagram"><span class="cm"># one step (JDK 11+): compile in memory and run</span>
+java Add.java
+<span class="cm"># two steps: write Add.class, then run the class (no .class suffix)</span>
 javac Add.java
-java Add
-<span class="cm"># one step: the source launcher compiles in memory and runs (JDK 11+)</span>
-java Add.java</pre>
-  <p>Peek at the bytecode with <code>javap -c Add</code> (excerpt from JDK 25; the class-file major version is 69):</p>
+java Add</pre>
+  <details class="d"><summary>Go deeper: what the bytecode looks like (<code>javap -c Add</code>)</summary><div class="b">
+    <p class="small muted">JDK 25 writes class-file version 69. Bytecode is a tiny <i>stack machine</i>: push values, operate, pop the result.</p>
 <pre class="diagram">static int add(int, int);
   Code:
      0: iload_0            <span class="cm">// push parameter a onto the operand stack</span>
@@ -85,13 +78,14 @@ public static void main(java.lang.String[]);
      5: istore_1           <span class="cm">// store the result in local slot 1 (sum)</span>
      ...
     10: invokedynamic #19  <span class="cm">// makeConcatWithConstants: "2 + 3 = " + sum (Java 9+)</span></pre>
-  <ul>
-    <li><b>Line 3 (<code>add</code>):</b> bytecode is a <i>stack machine</i>. Locals live in numbered slots (<code>a</code> is slot 0 because the method is <code>static</code>; an instance method would use slot 0 for <code>this</code>).</li>
-    <li><b>Line 8:</b> <code>invokestatic</code> pushes a new <b>frame</b> on the thread's stack for <code>add</code>; <code>ireturn</code> pops it.</li>
-    <li><b>Line 9:</b> the <code>+</code> with a String compiles to <code>invokedynamic</code> since Java 9 (Lesson 02, D8).</li>
-    <li><b>Line 10:</b> <code>Runtime.version().feature()</code> prints the major version of the JVM that ran the code.</li>
-  </ul>
-  <div class="tw"><table>
+    <ul>
+      <li>Locals live in numbered slots: <code>a</code> is slot 0 because <code>add</code> is <code>static</code> (an instance method keeps <code>this</code> in slot 0).</li>
+      <li><code>invokestatic</code> pushes a new <b>frame</b> on the thread's stack for <code>add</code>; <code>ireturn</code> pops it (F5 shows the frames).</li>
+      <li>String <code>+</code> compiles to <code>invokedynamic</code> since Java 9 (Lesson 02, D8).</li>
+    </ul>
+  </div></details>
+  <details class="d"><summary>Go deeper: the Java versions interviewers ask about</summary><div class="b">
+<div class="tw"><table>
     <tr><th>LTS release</th><th>Year</th><th>Headline features (the ones interviews ask about)</th></tr>
     <tr><td><b>Java 8</b></td><td>2014</td><td>Lambdas, streams, <code>Optional</code>, default methods, <code>java.time</code>, Metaspace replaces PermGen</td></tr>
     <tr><td><b>Java 11</b></td><td>2018</td><td><code>var</code> in lambdas, <code>HttpClient</code>, <code>java File.java</code> source launcher, <code>String.isBlank/strip/lines/repeat</code></td></tr>
@@ -99,9 +93,10 @@ public static void main(java.lang.String[]);
     <tr><td><b>Java 21</b></td><td>2023</td><td>Virtual threads, pattern matching for <code>switch</code>, record patterns, sequenced collections</td></tr>
     <tr><td><b>Java 25</b></td><td>2025</td><td>Compact source files and instance <code>main</code> (<code>void main() { IO.println("hi"); }</code>), module import declarations, flexible constructor bodies, scoped values</td></tr>
   </table></div>
-  <p class="small muted">Numbers in brackets are the release where a feature became final. This course targets Java 17+ concepts and verifies every program on JDK 25.</p>
-  <div class="note warn"><b>Common mistakes:</b> running <code>java Add.class</code> (the launcher wants the class name, <code>java Add</code>); naming the file differently from its <code>public</code> class (compile error); thinking Java is "only interpreted" (hot code is compiled to native code at run time); and thinking bytecode is tied to an OS (it is not, but a <i>newer</i> class-file version will not run on an older JVM: <code>UnsupportedClassVersionError</code>).</div>
-  <div class="ia"><div class="iah">Interview answer</div><p>"The JDK is the development kit: the compiler and tools plus a runtime. The JRE is the runtime: the JVM plus the standard libraries. The JVM executes bytecode. <code>javac</code> compiles source into platform-neutral bytecode; at run time the class loader loads classes on demand, the verifier checks them, and the JVM interprets them while the JIT compiles hot methods into native code. That is why Java is portable and still fast."</p><div class="fu"><b>Follow-ups</b><ul><li>Is Java compiled or interpreted? — Both: compiled to bytecode ahead of time, then interpreted and JIT-compiled at run time.</li><li>Why does a Java app get faster after warm-up? — The JIT compiles hot methods using profiling data (inlining, escape analysis).</li><li>What is <code>UnsupportedClassVersionError</code>? — The class was compiled for a newer Java than the JVM running it. Use <code>javac --release N</code>.</li><li>Is the JVM platform-independent? — No. Bytecode is; each OS/CPU needs its own JVM build.</li></ul></div></div>
+    <p class="small muted">Numbers in brackets are the release where a feature became final. This course targets Java 17+ concepts and verifies every program on JDK 25.</p>
+  </div></details>
+  <div class="note warn"><b>Common mistakes:</b> running <code>java Add.class</code> (the launcher wants the class name: <code>java Add</code>); naming the file differently from its <code>public</code> class (compile error); thinking Java is "only interpreted" (hot code is compiled to native code while it runs); and thinking bytecode is tied to an OS (it is not, but a <i>newer</i> class-file version will not run on an older JVM: <code>UnsupportedClassVersionError</code>).</div>
+<div class="ia"><div class="iah">Interview answer</div><p>"The JDK is the development kit: the compiler and tools plus a runtime. The JRE is the runtime: the JVM plus the standard libraries. The JVM executes bytecode. <code>javac</code> compiles source into platform-neutral bytecode; at run time the class loader loads classes on demand, the verifier checks them, and the JVM interprets them while the JIT compiles hot methods into native code. That is why Java is portable and still fast."</p><div class="fu"><b>Follow-ups</b><ul><li>Is Java compiled or interpreted? — Both: compiled to bytecode ahead of time, then interpreted and JIT-compiled at run time.</li><li>Why does a Java app get faster after warm-up? — The JIT compiles hot methods using profiling data (inlining, escape analysis).</li><li>What is <code>UnsupportedClassVersionError</code>? — The class was compiled for a newer Java than the JVM running it. Use <code>javac --release N</code>.</li><li>Is the JVM platform-independent? — No. Bytecode is; each OS/CPU needs its own JVM build.</li></ul></div></div>
 </section>
 
 <!-- F2 -->
@@ -110,6 +105,8 @@ public static void main(java.lang.String[]);
   <div class="tldr"><b>In 30 seconds</b> Java has <b>8 primitive types</b> that hold a value directly (<code>int</code>, <code>double</code>, <code>boolean</code>…), and <b>reference types</b> (every class, interface and array) whose variables hold a <i>reference</i> to an object on the heap. Each primitive has a wrapper class (<code>int</code> ↔ <code>Integer</code>), and Java converts between them automatically: <b>autoboxing</b>.</div>
   <div class="viz ol an" id="anBoxes"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
   <div class="note"><b>Why it exists:</b> primitives are fast and small (no object header, no garbage collection). Objects give you methods, <code>null</code> and the ability to live in collections like <code>List&lt;Integer&gt;</code>. Java keeps both and bridges them with wrappers.</div>
+  <div class="viz ol fd" id="fdTypes"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <details class="d"><summary>Reference table: all 8 types</summary><div class="b">
   <div class="tw"><table>
     <tr><th>Type</th><th>Size</th><th>Range</th><th>Default (fields, arrays)</th><th>Literal</th></tr>
     <tr><td><code>byte</code></td><td>8 bits</td><td>−128 … 127</td><td><code>0</code></td><td><code>(byte) 10</code></td></tr>
@@ -121,6 +118,7 @@ public static void main(java.lang.String[]);
     <tr><td><code>char</code></td><td>16 bits, unsigned</td><td>0 … 65,535 (a UTF-16 unit)</td><td><code>'\u0000'</code></td><td><code>'A'</code>, <code>'\n'</code></td></tr>
     <tr><td><code>boolean</code></td><td>not specified</td><td><code>true</code> / <code>false</code></td><td><code>false</code></td><td><code>true</code></td></tr>
   </table></div>
+  </div></details>
   <p>Defaults apply only to <b>fields</b> and <b>array elements</b>. A <b>local variable</b> has no default: the compiler refuses to read it until it is <i>definitely assigned</i>.</p>
 <figure class="fig" id="fig-primref">
   <div class="sv"><svg viewBox="0 28 760 288" role="img" aria-label="On the stack, int n holds 42 directly, while Integer variables a, b, c and d hold references. a and b both point to the one cached Integer 127; c and d point to two different Integer 128 objects, so a == b is true and c == d is false"><defs><marker id="fdg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mg"/></marker><marker id="fdh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mh"/></marker></defs><rect x="20" y="40" width="230" height="250" rx="12" class="zone"/><text x="32" y="58" class="zl" text-anchor="start">STACK · main() FRAME</text><rect x="36" y="66" width="198" height="34" rx="8" class="var"/><text x="50" y="88" class="ft" text-anchor="start">int n</text><text x="222" y="88" class="ft" text-anchor="end">42</text><rect x="36" y="110" width="198" height="34" rx="8" class="var"/><text x="50" y="132" class="ft" text-anchor="start">Integer a</text><text x="222" y="132" class="fs" text-anchor="end">ref</text><rect x="36" y="154" width="198" height="34" rx="8" class="var"/><text x="50" y="176" class="ft" text-anchor="start">Integer b</text><text x="222" y="176" class="fs" text-anchor="end">ref</text><rect x="36" y="198" width="198" height="34" rx="8" class="var"/><text x="50" y="220" class="ft" text-anchor="start">Integer c</text><text x="222" y="220" class="fs" text-anchor="end">ref</text><rect x="36" y="242" width="198" height="34" rx="8" class="var"/><text x="50" y="264" class="ft" text-anchor="start">Integer d</text><text x="222" y="264" class="fs" text-anchor="end">ref</text><rect x="330" y="40" width="410" height="250" rx="12" class="zone"/><text x="342" y="58" class="zl" text-anchor="start">HEAP</text><rect x="346" y="66" width="378" height="88" rx="10" class="pool"/><text x="358" y="84" class="zl g" text-anchor="start">INTEGER CACHE · −128 … 127</text><rect x="360" y="94" width="150" height="44" rx="8" class="obj"/><text x="435" y="121" class="ft" text-anchor="middle">Integer 127</text><rect x="536" y="96" width="176" height="26" rx="13" class="pok"/><text x="624" y="113" class="rt ok" text-anchor="middle">a == b → true</text><text x="624" y="142" class="fs" text-anchor="middle">256 shared objects</text><rect x="360" y="172" width="150" height="40" rx="8" class="obj heap"/><text x="435" y="197" class="ft" text-anchor="middle">Integer 128</text><rect x="360" y="228" width="150" height="40" rx="8" class="obj heap"/><text x="435" y="253" class="ft" text-anchor="middle">Integer 128</text><line x1="234" y1="127" x2="357" y2="110" class="a g" marker-end="url(#fdg)"/><line x1="234" y1="171" x2="357" y2="124" class="a g" marker-end="url(#fdg)"/><line x1="234" y1="215" x2="357" y2="192" class="a h" marker-end="url(#fdh)"/><line x1="234" y1="259" x2="357" y2="248" class="a h" marker-end="url(#fdh)"/><rect x="536" y="207" width="176" height="26" rx="13" class="pno"/><text x="624" y="224" class="rt no" text-anchor="middle">c == d → false</text><text x="135" y="306" class="fs" text-anchor="middle">n stores the value; a–d store references</text></svg></div>
@@ -210,6 +208,7 @@ public class Boxing {
   <span class="num">F3</span><h2>Operators, casting and arithmetic traps</h2>
   <div class="tldr"><b>In 30 seconds</b> Java converts a smaller type to a bigger one automatically (<b>widening</b>), but going smaller needs an explicit <b>cast</b> and can lose data (<b>narrowing</b>). Arithmetic on <code>byte</code>, <code>short</code> and <code>char</code> happens in <code>int</code>. <code>int</code> overflow wraps silently, <code>/</code> on ints drops the fraction, and <code>double</code> can't store 0.1 exactly.</div>
   <div class="viz ol an" id="anOdo"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="viz ol fd" id="fdCast"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
   <div class="tw"><table>
     <tr><th>Conversion</th><th>Direction</th><th>Needs a cast?</th></tr>
     <tr><td><b>Widening</b></td><td><code>byte → short → int → long → float → double</code>, and <code>char → int</code></td><td>No. Safe (<code>int → float</code> and <code>long → float/double</code> can lose precision, but not range).</td></tr>
@@ -330,6 +329,7 @@ public class Money {
   <span class="num">F4</span><h2>Control flow: if, switch and loops</h2>
   <div class="tldr"><b>In 30 seconds</b> <code>if/else</code> picks a branch, <code>switch</code> picks one of many cases, and <code>for</code>, <code>while</code>, <code>do-while</code> and the enhanced <code>for</code> repeat code. The classic <code>switch</code> <b>falls through</b> without <code>break</code>. The modern arrow form (Java 14+) never falls through and can return a value; Java 21 adds <b>pattern matching</b> on types.</div>
   <div class="viz ol an" id="anFall"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="viz ol fd" id="fdFlow"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
   <div class="tw"><table>
     <tr><th></th><th>Classic <code>case X:</code></th><th>Arrow <code>case X -&gt;</code> (Java 14+)</th></tr>
     <tr><td>Fall-through</td><td>Yes, until <code>break</code></td><td>Never</td></tr>
@@ -491,6 +491,7 @@ public class Overload {
     }
 }
 </script>
+  <div class="viz ol fd" id="fdOverload"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
   <p>The compiler resolves an overloaded call in <b>three phases</b> and stops at the first phase that finds a match: (1) exact match or <b>widening</b>, no boxing; (2) <b>boxing</b>/unboxing allowed; (3) <b>varargs</b> allowed. Inside a phase, the most specific method wins. That is why <code>show(5)</code> picks <code>long</code> over <code>Integer</code>: widening is phase 1, boxing is phase 2.</p>
 <figure class="fig" id="fig-frames">
   <div class="sv"><svg viewBox="0 0 760 300" role="img" aria-label="Five snapshots of the call stack for factorial(3): main, then frames for factorial 3, 2 and 1 pushed on top, then the frames pop one by one returning 1, 2 and 6"><defs><marker id="feg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mg"/></marker></defs><text x="80" y="30" class="fhd" text-anchor="middle">1 · main</text><rect x="20" y="44" width="120" height="226" rx="12" class="zone"/><rect x="30" y="226" width="100" height="34" rx="8" class="obj acc"/><text x="80" y="248" class="ft" text-anchor="middle">main</text><text x="215" y="30" class="fhd" text-anchor="middle">2 · f(3)</text><rect x="155" y="44" width="120" height="226" rx="12" class="zone"/><rect x="165" y="226" width="100" height="34" rx="8" class="var"/><text x="215" y="248" class="ft" text-anchor="middle">main</text><rect x="165" y="186" width="100" height="34" rx="8" class="obj acc"/><text x="177" y="208" class="ft" text-anchor="start">f(3)</text><text x="255" y="208" class="fs" text-anchor="end">n=3</text><text x="350" y="30" class="fhd" text-anchor="middle">3 · f(2)</text><rect x="290" y="44" width="120" height="226" rx="12" class="zone"/><rect x="300" y="226" width="100" height="34" rx="8" class="var"/><text x="350" y="248" class="ft" text-anchor="middle">main</text><rect x="300" y="186" width="100" height="34" rx="8" class="var"/><text x="312" y="208" class="ft" text-anchor="start">f(3)</text><text x="390" y="208" class="fs" text-anchor="end">n=3</text><rect x="300" y="146" width="100" height="34" rx="8" class="obj acc"/><text x="312" y="168" class="ft" text-anchor="start">f(2)</text><text x="390" y="168" class="fs" text-anchor="end">n=2</text><text x="485" y="30" class="fhd" text-anchor="middle">4 · f(1) base</text><rect x="425" y="44" width="120" height="226" rx="12" class="zone"/><rect x="435" y="226" width="100" height="34" rx="8" class="var"/><text x="485" y="248" class="ft" text-anchor="middle">main</text><rect x="435" y="186" width="100" height="34" rx="8" class="var"/><text x="447" y="208" class="ft" text-anchor="start">f(3)</text><text x="525" y="208" class="fs" text-anchor="end">n=3</text><rect x="435" y="146" width="100" height="34" rx="8" class="var"/><text x="447" y="168" class="ft" text-anchor="start">f(2)</text><text x="525" y="168" class="fs" text-anchor="end">n=2</text><rect x="435" y="106" width="100" height="34" rx="8" class="obj"/><text x="447" y="128" class="ft" text-anchor="start">f(1)</text><text x="525" y="128" class="fs" text-anchor="end">n=1</text><text x="485" y="88" class="rt ok" text-anchor="middle">returns 1</text><text x="650" y="30" class="fhd" text-anchor="middle">5 · unwind</text><rect x="560" y="44" width="180" height="226" rx="12" class="zone"/><rect x="570" y="226" width="160" height="34" rx="8" class="obj acc"/><text x="582" y="248" class="ft" text-anchor="start">main</text><text x="720" y="248" class="fs" text-anchor="end">gets 6</text><line x1="580" y1="214" x2="580" y2="106" class="a g" marker-end="url(#feg)"/><text x="594" y="128" class="fts" text-anchor="start">f(1) → 1</text><text x="594" y="168" class="fts" text-anchor="start">f(2) → 2 × 1 = 2</text><text x="594" y="208" class="fts" text-anchor="start">f(3) → 3 × 2 = 6</text><text x="660" y="88" class="fs" text-anchor="middle">pop, pop, pop</text><text x="380" y="290" class="zl" text-anchor="middle">EACH CALL PUSHES A FRAME WITH ITS OWN n · EACH RETURN POPS ONE</text></svg></div>
@@ -696,7 +697,16 @@ java -cp out com.shop.app.Main      <span class="cm"># run by fully qualified na
 <footer>Java: Zero to Advanced · every program compiled and run on JDK 25<span class="credits">3D models (CC BY 4.0): <a href="https://sketchfab.com/3d-models/1990-fatboy-inspired-cruiser-motorcycle-a38557914e324e418a407071eaedf6ec">cruiser motorcycle</a> by Alpha One · <a href="https://sketchfab.com/3d-models/skeleton-lord-a3f7b44275cf4c489ad62c535268ac16">Skeleton Lord</a> by DJMaesen · <a href="https://sketchfab.com/3d-models/horse-a6f860e43e364619bccb174a1ac7d0c9">Horse</a> by henrysteve973. Recoloured and posed for this page.</span></footer>
 </div>
 
-<script src="../assets/course-index.js"></script>
-<script src="../assets/course.js"></script>
+<script src="../../assets/data/course-index.js"></script>
+<script src="../../assets/data/quiz-data.js"></script>
+<script src="../../assets/js/course.js"></script>
+<script src="../../assets/js/effects.js"></script>
+<script src="../../assets/labs/labs-oop.js"></script>
+<script src="../../assets/labs/labs-collections.js"></script>
+<script src="../../assets/labs/labs-analogy.js"></script>
+<script src="../../assets/labs/labs-sorting.js"></script>
+<script src="../../assets/labs/labs-foundations.js"></script>
+<script src="../../assets/js/practice-tools.js"></script>
+<script src="../../assets/js/run-java.js"></script>
 </body>
 </html>

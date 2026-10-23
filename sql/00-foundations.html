@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SQL 00: Databases and SQL foundations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../assets/css/course.css">
+</head>
+<body data-page="s00" data-course="sql" data-name="SQL 00 · Foundations" data-short="S00">
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><i>S</i><span>SQL</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top" class="ph">
+  <div class="tag">SQL 00 · FOUNDATIONS</div>
+  <h1>Databases and <span class="grad">SQL</span> foundations</h1>
+  <p class="lead">What a database is, how tables connect, your first <code>SELECT</code>, the order a query really runs in, and the rules the database enforces for you. Every query on this page runs for real, in your browser, on the same small car-dealership database the whole course uses.</p>
+  <div class="pager"></div>
+</header>
+
+<div class="band" id="sqlfound">
+  <div class="tag">SQL 00 · DATABASES AND SQL FOUNDATIONS</div>
+  <h2>Tables, keys, SELECT, and how a query runs</h2>
+  <p class="muted">Start here if you have never written SQL. Play the visuals first; the text around them is short on purpose, and the depth is folded under "Go deeper". Six sections, five labs, every result produced by the real database (SQLite 3.49 through sql.js; where PostgreSQL or MySQL differ, the page says so).</p>
+</div>
+
+<!-- S1 -->
+<section id="s-what">
+  <span class="num">S1</span><h2>What a database is</h2>
+  <div class="tldr"><b>In 30 seconds</b> A <b>database</b> stores facts in <b>tables</b>. A table has <b>columns</b> (the kind of fact: <code>name</code>, <code>price</code>) and <b>rows</b> (one thing: one customer, one car). Every row has the same columns. <b>SQL</b> is the language you use to ask the database questions and to change what it holds. This course's database is a small car dealership: six tables, about sixty rows.</div>
+  <div class="viz ol fd sq" id="sqCabinet"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span>A database is a <b>filing cabinet</b>: a <b>drawer</b> per kind of thing (table), a <b>folder</b> per thing (row), the same <b>labels</b> on every folder (columns), and a <b>number</b> on each folder that no other folder in that drawer has (primary key).</span></div>
+  <details class="d"><summary>Go deeper: engines, dialects and where SQL came from</summary><div class="b">
+    <p>The program that keeps the cabinet is a <b>database engine</b> (DBMS): PostgreSQL, MySQL/MariaDB, SQLite, Oracle, SQL Server. They all speak SQL, standardised since 1986, but each has a <b>dialect</b>: small differences in functions, in how you limit rows (<code>LIMIT</code> vs <code>FETCH FIRST</code> vs <code>TOP</code>), in string concatenation (<code>||</code> vs <code>CONCAT</code>), in dates. This course runs on <b>SQLite</b> because it fits in a browser; the interview answers cover PostgreSQL and MySQL where they differ.</p>
+    <p><b>Relational</b> means the data lives in tables (relations) that reference each other by key, instead of in one big nested document. The payoff is that each fact is stored <b>once</b>: a customer's name sits in one row of <code>customers</code>, and every sale just points at it.</p>
+  </div></details>
+</section>
+
+<!-- S2 -->
+<section id="s-schema">
+  <span class="num">S2</span><h2>Tables, keys and the dealership schema</h2>
+  <div class="tldr"><b>In 30 seconds</b> A <b>primary key</b> is the column that identifies a row: unique, never <code>NULL</code> (<code>id</code> here). A <b>foreign key</b> is a column that holds another table's primary key: <code>sales.car_id</code> holds a <code>cars.id</code>. That is how tables connect, and the whole design of a database is deciding which drawers exist and which keys link them (the <b>schema</b>).</div>
+  <div class="viz ol fd sq" id="sqSchema"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span>A foreign key is a <b>folder number written on another folder</b>: the sale's folder says "car #3", and you walk to the cars drawer to read about car #3. Nothing about the car is copied into the sale.</span></div>
+  <h3>Try it</h3>
+  <p>Press <b>▶ Run</b> (or <kbd>Ctrl</kbd>+<kbd>Enter</kbd>). Edit the query and run it again; <b>Reset</b> restores it.</p>
+<script type="text/x-sql" data-file="cars.sql" data-auto>
+SELECT * FROM cars;
+</script>
+  <details class="d"><summary>Go deeper: natural vs surrogate keys, composite keys</summary><div class="b">
+    <p>A <b>surrogate key</b> is a made-up number (<code>id INTEGER PRIMARY KEY</code>): short, stable, meaningless. A <b>natural key</b> is a real-world value that is already unique (<code>cities.name</code> here). Natural keys read nicely but change (a city renamed) and get long; most teams use surrogate keys and put a <code>UNIQUE</code> constraint on the natural one. A <b>composite key</b> is two or more columns together (<code>(order_id, line_no)</code>). <code>customers.referred_by</code> and <code>employees.manager_id</code> point at <b>their own table</b>: a self-reference, which is how trees (org charts, categories) are stored.</p>
+  </div></details>
+</section>
+
+<!-- S3 -->
+<section id="s-select">
+  <span class="num">S3</span><h2>Your first query: <code>SELECT … FROM</code></h2>
+  <div class="tldr"><b>In 30 seconds</b> <code>SELECT</code> names the columns you want, <code>FROM</code> names the table. <code>*</code> means every column. <code>ORDER BY</code> sorts, <code>LIMIT</code> cuts, <code>AS</code> renames a column in the result. SQL keywords are not case-sensitive (<code>select</code> works), but the convention is UPPERCASE keywords and lowercase names.</div>
+  <div class="viz ol fd sq" id="sqPick"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span><code>SELECT</code> is <b>which labels</b> to read, <code>FROM</code> is <b>which drawer</b>. Everything else in a query only decides <i>which folders</i> and <i>in what order</i>.</span></div>
+  <h3>Try it</h3>
+<script type="text/x-sql" data-file="first.sql" data-auto>
+SELECT brand, model, price
+FROM cars
+ORDER BY price DESC
+LIMIT 3;
+</script>
+  <p>A query can compute values, not just read them. Watch the division: two whole numbers divide as whole numbers, exactly like <code>7 / 2</code> in Java.</p>
+<script type="text/x-sql" data-file="expressions.sql" data-auto>
+SELECT model,
+       price / 100000       AS lakhs_int,     -- integer division: 6, not 6.5
+       price * 1.0 / 100000 AS lakhs,         -- make one side a decimal
+       brand || ' ' || model AS full_name     -- || joins text (CONCAT() in MySQL)
+FROM cars
+WHERE brand = 'Maruti';
+</script>
+  <div class="note warn"><b>Common mistakes:</b> <code>SELECT *</code> in application code (the result changes when the table changes; name the columns); forgetting that <code>ORDER BY</code> is the <b>only</b> way to get a guaranteed order; <code>price / 100000</code> expecting 6.5; a string in double quotes (<code>"Maruti"</code> is a column name in standard SQL: text goes in <b>single</b> quotes).</div>
+  <details class="d"><summary>Go deeper: dialect differences for this section</summary><div class="b">
+    <div class="tw"><table><tr><th></th><th>SQLite</th><th>PostgreSQL</th><th>MySQL</th></tr>
+      <tr><td>First n rows</td><td><code>LIMIT 3</code></td><td><code>LIMIT 3</code> or <code>FETCH FIRST 3 ROWS ONLY</code></td><td><code>LIMIT 3</code></td></tr>
+      <tr><td>Join text</td><td><code>a || b</code></td><td><code>a || b</code>, <code>CONCAT(a, b)</code></td><td><code>CONCAT(a, b)</code> (<code>||</code> is OR unless <code>PIPES_AS_CONCAT</code>)</td></tr>
+      <tr><td><code>7 / 2</code></td><td><code>3</code></td><td><code>3</code></td><td><code>3.5000</code> (use <code>DIV</code> for integer division)</td></tr>
+      <tr><td>Case of names</td><td>insensitive</td><td>folded to lowercase unless quoted</td><td>tables follow the file system (case-sensitive on Linux)</td></tr>
+    </table></div>
+  </div></details>
+</section>
+
+<!-- S4 -->
+<section id="s-order">
+  <span class="num">S4</span><h2>How a query really runs: the logical order</h2>
+  <div class="tldr"><b>In 30 seconds</b> You <i>write</i> <code>SELECT</code> first, but the engine <i>runs</i> <b>FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT</b>. This one fact explains most SQL confusion: why <code>WHERE</code> cannot see an alias from <code>SELECT</code> (it does not exist yet), why <code>WHERE</code> cannot use <code>COUNT(*)</code> (nothing is grouped yet) while <code>HAVING</code> can, and why <code>ORDER BY</code> <i>can</i> use the alias.</div>
+  <div class="viz ol fd sq" id="sqOrder"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span><b>From Where Groups Have Selected Order Limits</b>: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT. Rows go in at the top, the answer comes out at the bottom.</span></div>
+  <h3>Try it</h3>
+  <p>Run the whole query, then try the two edits in the comments.</p>
+<script type="text/x-sql" data-file="order.sql" data-auto>
+SELECT brand, COUNT(*) AS models, MIN(price) AS cheapest
+FROM cars
+WHERE year >= 2023            -- try: WHERE models >= 2  → error: no such column
+GROUP BY brand
+HAVING COUNT(*) >= 2          -- try: ORDER BY models   → works: SELECT ran already
+ORDER BY cheapest
+LIMIT 1;
+</script>
+  <details class="d"><summary>Go deeper: logical order vs what the engine actually does</summary><div class="b">
+    <p>The order above is the <b>logical</b> order: the rules that define what the result must be. The engine's <b>planner</b> is free to do anything that gives the same answer: use an index instead of reading the whole table, apply a cheap filter before an expensive join, stop early because of <code>LIMIT</code>. Lesson S07 shows the plan. For reading and writing queries, think in the logical order; for performance, read the plan.</p>
+    <p>Some engines (MySQL, SQLite) let you use a <code>SELECT</code> alias in <code>GROUP BY</code> or <code>HAVING</code> as a convenience; PostgreSQL allows it in <code>GROUP BY</code> but not in <code>HAVING</code>. Portable code repeats the expression.</p>
+  </div></details>
+</section>
+
+<!-- S5 -->
+<section id="s-keys">
+  <span class="num">S5</span><h2>Primary keys, foreign keys and <code>NULL</code></h2>
+  <div class="tldr"><b>In 30 seconds</b> Keys are <b>rules the database enforces</b>: a duplicate primary key is refused, a foreign key that points at nothing is refused, and a refused statement changes nothing. <code>NULL</code> means <b>no value</b>: not 0, not an empty string. Any comparison with <code>NULL</code> is unknown, so <code>city = NULL</code> never matches; use <code>IS NULL</code>. <code>COUNT(*)</code> counts rows, <code>COUNT(col)</code> counts non-NULL values.</div>
+  <div class="viz ol fd sq" id="sqKeys"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span><code>NULL</code> is an <b>empty label</b> on the folder. You cannot say the empty label "equals" anything, not even another empty label; you can only ask <b>"is it empty?"</b> (<code>IS NULL</code>).</span></div>
+  <h3>Try it</h3>
+<script type="text/x-sql" data-file="nulls.sql" data-auto>
+SELECT COUNT(*)      AS all_rows,
+       COUNT(cost)   AS with_cost,      -- NULL costs are not counted
+       COUNT(note)   AS with_note
+FROM services;
+</script>
+  <details class="d"><summary>Go deeper: constraints you will meet, and SQLite's foreign-key switch</summary><div class="b">
+    <p><code>PRIMARY KEY</code> (unique + not null), <code>UNIQUE</code>, <code>NOT NULL</code>, <code>CHECK (price &gt; 0)</code>, <code>DEFAULT 1</code>, <code>FOREIGN KEY … REFERENCES cars(id)</code> with <code>ON DELETE CASCADE | SET NULL | RESTRICT</code> to say what happens to the child rows when the parent goes. In <b>SQLite</b> foreign keys are only checked after <code>PRAGMA foreign_keys = ON</code> on each connection (this page turns it on); PostgreSQL and MySQL/InnoDB always check them. Lesson S06 (modelling) and S09 (DDL) build on this.</p>
+  </div></details>
+</section>
+
+<!-- S6 -->
+<section id="s-review">
+  <span class="num">S6</span><h2>Foundations: interview questions and review</h2>
+  <p class="small muted">Click a question to see the answer. The mock interview on the practice page drills these.</p>
+  <details class="d"><summary><span class="q">Q1</span>What is the difference between a primary key and a foreign key?</summary><div class="b">A primary key uniquely identifies a row in its own table: unique and never NULL, one per table. A foreign key is a column in one table that holds the primary key of a row in another (or the same) table; it is how tables relate, and the database refuses values that point at no row.</div></details>
+  <details class="d"><summary><span class="q">Q2</span>In what order are the clauses of a SELECT executed?</summary><div class="b">FROM (and JOIN), WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT/OFFSET. That is why WHERE cannot use a SELECT alias or an aggregate, HAVING can use aggregates, and ORDER BY can use the alias.</div></details>
+  <details class="d"><summary><span class="q">Q3</span>WHERE vs HAVING?</summary><div class="b">WHERE filters individual rows before grouping; HAVING filters groups after GROUP BY, so it can use COUNT, SUM and friends. Put a condition in WHERE whenever it does not need an aggregate: it removes rows earlier and is cheaper.</div></details>
+  <details class="d"><summary><span class="q">Q4</span>Why does <code>WHERE city = NULL</code> return nothing?</summary><div class="b">NULL is "unknown". Any comparison with unknown is unknown, not true, and WHERE keeps only rows whose condition is true. Use <code>city IS NULL</code> or <code>IS NOT NULL</code>.</div></details>
+  <details class="d"><summary><span class="q">Q5</span>COUNT(*) vs COUNT(column) vs COUNT(DISTINCT column)?</summary><div class="b">COUNT(*) counts rows. COUNT(col) counts rows where col is not NULL. COUNT(DISTINCT col) counts different non-NULL values. On <code>services</code>: 8, 6 and (for cost) 6.</div></details>
+  <details class="d"><summary><span class="q">Q6</span>What does <code>SELECT *</code> cost you in application code?</summary><div class="b">The result's shape depends on the table: a new column changes every caller, reads more bytes than needed, and can defeat a covering index. Name the columns.</div></details>
+  <details class="d"><summary><span class="q">Q7</span>Is the row order of a query without ORDER BY defined?</summary><div class="b">No. Engines return rows in whatever order the plan produced them (table order, index order, hash order), and it can change with data size or a new index. Only ORDER BY guarantees an order; for pagination with LIMIT/OFFSET, always sort by something unique.</div></details>
+  <details class="d"><summary><span class="q">Q8</span>What is a schema?</summary><div class="b">The design of the database: which tables exist, their columns and types, their keys and constraints, and how they reference each other. (In PostgreSQL "schema" is also a namespace inside a database, like <code>public</code>.)</div></details>
+  <ul class="takeaways">
+    <li>Table = drawer, row = folder, column = label, primary key = folder number.</li>
+    <li>A foreign key stores another row's key; it never copies the row.</li>
+    <li>Logical order: FROM, WHERE, GROUP BY, HAVING, SELECT, ORDER BY, LIMIT.</li>
+    <li>NULL is "no value": test with IS NULL; COUNT(col) skips it.</li>
+    <li>Only ORDER BY gives you an order; name your columns instead of <code>*</code>.</li>
+  </ul>
+  <h3>Check yourself</h3>
+  <div class="quiz" data-quiz="s00"></div>
+</section>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>SQL: Zero to Advanced · every query runs in your browser on SQLite (sql.js) · <button type="button" class="ib" data-sq-reset>Reset the database</button></footer>
+</div>
+
+<script src="../assets/data/sql-index.js"></script>
+<script src="../assets/data/quiz-data.js"></script>
+<script src="../assets/js/course.js"></script>
+<script src="../assets/js/effects.js"></script>
+<script src="../assets/data/sql-seed.js"></script>
+<script src="../assets/labs/labs-sql.js"></script>
+</body>
+</html>
