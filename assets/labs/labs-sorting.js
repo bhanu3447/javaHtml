@@ -817,7 +817,7 @@
       '<code class="cx-java"></code><div class="cx-treew"><svg class="cx-tree" aria-label="Recursion tree"></svg></div><div class="cx-stat cx-tstat"></div><div class="cx-stack"></div>'+ctl()+'<div class="msg" aria-live="polite"></div></div>';
     const svg=$(".cx-tree",h);
     const draw=k=>{const R=REC[key],cur=k>=0?T.nodes[k]:null,path=new Set();for(let q=cur;q;q=q.par)path.add(q.i);
-      const W=Math.max(1,T.leaves)*54+40,H=T.depth*64+20,X=nd=>20+nd.x*54+27,Y=nd=>24+nd.d*64;svg.setAttribute("viewBox","0 0 "+W+" "+H);svg.style.maxWidth=W*1.1+"px";
+      const W=Math.max(1,T.leaves)*54+40,H=T.depth*64+20,X=nd=>20+nd.x*54+27,Y=nd=>24+nd.d*64;svg.setAttribute("viewBox","0 0 "+W+" "+H);svg.style.maxWidth=W*1.1+"px";svg.style.setProperty("--vbw",W);
       let g="";T.nodes.forEach(nd=>{if(nd.par)g+='<line x1="'+X(nd.par)+'" y1="'+Y(nd.par)+'" x2="'+X(nd)+'" y2="'+Y(nd)+'" class="'+(nd.i<=k?"on":"")+(path.has(nd.i)?" st":"")+'"/>';});
       T.nodes.forEach(nd=>{const st=nd.i>k?"todo":path.has(nd.i)?"stk":"done";g+='<g class="cx-nd '+st+(nd.memo?" memo":"")+'"><rect x="'+(X(nd)-25)+'" y="'+(Y(nd)-13)+'" width="50" height="26" rx="13"/><text x="'+X(nd)+'" y="'+(Y(nd)+4)+'" text-anchor="middle">'+(nd.memo?"memo":R.lab(nd.k))+"</text></g>";});
       svg.innerHTML=g;

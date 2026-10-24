@@ -79,6 +79,47 @@ nav .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient
 nav .gh{font-size:.84rem;color:var(--muted);text-decoration:none;padding:5px 11px;border-radius:8px}
 nav .gh:hover{color:var(--text);background:var(--soft)}
 @media (prefers-reduced-motion:reduce){.csw-m{animation:none}}
+/* hub v2 (responsive v40): 44 px touch targets in the nav, compact nav on landscape phones, a two-column card grid on tablets
+   with the "next course" card as a full-width strip, and a wider, larger page on big screens */
+nav .brand i{width:24px;height:24px;font-size:.75rem}
+.csw-m{max-width:calc(100vw - 24px)}
+.csw-m a small{font-size:.75rem}
+nav .gh{display:inline-flex;align-items:center}
+footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+@media (pointer:coarse){
+  nav .wrap{padding-top:6px;padding-bottom:6px}
+  nav .brand{min-width:44px;min-height:44px;justify-content:center;margin-left:-10px}
+  .csw{margin-left:-8px}
+  .csw-b,nav .gh{min-height:44px}
+  nav .gh{margin-right:-11px}
+  .csw-m a{min-height:48px}
+}
+@media (pointer:coarse) and (orientation:landscape) and (max-height:500px){nav .wrap{padding-top:3px;padding-bottom:3px}}
+@media (orientation:landscape) and (max-height:500px){header{padding:44px 0 28px}}
+@media (max-width:620px){.courses{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:480px){.wrap{padding:0 16px}}
+@media (min-width:621px) and (max-width:860px){
+  .courses{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .course.soon{grid-column:1/-1;display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:18px;row-gap:4px;align-items:center;padding-right:110px}
+  .course.soon .ic{grid-row:span 2}
+}
+@media (min-width:861px){.courses{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1600px){
+  .wrap{max-width:1120px}
+  header{padding:120px 0 52px}
+  .lead{font-size:19px;max-width:680px}
+  .courses{gap:22px}
+  .course{padding:30px 30px 26px}
+}
+@media (min-width:2400px){
+  body{font-size:17px}
+  .wrap{max-width:1280px}
+  header{padding-top:160px}
+  h1{font-size:80px}
+  .lead{font-size:21px;max-width:760px}
+  .course b{font-size:27px}
+  .course p{font-size:16px}
+}
 </style>
 </head>
 <body>

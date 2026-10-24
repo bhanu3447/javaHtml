@@ -196,18 +196,21 @@
     if(!h)return;let A=[12,7,30,4,19,25,8,16],grown=false;
     $(".an-foot",h).innerHTML='<div class="an-code"></div><div class="msg" aria-live="polite">An <code>int[8]</code>: eight lockers, each 4 bytes wide, starting at address 1000. Pick an index.</div>';
     const draw=(hot,walk)=>{$(".an-lrow",h).innerHTML=A.map((v,i)=>'<div class="an-locker'+(hot===i?" hot":"")+(walk&&walk.has(i)?" walked":"")+(v===null?" vac":"")+'"><small>'+i+"</small><b>"+(v===null?"":v)+"</b><em>@"+(1000+i*4)+"</em></div>").join("");};
+    /* on a narrow screen the row scrolls: bring locker i into view (v40) */
+    const seeL=i=>{const sc=$(".an-lockers",h),t=$$(".an-locker",h)[i];if(!sc||!t||sc.scrollWidth<=sc.clientWidth+1)return;
+      sc.scrollTo({left:Math.max(0,t.offsetLeft-(sc.clientWidth-t.offsetWidth)/2),behavior:still||document.documentElement.classList.contains("no-motion")?"auto":"smooth"});};
     const run=async(i,mode)=>{const ls=$$(".an-locker",h),rn=$(".an-runner",h);if(!ls[i])return;const target=ls[i];
-      if(mode==="get"){rn.style.transform="translateX("+(target.offsetLeft+target.offsetWidth/2-12)+"px)";draw(i);$(".an-code",h).innerHTML='<div class="cur">'+hl("arr["+i+"]   // address = 1000 + "+i+" × 4 = "+(1000+i*4)+"  →  "+A[i])+"</div>";
+      if(mode==="get"){rn.style.transform="translateX("+(target.offsetLeft+target.offsetWidth/2-12)+"px)";draw(i);seeL(i);$(".an-code",h).innerHTML='<div class="cur">'+hl("arr["+i+"]   // address = 1000 + "+i+" × 4 = "+(1000+i*4)+"  →  "+A[i])+"</div>";
         $(".msg",h).innerHTML="One multiplication and one addition give the address, so the runner goes <b>straight</b> to locker "+i+". Locker 0 or locker 7: the same single step. That is O(1), and why indexes start at 0 (the offset from the start).";pop($(".an-locker.hot",h));}
-      else{const seen=new Set();for(let k=0;k<=i;k++){seen.add(k);draw(k,seen);const rr=$(".an-runner",h);const t=$$(".an-locker",h)[k];rr.style.transform="translateX("+(t.offsetLeft+t.offsetWidth/2-12)+"px)";$(".an-code",h).innerHTML='<div class="cur">'+hl("list.get("+i+")   // node "+k+" → next …")+"</div>";await wait(330);}
+      else{const seen=new Set();for(let k=0;k<=i;k++){seen.add(k);draw(k,seen);const rr=$(".an-runner",h);const t=$$(".an-locker",h)[k];rr.style.transform="translateX("+(t.offsetLeft+t.offsetWidth/2-12)+"px)";seeL(k);$(".an-code",h).innerHTML='<div class="cur">'+hl("list.get("+i+")   // node "+k+" → next …")+"</div>";await wait(330);}
         $(".msg",h).innerHTML="A linked list has no locker numbers, only \"next\" arrows, so the runner checks <b>"+(i+1)+"</b> doors to reach item "+i+": O(n). Arrays win at random access.";}};
     h.addEventListener("click",e=>{const b=e.target.closest("[data-l]");if(!b)return;const m=b.dataset.l,i=Math.max(0,Math.min(A.length-1,parseInt($(".an-li",h).value,10)||0));
       if(m==="get"||m==="walk")run(i,m);
       else if(m==="add"){if(grown){$(".msg",h).innerHTML="The new row has room (16 lockers). Press reset to start again.";return;}
         $(".an-code",h).innerHTML='<div>'+hl("arr[8] = 21;   // ArrayIndexOutOfBoundsException: Index 8 out of bounds for length 8")+'</div><div class="cur">'+hl("arr = Arrays.copyOf(arr, 16);   arr[8] = 21;")+"</div>";
-        shake($(".an-lockers",h));grown=true;A=A.concat([21],Array(7).fill(null));setTimeout(()=>{draw(8);pop($$(".an-locker",h)[8]);},still?0:400);
+        shake($(".an-lockers",h));grown=true;A=A.concat([21],Array(7).fill(null));setTimeout(()=>{draw(8);seeL(8);pop($$(".an-locker",h)[8]);},still?0:400);
         $(".msg",h).innerHTML="The row is <b>welded</b>: there is no locker 8, so <code>arr[8]</code> throws. To grow, build a <b>new, bigger row</b> and move everything across (<code>Arrays.copyOf</code>). An <code>ArrayList</code> does exactly this for you, about 1.5× each time.";}
-      else{A=[12,7,30,4,19,25,8,16];grown=false;draw();$(".an-runner",h).style.transform="";$(".an-code",h).innerHTML="";}});
+      else{A=[12,7,30,4,19,25,8,16];grown=false;draw();seeL(0);$(".an-runner",h).style.transform="";$(".an-code",h).innerHTML="";}});
     draw();})();
 
   /* ===== L04 · cinema seats: 2D and jagged arrays ===== */

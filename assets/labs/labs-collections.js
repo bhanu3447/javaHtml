@@ -248,7 +248,7 @@
       const walk=nd=>{if(!nd)return;[nd.l,nd.r].forEach(ch=>{if(ch)edges.push('<line x1="'+px(nd)+'" y1="'+py(nd)+'" x2="'+px(ch)+'" y2="'+py(ch)+'" class="'+(vis&&vis.includes(nd)&&vis.includes(ch)?"on":"")+'"/>');});
         const cls=(ans===nd?"ans":vis&&vis.includes(nd)?"vis":"")+(range&&range.includes(nd.k)?" rng":"");
         nodes.push('<g class="'+cls+'"><circle cx="'+px(nd)+'" cy="'+py(nd)+'" r="18"/><text x="'+px(nd)+'" y="'+(py(nd)+4)+'" text-anchor="middle">'+nd.k+"</text>"+(vis&&vis.includes(nd)?'<text x="'+(px(nd)+20)+'" y="'+(py(nd)-14)+'" class="cl-st">'+(vis.indexOf(nd)+1)+"</text>":"")+"</g>");walk(nd.l);walk(nd.r);};walk(root);
-      $(".cl-tree",tHost).innerHTML='<svg viewBox="0 0 '+w+" "+h+'" style="max-width:'+w+'px" aria-hidden="true">'+edges.join("")+nodes.join("")+"</svg>";
+      $(".cl-tree",tHost).innerHTML='<svg viewBox="0 0 '+w+" "+h+'" style="max-width:'+w+'px;--vbw:'+w+'" aria-hidden="true">'+edges.join("")+nodes.join("")+"</svg>";
       $(".cl-line",tHost).innerHTML="sorted: "+keys.map(k=>'<span class="'+(ans&&ans.k===k?"ans":range&&range.includes(k)?"rng":"")+'">'+k+"</span>").join("");}
     const depth=nd=>nd?1+Math.max(depth(nd.l),depth(nd.r)):0;
     async function run(){const t=P.go(),x=parseFloat($('[data-k="x"]',tHost).value);if(isNaN(x)){msg.innerHTML="Type a number for x.";return;}

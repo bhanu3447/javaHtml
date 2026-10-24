@@ -2526,3 +2526,637 @@ nav .links{-webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 c
   .pager .btn{flex:1 1 auto;justify-content:center}
   .lx-start{padding:14px}
 }
+
+/* responsive v40 (2026-10-24): every page designed for 320 px phones through 3440 px ultrawide (18 audited viewports).
+   Parts: base, chrome, content, tools, labs-a, labs-b. Notes: kb/site-internals.md change log. */
+/* base: rules every area fragment builds on */
+/* control rows wrap instead of squeezing (and clipping) their buttons */
+.ctrl{flex-wrap:wrap}
+.ctrl>.btn,.ctrl>button{flex-shrink:0}
+/* touch: the compact lab/toolbar buttons from v39 reach the 44 px target too (v39's coarse rule lost on specificity) */
+@media (pointer:coarse){
+  .btn.sm,.rz-ctl .btn,.viz .btn,.ia .btn,.ol .btn,.bs-lab .btn,.fd .btn,.sq .btn,.cl .btn,.an .btn{min-height:44px}
+  .code .ib{min-height:40px}
+}
+
+/* chrome: one-row nav at every width (page strip only 861–1199, compact on touch/landscape), 44 px touch targets, wrapping sidebar that widens on big screens, phone-ready drawer, palette, shortcut sheet, theme picker, course menu, back-to-top, footer, generic form-control touch baseline */
+:root{--navh:51px;--tocw:272px}
+/* nav: height is known (--navh) so the sidebar/drawer start exactly under it */
+@media (pointer:coarse){:root{--navh:57px}nav .wrap{padding-top:6px;padding-bottom:6px}}
+@media (pointer:coarse) and (orientation:landscape) and (max-height:500px){:root{--navh:51px}nav .wrap{padding-top:3px;padding-bottom:3px}}
+/* nav brand: a bigger logo; on touch the link gets a 44 px hit area without moving the logo */
+nav .brand i{width:24px;height:24px;font-size:.75rem}
+@media (pointer:coarse){
+  nav .brand{min-width:44px;min-height:44px;justify-content:center;margin-left:-10px}
+  .csw{margin-left:-8px}
+  nav button{min-width:44px}
+}
+/* nav page strip: below 861 px the drawer, pager and course menu cover navigation, so the strip goes and the course menu pushes the tools right */
+@media (max-width:860px){nav .links{display:none}nav .csw{margin-right:auto}}
+@media (min-width:861px) and (max-width:1199px){nav .wrap{max-width:none;padding-left:24px;padding-right:24px}}
+@media (min-width:861px) and (max-width:1199px) and (pointer:coarse){nav .links a{display:flex;align-items:center;justify-content:center;min-height:44px;min-width:44px}}
+/* small phones: the effects and motion switches live in the command palette (search button), so the bar keeps its 44 px buttons */
+@media (pointer:coarse) and (max-width:480px){#fxBtn{display:none}}
+@media (pointer:coarse) and (max-width:360px){#motionBtn{display:none}}
+/* search pill: reads as a search field where the bar has room (tablet portrait without strip, desktop beside the sidebar) */
+#cmdBtn em{order:2;font-size:.75rem}
+@media (max-width:620px){#cmdBtn{border-color:transparent;background:transparent;box-shadow:none}#cmdBtn:hover{background:var(--soft);border-color:var(--line)}}
+#cmdBtn::after{order:1}
+@media (min-width:621px) and (max-width:860px),(min-width:1200px){
+  #cmdBtn{min-width:200px;padding:0 6px 0 11px}
+  #cmdBtn::after{content:"Search";flex:1;text-align:left;font:500 .84rem Inter,sans-serif;color:var(--muted)}
+  #cmdBtn em{margin-left:auto}
+}
+@media (min-width:1600px){#cmdBtn{min-width:240px}}
+/* sidebar (≥1200): one width token for the column, the body offset and the nav overhang; wider on big screens */
+@media (min-width:1600px){:root{--tocw:288px}}
+@media (min-width:1920px){:root{--tocw:304px}}
+@media (min-width:2400px){:root{--tocw:320px}}
+@media (min-width:1200px){
+  body{padding-left:var(--tocw)}
+  nav{margin-left:calc(-1*var(--tocw))}
+  #toc{width:var(--tocw)}
+}
+#toc{top:var(--navh)}
+/* sidebar items: titles wrap instead of being cut with an ellipsis */
+#toc .ti{white-space:normal;line-height:1.4;padding:6px 10px}
+#toc .ti b{overflow:visible;text-overflow:clip}
+#toc .ti span{width:28px;font-size:.75rem}
+#toc .tgh{font-size:.72rem;gap:10px}
+#toc .tgh small{font-size:.75rem}
+@media (min-width:1600px){#toc .ti{font-size:.875rem}#toc .ts{padding:18px 18px 8px}#toc .tl{padding:4px 12px 48px}}
+/* drawer (<1200): starts under the nav, scrolls on its own, 44 px rows on touch, page behind does not scroll */
+@media (max-width:1199px){
+  #toc{width:min(340px,88vw);border-right:1px solid var(--line)}
+  #toc .tl{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+  html:has(body.toc-open){overflow:hidden}
+}
+@media (max-width:1199px) and (pointer:coarse){
+  #toc .ts{padding:12px 12px 6px}
+  #toc input{min-height:44px;font-size:16px}
+  #toc .tgh{min-height:44px;padding:0 12px}
+  #toc .tg.fold .tgh{padding-bottom:0}
+  #toc .tg{margin:4px 0}
+  #toc .ti{min-height:44px;padding:12px}
+}
+/* command palette and shortcut sheet: kbd hints readable, rows 44 px on touch, a top sheet on phones that leaves a strip to tap away */
+.pal-in kbd,.pal-foot kbd,.kb-list kbd{font-size:.75rem}
+.pal-g{font-size:.7rem}
+.pal-it span{font-size:.75rem}
+.pal-it small{font-size:.75rem}
+.pal-it b{white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+.pal-in>span{font-size:1.15rem;line-height:1;color:var(--muted)}
+.pal-in input:focus-visible{outline:none}
+.kb-h{flex:none}
+.kb-list{overflow-y:auto;min-height:0;overscroll-behavior:contain}
+.kb-list li>span:last-child{flex:none;white-space:nowrap}
+.pal-list{overscroll-behavior:contain}
+@media (pointer:coarse){
+  .pal-in{padding:4px 8px 4px 16px}
+  .pal-it{min-height:44px}
+  .kb-h{padding:6px 6px 6px 18px}
+  .kb-h button{width:44px;height:44px;min-height:44px}
+}
+@media (max-width:620px){
+  dialog.pal{width:calc(100% - 24px);max-width:none;margin:12px auto auto;max-height:min(560px,calc(100vh - 88px));max-height:min(560px,calc(100dvh - 88px));border-radius:14px}
+  .kb-list{padding:4px 16px 12px}
+  .kb-list li{gap:12px}
+}
+@media (max-width:620px) and (pointer:coarse){.pal-foot,.pal-in kbd{display:none}}
+@media (orientation:landscape) and (max-height:500px){dialog.pal{margin-top:12px;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px)}}
+/* theme picker: never taller than the screen; three columns on landscape phones; 44 px on touch */
+.thm{max-height:calc(100vh - var(--navh) - 20px);max-height:calc(100dvh - var(--navh) - 20px);overflow-y:auto;overscroll-behavior:contain}
+.thm h4{font-size:.7rem}
+@media (orientation:landscape) and (max-height:500px){.thm{width:min(540px,calc(100vw - 24px))}.thm-g{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (pointer:coarse){.thm-g button{min-height:44px}.thm-row button{min-height:44px;min-width:64px}}
+/* course menu */
+.csw-m{max-width:calc(100vw - 24px)}
+.csw-h{font-size:.7rem}
+.csw-m a small{font-size:.75rem}
+@media (pointer:coarse){.csw-m a{min-height:48px}}
+/* back to top: 44 px on touch, clear of the home indicator; beside the sidebar it sits in the corner when there is no mascot column */
+@media (max-width:1199px){#totop{right:max(16px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom))}}
+@media (pointer:coarse){#totop{width:44px;height:44px}}
+@media (min-width:1200px){html.fx-off #totop{right:24px;bottom:24px}}
+/* skip link */
+@media (pointer:coarse){.skip{min-height:44px;display:inline-flex;align-items:center}}
+/* footer */
+footer{padding-bottom:calc(90px + env(safe-area-inset-bottom));line-height:1.6}
+.credits{font-size:.75rem;margin-top:8px}
+footer .ib{display:inline-flex;align-items:center;min-height:32px;margin:6px 0 0 4px;padding:4px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);font:500 .82rem Inter,sans-serif;cursor:pointer}
+footer .ib:hover{border-color:var(--accent);color:var(--accent)}
+@media (pointer:coarse){footer .ib{min-height:44px}}
+/* generic touch baseline: every form control outside the .ol labs (their dense rows belong to the lab fragments), figures and editors */
+@media (pointer:coarse){
+  :where(select,textarea,input:not([type=checkbox],[type=radio],[type=hidden],[type=range],[type=color])):not(:is(.ol,.fig,.code,.CodeMirror) *){min-height:44px}
+  :where(input[type=range]):not(:is(.ol,.fig) *){min-height:44px}
+  :where(input[type=checkbox],input[type=radio]):not(:is(.ol,.fig,.code) *){width:24px;height:24px;flex:none;accent-color:var(--accent-fill)}
+  :where(summary):not(:is(.ol,.fig) *){min-height:44px}
+  .chk label{min-height:48px;align-items:center}
+  .chk input{margin-top:0}
+}
+@media (prefers-reduced-motion:reduce){#toc,.csw-m,dialog.pal{animation:none}}
+html.no-motion :is(#toc,.csw-m,dialog.pal){animation:none}
+
+/* content: long tokens wrap, framed tables/figures with scroll shadows, 12px type floor, responsive roadmap + hero window, landscape-phone heroes, fluid large-screen column and type */
+/* prose: long identifiers (ConcurrentModificationException, java.util.…) wrap inside their box instead of widening the page */
+section>:is(p,ul,ol,h2,h3,h4,h5),.note,.tldr,details.d>summary,details.d>.b,.takeaways,.fig figcaption,.band>:is(h2,p),header>:is(h1,.lead),.lx-grid,.qq,.card,.sheet div,.ia>p,.ia .fu{overflow-wrap:break-word}
+.secnext>span:nth-child(2){flex:1 1 0;min-width:0;overflow-wrap:break-word}
+/* type floor: labels people read are 12px (eyebrows, chips, counters, table heads) */
+.tag,.num,.secnext .sn-n,.secnext small,.lv,.qn,.qopt .qk,.tldr>b:first-child,.lx-grid h5,.lx-start summary span,.ia .iah,.sheet h4,.lcard .ln,.lcard i,.rmap .st,.rmap li>span:first-child,.hw-oh,.hw-run,.hw-tabs button,.mref sup{font-size:.75rem}
+section>:is(p,ul,ol) kbd,.note kbd,.tldr kbd,.lead kbd,.lx-grid kbd{font-size:.75rem}
+.card h4 code,.lx-grid h5 code,.lcard .d code{font-size:1em}
+td sup{font-size:.82em}
+.hw-note{font-size:.8rem}.hw-note code{font-size:.94em}
+/* "In 30 seconds" box: same right edge as notes and prose (78ch at its .98rem ≈ 72ch of body text) */
+.tldr{max-width:78ch}
+/* eyebrow pill: a 14px radius reads as a pill on one line and stays tidy when it wraps on small phones */
+.tag{border-radius:14px;max-width:100%;text-wrap:balance;line-height:1.45}
+/* tables: the frame moves to the scroller, so a wide table scrolls inside rounded corners; edge shadows (pure CSS,
+   local/scroll backgrounds built from tokens) appear only on a side that has more to show */
+:is(section,.b)>.tw{margin:16px 0;border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow-x:auto;overscroll-behavior-x:contain;
+  background:linear-gradient(90deg,var(--surface) 35%,transparent) left/36px 100% no-repeat local,linear-gradient(270deg,var(--surface) 35%,transparent) right/36px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%,color-mix(in srgb,var(--muted) 55%,transparent),transparent) left/16px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,color-mix(in srgb,var(--muted) 55%,transparent),transparent) right/16px 100% no-repeat scroll,var(--surface)}
+:is(section,.b)>.tw>table{margin:0;border:0;border-radius:0;box-shadow:none;background:transparent;overflow:visible}
+:is(section,.b)>.tw th{font-size:.75rem;background:color-mix(in srgb,var(--soft) 82%,transparent)}
+:is(section,.b)>.tw th code{font-size:1em;text-transform:none;letter-spacing:0}
+:is(section,.b)>.tw .cx{white-space:nowrap}
+/* columns never collapse to a word per line: tables of up to 5 columns everywhere, every table where it scrolls (≤760) */
+:is(section,.b)>.tw>table:not(:has(tr>:nth-child(6))) td{min-width:7.5em}
+@media (max-width:760px){:is(section,.b)>.tw td{min-width:7.5em}}
+/* figures: SVGs keep a legible minimum width (760-unit viewBox at 680px renders 10.5px labels at 9.4px) and scroll on narrow screens */
+.fig svg{min-width:680px}
+.fig .sv{overscroll-behavior-x:contain;
+  background:linear-gradient(90deg,var(--surface) 35%,transparent) left/36px 100% no-repeat local,linear-gradient(270deg,var(--surface) 35%,transparent) right/36px 100% no-repeat local,
+    radial-gradient(farthest-side at 0 50%,color-mix(in srgb,var(--muted) 55%,transparent),transparent) left/16px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,color-mix(in srgb,var(--muted) 55%,transparent),transparent) right/16px 100% no-repeat scroll,var(--surface)}
+@media (max-width:480px){
+  .fig{padding:14px 0 12px}
+  .fig .sv{margin:0;padding:0 14px}
+  .fig figcaption{margin:12px 14px 0}
+}
+/* where scroll-driven animations exist (and motion is allowed), a figure that scrolls also fades out at the edge that
+   has more to show, so the cue is visible even over the drawing's opaque boxes; inactive when nothing overflows */
+@property --sv-l{syntax:"<length>";inherits:false;initial-value:0px}
+@property --sv-r{syntax:"<length>";inherits:false;initial-value:0px}
+@keyframes sv-edge{from{--sv-l:0px;--sv-r:44px}8%{--sv-l:44px}92%{--sv-r:44px}to{--sv-l:44px;--sv-r:0px}}
+@supports (animation-timeline:scroll()){
+  @media (prefers-reduced-motion:no-preference){
+    html:not(.no-motion) .fig .sv{-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--sv-l),#000 calc(100% - var(--sv-r)),transparent);mask-image:linear-gradient(90deg,transparent,#000 var(--sv-l),#000 calc(100% - var(--sv-r)),transparent);animation:sv-edge linear both;animation-timeline:scroll(self inline)}
+  }
+}
+/* spoiler cells in tables are real touch targets */
+@media (pointer:coarse){td>.spoil{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}}
+/* section next card + footer + pager */
+@media (max-width:480px){.secnext{gap:10px;padding:12px 14px}}
+@media (pointer:coarse){.secfoot button{min-height:44px;padding:9px 16px}.pager .btn{min-height:44px}}
+/* before-you-start card: one padding layer on phones, summary wraps cleanly */
+.lx-start summary{flex-wrap:wrap;row-gap:2px}
+.lx-start summary span{white-space:nowrap}
+@media (max-width:480px){
+  .lx-start{padding:0}
+  .lx-start summary{padding:12px 14px}
+  .lx-grid{padding:2px 14px 14px;gap:14px}
+}
+/* teaching blocks: phones get the text width back from deep left paddings */
+@media (max-width:480px){
+  details.d{padding:0 14px}
+  details.d .b{padding:0 0 16px}
+  .note{padding:12px 14px 12px 42px}.note::before{left:12px;top:15px}
+  .tldr{padding:12px 14px}
+  .takeaways li{padding:10px 12px 10px 42px}.takeaways li::before{left:12px}
+  .qq{padding:14px}
+  .lead{font-size:1.06rem;line-height:1.6}
+}
+/* quiz header: sticky only where there is height for it */
+@media (orientation:landscape) and (max-height:500px){.qhead{position:static}}
+/* home hero CTA: the looping shine is decoration; it stops under reduced motion (it also no longer overflows the button) */
+@media (prefers-reduced-motion:reduce){.btn.big.pri::after{animation:none}}
+html.no-motion .btn.big.pri::after{animation:none}
+/* roadmap: one grid row per level (number · title · description, status under the description), chips wrap instead of overflowing */
+.roadmap>summary{min-height:44px;padding:6px 0}
+.rmap li{display:grid;grid-template-columns:1.75rem minmax(0,15rem) minmax(0,1fr);column-gap:14px;row-gap:6px;align-items:baseline}
+.rmap li>span:first-child{grid-column:1;grid-row:1/span 2;width:auto}
+.rmap li>b{grid-column:2;width:auto}
+.rmap li>em{grid-column:3}
+.rmap .st{grid-column:3;justify-self:start;max-width:100%;white-space:normal;border-radius:8px;line-height:1.4;padding:3px 8px}
+@media (max-width:620px){
+  .rmap li{grid-template-columns:1.5rem minmax(0,1fr);column-gap:10px}
+  .rmap li>:is(b,em),.rmap .st{grid-column:2}
+}
+/* hero code window: on narrow screens the file tabs get their own row (no hidden scroller), 2x2 on phones */
+@media (max-width:760px){
+  .hw-bar{flex-wrap:wrap;row-gap:8px}
+  .hw-run{margin-left:auto}
+  .hw-tabs{order:3;flex:1 1 100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;overflow:visible}
+  .hw-tabs button{min-width:0;padding:6px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+}
+@media (max-width:480px){.hw-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:360px){.hw-bar{padding:10px}.hw-tabs button{padding:6px 4px}}
+@media (pointer:coarse){.hw-tabs button{min-height:44px}}
+/* landscape phones: a 375px-tall screen gets a compact hero */
+@media (orientation:landscape) and (max-height:500px){
+  header{padding:32px 0 28px}
+  header.ph{padding:28px 0 4px}
+  header h1{font-size:2.75rem}
+  header.ph h1{font-size:2.25rem}
+  .lead{font-size:1.04rem}
+  .band{margin-top:40px;padding:32px 24px 28px}
+  .band h2{font-size:1.8rem}
+}
+/* large screens: the reading column and its type grow together (--fz: 17px at 1600 → 18px at 1920 → 20px at 2560+);
+   prose stays at 72ch, visuals use the wider column (1040 → 1120 → 1280 → 1400px max). Every size below is its
+   ≤1599px value (px at a 17px base) times --fz/17, so 1600px renders exactly as before. */
+@media (min-width:1600px){
+  body>.wrap{--fz:clamp(17px,calc(12px + .3125vw),20px);font-size:var(--fz);max-width:clamp(1040px,calc(25vw + 640px),1400px)}
+  body>.wrap>section>:is(h3,h4){max-width:72ch}
+  body>.wrap header.ph h1{font-size:calc(var(--fz)*3.576)}
+  body>.wrap header:not(.ph) h1{font-size:calc(var(--fz)*4.894)}
+  body>.wrap header .lead{font-size:calc(var(--fz)*1.082);max-width:34em}
+  body>.wrap :is(.tag,.num,.qn,.lv,.secnext small,.secnext .sn-n,.tldr>b:first-child,.lx-start summary span,.lx-grid h5,.ia .iah,.lcard .ln,.lcard i,.rmap .st,.rmap li>span:first-child,.hw-bar,.hw-oh){font-size:calc(var(--fz)*.706)}
+  body>.wrap :is(section>:is(p,ul,ol),.note,.tldr,.lead,.lx-grid) kbd,body>.wrap :is(.card,.sheet) h4,body>.wrap :is(section,.b)>.tw th,body>.wrap .qopt .qk{font-size:calc(var(--fz)*.706)}
+  body>.wrap h2{font-size:calc(var(--fz)*1.741)}
+  body>.wrap .band h2{font-size:calc(var(--fz)*2.165)}
+  body>.wrap section h3{font-size:calc(var(--fz)*1.035)}
+  body>.wrap .tldr{font-size:calc(var(--fz)*.922)}
+  body>.wrap details.d>summary .q{font-size:calc(var(--fz)*.753)}
+  body>.wrap :is(section,.b)>.tw>table,body>.wrap .qscore,body>.wrap .ia .fu{font-size:calc(var(--fz)*.866)}
+  body>.wrap :is(.fig figcaption,.card,.sheet div,.rmap li){font-size:calc(var(--fz)*.847)}
+  body>.wrap .secnext b{font-size:calc(var(--fz)*.941)}body>.wrap .secnext .sn-go{font-size:calc(var(--fz)*1.129)}
+  body>.wrap .qopt{font-size:calc(var(--fz)*.885)}body>.wrap .qe{font-size:calc(var(--fz)*.875)}
+  body>.wrap .secfoot :is(button,.sf-note){font-size:calc(var(--fz)*.772)}
+  body>.wrap .lx-start{max-width:calc(var(--fz)*51.75)}body>.wrap .lx-grid :is(p,li){font-size:calc(var(--fz)*.828)}
+  body>.wrap .pager .btn{font-size:calc(var(--fz)*.8)}body>.wrap .cta .btn.big{font-size:calc(var(--fz)*.922)}
+  body>.wrap .meta span{font-size:calc(var(--fz)*.79)}
+  body>.wrap .lcard b{font-size:calc(var(--fz)*.988)}body>.wrap .lcard .d{font-size:calc(var(--fz)*.809)}
+  body>.wrap .roadmap>summary{font-size:calc(var(--fz)*.866)}
+  body>.wrap .mq-t span{font-size:calc(var(--fz)*.753)}
+  body>.wrap .hw-tabs button,body>.wrap .hw-run{font-size:1em}body>.wrap :is(.hw-code,.hw-o){font-size:calc(var(--fz)*.809)}body>.wrap .hw-note{font-size:calc(var(--fz)*.753)}
+}
+
+/* tools: editor bar that follows the editor's own width (one row → compact row → two tiers), 44 px editor/tool controls on touch, phone-sized code, scroll glows on code and result scrollers, Run output, Playground, practice tools (mock, Big-O cards, revise, stars, Memory Lab, race), SQL kit + S00 labs, Watch it run, L01 line runner */
+/* editor chrome: .code is a size container (always a block child of a section or answer), so the bar reacts to the editor width, not the viewport */
+.code{container:jcode/inline-size}
+.code .mod,.status{font-size:.75rem}
+.code .ib{justify-content:center}
+.code .sw input{inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+/* compact row (editor < 640 px): no window dots, switch without its label */
+@container jcode (max-width:639.98px){.code .dots,.code .sw .sl{display:none}}
+/* two tiers (editor < 520 px): file name + switch on top (the name wraps, never cut), Reset · ▶ Run · Copy share the row under a hairline */
+@container jcode (max-width:519.98px){
+  .code .bar{flex-wrap:wrap;gap:0 8px;padding:8px 12px}
+  .code .fn{flex:1 1 0;min-width:0;white-space:normal;overflow-wrap:anywhere;line-height:1.45;padding:2px 0}
+  .code .mod{flex:none}
+  .code .sp{order:1;flex:0 0 calc(100% + 24px);margin:8px -12px;height:0;border-top:1px solid var(--code-line)}
+  .code .bar>.ib{order:2;flex:1 1 auto}
+}
+@container jcode (min-width:390px) and (max-width:519.98px){.code .sw .sl{display:inline}}
+/* touch: 44 px editor buttons and switch */
+@media (pointer:coarse){
+  .code .ib{min-height:44px;min-width:44px;padding:3px 12px}
+  .code .sw{min-height:44px;padding:0 4px;margin-block:-10px}
+}
+/* code type on phones: 13 px, slimmer gutter, so ~3 more characters fit before the code scrolls */
+@media (max-width:480px){
+  .code .CodeMirror{font-size:13px}
+  .code .CodeMirror-linenumber{padding:0 8px 0 4px}
+  .code pre.cm-wait{font-size:13px}
+  .code .ln::before{width:2.2em;padding-right:.9em}
+}
+/* scroll glow: an accent edge on the side that has more (background-attachment trick, same recipe as the labs); CodeMirror's scroller hides 50 px of native scrollbar on the right, hence the offset */
+.code .CodeMirror-scroll{background:linear-gradient(270deg,var(--code-bg) 40%,transparent) right 50px center/28px 100% no-repeat local,radial-gradient(farthest-side at 100% 50%,color-mix(in srgb,var(--accent) 50%,transparent),transparent) right 50px center/12px 100% no-repeat scroll}
+.code pre.cm-wait,.rz-code,.sq-q,.sq .an-code{background:linear-gradient(90deg,var(--code-bg) 40%,transparent) left center/28px 100% no-repeat local,linear-gradient(270deg,var(--code-bg) 40%,transparent) right center/28px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,color-mix(in srgb,var(--accent) 50%,transparent),transparent) left center/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,color-mix(in srgb,var(--accent) 50%,transparent),transparent) right center/12px 100% no-repeat scroll,var(--code-bg)}
+/* Run output (run-java.js) */
+.jr-lbl,.jr-in span{font-size:.6875rem}
+.jr-status{row-gap:4px;line-height:1.5}
+.jr-status .jr-close{min-width:32px}
+@media (pointer:coarse){.jr-status .jr-close{min-width:44px;min-height:44px}.jr-in textarea{min-height:44px;font-size:16px}}
+@media (max-width:480px){.jr-out{padding:0 10px 10px}.jr-stdout,.jr-err{padding:10px;font-size:12.5px;max-height:300px}}
+/* Playground: a shorter editor where the screen is short */
+@media (orientation:landscape) and (max-height:500px){#pg .CodeMirror-scroll,#pg textarea{min-height:220px}}
+/* Mock interview: labels above their chips on phones, the start button full width */
+.mk-top,.mk-list a small{font-size:.75rem}
+@media (max-width:480px){.mk-row>b{flex:0 0 100%}.mk-row>.btn.pri{flex:1 1 100%}.mk-act>.btn{flex:1 1 auto}}
+/* Big-O sheet: a full-width filter on phones; the table turns into one card per operation (no sideways scroll) */
+@media (max-width:620px){
+  .bo-ctl #boQ{flex:1 1 100%;width:100%}
+  #boT{min-width:0;display:block;border-radius:14px}
+  #boT tbody{display:block}
+  #boT tr:first-child{display:none}
+  #boT tr{display:grid;grid-template-columns:auto auto 1fr;align-items:baseline;gap:6px 12px;padding:12px 14px;border-bottom:1px solid var(--line)}
+  #boT tr:last-child{border-bottom:0}
+  #boT tr[hidden],#boT[hidden]{display:none}
+  #boT td{display:block;padding:0;border:0;min-width:0}
+  #boT td:first-child{grid-column:1/-1;font-weight:600;line-height:1.55}
+  #boT td:nth-child(3){font-size:.82rem;color:var(--muted)}
+  #boT td:nth-child(3)::before{content:"space ";font:600 .6875rem Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+  #boT td:nth-child(4){grid-column:1/-1;font-size:.88rem;line-height:1.55}
+  #boT tr:hover td{background:none}
+}
+/* Revise: 44 px tabs, prompts with long code wrap */
+.rq .ri .rs{font-size:.75rem}
+#revise details.d summary code,#rcp details.d summary code{overflow-wrap:anywhere}
+@media (pointer:coarse){.rtabs button{min-height:44px;padding:8px 16px}}
+@media (max-width:480px){.rq .ri .btn{flex:1 1 auto}}
+/* Feedback stars: 44 px stars on touch; the label sits above its stars on phones */
+@media (pointer:coarse){.stars{gap:0}.stars button{min-width:44px;min-height:44px;font-size:1.5rem;padding:0;display:inline-grid;place-items:center}}
+@media (max-width:480px){.rate{flex-wrap:wrap;gap:4px 10px}.rate>span{flex:1 1 100%}}
+@media (max-width:480px) and (pointer:coarse){.stars{margin-left:-12px}}
+/* Memory Lab + Watch it run (.rz): readable labels, wrapping controls */
+.rz-head,.rz-fh,.rz-o small,.ml .rz-v em{font-size:.75rem}
+.rz-mem h5,.rz-out span,.rz-at,.rz-cells em{font-size:.6875rem}
+.rz-head{flex-wrap:wrap;row-gap:2px}
+.rz-ctl{flex-wrap:wrap}
+@media (max-width:480px){
+  .rz-foot{padding:10px 12px}
+  .rz-out{flex:1 1 100%;min-width:0}
+  .rz-ctl{flex:1 1 100%}
+  .rz-ctl .btn{flex:1 1 0;min-width:max-content;padding:4px 10px}
+  .rz-ctl .btn[data-a=reset]{flex:0 0 44px;min-width:44px;padding:0}
+  .ml .rz-ctl .btn[data-a=play],.ml .rz-ctl .btn[data-a=gc]{flex:1 1 calc(50% - 3px)}
+  .ml-ed textarea{font-size:12.5px;line-height:22.75px;padding:12px 10px 12px 40px}
+  .ml-gut{width:32px;font-size:12.5px;line-height:22.75px}
+  .ml-gut div{padding-right:6px}
+  .ml-ed,.ml-ed textarea{min-height:260px}
+}
+/* Algorithm race: on phones the controls become a two-column form, the buttons share a row */
+.rc-o{font-size:.75rem}
+@media (max-width:620px){
+  #raceApp .rc-ctl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  #raceApp .rc-ctl>label{flex-direction:column;align-items:stretch;gap:4px;font-size:.75rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+  #raceApp .rc-ctl select{width:100%;min-width:0;font-size:.9rem;text-transform:none;letter-spacing:0;font-weight:400}
+  #raceApp .rc-sp{grid-column:1/-1}
+  .rc-sp input{width:100%}
+  #raceApp .rc-ctl>.btn{width:100%}
+}
+@media (pointer:coarse){#raceApp select,#raceApp input[type=range]{min-height:44px}}
+@media (min-width:1600px){.rc-lane canvas{height:230px}}
+/* SQL kit: result grids scroll with a glow; readable header/count; touch-sized selects */
+.sq-grid{background:linear-gradient(90deg,var(--surface) 40%,transparent) left center/28px 100% no-repeat local,linear-gradient(270deg,var(--surface) 40%,transparent) right center/28px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,color-mix(in srgb,var(--accent) 45%,transparent),transparent) left center/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,color-mix(in srgb,var(--accent) 45%,transparent),transparent) right center/12px 100% no-repeat scroll,var(--surface)}
+.sq-ed .sq-out .sq-grid{background-color:#0f131a}
+.sq-grid table{background:transparent}
+.sq-grid th{font-size:.6875rem}
+.sq-grid .sq-count,.sq-arrowcol,.sq-tcard span.fk em{font-size:.75rem}
+@media (pointer:coarse){
+  .sq .sq-ord,.sq .sq-dir,.sq .sq-lim{min-height:44px;padding:4px 10px}
+  .sq-tcard span.fk{display:flex;flex-wrap:wrap;align-items:center;column-gap:6px;min-height:44px}
+}
+/* S00 labs: wider drawers (no squeezed captions), 12 px captions, long statement chips wrap */
+.sq-cab{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}
+.sq-drawer small,.sq-drawer em,.sq-labels span small{font-size:.75rem}
+.sq-folder span small{font-size:.6875rem}
+.sq-tries .chip{white-space:normal;text-align:left;line-height:1.4;padding-top:6px;padding-bottom:6px}
+.sq .count{white-space:nowrap}
+@media (max-width:760px){.sq-q{white-space:normal}.sq-q .sq-l{padding-top:2px;padding-bottom:2px}}
+/* L01 line runner: lines wrap with a hanging indent on phones instead of scrolling */
+#poolviz .count{white-space:nowrap}
+@media (max-width:480px){
+  .pcode{font-size:12.5px}
+  .pl{white-space:pre-wrap;overflow-wrap:anywhere;padding-left:calc(8px + 1.8em);text-indent:-1.8em}
+  .pn{text-indent:0}
+}
+
+/* labs-a: lab shell (.viz .vbody .ol-head .seg .vin .ctrl), analogy visuals (.an-*), L00 labs (.fd-*), L01–L04 widgets (#poolviz #mx #ci #capviz #sviz #aviz): phone gutters, 44 px touch targets, 12 px labels, scroll affordances */
+/* lab shell: phone gutters (246 → 254/260 px of content at 320) */
+@media (max-width:480px){
+  .vbody{padding:16px}
+  .viz .ol-head{padding:12px 16px}
+  .an .an-hooks,.fd .fd-hooks{padding:12px 16px 0}
+  .an .an-seg{margin:-16px -16px 14px}
+  .viz details{padding:0 16px}
+}
+@media (max-width:360px){
+  .vbody{padding:14px 13px}
+  .viz .ol-head{padding:11px 13px}
+  .an .an-hooks,.fd .fd-hooks{padding:11px 13px 0}
+  .an .an-seg{margin:-14px -13px 12px}
+  .viz details{padding:0 13px}
+}
+/* segmented tabs: wrap into rows on phones instead of hiding tabs in a scroller */
+@media (max-width:620px){.seg{flex-wrap:wrap;overflow-x:visible}.seg button{min-width:0;flex:1 1 auto}}
+/* control rows on phones: equal-width transport buttons, the counter drops below */
+@media (max-width:480px){
+  .ctrl.an-ctl>.btn,#poolviz .ctrl>.btn{flex:1 0 0;min-width:max-content}
+}
+/* scroll affordance for code-like scrollers: an accent edge glow on the side that has more (background-attachment trick, no JS) */
+.an-code,.pcode,.fd-card pre{background:linear-gradient(90deg,var(--code-bg) 40%,transparent) left center/28px 100% no-repeat local,linear-gradient(270deg,var(--code-bg) 40%,transparent) right center/28px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,color-mix(in srgb,var(--accent) 50%,transparent),transparent) left center/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,color-mix(in srgb,var(--accent) 50%,transparent),transparent) right center/12px 100% no-repeat scroll,var(--code-bg)}
+/* step code on phones: the one-line snippets (code + // why) wrap with a hanging indent instead of hiding the comment off-screen */
+@media (max-width:480px){.an-code{white-space:pre-wrap;overflow-wrap:anywhere}.an-code>div{padding-left:2ch;text-indent:-2ch}.an-code .cur{padding-left:calc(12px + 2ch)}}
+/* analogy labels: 12 px floor (eyebrows, indexes, addresses) */
+.an h5,.fd h5{font-size:.75rem}
+.fd h5 code{font-size:inherit}
+.an-strip>b:first-child{font-size:.75rem}
+.an-plate small,.an-cell small,.an-locker small,.an-locker em,.an-carcard small,.an-tags span,.an-tower small,.an-folkp small,.an-rl,.an-seat,.an-ceil,.an-dam{font-size:.75rem}
+.an-screen{font-size:.75rem;letter-spacing:.24em}
+/* odometer: 8 bits on one line and the 32-bit value inside the dial at 320; 32 bits as two rows of 16 on phones */
+.an-plate{font-size:.78rem}
+.an-bits.w32 i{font-size:.75rem}
+@media (max-width:620px){.an-num{font-size:min(2rem,6vw)}.an-bits.w32{display:grid;grid-template-columns:repeat(16,13px);gap:3px 2px}.an-bits.w32 i{width:auto}}
+@media (max-width:480px){.an-odo{padding:14px 10px}.an-num{padding:4px 12px}.an-dial{gap:8px;font-size:1.3rem}}
+@media (max-width:360px){.an-bits i{width:24px}}
+/* caterpillar: 8 cells per row at 320 */
+@media (max-width:360px){.an-track{padding:16px 2px 8px}.an-cell{width:28px}}
+/* lockers: a real array (8, then 16 lockers) keeps its single row and scrolls; the cut-off locker is the cue, and the row fades at the edge that has more */
+@property --an-fl{syntax:"<length>";inherits:false;initial-value:0px}
+@property --an-fr{syntax:"<length>";inherits:false;initial-value:0px}
+@keyframes an-edge{0%{--an-fl:0px;--an-fr:36px}12%{--an-fl:36px}88%{--an-fr:36px}100%{--an-fl:36px;--an-fr:0px}}
+@supports (animation-timeline:scroll()){.an-lockers{-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--an-fl),#000 calc(100% - var(--an-fr)),transparent);mask-image:linear-gradient(90deg,transparent,#000 var(--an-fl),#000 calc(100% - var(--an-fr)),transparent);animation:an-edge linear both;animation-timeline:scroll(self inline)}}
+.an-lockers{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--accent) 45%,transparent) transparent;overscroll-behavior-x:contain}
+/* cinema: smaller hall gutter on phones */
+@media (max-width:480px){.an-hall{padding:12px 8px}.an-row{padding:3px 4px}}
+/* foundations: bit rows line up as 16-bit columns, 12 px digits */
+.fd-bitrow{display:grid;grid-template-columns:repeat(16,13px);gap:2px 1px}
+.fd-bitrow i{width:auto;font-size:.75rem;padding:1px 0}
+.fd-tgrid small,.fd-mach span,.fd-tools span,.fd-phase small,.fd-arr em,.fd-pipe2 span,.fd-mach em,.fd-phase em,.fd-card small,.fd-stage small,.fd-mem small,.fd-tbar small,.fd-heat em,.fd-val small{font-size:.75rem}
+/* L00: the label above a row of chips takes its own line on phones */
+@media (max-width:480px){.fd .ol-cmds>.fd-lbl{flex:1 1 100%}}
+.an .ol-tog code,.fd .ol-tog code{font-size:.75rem}
+/* L01–L04 widgets: labels at 12 px */
+#poolviz .ah{font-size:.75rem}
+#poolviz .oid,#poolviz .refs{font-size:.75rem}
+#ci .cu .ct,#ci .cu .ci,#ci .cu .cx{font-size:.75rem}
+.algo .cw>.pt,.algo .cw>.i,#mx .cw>.pt,#mx .cw>.i{font-size:.75rem}
+/* steppers: a 7-value array stays on one row at 320 */
+@media (max-width:480px){.algo .cells{gap:4px}.algo .cw,.algo .cells .c{min-width:32px}.algo .cells .c{padding:0 4px}}
+/* pool visualizer: the comparison table is three short columns, so it fits instead of scrolling; hidden until it has rows */
+#poolviz .tw table{min-width:0}
+#poolviz .tw:has(>table:empty){display:none}
+/* capacity simulator + algorithm steppers: inputs in one row, the transport buttons together in the next */
+.algo .capctl::after{content:"";order:2;flex:0 0 100%;height:0}
+.algo .capctl>[data-a],.algo .capctl>.av-ct{order:3}
+@media (max-width:620px){
+  .capctl>label{display:flex;align-items:center;gap:8px;flex:1 1 100%;min-width:0}
+  .capctl>label select{flex:1 1 0;width:0;min-width:0}
+  .capctl>input,#aviz .av-in{flex:1 1 140px;min-width:0;width:auto}
+  .algo .capctl>select{flex:1 1 100%}
+  .capctl>.btn{flex:1 0 0;min-width:max-content}
+}
+@media (max-width:400px){.algo .capctl>[data-a]{flex:1 0 calc(50% - 4px)}}
+/* method explorer / char inspector inputs: full width on phones */
+@media (max-width:480px){
+  #mx .vin>*{flex:1 1 100%;width:auto;min-width:0}
+  #mxargs .arg{flex:1 1 100px;width:auto;min-width:0}
+  #ci .vin>input{flex:1 1 100%;width:auto}
+  .an .vin>.an-cin{flex:1 1 100%;width:auto}
+}
+/* touch: every lab control reaches 44 px; checkboxes sit inside 44 px labels (the label is the target) */
+@media (pointer:coarse){
+  .seg button{min-height:44px}
+  .vin input,.vin select,.capctl input,.capctl select,.an input[type=number],.an .an-cin{min-height:44px}
+  .an-dam{min-height:44px;padding:0 12px}
+  .an .ol-tog,.fd .ol-tog,.fd-case .fd-brk{min-height:44px;padding-top:0;padding-bottom:0}
+  .an .ol-tog input,.fd .ol-tog input,.fd-case .fd-brk input{width:24px;height:24px;margin:0}
+  .an .ol-cmds>.btn,.an .ol-cmds>.chip,.fd .ol-cmds>.chip{min-width:44px;justify-content:center}
+  .an-rl{min-height:44px;min-width:48px}
+  .an-row{gap:4px}
+  .an-rows{container-type:inline-size}
+  /* seats: one width for every row (sized for the 6-seat jagged row), 24–44 px; a dense seat map, so ≥24 px is the floor on small phones */
+  .an-seat{height:44px;width:clamp(24px,calc((100cqw - 84px) / 6),44px)}
+}
+
+/* labs-b: L05 OOP, L06 sorting/complexity, L07 collections labs: code tracks wrap, grids reflow per width, 12 px lab text, 44 px touch targets */
+/* host list used below for the classes these labs share with other lessons (.ol-tog .ol-cmds .chip h5):
+   :is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) */
+
+/* code tracks: long lines wrap with a hanging indent instead of hiding behind a sideways scroll */
+.ol-code .ol-l{white-space:pre-wrap;overflow-wrap:anywhere;padding-left:calc(12px + 2ch);text-indent:-2ch}
+.olf-code,.ol-log{white-space:pre-wrap;overflow-wrap:anywhere}
+.olf-code>div,.ol-log>div{padding-left:2ch;text-indent:-2ch}
+.olf-code>div.cur,.ol-log>div.cur{padding-left:calc(12px + 2ch)}
+.ol code.ol-stmt,.ol .ol-decl{white-space:pre-wrap;overflow-wrap:anywhere}
+.bs-code{font-size:12px}
+@media (max-width:620px){
+  /* a trailing comment gets its own line under the statement */
+  .ol-code .ol-l>.cm:not(:first-child),.olf-code>div>.cm:not(:first-child),.ol-log>div>.cm:not(:first-child){display:block;text-indent:0;padding-left:2ch}
+}
+
+/* shared lab parts, scoped to these lessons' hosts */
+:is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) h5{font-size:.75rem}
+:is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) .ol-tog{max-width:100%;min-width:0}
+:is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) .ol-tog select{min-width:0;max-width:100%;text-overflow:ellipsis}
+:is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) .ol-tog code{font-size:.75rem}
+/* checkbox toggles: the whole pill is the hit area (the native box is stretched over it, a drawn box shows the state) */
+:is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .ol-tog:has(>input[type=checkbox]){position:relative;padding-left:36px}
+:is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .ol-tog>input[type=checkbox]{position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);margin:0;opacity:0;cursor:pointer}
+:is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .ol-tog:has(>input[type=checkbox])::before{content:"";position:absolute;left:11px;top:50%;width:16px;height:16px;margin-top:-9px;border:1.5px solid color-mix(in srgb,var(--muted) 70%,var(--line));border-radius:5px;background:var(--bg);transition:background .15s,border-color .15s}
+:is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .ol-tog:has(>input[type=checkbox]:checked)::before{background:var(--accent-fill) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat;border-color:var(--accent-fill)}
+:is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .ol-tog:has(>input[type=checkbox]:checked){border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
+:is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .ol-tog:has(>input[type=checkbox]:focus-visible){outline:2px solid var(--accent);outline-offset:2px}
+:is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .ol-tog:has(>input[type=checkbox]):hover{border-color:var(--accent)}
+
+/* ---------- L05 OOP labs ---------- */
+.ol-tree .ol-ext,.ol-ph>b,.ol-shr small,.ol-obj small,.olf-bpt,.olf-bpt code,.ol-zt,.olf-tl,.olf-dashl,.olf-hoodl,.ol-dmg .b::after{font-size:.75rem}
+.ol-cls.dz .tagd,.ol-cls.dz .tagr{font-size:.75rem;top:-11px;white-space:nowrap;letter-spacing:.04em}
+.ol-ph code,.ol-calc code{font-size:.75rem}
+.olf-gauge,.olf-key,.olf-acts .chip,.olf-parts span,.olf-bay code{font-size:.75rem}
+.ol-acc small,.ol-acc .ol-res{font-size:.78rem}
+.ol-dmg.ext .b[data-n="B"]::before{font-size:.6875rem}
+.ol-zt{top:6px}.ol-pkg,.ol-world{padding-top:30px}
+/* hash buckets: readable keys; 8 columns until the column is wide, 4 on phones */
+.ol-bk>span,.ol-bk i,.ol-bk i small{font-size:.75rem}
+.ol-bk i{padding:3px 2px}
+/* colour swatches */
+.olf-sw{flex-wrap:wrap}
+/* init order: the two classes side by side, the object and the console under them */
+.ol-init{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ol-side{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto 1fr;grid-auto-flow:column;column-gap:14px}
+.ol-side .ol-build{margin-bottom:0}
+/* default-method resolver + sealed checker: source on top until there is room for both */
+@media (max-width:860px){.ol-dm{grid-template-columns:minmax(0,1fr)}.ol-buckets{grid-template-columns:repeat(8,minmax(0,1fr))}}
+/* the four pillars: tabs as a 2 × 2 grid on phones */
+@media (max-width:620px){
+  #olStory>.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible}
+  #olStory>.seg button{min-width:0}
+  .ol-init{grid-template-columns:minmax(0,1fr)}
+  .ol-side{display:block}
+  .ol-side .ol-build{margin-bottom:12px}
+}
+@media (max-width:480px){
+  .ol-buckets{grid-template-columns:repeat(4,minmax(0,1fr))}.ol-bk{min-height:64px}
+  .ol-tree .r2{gap:6px}
+  /* the two role pills on the narrow class boxes: 11 px uppercase, the only text under 12 px in these labs */
+  .ol-cls.dz .tagd,.ol-cls.dz .tagr{font-size:.6875rem;letter-spacing:.02em;padding:2px 6px}
+  .ol-cls.dz .tagd{right:6px}.ol-cls.dz .tagr{left:6px}
+}
+
+/* ---------- L06 sorting labs ---------- */
+.bs-b b,.bs-p,.bs-car small,.bs-card small,.bs-gh,.bs-gc,.bs-ln em,.bs-cells small,.bs-bk small,.bsx-tier,.lp-n,.mv-c small,.mv-glass small,.bs-auxp h5,.bsx-two h5,.bsx-sel span{font-size:.75rem}
+.bs-bound,.bs-lohi,.bs-cells em,.bs-tn small,.bs-valet span,.bs-sign{font-size:.75rem}
+.bs-cells em{top:-11px}.bs-tn small{top:calc(100% + 1px)}
+.bs-stats small,.bsx-cost small{font-size:.75rem;letter-spacing:.03em}
+.bs-stats{grid-template-columns:repeat(auto-fit,minmax(120px,1fr))}
+#bsPath .lp-top .btn{white-space:normal;text-align:left;max-width:100%}
+/* lab tables fit the column instead of forcing the page-wide 480 px minimum */
+:is(#clCmp,#bsLabDry,.bs-lab,#cxLoops,#cxGrow) .tw table{min-width:0}
+/* complexity labs: recursion tree and charts keep their labels at 9 px or more */
+#cxTree .cx-tree{min-width:calc(var(--vbw,400) * .82px)}
+#cxTree .cx-treew{background:linear-gradient(90deg,var(--soft) 30%,transparent) left/28px 100% no-repeat local,linear-gradient(270deg,var(--soft) 30%,transparent) right/28px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,color-mix(in srgb,var(--text) 22%,transparent),transparent) left/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,color-mix(in srgb,var(--text) 22%,transparent),transparent) right/12px 100% no-repeat scroll,var(--soft)}
+@media (max-width:620px){#bsMoves>.seg button{min-width:0}}
+@media (max-width:480px){
+  .bsx-cost{grid-template-columns:repeat(2,minmax(0,1fr))}
+  :is(#clCmp,#bsLabDry,.bs-lab,#cxLoops,#cxGrow) .tw :is(td,th){padding:5px 7px}
+  #cxGrow svg text,#cxAmort svg text{font-size:13px}
+  .bs-opts .ol-tog:has(>select){flex:1 1 100%}
+  .bs-opts .ol-tog>select{flex:1 1 auto}
+  .bs-cu{width:100%;flex:1 1 100%}
+  #bsPath .lp-top .btn{flex:1 1 100%;justify-content:flex-start}
+  #bsChart .bs-ax,#bsChart .bs-rl{font-size:13px}
+}
+
+/* ---------- L07 collections labs ---------- */
+.cl .cl-end,.cl-root small,.cl-cls small,.cl-cap,.cl-key button,.cl-vh span,.cl-fvars span,.cl-vcode,.cl-bay>span{font-size:.75rem}
+.cl-arr span small,.cl-ring span small,.cl-harr span small,.cl-flist span small{font-size:.75rem}
+.cl-ring em{font-size:.75rem}
+.cl-calc code{font-size:.75rem}
+.cl-bk>span,.cl-bk i,.cl-bk i small{font-size:.75rem}
+.cl-car b{font-size:.75rem;overflow-wrap:normal;line-height:1.2}
+.cl-tree text.cl-st,.cl-heap text.cl-st{font-size:12px}
+/* picker: long answer chips wrap instead of running out of the card */
+#clPick .cl-q .chip{white-space:normal;text-align:left;max-width:100%;line-height:1.35}
+/* fail-fast: the source runs full width (it carries comments), the iterator state sits under it */
+.cl-fail{grid-template-columns:minmax(0,1fr)}
+.cl-fail>div:last-child{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:start}
+.cl-fail .cl-flist{margin-bottom:0;flex-wrap:wrap}
+/* trees: never shrink the labels below 9 px; scroll sideways (with edge shadows) instead. Same shadows on lab tables that still scroll */
+:is(#clCmp,.bs-lab,#bsChart,#cxLoops,#cxGrow) .tw,.cl-tree,.cl-heap{background:linear-gradient(90deg,var(--surface) 30%,transparent) left/28px 100% no-repeat local,linear-gradient(270deg,var(--surface) 30%,transparent) right/28px 100% no-repeat local,radial-gradient(farthest-side at 0 50%,color-mix(in srgb,var(--text) 22%,transparent),transparent) left/12px 100% no-repeat scroll,radial-gradient(farthest-side at 100% 50%,color-mix(in srgb,var(--text) 22%,transparent),transparent) right/12px 100% no-repeat scroll}
+#clNav .cl-tree svg{min-width:calc(var(--vbw,504) * .75px)}
+#clHeap .cl-heap svg{min-width:360px}
+@media (max-width:860px){.cl-tab{grid-template-columns:repeat(min(var(--cols,16),8),minmax(0,1fr))}}
+@media (max-width:620px){
+  .cl-fail>div:last-child{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:480px){
+  .cl-grp{grid-template-columns:minmax(0,1fr)}
+  .cl-grp>div{flex-direction:row;flex-wrap:wrap}
+  .cl-grp>div>h5{flex:1 1 100%;margin-bottom:2px}
+  .cl-views{grid-template-columns:minmax(0,1fr)}
+  .cl-fvars{grid-template-columns:minmax(0,1fr)}
+  .cl-tab{grid-template-columns:repeat(min(var(--cols,16),4),minmax(0,1fr))}.cl-bk{min-height:48px}
+  .cl-lot{grid-template-columns:repeat(min(var(--bays,8),4),minmax(0,1fr))}
+}
+
+/* ---------- touch: every control in these labs reaches 44 px ---------- */
+@media (pointer:coarse){
+  :is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) .ol-tog{min-height:44px}
+  :is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) .ol-tog:has(>select){padding-top:0;padding-bottom:0;padding-right:0}
+  :is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) .ol-tog select{min-height:44px;border-radius:0 9px 9px 0;border-width:0 0 0 1px}
+  :is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) .ol-tog input[type=range]{height:44px}
+  :is(.viz[id^="ol"],.bs-lab,#bsx,#bsPath,#bsMoves,#bsStable,#bsInv,#bsChart,#bsRace,#cxLoops,#cxGrow,#cxAmort,#cxTree,.cl) .ol-cmds>.chip{min-width:44px;justify-content:center}
+  :is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .vin input,.ol-pt input,.olf-form input,.ol-dsel select,.bs-cu,.bsx-sel select,.bs-spd input{min-height:44px}
+  .olf-dot{width:44px;height:44px;border:0;background:none;position:relative;transform:none}
+  .olf-dot::before{content:"";position:absolute;inset:9px;border-radius:50%;background:var(--paint);border:2px solid var(--line);transition:inset .15s}
+  .olf-dot.on{transform:none}.olf-dot.on::before{inset:6px;border-color:var(--text)}
+  .olf-sw{gap:0}
+  .lp-steps li{min-height:44px}.lp-tick{width:44px}
+  .cl-op,.cl-cls,.bs-lg,.lp-go{min-height:44px}
+  .cl-key{padding:0 0 0 12px;gap:2px}
+  .cl-key button{min-height:44px;min-width:44px;border-color:transparent;background:none}
+  .cl-key button:last-child{border-radius:0 99px 99px 0}
+  #olStory>.seg button,#bsMoves>.seg button,.bs-seg button{min-height:44px}
+  .bsx-chips .chip{min-width:44px;justify-content:center}
+  .bsx-head a{display:inline-flex;align-items:center;min-height:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  :is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .ol-tog::before,.olf-dot::before{transition:none}
+}
+html.no-motion :is(.viz[id^="ol"],.bs-lab,#bsx,.cl) .ol-tog::before,html.no-motion .olf-dot::before{transition:none}
+
