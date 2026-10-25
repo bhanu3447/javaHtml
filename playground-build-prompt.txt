@@ -1,0 +1,266 @@
+JAVA VISUAL PLAYGROUND - BUILD PROMPT (full scope, best version)
+=====================================================================
+Saved 2026-10-25. Paste the whole "PROMPT" section below into a fresh
+Claude Code session (run /clear first) opened in this folder.
+Expected cost: roughly 300k tokens for the full scope. Build it in the
+phases listed; each phase ends with a headless test, so a session can
+stop after any phase and the next session continues from the notes.
+
+---------------------------------------------------------------------
+PROMPT
+---------------------------------------------------------------------
+
+Read CLAUDE.md first and follow every rule in it (file layout, script
+order, naming, localStorage keys, reduced motion, no extra files, keep
+reads small). Then build the "Java Visual Playground" described here.
+
+GOAL
+----
+A page where I type any Java program, press "Visualize", and step
+through it line by line like Python Tutor / Java Visualizer. On every
+step the page draws:
+  - the CALL STACK: one frame per active method, with its local
+    variables and parameters, newest frame on top, current frame
+    highlighted;
+  - the HEAP: every object, array, String and collection created with
+    new (or by a literal), drawn as boxes, with SVG arrows from every
+    reference variable or field to the box it points to;
+  - the STRING POOL: a separate area for string literals, so the SCP
+    rules from Lesson 01 match what the student sees;
+  - the CONSOLE: everything printed so far;
+  - the CODE: the current line highlighted, the previous line dimmed,
+    with the line number of the step shown.
+A browser cannot run Java, so the page needs its own interpreter for
+a large Java subset written in JavaScript. The existing Wandbox "Run"
+button stays for real output; "Visualize" uses the interpreter.
+
+FILES (no others)
+-----------------
+  java/playground.html         the page (same nav and footer as the
+                               lesson pages; body data-page="pg"
+                               data-name="Playground" data-short="PG")
+  assets/js/jvm-lite.js        lexer + parser + interpreter + step
+                               recorder. No DOM code in this file.
+                               Exposes window.JVML = { run(source,
+                               stdin, opts) -> {steps, error} }.
+  assets/js/playground.js      the UI: editor, panels, SVG arrows,
+                               controls, examples, persistence.
+  assets/css/course.css        append one block /* playground v1 */.
+  kb/playground.md             how it works, the supported subset,
+                               the step format, testing recipes.
+  java/index.html              add a "Playground" link in the nav and
+                               one card on the home page.
+  index.html (hub)             one line in the Java card: "+ Playground".
+  KB.md + CLAUDE.md            one row and one change-log line.
+Script order on the page: course-index, quiz-data, course, effects,
+jvm-lite, playground, run-java.
+
+LANGUAGE SUBSET (full scope)
+----------------------------
+Types: byte short int long float double char boolean String, arrays of
+  any type and any depth, user classes, enums (simple), var.
+Literals: int, long (L), double, float (f), char with escapes, String
+  with escapes, text blocks ("""), true false null, hex and underscore
+  in numbers.
+Operators: all arithmetic, ++ -- (pre and post), compound assignment,
+  comparison, && || !, ternary, bitwise and shifts, instanceof,
+  casts (int) (double) (char) (long), integer division and overflow
+  exactly like Java (use Math.imul and BigInt for long), String
+  concatenation with +, char arithmetic ('a' + 1 is 98).
+Statements: declarations with and without init, multiple declarators,
+  if/else, switch (old and arrow form, on int char String enum),
+  while, do-while, classic for, for-each over arrays and Iterables,
+  break, continue, labelled break/continue, return, blocks, try/catch/
+  finally, throw, assert (ignored), System.exit.
+Methods: static and instance, overloading by arity and type, varargs,
+  recursion (depth limit 2000 -> StackOverflowError shown as Java
+  would show it), main(String[] args).
+Classes: fields with defaults, constructors with this(...) and
+  super(...), static fields and static blocks, instance init blocks,
+  inheritance (extends), method overriding with dynamic dispatch,
+  super.method(), abstract classes, interfaces (default methods too),
+  generics (parsed and ignored at run time), inner static classes,
+  anonymous classes and lambdas for functional interfaces (Runnable,
+  Comparator, Function, Predicate, Consumer, Supplier, BiFunction),
+  toString/equals/hashCode called where Java would call them,
+  records (simple).
+Library (implement in JS, behave like the JDK):
+  String: length charAt substring indexOf lastIndexOf contains equals
+    equalsIgnoreCase compareTo toUpperCase toLowerCase trim strip
+    split replace replaceAll(simple regex) startsWith endsWith isEmpty
+    isBlank toCharArray chars valueOf join repeat format intern
+    concat hashCode matches.
+  StringBuilder: append insert delete deleteCharAt reverse toString
+    length charAt setCharAt indexOf.
+  Math: abs max min pow sqrt floor ceil round random PI E.
+  Integer/Long/Double/Character/Boolean: parseX valueOf MAX_VALUE
+    MIN_VALUE toString compare isDigit isLetter isUpperCase
+    toUpperCase; autoboxing and unboxing; Integer cache -128..127 so
+    == on boxed values behaves like real Java.
+  Arrays: toString sort fill copyOf copyOfRange asList equals
+    deepToString stream (minimal: sum, max, min).
+  Collections: ArrayList LinkedList HashMap LinkedHashMap TreeMap
+    HashSet LinkedHashSet TreeSet ArrayDeque Stack Queue Deque
+    PriorityQueue Iterator, List.of Map.of Set.of, Collections.sort
+    reverse max min, with the common methods of each (add get set
+    remove size isEmpty contains put getOrDefault containsKey keySet
+    values entrySet push pop peek poll offer addFirst addLast
+    removeFirst removeLast iterator hasNext next). Ordering of HashMap
+    iteration should follow Java's bucket order for small int and
+    String keys where practical; otherwise insertion order and say so
+    in kb/playground.md.
+  Scanner(System.in): nextInt nextLine next nextDouble hasNext
+    hasNextInt, reading from the stdin box on the page.
+  System.out: print println printf (common %d %s %f %.2f %n %c %b
+    %5d %-5s), System.err, System.currentTimeMillis, System.nanoTime.
+  Objects.equals, Objects.hash, Optional (minimal), Random (seeded,
+    nextInt(bound)), Thread.sleep (no-op step).
+  Exceptions: ArithmeticException, ArrayIndexOutOfBoundsException,
+    NullPointerException (message like JDK 25 helpful NPE),
+    NumberFormatException, StringIndexOutOfBoundsException,
+    ClassCastException, IllegalArgumentException, IllegalStateException,
+    RuntimeException, Exception, custom exception classes,
+    StackOverflowError. Uncaught -> console shows the Java-style
+    "Exception in thread "main" ..." line plus "at Class.method(File
+    .java:line)" trace built from the frames.
+Anything not supported: stop with a clear message naming the construct
+and the line ("Line 12: streams are not supported in the visualizer,
+use Run for real output"). Never hang: hard limit of 50,000 steps,
+then a message "Stopped after 50,000 steps (infinite loop?)".
+
+STEP RECORDER
+-------------
+Interpreting produces an array of steps. One step per executed
+statement, plus one at method entry ("call"), one at return
+("return" with the value), one at an exception throw, and one final
+"end". Each step stores: line number, event, current frame id, a
+snapshot of all frames (name, variables in declaration order with
+value or reference id), the heap (id -> {kind: object|array|string|
+list|map|set|deque|node, class name, fields or elements, pool flag}),
+console text so far, and the set of ids/variables that changed in
+this step (for highlighting). Snapshots must be cheap: use structural
+sharing or copy-on-write so 50,000 steps stay under 200 MB; measure
+and note the number in kb/playground.md.
+
+UI (match the site's dark, polished look; Stripe/Linear/Vercel level)
+----------------------------------------------------------------------
+Layout, desktop: left column = editor (CodeMirror like the lessons,
+  Java mode, line numbers, Ctrl+Enter = Visualize) with a toolbar:
+  [Visualize] [Run (Wandbox)] [Examples v] [Speed] [Share] [Reset].
+  Under the editor: a collapsible "Input (stdin)" textarea, then the
+  Console. Right column = Stack (top) and Heap (bottom) in one
+  scrollable panel with an SVG overlay for arrows. Mobile: stacked.
+Controls bar (sticky under the toolbar): |< First, < Back, Next >,
+  Last >|, a slider "step 37 / 212", Play/Pause with speed 0.25x to
+  4x, and keyboard: Right/Space next, Left back, Home/End, P play.
+  All buttons carry data-a="next|back|play" like the other visuals.
+Drawing rules:
+  - Frames: a card per frame, title "main" or "Car.drive(int)" with
+    line of the call, rows "name  type  value". Primitives show the
+    value; chars show 'a' (97); doubles show as Java prints them;
+    references show a small dot which is the arrow's tail; null shows
+    "null" in grey. Changed rows flash once (honour
+    prefers-reduced-motion: no flash, just a colour).
+  - Objects: box with the class name header and one row per field.
+  - Arrays: a row of cells with index labels under each, the length
+    in the header; 2D arrays: an array of arrows to inner rows;
+    char[] cells show the char; long rows wrap at 16 cells.
+  - Strings: box with the text in quotes; pooled literals live in the
+    String Pool strip at the top of the heap; new String("x") and
+    concatenation results sit in the normal heap; .intern() moves
+    the arrow to the pool entry. Two variables pointing at the same
+    box clearly share it (that is the whole SCP lesson).
+  - Linked nodes: any user class whose fields include a reference to
+    its own class (Node next, TreeNode left/right) is laid out as a
+    chain left-to-right (or as a tree top-down for two self
+    references) using a simple layered layout; arrows are drawn with
+    rounded orthogonal paths and an arrowhead; cycles are allowed and
+    drawn with a curved back edge.
+  - ArrayList: cell row with size/capacity in the header; LinkedList:
+    node chain; HashMap: table of key -> value rows (bucket index
+    shown when the key is int or String); HashSet: cells; Stack and
+    ArrayDeque: vertical stack with "top" marker; PriorityQueue: cell
+    row plus a small heap-tree view; Iterator: a small cursor box
+    pointing at the current element.
+  - Boxed Integer in the cache range draws one shared box, so
+    Integer a = 127, b = 127; a == b shows two arrows to one box.
+  - Garbage: objects with no incoming references after a step fade to
+    40% opacity and get a small "unreachable" tag (to teach GC).
+  - Arrows: SVG paths from the variable dot to the target box edge,
+    recomputed on every step and on resize; the arrow of the variable
+    that changed is drawn in the accent colour.
+  - A "Why?" line under the controls explains the current step in
+    one sentence when it is interesting: "new Node(2) allocates on the
+    heap; head.next now points to it", "x++ reads 5 and writes 6",
+    "frame fact(3) returns 6 to fact(4)". Generate from the event, no
+    AI call.
+Examples menu (each is a complete program, tested on JDK 25 so the
+  real Run output matches): Hello and variables; Swap two ints;
+  Arrays and loops; 2D matrix; String pool and equals; StringBuilder
+  reverse; Factorial recursion; Fibonacci memo with HashMap; Car class
+  and objects (reuse the course's car story); Inheritance and
+  overriding; Linked list build, traverse, reverse; Stack with array;
+  Queue with ArrayDeque; Binary tree insert and inorder; Bubble sort;
+  Binary search; Exceptions try/catch/finally; Scanner input; Integer
+  cache == trap; Interface and lambda Comparator sort.
+Persistence (try/catch, keys js1-pg-code, js1-pg-stdin, js1-pg-speed):
+  the last program and input come back on reload. Share = copy a URL
+  with the program LZ-compressed in the hash (write a tiny compressor
+  or base64 the UTF-8 if LZ is too long; no new library).
+Performance: a 5,000-step program must visualize in under 1 s; drawing
+  a step must stay under 16 ms for a heap of 200 objects (only redraw
+  what changed; keep DOM nodes keyed by heap id).
+
+PHASES (test after each, then write the kb notes)
+-------------------------------------------------
+ 1. jvm-lite core: lexer, parser (full grammar above), interpreter for
+    primitives, String, arrays, control flow, static methods,
+    recursion, exceptions. Unit test in headless Chrome with 25 small
+    programs whose expected output was produced on JDK 25 (keep the
+    programs and expected outputs in kb/playground.md). Output of the
+    interpreter must match byte for byte.
+ 2. Classes, objects, inheritance, interfaces, lambdas, collections,
+    Scanner, printf. Add 25 more test programs.
+ 3. Step recorder and snapshots; memory and speed numbers.
+ 4. The page and the visualizer: panels, arrows, controls, examples,
+    persistence, share, mobile, reduced motion, keyboard.
+ 5. Polish: the Why line, GC fading, Integer cache, pool strip, heap
+    layouts for chains and trees, the home card, hub line, nav link,
+    KB.md row, CLAUDE.md change-log line.
+Run node --check on every JS file. Headless Chrome: 0 console errors
+on the playground page, the Java home, and the hub. Check from file://
+with the long OneDrive path. Run the example programs with the real
+JDK from a short folder (the scratchpad path is too long for java on
+Windows) and paste the outputs as expected values.
+
+RULES REPEATED FROM CLAUDE.md THAT MATTER HERE
+----------------------------------------------
+- Classic scripts in one global scope: prefix everything in
+  playground.js with PG and in jvm-lite.js with JVML; no top-level
+  name reuse across files.
+- New CSS classes use the prefix pg-; no global short classes.
+- Never put </script> or ${ inside backtick strings; the example
+  programs go in <script type="text/x-java"> blocks or a JS array of
+  normal strings.
+- localStorage always in try/catch. Every animation honours
+  prefers-reduced-motion. Dark editors.
+- Do not read assets/models/ or whole big files; grep then read with
+  offset/limit. Only open effects.js if an effect is involved (it is
+  not).
+- Write files containing backslashes with the Write tool.
+- Do things directly with sensible defaults; do not ask questions
+  unless truly blocked. At the end, report what works, what is not
+  supported, the token cost, and the test results.
+
+---------------------------------------------------------------------
+END OF PROMPT
+---------------------------------------------------------------------
+Notes for me (the user):
+- Minimal scope (80k to 110k tokens) = phases 1, 3, 4 without
+  collections, inheritance, lambdas and exceptions.
+- Recommended scope (150k to 200k) = everything except inheritance,
+  interfaces, lambdas, generics-heavy code, records, enums.
+- Full scope (300k+) = the prompt as written.
+To run a smaller scope, tell Claude "build the recommended scope from
+playground-build-prompt.txt" and it should skip the extras and list
+them as unsupported.

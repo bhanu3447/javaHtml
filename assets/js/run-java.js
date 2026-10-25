@@ -24,10 +24,10 @@
     bar.insertBefore(run,bar.querySelector(".cp"));
     const out=document.createElement("div");out.className="jr-out";out.hidden=true;box.appendChild(out);
     let stdinBox=null;const ensureIn=()=>{if(stdinBox)return stdinBox;stdinBox=document.createElement("label");stdinBox.className="jr-in";stdinBox.innerHTML='<span>stdin (what the program reads)</span><textarea rows="2" spellcheck="false" placeholder="one value per line, or space-separated"></textarea>';box.insertBefore(stdinBox,out);return stdinBox;};
-    async function go(){if(run.disabled)return;const src=getSrc();if(readsIn(src))ensureIn();
+    async function go(){if(run.disabled)return;const src=getSrc();if(readsIn(src)&&!opts.stdin)ensureIn();if(typeof opts.fileOf==="function")opts.file=opts.fileOf();
       run.disabled=true;run.textContent="⏳ Running…";out.hidden=false;const t0=performance.now();
       out.innerHTML='<div class="jr-status">Compiling and running on a real JDK (Wandbox)… usually 10–20 s.<i class="jr-spin"></i></div>';
-      try{const j=await exec(src,stdinBox?stdinBox.querySelector("textarea").value:"");const secs=((performance.now()-t0)/1000).toFixed(1);
+      try{const j=await exec(src,opts.stdin?opts.stdin():stdinBox?stdinBox.querySelector("textarea").value:"");const secs=((performance.now()-t0)/1000).toFixed(1);
         const ce=(j.compiler_error||"").trim(),so=j.program_output||"",se=(j.program_error||"").trim(),ok=j.status==="0"&&!ce;
         let html="";
         if(ce)html+='<div class="jr-lbl">compile error</div><pre class="jr-err">'+esc(ce.replace(/prog\.java/g,(opts.file||"Main.java")))+"</pre>";
@@ -40,10 +40,14 @@
       run.disabled=false;run.textContent="▶ Run";}
     run.onclick=go;box._run=go;
     out.addEventListener("click",e=>{if(e.target.closest(".jr-close"))out.hidden=true;});
-    box.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)&&!e.target.closest(".jr-in")){e.preventDefault();go();}});}
+    if(!opts.noKey)box.addEventListener("keydown",e=>{if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)&&!e.target.closest(".jr-in")){e.preventDefault();go();}});}
   /* lesson editors (shells exist at load; CodeMirror mounts later) */
-  document.querySelectorAll(".code").forEach(box=>{if(box.closest("#pg,#heroWin,.hw"))return;const fn=box.querySelector(".fn");
+  document.querySelectorAll(".code").forEach(box=>{if(box.closest("#pg,#pgv,#heroWin,.hw"))return;const fn=box.querySelector(".fn");
     attach(box,()=>box._cm?box._cm.getValue():(box._src||(box.querySelector("pre")||{}).textContent||""),{file:fn?fn.textContent:"Main.java"});});
+  /* the Java Visual Playground (java/playground.html): its toolbar button calls box._run() */
+  const pv=document.querySelector("#pgv .code");
+  if(pv){const fn=pv.querySelector(".fn"),inp=document.querySelector("#pgIn");
+    attach(pv,()=>pv._cm?pv._cm.getValue():(pv._src||""),{fileOf:()=>fn?fn.textContent:"Main.java",stdin:()=>inp?inp.value:"",noKey:true});}
   /* the Playground: compare with the expected output shown next to it */
   const pg=document.querySelector("#pg .code");
   if(pg){const ta=pg.querySelector("textarea"),fn=pg.querySelector(".fn"),exp=document.querySelector("#pgOut");

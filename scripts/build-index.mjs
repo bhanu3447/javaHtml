@@ -1,7 +1,7 @@
 // Rebuilds assets/data/course-index.js: the list of pages and their sections (sidebar, progress, review, "Next" cards,
 // command palette) and every numbered interview question (mock interview). Run it after adding or changing a lesson:
 //   node scripts/build-index.mjs
-// Pages: java/index.html (home), java/lessons/*.html in file-name order, then java/practice.html. Paths are relative to the site root (ROOT in course.js). Each page's <body> carries
+// Pages: java/index.html (home), java/lessons/*.html in file-name order, then java/playground.html and java/practice.html. Paths are relative to the site root (ROOT in course.js). Each page's <body> carries
 // data-page (key, e.g. l05), data-name ("Lesson 05 · OOP") and data-short ("L05").
 import fs from "fs";
 import path from "path";
@@ -13,7 +13,7 @@ const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const COURSE = process.argv[2] === "sql" ? "sql" : "java";
 const files = COURSE === "sql"
   ? ["sql/index.html", ...fs.readdirSync(path.join(ROOT, "sql")).filter(f => /^\d\d-.*\.html$/.test(f)).sort().map(f => "sql/" + f)]
-  : ["java/index.html", ...fs.readdirSync(path.join(ROOT, "java/lessons")).filter(f => f.endsWith(".html")).sort().map(f => "java/lessons/" + f), "java/practice.html"];
+  : ["java/index.html", ...fs.readdirSync(path.join(ROOT, "java/lessons")).filter(f => f.endsWith(".html")).sort().map(f => "java/lessons/" + f), "java/playground.html", "java/practice.html"].filter(f => fs.existsSync(path.join(ROOT, f)));
 const ENT = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'", nbsp: " " };
 const text = h => h.replace(/<[^>]+>/g, "").replace(/&(\w+|#\d+);/g, (m, e) => ENT[e] ?? m).replace(/\s+/g, " ").trim();
 

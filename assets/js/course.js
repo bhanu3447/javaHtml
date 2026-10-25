@@ -1632,8 +1632,8 @@ public class Aliasing {
   /* ---------- 2. Before you start ---------- */
   const START={
     l00:{need:"Nothing: no programming experience assumed. Install a JDK (21 or newer; this course uses JDK 25) to run the programs.",learn:"How Java runs (JDK, JVM, bytecode), variables and types, operators and casting, if / switch / loops, methods and recursion, pass-by-value, packages and input/output.",time:"about 4 hours"},
-    l01:{need:"Lesson 00: types, references, methods.",learn:"What a String is, creating and comparing Strings, the String pool, immutability, the key methods, StringBuilder, conversions, formatting, regex and Unicode.",time:"about 5 hours"},
-    l02:{need:"Lesson 01.",learn:"How Strings work inside the JVM: memory, the pool in depth, how many objects a line creates, equals and hashCode, how + is compiled, tricky outputs.",time:"about 4 hours"},
+    l01:{need:"Nothing: this is the first lesson. A JDK (21 or newer; the course uses JDK 25) to run the programs, or press ▶ Run in any editor.",learn:"What a String is, the three ways to create one, where it lives (stack, heap, String Constant Pool), what new String() really does, == vs equals, why a String can never change, compile-time vs run-time concatenation.",time:"about 2 hours"},
+    l02:{need:"Lesson 01 (references, stack and heap, == vs equals).",learn:"What a class and an object are, what is inside a class, what new really does, where objects live (stack, heap, Metaspace), references and null, constructors and this, static vs instance, printing and comparing objects.",time:"about 2 hours"},
     l03:{need:"Lesson 01 (Lesson 02 helps).",learn:"How to solve String interview problems: the 7 patterns (two pointers, frequency counts, sliding window, stacks…) with classic problems and their costs.",time:"about 5 hours"},
     l04:{need:"Lesson 00.",learn:"Arrays from zero: creation and memory, 2D arrays, copying, the Arrays class, sorting and binary search, ArrayList, and 9 core array patterns.",time:"about 5 hours"},
     l05:{need:"Lessons 00 and 04.",learn:"Object-oriented Java: classes and objects, constructors, encapsulation, static, inheritance vs composition, polymorphism, interfaces, equals/hashCode, records, enums and sealed types.",time:"about 5 hours"},
@@ -1644,7 +1644,7 @@ public class Aliasing {
   if(st&&hdr){const key="js1-start-"+PAGE,d=document.createElement("details");d.className="lx-start";d.open=store.get(key)!=="0";
     d.innerHTML='<summary><b>Before you start</b><span>'+esc(st.time)+"</span></summary>"+
       '<div class="lx-grid"><div><h5>You need</h5><p>'+esc(st.need)+'</p></div><div><h5>You will learn</h5><p>'+esc(st.learn)+'</p></div><div><h5>How to study each section</h5><ol>'+
-      "<li>Read the <b>In 30 seconds</b> box.</li><li>Play the visual: <kbd>←</kbd> <kbd>→</kbd> step, <kbd>Space</kbd> plays.</li><li>Read the code, then run it (Playground or <code>java File.java</code>).</li><li>Hover the <dfn class=\"gl-demo\">dotted words</dfn> for definitions.</li><li>Click <b>Mark as understood</b>, then answer the quiz.</li><li>Come back when <b>Revise</b> asks: after 1, 3 and 7 days.</li></ol></div></div>";
+      "<li>Read the <b>In 30 seconds</b> box.</li><li>Play the visual: <kbd>←</kbd> <kbd>→</kbd> step, <kbd>Space</kbd> plays.</li><li>Read the code, then press <b>▶ Run</b> (or run <code>java File.java</code> yourself).</li><li>Hover the <dfn class=\"gl-demo\">dotted words</dfn> for definitions.</li><li>Click <b>Mark as understood</b>, then answer the quiz.</li><li>Come back to the <b>Recall prompts</b> after 1, 3 and 7 days.</li></ol></div></div>";
     d.addEventListener("toggle",()=>store.set(key,d.open?"1":"0"));
     const pager=$(".pager",hdr);if(pager)hdr.insertBefore(d,pager);else hdr.appendChild(d);}
 
@@ -1711,7 +1711,7 @@ if($("#rates")){
 const RT=["Visual explanation","Depth of understanding","Code & dry runs","Interview coverage","Overall usefulness"],sc=RT.map(()=>0);
 $("#rates").innerHTML=RT.map((t,i)=>'<div class="rate"><span>'+t+'</span><div class="stars" data-i="'+i+'">'+[1,2,3,4,5].map(n=>'<button data-n="'+n+'" aria-label="'+n+' stars">★</button>').join("")+'</div></div>').join("");
 $("#rates").onclick=e=>{const b=e.target.closest("button");if(!b)return;const g=b.parentElement,n=+b.dataset.n;sc[+g.dataset.i]=n;$$("button",g).forEach(x=>x.classList.toggle("on",+x.dataset.n<=n));};
-$("#fbc").onclick=()=>{const t="Java course, Lessons 00–04 feedback:\n"+RT.map((r,i)=>"- "+r+": "+(sc[i]||"-")+"/5").join("\n")+"\nComments: "+($("#fbt").value.trim()||"none");
+$("#fbc").onclick=()=>{const t="Feedback on "+document.body.dataset.name+":\n"+RT.map((r,i)=>"- "+r+": "+(sc[i]||"-")+"/5").join("\n")+"\nComments: "+($("#fbt").value.trim()||"none");
   if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>{$("#fbm").textContent="Copied — paste it in the chat.";},()=>{});};
 }
 };if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",late);else late();})();

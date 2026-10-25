@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Java: Zero to Advanced</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../assets/css/course.css">
+</head>
+<body data-page="home" data-name="Home" data-short="Home">
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><i>J</i><span>Java</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top">
+  <div class="tag">THE JAVA COURSE · ZERO TO ADVANCED · LESSONS 00–07</div>
+  <h1>Master <span class="grad">Java</span></h1>
+  <p class="lead">Start with <a href="lessons/00-foundations.html">how Java runs</a> and the language basics, then go from “what is a String?” to the String pool, immutability, every key method, StringBuilder, regex, Unicode and the JVM internals. Then a concept-first <a href="lessons/02-string-internals.html">deep dive</a>, the <a href="lessons/03-string-problems.html">String problem patterns</a>, a complete lesson on <a href="lessons/04-arrays.html">arrays</a>, and <a href="lessons/05-oop.html">object-oriented Java</a>: constructors, the four pillars, dynamic dispatch, equals and hashCode, records and sealed types. Then <a href="lessons/06-bubble-sort.html">sorting, every way</a>: every interview sort in one explorer with its cost and a step-by-step visual, and bubble sort in depth (eleven variants from brute force to recursion). Then the <a href="lessons/07-collections.html">Collections Framework</a>: generics, ArrayList and HashMap internals (buckets, resize, treeify), LRU caches, TreeMap, heaps, comparators and ConcurrentHashMap. Every code block is a live editor with Java suggestions, every lesson ends with a quiz, and the <a href="practice.html#revise">Revise</a> hub brings sections back after 1, 3 and 7 days. Drill yourself in the timed <a href="practice.html#mock">mock interview</a>, check every cost in the <a href="practice.html#bigo">complexity cheat sheet</a>, and press <kbd>Ctrl</kbd> + <kbd>K</kbd> to jump anywhere.</p>
+  <div class="cta"><a class="btn pri big" href="lessons/00-foundations.html">Start learning <span aria-hidden="true">→</span></a><a class="btn big" href="practice.html#mock">Mock interview</a><a class="btn big ghost" href="practice.html#bigo">Big-O sheet</a></div>
+  <div class="meta"><span><b>8</b> lessons</span><span><b>136</b> sections</span><span><b>131</b> runnable programs</span><span><b>193</b> interview questions</span><span><b>130</b> quiz questions</span><span><b>18</b> exercises</span><span><b>84</b> interactive visuals</span><span><b>1</b> mock interview</span><span><b>1</b> playground</span></div>
+  <div class="hw" id="heroWin" hidden></div>
+  <div class="mq" aria-hidden="true"><div class="mq-t"><span>JVM &amp; bytecode</span><span>JIT compiler</span><span>String Pool</span><span>intern()</span><span>Immutability</span><span>Compact Strings</span><span>hashCode &amp; equals</span><span>StringBuilder growth</span><span>invokedynamic concat</span><span>Integer cache</span><span>Autoboxing</span><span>Pass-by-value</span><span>Switch expressions</span><span>Regex</span><span>Unicode &amp; UTF-16</span><span>HashMap buckets</span><span>Load factor 0.75</span><span>LRU cache</span><span>Arrays.sort</span><span>TimSort</span><span>Binary search</span><span>Two pointers</span><span>Sliding window</span><span>Prefix sum</span><span>Kadane</span><span>Big-O</span><span>Dynamic dispatch</span><span>Records &amp; sealed types</span><span>JVM &amp; bytecode</span><span>JIT compiler</span><span>String Pool</span><span>intern()</span><span>Immutability</span><span>Compact Strings</span><span>hashCode &amp; equals</span><span>StringBuilder growth</span><span>invokedynamic concat</span><span>Integer cache</span><span>Autoboxing</span><span>Pass-by-value</span><span>Switch expressions</span><span>Regex</span><span>Unicode &amp; UTF-16</span><span>Arrays.sort</span><span>TimSort</span><span>Binary search</span><span>Two pointers</span><span>Sliding window</span><span>Prefix sum</span><span>Kadane</span><span>Big-O</span><span>Dynamic dispatch</span><span>Records &amp; sealed types</span></div></div>
+  <div class="lessons">
+    <a class="lcard" href="lessons/00-foundations.html" data-l="l00"><span class="ln">LESSON 00</span><b>Java foundations</b><span class="d">JDK, JRE and JVM, primitives and casting, operators, control flow, methods, recursion and pass-by-value.</span><i>8 sections · quiz</i><span class="go" aria-hidden="true">→</span></a>
+    <a class="lcard" href="lessons/01-strings.html" data-l="l01"><span class="ln">LESSON 01</span><b>Strings from zero to advanced</b><span class="d">Creating Strings, the pool, immutability, comparing, methods, StringBuilder, regex and Unicode.</span><i>18 sections · Playground · Revise</i><span class="go" aria-hidden="true">→</span></a>
+    <a class="lcard" href="lessons/02-string-internals.html" data-l="l02"><span class="ln">LESSON 02</span><b>String concepts deep dive</b><span class="d">JVM memory, the String Constant Pool, <code>new String()</code>, equals and hashCode, builder internals.</span><i>13 sections · capacity simulator</i><span class="go" aria-hidden="true">→</span></a>
+    <a class="lcard" href="lessons/03-string-problems.html" data-l="l03"><span class="ln">LESSON 03</span><b>String problems &amp; patterns</b><span class="d">Reversal, palindromes, frequency, sliding window, stacks, streams and advanced regex.</span><i>12 sections · algorithm stepper</i><span class="go" aria-hidden="true">→</span></a>
+    <a class="lcard" href="lessons/04-arrays.html" data-l="l04"><span class="ln">LESSON 04</span><b>Arrays from zero to advanced</b><span class="d">Memory, 2D arrays, copying, the Arrays class, sorting, conversions and core patterns.</span><i>14 sections · algorithm stepper</i><span class="go" aria-hidden="true">→</span></a>
+    <a class="lcard" href="lessons/05-oop.html" data-l="l05"><span class="ln">LESSON 05</span><b>Object-oriented Java</b><span class="d">Classes and constructors, encapsulation, inheritance vs composition, polymorphism, interfaces, equals/hashCode, records, enums, sealed types.</span><i>10 sections · 2 step-through runs</i><span class="go" aria-hidden="true">→</span></a>
+    <a class="lcard" href="lessons/06-bubble-sort.html" data-l="l06"><span class="ln">LESSON 06</span><b>Sorting, every way</b><span class="d">Every interview sort (merge, quick, heap, counting, bucket, radix, insertion, selection, cyclic, Dutch flag) in one explorer, then bubble sort in depth: 11 types, every cost measured.</span><i>15 sections · explorer with every interview sort</i><span class="go" aria-hidden="true">→</span></a>
+    <a class="lcard" href="lessons/07-collections.html" data-l="l07"><span class="ln">LESSON 07</span><b>The Collections Framework</b><span class="d">List, Set, Queue and Map; generics and PECS; ArrayList growth, HashMap buckets, resize and treeify; LRU, TreeMap, heaps, comparators, fail-fast and ConcurrentHashMap.</span><i>12 sections · 13 labs · parking-lot HashMap</i><span class="go" aria-hidden="true">→</span></a>
+    <a class="lcard sqlcard" href="../sql/index.html"><span class="ln">ALSO HERE · SQL COURSE</span><b>SQL: Zero to Advanced</b><span class="d">Same method, second language: tables and keys as a filing cabinet, your first SELECT built by clicking, the order a query really runs in. Every query runs live in the browser.</span><i>Lesson S00 live · switch with Java ▾ / SQL in the top bar</i><span class="go" aria-hidden="true">→</span></a>
+  </div>
+  <details class="roadmap">
+    <summary>Course roadmap: 10 levels, and what is covered so far</summary>
+    <ol class="rmap">
+      <li><span>1</span><b>Java foundations</b><em>Platform, types, operators, methods, pass-by-value, Strings, arrays</em><span class="st on">Lessons 00–04</span></li>
+      <li><span>2</span><b>Object-oriented programming</b><em>Classes, the four pillars, overloading vs overriding, interfaces, equals/hashCode, records, enums</em><span class="st on">Lesson 05</span></li>
+      <li><span>3</span><b>Collections framework</b><em>List, Set, Map, Queue, HashMap internals, Comparable vs Comparator, generics</em><span class="st on">Lesson 07</span></li>
+      <li><span>4</span><b>Exceptions and core APIs</b><em>Exception hierarchy, try-with-resources, date/time, NIO, reflection</em><span class="st">Next</span></li>
+      <li><span>5</span><b>Functional and modern Java</b><em>Lambdas, streams, Optional, records, sealed classes, pattern matching</em><span class="st part">Records, sealed types and switch patterns in 05</span></li>
+      <li><span>6</span><b>JVM internals and memory</b><em>Class loading, JIT, heap and metaspace, GC, memory leaks</em><span class="st part">String and array parts in 02 and 04</span></li>
+      <li><span>7</span><b>Concurrency</b><em>Threads, synchronized, volatile, executors, CompletableFuture, JMM</em><span class="st">Planned</span></li>
+      <li><span>8</span><b>DSA for interviews</b><em>Patterns, recursion, trees, graphs, DP, Big-O</em><span class="st part">String and array patterns in 03 and 04; every interview sort in 06</span></li>
+      <li><span>9</span><b>Backend with Java</b><em>JDBC, REST, Spring Boot, JPA/Hibernate, transactions, testing</em><span class="st">Planned</span></li>
+      <li><span>10</span><b>Engineering and interview readiness</b><em>SOLID, design patterns, Maven/Gradle, logging, design scenarios</em><span class="st">Planned</span></li>
+    </ol>
+  </details>
+</header>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>Java: Zero to Advanced · every program compiled and run on JDK 25<span class="credits">3D models (CC BY 4.0): <a href="https://sketchfab.com/3d-models/1990-fatboy-inspired-cruiser-motorcycle-a38557914e324e418a407071eaedf6ec">cruiser motorcycle</a> by Alpha One · <a href="https://sketchfab.com/3d-models/skeleton-lord-a3f7b44275cf4c489ad62c535268ac16">Skeleton Lord</a> by DJMaesen · <a href="https://sketchfab.com/3d-models/horse-a6f860e43e364619bccb174a1ac7d0c9">Horse</a> by henrysteve973. Recoloured and posed for this page.</span></footer>
+</div>
+
+<script src="../assets/data/course-index.js"></script>
+<script src="../assets/data/quiz-data.js"></script>
+<script src="../assets/js/course.js"></script>
+<script src="../assets/js/effects.js"></script>
+<script src="../assets/labs/labs-oop.js"></script>
+<script src="../assets/labs/labs-collections.js"></script>
+<script src="../assets/labs/labs-analogy.js"></script>
+<script src="../assets/labs/labs-sorting.js"></script>
+<script src="../assets/labs/labs-foundations.js"></script>
+<script src="../assets/js/practice-tools.js"></script>
+<script src="../assets/js/run-java.js"></script>
+</body>
+</html>

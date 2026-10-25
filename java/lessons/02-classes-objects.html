@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 02: What is a Class and an Object? · Java</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../../assets/css/course.css">
+</head>
+<body data-page="l02" data-name="Lesson 02 · What is a Class and an Object?" data-short="L02">
+
+<nav><div class="wrap">
+  <a class="brand" href="../index.html"><i>J</i><span>Java</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top" class="ph">
+  <div class="tag">LESSON 02 · CLASSES AND OBJECTS</div>
+  <h1>What is a <span class="grad">Class</span>, and what is an <span class="grad">Object</span>?</h1>
+  <p class="lead">The idea the whole of Java is built on, explained properly: a class is the blueprint, an object is the real thing built from it. You will see what is inside a class, what <code>new</code> really does, where objects live in memory, what a reference is, how constructors and <code>this</code> work, what <code>static</code> means, and how to print and compare objects. Build cars in the factory, drive them, copy their keys; run every program.</p>
+  <div class="pager"></div>
+</header>
+
+<div class="band" id="cls">
+  <div class="tag">LESSON 02</div>
+  <h2>Classes and objects: the blueprint and the thing</h2>
+  <p>Ten short sections. Each one has a picture or lab you can play with, a program you can run, and a question an interviewer actually asks.</p>
+</div>
+
+<!-- 1 -->
+<section id="co-what">
+  <span class="num">01</span><h2>What is a class? What is an object?</h2>
+  <div class="tldr"><b>In 30 seconds</b> A <b>class</b> is a blueprint: it describes what every thing of that kind <b>has</b> (its <b>fields</b>, the data) and what it <b>can do</b> (its <b>methods</b>, the behaviour). An <b>object</b> is one real thing built from that blueprint with <code>new</code>. One class, as many objects as you like, and each object has its <b>own</b> copy of the fields.</div>
+  <p>Think about a car. Every car has a model, a colour and a speed, and every car can accelerate and honk. Writing that description down <b>once</b> is the <b>class</b>. The red Swift in your parking lot and the blue Nexon next to it are <b>objects</b>: two real cars, built from the same description, each with its own colour and its own speed.</p>
+  <div class="an-strip"><b>💡 Remember it</b><span>A <b>class is the blueprint</b> of a car: one drawing. An <b>object is a real car</b> built from it in the factory (<code>new</code>). You can't drive a blueprint, and one blueprint builds any number of cars. A <b>variable is the car key</b>: copying a key does not build a second car.</span></div>
+  <div class="viz ol" id="olFactory"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p>Here is that blueprint in Java, and two cars built from it:</p>
+<script type="text/x-java" data-file="Car.java" data-hl="24-25">
+public class Car {
+
+    // fields: what every car HAS (each object gets its own copy)
+    String model;
+    String color;
+    int speed;
+
+    // a constructor: runs once, when new Car(...) builds the object
+    Car(String model, String color) {
+        this.model = model;                // this.model = the field, model = the parameter
+        this.color = color;
+    }
+
+    // methods: what every car CAN DO (written once, used by every object)
+    void accelerate(int by) {
+        speed += by;
+    }
+
+    void describe() {
+        System.out.println(color + " " + model + " at " + speed + " km/h");
+    }
+
+    public static void main(String[] args) {
+        Car a = new Car("Swift", "red");   // object 1, built from the blueprint
+        Car b = new Car("Nexon", "blue");  // object 2: same blueprint, its own fields
+
+        a.accelerate(40);                  // only a's speed changes
+        b.accelerate(90);
+
+        a.describe();                      // red Swift at 40 km/h
+        b.describe();                      // blue Nexon at 90 km/h
+
+        System.out.println(a == b);                 // false  (two different objects)
+        System.out.println(a.getClass().getName()); // Car    (both are built from class Car)
+    }
+}
+</script>
+  <div class="tw"><table>
+    <tr><th></th><th>Class</th><th>Object</th></tr>
+    <tr><td>What it is</td><td>A blueprint, a template, a <b>type</b></td><td>One real <b>instance</b> of that type</td></tr>
+    <tr><td>How you make it</td><td>You write it once: <code>class Car { … }</code></td><td>At run time with <code>new Car(…)</code>, as many as you need</td></tr>
+    <tr><td>Exists</td><td>In your source code, then loaded once by the JVM</td><td>On the heap, while the program runs</td></tr>
+    <tr><td>Holds data?</td><td>No (it only <i>describes</i> the fields; <code>static</code> ones aside, section 06)</td><td>Yes: its own value for every field</td></tr>
+    <tr><td>Real-world</td><td>The car's blueprint</td><td>The red Swift in the parking lot</td></tr>
+  </table></div>
+  <div class="facts"><div><b>state</b>the values of its fields</div><div><b>behaviour</b>the methods it can run</div><div><b>identity</b>it is itself, not its twin</div><div><b>instance</b>another word for object</div></div>
+  <p class="small muted">Every object has those three things. Two cars with the same model and colour still have different <b>identity</b>: they are two cars, and <code>==</code> tells them apart (section 07).</p>
+</section>
+
+<!-- 2 -->
+<section id="co-anatomy">
+  <span class="num">02</span><h2>Inside a class: fields, constructors, methods</h2>
+  <p>A class body holds <b>members</b>. You will meet three kinds all the time:</p>
+  <div class="tw"><table>
+    <tr><th>Member</th><th>What it is</th><th>In <code>Car</code></th><th>Rule of thumb</th></tr>
+    <tr><td><b>Field</b> (instance variable)</td><td>Data each object stores</td><td><code>String model; int speed;</code></td><td>A noun: what it <i>has</i></td></tr>
+    <tr><td><b>Constructor</b></td><td>Code that sets up a new object; same name as the class, no return type</td><td><code>Car(String model, String color) { … }</code></td><td>Runs once per object, inside <code>new</code></td></tr>
+    <tr><td><b>Method</b></td><td>Behaviour; reads and changes this object's fields</td><td><code>void accelerate(int by) { … }</code></td><td>A verb: what it <i>does</i></td></tr>
+  </table></div>
+  <p>A class is also a <b>new type</b>, exactly like <code>int</code> or <code>String</code>. Once <code>Car</code> exists you can declare <code>Car</code> variables, pass a <code>Car</code> to a method, return one, and keep them in an array.</p>
+<script type="text/x-java" data-file="Garage.java" data-hl="11,18,23">
+public class Garage {
+
+    static class Car {                     // a class is a new TYPE, like int or String
+        String model;
+        int speed;
+
+        Car(String model) {
+            this.model = model;
+        }
+
+        Car faster(int by) {               // a method can RETURN an object...
+            Car copy = new Car(model);
+            copy.speed = speed + by;
+            return copy;
+        }
+    }
+
+    static void print(Car c) {             // ...a method can TAKE one as a parameter...
+        System.out.println(c.model + " " + c.speed);
+    }
+
+    public static void main(String[] args) {
+        Car[] lot = { new Car("Swift"), new Car("Nexon"), new Car("Creta") };   // ...and an array can hold them
+        for (Car c : lot) {
+            print(c);                      // Swift 0, then Nexon 0, then Creta 0
+        }
+
+        Car quick = lot[0].faster(60);
+        print(quick);                      // Swift 60
+        print(lot[0]);                     // Swift 0   (the original object is unchanged)
+        System.out.println(lot.length);    // 3
+    }
+}
+</script>
+  <div class="note"><b>File rules:</b> a <code>public class Car</code> must be in a file named <code>Car.java</code>, and a file has at most one public top-level class. The <code>static class Car</code> inside <code>Garage</code> is a <i>nested</i> class: a handy way to keep a small example in one file. Class names are nouns in <code>PascalCase</code>; fields and methods are <code>camelCase</code>.</div>
+  <p>The dot does the work: <code>c.model</code> reads <b>this object's</b> field, <code>a.accelerate(40)</code> runs the method <b>on</b> object <code>a</code>. The method code is the same for every car; the data it touches is the one object you called it on.</p>
+</section>
+
+<!-- 3 -->
+<section id="co-new">
+  <span class="num">03</span><h2>What <code>new</code> really does</h2>
+  <div class="tldr"><b>In 30 seconds</b> <code>new Car("Swift")</code> does three things, in order: <b>1</b> allocate memory for a new Car on the heap, with every field at its <b>default value</b>; <b>2</b> run the <b>constructor</b> on that object (<code>this</code> = the new object); <b>3</b> hand back a <b>reference</b> to it, which you store in a variable.</div>
+  <div class="an-strip"><b>💡 Remember it</b><span>The factory first builds a <b>bare car</b> (no paint, speed 0), then the <b>workers</b> (the constructor) paint it and fit the badge, then you get the <b>key</b>.</span></div>
+  <h3>Watch it run</h3>
+  <p class="small muted">Step through it: the object appears with default values, the constructor frame gets <code>this</code>, the reference comes back, then a reference is copied and re-pointed.</p>
+<div class="runviz" data-run="objs"></div>
+  <p>Step 1 is why fields always start with a value, even if the constructor never sets them. <b>Local variables</b> (inside a method) get no default: the compiler refuses to let you read one before you assign it.</p>
+  <div class="tw"><table>
+    <tr><th>Field type</th><th>Default value</th></tr>
+    <tr><td><code>byte short int long</code></td><td><code>0</code></td></tr>
+    <tr><td><code>float double</code></td><td><code>0.0</code></td></tr>
+    <tr><td><code>boolean</code></td><td><code>false</code></td></tr>
+    <tr><td><code>char</code></td><td>character number 0 (invisible)</td></tr>
+    <tr><td>any reference: <code>String</code>, <code>Car</code>, arrays…</td><td><code>null</code></td></tr>
+  </table></div>
+<script type="text/x-java" data-file="DefaultValues.java" data-hl="12">
+public class DefaultValues {
+
+    static class Car {
+        String model;          // a reference field -> null
+        int speed;             // int               -> 0
+        double fuel;           // double            -> 0.0
+        boolean running;       // boolean           -> false
+        char gear;             // char              -> character number 0 (invisible)
+    }
+
+    public static void main(String[] args) {
+        Car c = new Car();     // we wrote no constructor, so the compiler added: Car() {}
+
+        System.out.println(c.model);         // null
+        System.out.println(c.speed);         // 0
+        System.out.println(c.fuel);          // 0.0
+        System.out.println(c.running);       // false
+        System.out.println((int) c.gear);    // 0
+
+        int local;                           // a LOCAL variable gets no default value
+        // System.out.println(local);        // compile error: variable local might not have been initialized
+    }
+}
+</script>
+</section>
+
+<!-- 4 -->
+<section id="co-memory">
+  <span class="num">04</span><h2>Where objects live: stack, heap, Metaspace</h2>
+  <div class="tldr"><b>In 30 seconds</b> Every object lives on the <b>heap</b>. A variable of a class type never holds the object: it holds a <b>reference</b> (an arrow) to it. Local variables sit in the method's frame on the <b>stack</b>. The class itself (its field layout and method code) is loaded <b>once</b> into <b>Metaspace</b>, and every object points back to it.</div>
+<figure class="fig" id="fig-objmem">
+  <div class="sv"><svg viewBox="0 0 760 320" role="img" aria-label="The main frame on the stack holds references a, c and b. a and c point to the same Car object on the heap, b to a second Car object. Each object has a header whose klass pointer leads to the one Car class description in Metaspace"><defs><marker id="oag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mg"/></marker><marker id="oaa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ma"/></marker></defs><rect x="10" y="10" width="190" height="300" rx="12" class="zone"/><text x="24" y="30" class="zl" text-anchor="start">STACK · main() FRAME</text><rect x="30" y="58" width="150" height="46" rx="8" class="var"/><text x="46" y="80" class="ft">a</text><text x="46" y="96" class="fs">reference</text><rect x="30" y="118" width="150" height="46" rx="8" class="var"/><text x="46" y="140" class="ft">c</text><text x="46" y="156" class="fs">reference (copy of a)</text><rect x="30" y="198" width="150" height="46" rx="8" class="var"/><text x="46" y="220" class="ft">b</text><text x="46" y="236" class="fs">reference</text><rect x="220" y="10" width="310" height="300" rx="12" class="zone"/><text x="234" y="30" class="zl" text-anchor="start">HEAP · OBJECTS</text><rect x="250" y="50" width="250" height="112" rx="8" class="obj"/><text x="264" y="72" class="fhd">Car object #1</text><text x="264" y="92" class="fs">header: mark word · klass pointer</text><line x1="262" y1="102" x2="488" y2="102" class="sep"/><text x="264" y="124" class="ft">model → "Swift"</text><text x="264" y="148" class="ft">speed = 60</text><rect x="250" y="180" width="250" height="112" rx="8" class="obj"/><text x="264" y="202" class="fhd">Car object #2</text><text x="264" y="222" class="fs">header: mark word · klass pointer</text><line x1="262" y1="232" x2="488" y2="232" class="sep"/><text x="264" y="254" class="ft">model → "Nexon"</text><text x="264" y="278" class="ft">speed = 90</text><rect x="550" y="10" width="200" height="300" rx="12" class="zone perm"/><text x="564" y="30" class="zl" text-anchor="start">METASPACE · CLASSES</text><rect x="566" y="50" width="168" height="242" rx="8" class="obj acc"/><text x="650" y="74" class="fhd" text-anchor="middle">class Car</text><text x="580" y="100" class="fs">super: Object</text><text x="580" y="122" class="fs">fields: model, speed</text><text x="580" y="150" class="fts">Car(String)</text><text x="580" y="172" class="fts">accelerate(int)</text><text x="580" y="194" class="fts">toString()</text><line x1="578" y1="210" x2="722" y2="210" class="sep"/><text x="580" y="232" class="fs">method code lives here,</text><text x="580" y="252" class="fs">once, not in each object</text><line x1="180" y1="81" x2="247" y2="81" class="a g" marker-end="url(#oag)"/><path d="M180 141 L214 141 L214 112 L247 112" class="a g" marker-end="url(#oag)"/><line x1="180" y1="221" x2="247" y2="221" class="a g" marker-end="url(#oag)"/><path d="M500 86 L563 120" class="a ac d" marker-end="url(#oaa)"/><path d="M500 216 L563 190" class="a ac d" marker-end="url(#oaa)"/></svg></div>
+  <figcaption><b>Two objects, three references, one class.</b> The <code>main</code> frame on the stack holds only references. <code>a</code> and <code>c</code> point to the <b>same</b> Car; <code>b</code> points to a second one. Each object on the heap has a small <b>header</b> (a mark word for hashing, locking and GC age, and a <b>klass pointer</b>) followed by its own fields. The class is loaded once into <b>Metaspace</b>; methods are not copied into each object.</figcaption>
+</figure>
+  <p>Because a variable only holds a reference, <code>Car c = a;</code> copies the <b>arrow</b>, not the car. Change the car through <code>c</code> and <code>a</code> sees it. Set a variable to <code>null</code> and it points at nothing; call a method through it and you get a <code>NullPointerException</code>. Drive the heap yourself:</p>
+  <div class="viz ol" id="olObj"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+<script type="text/x-java" data-file="References.java" data-hl="12-16,20">
+public class References {
+
+    static class Car {
+        String model;
+        int speed;
+
+        Car(String model) {
+            this.model = model;
+        }
+    }
+
+    static void tune(Car car) {            // 'car' is a COPY of the caller's reference
+        car.speed = 100;                   // follows it: changes the caller's object
+        car = new Car("Spare");            // moves only the copy
+        car.speed = 5;                     // changes the spare, which nobody else sees
+    }
+
+    public static void main(String[] args) {
+        Car a = new Car("Swift");
+        Car c = a;                         // copies the reference: still ONE car
+        c.speed = 60;
+        System.out.println(a.speed);                   // 60   (a and c point to the same object)
+
+        a = new Car("Nexon");              // a now points to a new car; c keeps the Swift
+        System.out.println(c.model + " " + a.model);   // Swift Nexon
+
+        tune(c);
+        System.out.println(c.model + " " + c.speed);   // Swift 100
+
+        Car none = null;                   // a reference to no object at all
+        System.out.println(none == null);              // true
+        try {
+            none.speed = 1;                // there is no object to change
+        } catch (NullPointerException e) {
+            System.out.println("NullPointerException");  // NullPointerException
+        }
+    }
+}
+</script>
+  <div class="note"><b>Pass-by-value, again:</b> just like the String in Lesson 01, <code>tune(c)</code> gets a <b>copy of the reference</b>. Following the copy (<code>car.speed = 100</code>) changes the caller's car; re-pointing the copy (<code>car = new Car(…)</code>) changes nothing for the caller. Java has no pass-by-reference.</div>
+  <p><b>When does an object die?</b> You never delete objects in Java. When no reachable variable refers to an object any more, it becomes <b>eligible for garbage collection</b>, and the garbage collector frees it whenever the JVM decides (<code>System.gc()</code> is only a request).</p>
+</section>
+
+<!-- 5 -->
+<section id="co-ctor">
+  <span class="num">05</span><h2>Constructors and <code>this</code></h2>
+  <div class="tldr"><b>In 30 seconds</b> A <b>constructor</b> has the class's name and <b>no return type</b>; it runs once per object, inside <code>new</code>, to put the object in a valid state. Write no constructor and the compiler adds an empty no-argument one; write <b>any</b> constructor and it doesn't. <code>this</code> is the reference to the current object: <code>this.model = model</code> sets the field from the parameter. <code>this(…)</code> calls another constructor of the same class.</div>
+<script type="text/x-java" data-file="Constructors.java" data-hl="7-10,12-14,30">
+public class Constructors {
+
+    static class Car {
+        String model;
+        String color;
+
+        Car(String model, String color) {  // the one constructor that does the real work
+            this.model = model;
+            this.color = color;
+        }
+
+        Car(String model) {                // overloaded: same name, different parameters
+            this(model, "white");          // calls the constructor above (must be the first line)
+        }
+
+        Car() {
+            this("Unknown");
+        }
+
+        String describe() {
+            return color + " " + model;
+        }
+    }
+
+    static class Bike {
+        String model;
+
+        Bike(String model) {
+            model = model;                 // BUG: assigns the parameter to itself
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(new Car("Nexon", "blue").describe());   // blue Nexon
+        System.out.println(new Car("Swift").describe());           // white Swift
+        System.out.println(new Car().describe());                  // white Unknown
+
+        System.out.println(new Bike("Duke").model);                // null  (forgot this.)
+        // new Bike();   // compile error: constructor Bike in class Bike cannot be applied to given types
+    }
+}
+</script>
+  <div class="tw"><table>
+    <tr><th>Rule</th><th>Detail</th></tr>
+    <tr><td>Name and return type</td><td>Same name as the class, no return type. <code>void Car() {}</code> is a <i>method</i> called Car, not a constructor.</td></tr>
+    <tr><td>Default constructor</td><td>Added by the compiler <b>only</b> when the class declares no constructor at all.</td></tr>
+    <tr><td>Overloading</td><td>Several constructors with different parameter lists. Put the real work in one and let the others call it with <code>this(…)</code>.</td></tr>
+    <tr><td><code>this(…)</code></td><td>Calls another constructor of the same class; it must be the first statement.</td></tr>
+    <tr><td><code>this</code> (no brackets)</td><td>The current object. Needed when a parameter <i>shadows</i> a field with the same name.</td></tr>
+  </table></div>
+  <div class="note warn"><b>The classic bug:</b> in <code>Bike</code>, <code>model = model;</code> assigns the parameter to itself, because inside the constructor the name <code>model</code> means the parameter. The field stays <code>null</code>. Write <code>this.model = model;</code>.</div>
+</section>
+
+<!-- 6 -->
+<section id="co-static">
+  <span class="num">06</span><h2><code>static</code> vs instance: the class's data vs each object's data</h2>
+  <div class="tldr"><b>In 30 seconds</b> An <b>instance</b> field belongs to each object: every car has its own <code>speed</code>. A <b>static</b> field belongs to the <b>class</b>: there is exactly one copy, shared by all objects, and it exists even before any object. A <b>static method</b> runs without an object, so it has no <code>this</code> and can't touch instance fields directly. That is why <code>main</code> is static: the JVM calls it before any object exists.</div>
+  <div class="an-strip"><b>💡 Remember it</b><span>Each car has its own <b>odometer</b> (instance). The factory has <b>one counter on the wall</b> of how many cars it has built (static). Every car can read the wall, but there is only one wall.</span></div>
+  <div class="viz ol" id="olStatic"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+<script type="text/x-java" data-file="StaticVsInstance.java" data-hl="4-5,7">
+public class StaticVsInstance {
+
+    static class Car {
+        static int built = 0;              // ONE copy, owned by the class
+        static final int WHEELS = 4;       // a shared constant
+
+        final int id;                      // one copy PER OBJECT
+        String model;
+
+        Car(String model) {
+            this.model = model;
+            built++;                       // every new car updates the one shared counter
+            id = built;                    // ...and keeps its own number
+        }
+
+        static int howMany() {             // needs no object, so it has no 'this'
+            return built;
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Car.howMany());                    // 0   (the class exists before any object)
+
+        Car a = new Car("Swift");
+        Car b = new Car("Nexon");
+        Car c = new Car("Creta");
+
+        System.out.println(a.id + " " + b.id + " " + c.id);  // 1 2 3
+        System.out.println(Car.built);                        // 3
+        System.out.println(Car.WHEELS);                       // 4
+        System.out.println(Car.howMany());                    // 3
+    }
+}
+</script>
+  <div class="tw"><table>
+    <tr><th></th><th>Instance member</th><th><code>static</code> member</th></tr>
+    <tr><td>Belongs to</td><td>Each object</td><td>The class</td></tr>
+    <tr><td>Copies</td><td>One per object</td><td>Exactly one</td></tr>
+    <tr><td>Access</td><td><code>a.speed</code>, <code>a.accelerate()</code></td><td><code>Car.built</code>, <code>Car.howMany()</code></td></tr>
+    <tr><td>Has <code>this</code>?</td><td>Yes</td><td>No</td></tr>
+    <tr><td>Use for</td><td>Data that differs per object</td><td>Counters, constants (<code>static final</code>), helpers like <code>Math.max</code></td></tr>
+  </table></div>
+</section>
+
+<!-- 7 -->
+<section id="co-print">
+  <span class="num">07</span><h2>Printing and comparing objects</h2>
+  <div class="tldr"><b>In 30 seconds</b> Every class quietly extends <code>Object</code>, so every object already has <code>toString()</code>, <code>equals()</code> and <code>hashCode()</code>. <code>println(obj)</code> calls <code>toString()</code>; the default prints <code>ClassName@hexHash</code>. The default <code>equals</code> is the same as <code>==</code>: "same object?". Override them to say what your object looks like and what "equal" means; if you override <code>equals</code>, always override <code>hashCode</code> too.</div>
+<script type="text/x-java" data-file="PrintCompare.java" data-hl="22-25,28-32">
+import java.util.Objects;
+
+public class PrintCompare {
+
+    static class Plain {                   // writes nothing extra: uses Object's versions
+        String model;
+
+        Plain(String model) {
+            this.model = model;
+        }
+    }
+
+    static class Car {
+        String model;
+        int year;
+
+        Car(String model, int year) {
+            this.model = model;
+            this.year = year;
+        }
+
+        @Override
+        public String toString() {         // what println shows
+            return model + " (" + year + ")";
+        }
+
+        @Override
+        public boolean equals(Object o) {  // what "the same car" means for us
+            if (this == o) return true;
+            if (!(o instanceof Car other)) return false;
+            return year == other.year && model.equals(other.model);
+        }
+
+        @Override
+        public int hashCode() {            // always override together with equals
+            return Objects.hash(model, year);
+        }
+    }
+
+    public static void main(String[] args) {
+        Plain p1 = new Plain("Swift");
+        Plain p2 = new Plain("Swift");
+        System.out.println(p1);                  // PrintCompare$Plain@ followed by a hex hash (changes every run)
+        System.out.println(p1.equals(p2));       // false  (Object's equals is just ==)
+
+        Car a = new Car("Swift", 2024);
+        Car b = new Car("Swift", 2024);
+        System.out.println(a);                   // Swift (2024)   println calls toString()
+        System.out.println(a == b);              // false  two different objects
+        System.out.println(a.equals(b));         // true   same model and year
+        System.out.println(a.hashCode() == b.hashCode());   // true
+    }
+}
+</script>
+  <p>This is the same rule you met with Strings in Lesson 01: <code>==</code> compares <b>identity</b> (the arrows), <code>equals</code> compares <b>content</b>. String already overrides <code>equals</code>; your own classes must do it themselves. (Lesson 01's twins are back: two Cars with the same model and year are twins, not one car.)</p>
+</section>
+
+<!-- 8 -->
+<section id="co-mistakes">
+  <span class="num">08</span><h2>Common mistakes</h2>
+  <div class="tw"><table>
+    <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+    <tr><td><code>Car c = a;</code> "to copy the car"</td><td>Copies the reference; both names drive the same car</td><td>Build a new object: <code>new Car(a.model, a.color)</code></td></tr>
+    <tr><td>Calling a method on a <code>null</code> variable</td><td><code>NullPointerException</code> at run time</td><td>Create the object first, or check for <code>null</code></td></tr>
+    <tr><td><code>model = model;</code> in a constructor</td><td>The field stays <code>null</code></td><td><code>this.model = model;</code></td></tr>
+    <tr><td>Adding <code>Car(String)</code>, then calling <code>new Car()</code></td><td>Compile error: the free no-arg constructor is gone</td><td>Write <code>Car()</code> yourself if you need it</td></tr>
+    <tr><td><code>void Car() { … }</code></td><td>A method named Car; the "constructor" never runs</td><td>Remove the return type</td></tr>
+    <tr><td><code>a == b</code> to compare content</td><td><code>false</code> for two equal-looking objects</td><td>Override and call <code>equals</code></td></tr>
+    <tr><td>Reading an instance field from <code>static main</code></td><td>Compile error: non-static variable cannot be referenced from a static context</td><td>Create an object and use <code>obj.field</code></td></tr>
+  </table></div>
+</section>
+
+<!-- 9 -->
+<section id="co-qa">
+  <span class="num">09</span><h2>10 interview questions</h2>
+  <p class="small muted">Answer out loud first, then open the card.</p>
+  <details class="d"><summary><span class="q">01</span>What is a class, and what is an object?</summary><div class="b">A <b>class</b> is a blueprint (a user-defined type) that declares state (fields) and behaviour (methods). An <b>object</b> is an instance of that class created at run time with <code>new</code>; it lives on the heap and has its own copy of the instance fields.</div></details>
+  <details class="d"><summary><span class="q">02</span>What is the difference between a class and an object?</summary><div class="b">A class is a logical template, written once and loaded once; it takes no heap memory for instance data. An object is a physical instance: you can create many from one class, each on the heap with its own state, its own identity, and the class's behaviour.</div></details>
+  <details class="d"><summary><span class="q">03</span>What happens when you write <code>new Car("Swift")</code>?</summary><div class="b">The JVM (loads the class if needed and) allocates memory on the heap with every field at its default value, runs the constructor with <code>this</code> = the new object, and returns a reference to it, which is stored in the variable.</div></details>
+  <details class="d"><summary><span class="q">04</span>Where are objects stored? Where are references stored?</summary><div class="b">Objects always live on the heap. A local reference variable lives in its method's stack frame; a reference held in a field lives inside the object that owns the field (on the heap). Class metadata and method code are in Metaspace.</div></details>
+  <details class="d"><summary><span class="q">05</span>Does <code>Car c = a;</code> create a new object?</summary><div class="b">No. It copies the <b>reference</b>, so <code>a</code> and <code>c</code> point to the same object and <code>a == c</code> is true. A change through one is visible through the other.</div></details>
+  <details class="d"><summary><span class="q">06</span>What are the default values of fields? Do local variables get them?</summary><div class="b">Numbers 0 / 0.0, <code>boolean</code> false, <code>char</code> character 0, references <code>null</code>. Local variables get no default; reading one before assigning it is a compile error.</div></details>
+  <details class="d"><summary><span class="q">07</span>What is a constructor? How is it different from a method?</summary><div class="b">Code that initialises a new object: it has the class's name, no return type, runs once per object inside <code>new</code>, and is not inherited. A method has a return type (or <code>void</code>), any name, and can be called any number of times on an existing object.</div></details>
+  <details class="d"><summary><span class="q">08</span>What is <code>this</code>?</summary><div class="b">A reference to the current object, available in constructors and instance methods. Used to reach a field shadowed by a parameter (<code>this.model = model</code>), to call another constructor (<code>this(…)</code>), or to pass the current object somewhere. Static methods have no <code>this</code>.</div></details>
+  <details class="d"><summary><span class="q">09</span>What is the difference between static and instance members?</summary><div class="b">Instance members belong to each object (one copy per object, need an object to use). Static members belong to the class (one shared copy, used via the class name, exist before any object). A static method has no <code>this</code>, so it can't use instance fields directly.</div></details>
+  <details class="d"><summary><span class="q">10</span>In how many ways can you create an object in Java?</summary><div class="b">The usual answer is five: <code>new</code>; reflection (<code>Car.class.getDeclaredConstructor().newInstance()</code>); <code>clone()</code>; deserialization; and factory methods such as <code>List.of()</code> or <code>LocalDate.now()</code>, which use one of the others inside. <code>new</code> is the one you use every day.</div></details>
+</section>
+
+<!-- 10 -->
+<section id="co-review">
+  <span class="num">10</span><h2>Review</h2>
+  <h3>5 takeaways</h3><ul class="takeaways"><li>A class is the blueprint (fields + constructors + methods) and a new type; an object is one real instance built from it with <code>new</code>.</li><li><code>new</code> allocates the object on the heap with default values, runs the constructor, and returns a reference.</li><li>Variables hold references, not objects: copying a variable shares the object, <code>null</code> means no object, and unreachable objects are garbage-collected.</li><li>Constructors set up the object; <code>this</code> is the current object. Static members belong to the class, instance members to each object.</li><li><code>println</code> calls <code>toString()</code>; <code>==</code> asks "same object?", <code>equals</code> asks "same content?" once you override it (with <code>hashCode</code>).</li></ul>
+  <h3>Check yourself</h3>
+  <p class="small muted">Answer before you look. Each answer locks and explains itself; your answers are saved in this browser.</p>
+  <div class="quiz" data-quiz="l02"><p class="small muted">This quiz needs JavaScript.</p></div>
+  <h3>Recall prompts</h3>
+  <p class="small muted">Come back after 1, 3 and 7 days and answer out loud before opening each one.</p>
+  <div id="rcp"></div>
+  <h3>Your feedback</h3>
+  <div id="rates"></div>
+  <textarea id="fbt" placeholder="What should change, and which topic should come next?"></textarea>
+  <p><button class="btn pri" id="fbc">Copy feedback</button> <span id="fbm" class="small" style="color:var(--good)"></span></p>
+</section>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>Java: Zero to Advanced · every program compiled and run on JDK 25<span class="credits">3D models (CC BY 4.0): <a href="https://sketchfab.com/3d-models/1990-fatboy-inspired-cruiser-motorcycle-a38557914e324e418a407071eaedf6ec">cruiser motorcycle</a> by Alpha One · <a href="https://sketchfab.com/3d-models/skeleton-lord-a3f7b44275cf4c489ad62c535268ac16">Skeleton Lord</a> by DJMaesen · <a href="https://sketchfab.com/3d-models/horse-a6f860e43e364619bccb174a1ac7d0c9">Horse</a> by henrysteve973. Recoloured and posed for this page.</span></footer>
+</div>
+
+<script src="../../assets/data/course-index.js"></script>
+<script src="../../assets/data/quiz-data.js"></script>
+<script src="../../assets/js/course.js"></script>
+<script src="../../assets/js/effects.js"></script>
+<script src="../../assets/labs/labs-objects.js"></script>
+<script src="../../assets/js/run-java.js"></script>
+</body>
+</html>

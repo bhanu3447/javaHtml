@@ -1,0 +1,873 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lesson 01: Strings · Java</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../../assets/css/course.css">
+</head>
+<body data-page="l01" data-name="Lesson 01 · Strings" data-short="L01">
+
+<nav><div class="wrap">
+  <a class="brand" href="../index.html"><i>J</i><span>Java</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top" class="ph">
+  <div class="tag">LESSON 01 · STRINGS</div>
+  <h1>Java <span class="grad">Strings</span></h1>
+  <p class="lead">Creating Strings, the pool, immutability, comparing, methods, StringBuilder, regex and Unicode.</p>
+  <div class="pager"></div>
+</header>
+
+<!-- 1 -->
+<section id="what">
+  <span class="num">01</span><h2>What is a String?</h2>
+  <p>A <b>String is a sequence of characters</b>, such as <code>"Hello"</code>, <code>"42"</code> or <code>""</code>. In Java it is an <b>object</b> of the class <code>java.lang.String</code>. It is not a primitive like <code>int</code> or <code>char</code>.</p>
+  <div class="row"><span class="lb">"Hello"</span><div class="cells" data-cells="Hello"></div></div>
+  <p class="small muted">Indexes start at 0. <code>length()</code> is 5, so the last index is <code>length() - 1</code> = 4.</p>
+  <div class="tw"><table>
+    <tr><th></th><th><code>char</code></th><th><code>String</code></th></tr>
+    <tr><td>Holds</td><td>Exactly one character</td><td>Zero or more characters</td></tr>
+    <tr><td>Quotes</td><td>Single: <code>'H'</code></td><td>Double: <code>"Hello"</code></td></tr>
+    <tr><td>Kind</td><td>Primitive (a 16-bit number)</td><td>Object (a reference type)</td></tr>
+    <tr><td>Can be <code>null</code>?</td><td>No</td><td>Yes</td></tr>
+    <tr><td>Empty value</td><td>Not possible</td><td><code>""</code> (length 0)</td></tr>
+  </table></div>
+  <div class="facts"><div><b>java.lang</b>no import needed</div><div><b>final class</b>can't be extended</div><div><b>immutable</b>characters never change</div></div>
+  <p>It implements <code>CharSequence</code>, <code>Comparable&lt;String&gt;</code> and <code>Serializable</code>. <code>""</code> is an empty object, while <code>null</code> means no object at all, so <code>null.length()</code> throws <code>NullPointerException</code>.</p>
+<script type="text/x-java" data-file="StringBasics.java">
+public class StringBasics {
+
+    public static void main(String[] args) {
+        String greeting = "Hello";            // a String: text in double quotes
+        char letter = 'H';                    // a char: ONE character in single quotes
+
+        System.out.println(greeting);             // Hello
+        System.out.println(greeting.length());    // 5
+        System.out.println(greeting.charAt(0));   // H
+        System.out.println(letter == greeting.charAt(0));   // true
+
+        String empty = "";                    // a real object with length 0
+        String nothing = null;                // no object at all
+        System.out.println(empty.length());       // 0
+        System.out.println(nothing == null);      // true
+
+        CharSequence seq = greeting;          // String implements CharSequence
+        System.out.println(seq.length());         // 5
+    }
+}
+</script>
+</section>
+
+<!-- 2 -->
+<section id="create">
+  <span class="num">02</span><h2>Creating Strings</h2>
+  <div class="tw"><table>
+    <tr><th>Way</th><th>Example</th><th>Notes</th></tr>
+    <tr><td>Literal</td><td><code>"java"</code></td><td>Most common. Uses the <b>String pool</b>.</td></tr>
+    <tr><td><code>new</code></td><td><code>new String("java")</code></td><td>Always a <b>new</b> heap object. You rarely need it.</td></tr>
+    <tr><td>From <code>char[]</code></td><td><code>new String(chars)</code></td><td>Copies the array</td></tr>
+    <tr><td>From bytes</td><td><code>new String(bytes, UTF_8)</code></td><td>Always pass a charset</td></tr>
+    <tr><td>Other types</td><td><code>String.valueOf(42)</code></td><td>Works for any value</td></tr>
+    <tr><td>Builder</td><td><code>sb.toString()</code></td><td></td></tr>
+    <tr><td>Text block (15+)</td><td><code>"""</code> … <code>"""</code></td><td>Multi-line text</td></tr>
+  </table></div>
+<script type="text/x-java" data-file="CreatingStrings.java">
+import java.nio.charset.StandardCharsets;
+
+public class CreatingStrings {
+
+    public static void main(String[] args) {
+        String a = "java";                                  // 1. literal (uses the String pool)
+        String b = new String("java");                      // 2. new: always a new heap object
+        char[] letters = {'j', 'a', 'v', 'a'};
+        String c = new String(letters);                     // 3. from a char[]
+        byte[] bytes = {106, 97, 118, 97};
+        String d = new String(bytes, StandardCharsets.UTF_8);   // 4. from bytes + charset
+        String e = String.valueOf(42);                      // 5. from another type
+        String f = new StringBuilder("ja").append("va").toString();   // 6. from a builder
+        String g = """
+                java""";                                    // 7. text block (Java 15+)
+
+        System.out.println(a + " " + b + " " + c + " " + d + " " + e + " " + f + " " + g);
+        // java java java java 42 java java
+
+        System.out.println(a.equals(b) && a.equals(c) && a.equals(d) && a.equals(f) && a.equals(g));   // true
+        System.out.println(a == g);    // true  (literal and text block share the pooled "java")
+        System.out.println(a == b);    // false (new always makes a new object)
+    }
+}
+</script>
+</section>
+
+<!-- 3 -->
+<section id="pool">
+  <span class="num">03</span><h2>Memory and the String Pool</h2>
+  <p>The <b>String pool</b> keeps <b>one shared copy of each literal</b>. Since Java 7 the pooled String objects live in the ordinary heap; the lookup table itself (HotSpot's <code>StringTable</code>) is native JVM memory. Step through the code below and watch where each variable points.</p>
+  <div class="an-strip"><b>💡 Remember it</b><span>The String pool is a shared <b>sticker book</b>. Every <code>"hi"</code> literal in your program uses the <i>same</i> sticker; <code>new String("hi")</code> prints a fresh copy that is not in the book.</span></div>
+<figure class="fig" id="fig-scp1">
+  <div class="sv"><svg viewBox="0 0 760 350" role="img" aria-label="s1, s2 and s4 point to the one pooled hello; s3 points to a separate heap object that shares the same byte array"><defs><marker id="f1g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mg"/></marker><marker id="f1h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mh"/></marker><marker id="f1a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ma"/></marker><marker id="f1n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mn"/></marker></defs><rect x="20" y="30" width="170" height="270" rx="14" class="zone"/><text x="36" y="54" class="zl" text-anchor="start">STACK · main()</text><rect x="40" y="80" width="130" height="36" rx="8" class="var"/><text x="54" y="103" class="ft" text-anchor="start">s1</text><text x="158" y="103" class="fs" text-anchor="end">ref</text><rect x="40" y="135" width="130" height="36" rx="8" class="var"/><text x="54" y="158" class="ft" text-anchor="start">s2</text><text x="158" y="158" class="fs" text-anchor="end">ref</text><rect x="40" y="190" width="130" height="36" rx="8" class="var"/><text x="54" y="213" class="ft" text-anchor="start">s4</text><text x="158" y="213" class="fs" text-anchor="end">ref</text><rect x="40" y="245" width="130" height="36" rx="8" class="var"/><text x="54" y="268" class="ft" text-anchor="start">s3</text><text x="158" y="268" class="fs" text-anchor="end">ref</text><rect x="220" y="30" width="520" height="270" rx="14" class="zone"/><text x="236" y="54" class="zl" text-anchor="start">HEAP</text><rect x="250" y="70" width="250" height="125" rx="12" class="pool"/><text x="264" y="92" class="zl g" text-anchor="start">STRING CONSTANT POOL</text><rect x="290" y="108" width="170" height="60" rx="10" class="obj"/><text x="375" y="135" class="ft" text-anchor="middle">"hello"</text><text x="375" y="156" class="fs" text-anchor="middle">String #1 · pooled</text><rect x="290" y="230" width="170" height="56" rx="10" class="obj heap"/><text x="375" y="255" class="ft" text-anchor="middle">"hello"</text><text x="375" y="275" class="fs" text-anchor="middle">String #2 · from new</text><rect x="565" y="150" width="155" height="60" rx="10" class="obj acc"/><text x="642" y="176" class="ft" text-anchor="middle">byte[] value</text><text x="642" y="196" class="fs" text-anchor="middle">h e l l o</text><line x1="170" y1="98" x2="287" y2="124" class="a g" marker-end="url(#f1g)"/><line x1="170" y1="153" x2="287" y2="138" class="a g" marker-end="url(#f1g)"/><line x1="170" y1="208" x2="287" y2="152" class="a g" marker-end="url(#f1g)"/><line x1="170" y1="263" x2="287" y2="258" class="a h" marker-end="url(#f1h)"/><path d="M460 138 C 515 138, 520 170, 562 172" class="a ac d" marker-end="url(#f1a)"/><path d="M460 258 C 520 258, 525 200, 562 192" class="a ac d" marker-end="url(#f1a)"/><text x="642" y="230" class="fs" text-anchor="middle">both share it</text><rect x="20" y="314" width="150" height="26" rx="13" class="pok"/><text x="95" y="331" class="rt ok" text-anchor="middle">s1 == s2 → true</text><rect x="182" y="314" width="155" height="26" rx="13" class="pno"/><text x="259.5" y="331" class="rt no" text-anchor="middle">s1 == s3 → false</text><rect x="349" y="314" width="150" height="26" rx="13" class="pok"/><text x="424" y="331" class="rt ok" text-anchor="middle">s1 == s4 → true</text><rect x="511" y="314" width="229" height="26" rx="13" class="pok"/><text x="625.5" y="331" class="rt ok" text-anchor="middle">s1.equals(s3) → true</text></svg></div>
+  <figcaption><b>Literal vs <code>new</code> vs <code>intern()</code>.</b> <code>s1 = "hello"</code> and <code>s2 = "hello"</code> get the <b>same</b> pooled object. <code>s3 = new String("hello")</code> is a second object outside the pool, but it shares the pooled String's <code>byte[]</code>. <code>s4 = s3.intern()</code> returns the pooled one. <code>==</code> compares the arrows; <code>equals</code> compares the characters.</figcaption>
+</figure>
+  <div class="viz" id="poolviz">
+    <div class="vbody">
+      <div class="pool-grid">
+        <div class="pcode" id="pcode"></div>
+        <div class="pmem">
+          <div class="area"><div class="ah">String pool</div><div class="objs" id="ppool"></div></div>
+          <div class="area heap"><div class="ah">Heap (outside the pool)</div><div class="objs" id="pheap"></div></div>
+          <div class="vars" id="pvars"></div>
+        </div>
+      </div>
+      <div class="msg" id="pmsg"></div>
+      <div class="tw"><table id="pcmp"></table></div>
+      <div class="ctrl">
+        <button class="btn" id="pprev">← Prev</button>
+        <button class="btn pri" id="pnext">Run line →</button>
+        <button class="btn" id="preset">Restart</button>
+        <span class="count" id="pcount"></span>
+      </div>
+    </div>
+  </div>
+  <ul>
+    <li>Two equal literals share <b>one</b> object, so <code>==</code> is <code>true</code>.</li>
+    <li><code>new String(...)</code> always creates a separate object. <code>intern()</code> returns the pooled copy.</li>
+    <li>Compile-time constants (<code>"hel" + "lo"</code>, or a <code>final</code> variable plus a literal) are joined by the compiler. Runtime concatenation creates a new object.</li>
+  </ul>
+  <div class="note"><b>Interview classic:</b> <i>How many objects does <code>new String("hello")</code> create?</i> Up to <b>two</b>: the pooled literal (if it isn't already there) plus one new heap object.</div>
+  <div class="note warn"><b>Rule:</b> never compare content with <code>==</code>. Use <code>equals()</code>. The <code>==</code> results only show <i>where objects live</i>.</div>
+<script type="text/x-java" data-file="StringPoolDemo.java">
+public class StringPoolDemo {
+
+    public static void main(String[] args) {
+        String s1 = "hello";                  // goes to the pool
+        String s2 = "hello";                  // reuses the SAME pooled object
+        String s3 = new String("hello");      // new object on the heap
+        String s4 = s3.intern();              // returns the pooled "hello"
+
+        System.out.println(s1 == s2);         // true
+        System.out.println(s1 == s3);         // false
+        System.out.println(s1 == s4);         // true
+        System.out.println(s1.equals(s3));    // true  (same content)
+
+        // Compile-time constants are joined by the compiler
+        String s5 = "hel" + "lo";             // becomes "hello" at compile time
+        System.out.println(s1 == s5);         // true
+
+        String part = "hel";
+        String s6 = part + "lo";              // built at runtime → new object
+        System.out.println(s1 == s6);         // false
+
+        final String constPart = "hel";
+        String s7 = constPart + "lo";         // final + literal → compile-time constant
+        System.out.println(s1 == s7);         // true
+    }
+}
+</script>
+<div class="ia"><div class="iah">Interview answer</div><p>The String pool is a JVM-wide table of unique String objects. Every String literal is resolved through it, so equal literals share one object, which saves memory and makes <code>==</code> true between them. Since Java 7 the pool lives in the main heap, so pooled Strings can be garbage-collected. <code>new String("x")</code> always creates a separate heap object, and <code>intern()</code> returns the pooled copy, adding one if needed.</p><div class="fu"><b>Follow-ups</b><ul><li>Why not intern everything? — The pool is a hash table that starts with 65536 buckets (<code>-XX:StringTableSize</code>) and grows as needed since JDK 11, lookups cost time, and most runtime Strings are short-lived; interning helps only when there are many duplicates that live long.</li><li>Is <code>"a" + "b"</code> pooled? — Yes, javac folds constant expressions into the literal <code>"ab"</code>. With a non-final variable, the result is a new heap String.</li><li>Where was the pool before Java 7? — In PermGen, which had a fixed size, so heavy interning could cause <code>OutOfMemoryError: PermGen space</code>.</li><li>Should you compare with <code>==</code> because of the pool? — No. Strings built at runtime (input, JSON, DB values) are not pooled; always use <code>equals</code>.</li></ul></div></div>
+</section>
+
+<!-- 4 -->
+<section id="immutable">
+  <span class="num">04</span><h2>Immutability</h2>
+  <p>Once created, a String's characters <b>never change</b>. Methods such as <code>toUpperCase</code>, <code>replace</code>, <code>trim</code> and <code>substring</code> <b>return a new String</b>. If you don't keep the result, it is lost.</p>
+<figure class="fig" id="fig-immut">
+  <div class="sv"><svg viewBox="0 0 760 220" role="img" aria-label="After original = original + !, original points to a new object while alias still points to the unchanged hi"><defs><marker id="f4g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mg"/></marker><marker id="f4h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mh"/></marker><marker id="f4a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ma"/></marker><marker id="f4n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mn"/></marker></defs><text x="185" y="22" class="fhd" text-anchor="middle">1 · String alias = original;</text><text x="570" y="22" class="fhd" text-anchor="middle">2 · original = original + "!";</text><rect x="20" y="70" width="140" height="36" rx="8" class="var"/><text x="34" y="93" class="ft" text-anchor="start">original</text><text x="148" y="93" class="fs" text-anchor="end">ref</text><rect x="20" y="130" width="140" height="36" rx="8" class="var"/><text x="34" y="153" class="ft" text-anchor="start">alias</text><text x="148" y="153" class="fs" text-anchor="end">ref</text><rect x="240" y="92" width="110" height="52" rx="10" class="obj"/><text x="295" y="123" class="ft" text-anchor="middle">"hi"</text><line x1="160" y1="88" x2="237" y2="112" class="a g" marker-end="url(#f4g)"/><line x1="160" y1="148" x2="237" y2="126" class="a g" marker-end="url(#f4g)"/><line x1="380" y1="38" x2="380" y2="200" class="sep"/><rect x="404" y="70" width="140" height="36" rx="8" class="var"/><text x="418" y="93" class="ft" text-anchor="start">original</text><text x="532" y="93" class="fs" text-anchor="end">ref</text><rect x="404" y="130" width="140" height="36" rx="8" class="var"/><text x="418" y="153" class="ft" text-anchor="start">alias</text><text x="532" y="153" class="fs" text-anchor="end">ref</text><rect x="624" y="120" width="110" height="52" rx="10" class="obj"/><text x="679" y="151" class="ft" text-anchor="middle">"hi"</text><text x="679" y="190" class="fs" text-anchor="middle">unchanged</text><rect x="624" y="40" width="110" height="52" rx="10" class="obj acc"/><text x="679" y="71" class="ft" text-anchor="middle">"hi!"</text><text x="679" y="108" class="zl v" text-anchor="middle">new object</text><line x1="544" y1="88" x2="621" y2="68" class="a ac" marker-end="url(#f4a)"/><line x1="544" y1="148" x2="621" y2="146" class="a g" marker-end="url(#f4g)"/><path d="M544 92 C 580 100, 595 120, 621 132" class="a no d" marker-end="url(#f4n)"/><text x="574" y="124" class="rt no" text-anchor="middle">✕</text></svg></div>
+  <figcaption><b>Immutability in one picture.</b> Nothing can change the characters of <code>"hi"</code>. The <code>+</code> builds a <b>new</b> String, and only the variable <code>original</code> is moved to it (the red dashed arrow is the link that was replaced). <code>alias</code> still sees <code>"hi"</code>. That is why sharing Strings, including through the pool, is safe.</figcaption>
+</figure>
+  <p class="small muted">The same holds for every "changing" method: <code>name.toUpperCase()</code> leaves <code>"java"</code> untouched and returns a new <code>"JAVA"</code>. Write <code>name = name.toUpperCase();</code> to move the variable to it.</p>
+  <h3>Why Java made String immutable</h3>
+  <div class="sheet">
+    <div><h4>1 · Pool safety</h4>Many variables can share one object without affecting each other.</div>
+    <div><h4>2 · Security</h4>Paths, URLs and class names can't change after they are checked.</div>
+    <div><h4>3 · Thread safety</h4>Strings can be shared across threads with no locks.</div>
+    <div><h4>4 · Cached hashCode</h4>It is computed once, which makes Strings fast HashMap keys.</div>
+  </div>
+  <p>Do you need text that changes? Use <code>StringBuilder</code>, which is mutable (<a href="#build">section 08</a>).</p>
+<script type="text/x-java" data-file="ImmutabilityDemo.java">
+public class ImmutabilityDemo {
+
+    public static void main(String[] args) {
+        String name = "java";
+        name.toUpperCase();                   // creates "JAVA" ... and throws it away
+        System.out.println(name);             // java
+
+        name = name.toUpperCase();            // keep the result by reassigning
+        System.out.println(name);             // JAVA
+
+        String original = "hi";
+        String alias = original;              // both variables point to the same object
+        original = original + "!";            // original now points to a NEW object
+        System.out.println(alias);            // hi
+        System.out.println(original);         // hi!
+
+        StringBuilder sb = new StringBuilder("java");
+        sb.setCharAt(0, 'J');                 // StringBuilder IS mutable
+        System.out.println(sb);               // Java
+    }
+}
+</script>
+<div class="ia"><div class="iah">Interview answer</div><p>A String's content can never change after it is created; every "modifying" method returns a new String. Java designed it that way so Strings can be shared safely in the pool, used as <code>HashMap</code> keys with a cached hash, passed between threads without locking, and trusted in security checks such as file paths, URLs and class names. The cost is extra objects when you modify text repeatedly, which is what StringBuilder is for.</p><div class="fu"><b>Follow-ups</b><ul><li>How is immutability enforced? — The class is <code>final</code>, the <code>value</code> array is <code>private final</code>, no method writes to it, and it is never handed out without copying.</li><li>Is <code>final String s</code> the same thing? — No. <code>final</code> fixes the variable's reference; immutability is a property of the object.</li><li>Why can the hash be cached? — The content can't change, so the hash can't either; it is computed once and stored in the <code>hash</code> field.</li><li>Why <code>char[]</code> for passwords? — You can overwrite a <code>char[]</code> after use; an immutable String stays in memory until it is collected.</li></ul></div></div>
+<h3>Watch it run</h3>
+<p class="small muted">Step through the program line by line and watch the stack and the heap change. Press <b>▶ Play</b>, or step with <b>Next</b>.</p>
+<div class="runviz" data-run="immut"></div>
+</section>
+
+<!-- 5 -->
+<section id="compare">
+  <span class="num">05</span><h2>Comparing Strings</h2>
+  <div class="tw"><table>
+    <tr><th>Method</th><th>Compares</th><th>Returns</th><th>Use it for</th></tr>
+    <tr><td><code>a == b</code></td><td><b>References</b></td><td>boolean</td><td class="bad">Almost never</td></tr>
+    <tr><td><code>a.equals(b)</code></td><td>Content, case-sensitive</td><td>boolean</td><td class="good">The default</td></tr>
+    <tr><td><code>equalsIgnoreCase</code></td><td>Content, any case</td><td>boolean</td><td>User input</td></tr>
+    <tr><td><code>compareTo</code></td><td>Dictionary order</td><td>int (&lt;0, 0, &gt;0)</td><td>Sorting</td></tr>
+    <tr><td><code>compareToIgnoreCase</code></td><td>Order, any case</td><td>int</td><td>Case-insensitive sorting</td></tr>
+    <tr><td><code>Objects.equals(a, b)</code></td><td>Content, null-safe</td><td>boolean</td><td>Either side may be null</td></tr>
+    <tr><td><code>contentEquals(sb)</code></td><td>Content against a CharSequence</td><td>boolean</td><td>Comparing with a StringBuilder</td></tr>
+  </table></div>
+  <p><code>compareTo</code> returns <code>charA - charB</code> at the first difference. If one String is a prefix of the other, it returns the <b>length difference</b>. For null safety, write <code>"yes".equals(input)</code>.</p>
+  <div class="viz ol an" id="anTwins"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+<figure class="fig" id="fig-cmp">
+  <div class="sv"><svg viewBox="0 0 760 344" role="img" aria-label="Left: a and b point to two different String objects with the same text, so == is false and equals is true. Right: compareTo walks both Strings and stops at the first different char, or returns the length difference."><defs><marker id="pa1g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mg"/></marker><marker id="pa1h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mh"/></marker></defs><text x="20" y="22" class="fhd" text-anchor="start">String a = &quot;Apple&quot;;</text><text x="20" y="40" class="fhd" text-anchor="start">String b = new String(&quot;Apple&quot;);</text><rect x="20" y="80" width="100" height="36" rx="8" class="var"/><text x="34" y="103" class="ft" text-anchor="start">a</text><text x="108" y="103" class="fs" text-anchor="end">ref</text><rect x="20" y="180" width="100" height="36" rx="8" class="var"/><text x="34" y="203" class="ft" text-anchor="start">b</text><text x="108" y="203" class="fs" text-anchor="end">ref</text><rect x="190" y="70" width="170" height="56" rx="8" class="obj"/><text x="275" y="95" class="ft" text-anchor="middle">&quot;Apple&quot;</text><text x="275" y="115" class="fs" text-anchor="middle">object #1 · pooled literal</text><rect x="190" y="170" width="170" height="56" rx="8" class="obj heap"/><text x="275" y="195" class="ft" text-anchor="middle">&quot;Apple&quot;</text><text x="275" y="215" class="fs" text-anchor="middle">object #2 · made by new</text><line x1="120" y1="98" x2="187" y2="98" class="a g" marker-end="url(#pa1g)"/><line x1="120" y1="198" x2="187" y2="198" class="a h" marker-end="url(#pa1h)"/><text x="275" y="150" class="fs" text-anchor="middle">two objects, same 5 chars</text><rect x="20" y="250" width="160" height="26" rx="13" class="pno"/><text x="100" y="267" class="rt no" text-anchor="middle">a == b → false</text><rect x="192" y="250" width="168" height="26" rx="13" class="pok"/><text x="276" y="267" class="rt ok" text-anchor="middle">a.equals(b) → true</text><text x="100" y="296" class="fs" text-anchor="middle">same object? (the arrows)</text><text x="276" y="296" class="fs" text-anchor="middle">same chars? (the content)</text><line x1="385" y1="14" x2="385" y2="330" class="sep"/><text x="405" y="22" class="fhd" text-anchor="start">&quot;apple&quot;.compareTo(&quot;apply&quot;)</text><text x="540" y="48" class="fs" text-anchor="middle">0</text><text x="584" y="48" class="fs" text-anchor="middle">1</text><text x="628" y="48" class="fs" text-anchor="middle">2</text><text x="672" y="48" class="fs" text-anchor="middle">3</text><text x="716" y="48" class="fs" text-anchor="middle">4</text><text x="405" y="76" class="fts" text-anchor="start">&quot;apple&quot;</text><rect x="520" y="54" width="40" height="32" rx="4" class="cell"/><text x="540" y="75" class="ft" text-anchor="middle">a</text><rect x="564" y="54" width="40" height="32" rx="4" class="cell"/><text x="584" y="75" class="ft" text-anchor="middle">p</text><rect x="608" y="54" width="40" height="32" rx="4" class="cell"/><text x="628" y="75" class="ft" text-anchor="middle">p</text><rect x="652" y="54" width="40" height="32" rx="4" class="cell"/><text x="672" y="75" class="ft" text-anchor="middle">l</text><rect x="696" y="54" width="40" height="32" rx="4" class="cell sh"/><text x="716" y="75" class="ft" text-anchor="middle">e</text><text x="540" y="101" class="rt ok" text-anchor="middle">=</text><text x="584" y="101" class="rt ok" text-anchor="middle">=</text><text x="628" y="101" class="rt ok" text-anchor="middle">=</text><text x="672" y="101" class="rt ok" text-anchor="middle">=</text><text x="716" y="101" class="rt no" text-anchor="middle">≠</text><text x="405" y="130" class="fts" text-anchor="start">&quot;apply&quot;</text><rect x="520" y="108" width="40" height="32" rx="4" class="cell"/><text x="540" y="129" class="ft" text-anchor="middle">a</text><rect x="564" y="108" width="40" height="32" rx="4" class="cell"/><text x="584" y="129" class="ft" text-anchor="middle">p</text><rect x="608" y="108" width="40" height="32" rx="4" class="cell"/><text x="628" y="129" class="ft" text-anchor="middle">p</text><rect x="652" y="108" width="40" height="32" rx="4" class="cell"/><text x="672" y="129" class="ft" text-anchor="middle">l</text><rect x="696" y="108" width="40" height="32" rx="4" class="cell sh"/><text x="716" y="129" class="ft" text-anchor="middle">y</text><rect x="405" y="154" width="335" height="26" rx="13" class="pno"/><text x="572.5" y="171" class="rt no" text-anchor="middle">index 4: 'e' − 'y' = 101 − 121 = −20</text><text x="405" y="212" class="fhd" text-anchor="start">&quot;app&quot;.compareTo(&quot;apple&quot;)</text><text x="405" y="246" class="fts" text-anchor="start">&quot;app&quot;</text><rect x="520" y="224" width="40" height="32" rx="4" class="cell"/><text x="540" y="245" class="ft" text-anchor="middle">a</text><rect x="564" y="224" width="40" height="32" rx="4" class="cell"/><text x="584" y="245" class="ft" text-anchor="middle">p</text><rect x="608" y="224" width="40" height="32" rx="4" class="cell"/><text x="628" y="245" class="ft" text-anchor="middle">p</text><rect x="652" y="224" width="40" height="32" rx="4" class="free"/><rect x="696" y="224" width="40" height="32" rx="4" class="free"/><text x="405" y="288" class="fts" text-anchor="start">&quot;apple&quot;</text><rect x="520" y="266" width="40" height="32" rx="4" class="cell"/><text x="540" y="287" class="ft" text-anchor="middle">a</text><rect x="564" y="266" width="40" height="32" rx="4" class="cell"/><text x="584" y="287" class="ft" text-anchor="middle">p</text><rect x="608" y="266" width="40" height="32" rx="4" class="cell"/><text x="628" y="287" class="ft" text-anchor="middle">p</text><rect x="652" y="266" width="40" height="32" rx="4" class="cell"/><text x="672" y="287" class="ft" text-anchor="middle">l</text><rect x="696" y="266" width="40" height="32" rx="4" class="cell"/><text x="716" y="287" class="ft" text-anchor="middle">e</text><rect x="405" y="308" width="335" height="26" rx="13" class="pno"/><text x="572.5" y="325" class="rt no" text-anchor="middle">no difference: length 3 − 5 = −2</text></svg></div>
+  <figcaption><b><code>==</code>, <code>equals()</code> and <code>compareTo()</code>.</b> On the left, <code>a</code> and <code>b</code> hold the same five characters in two different objects: <code>==</code> asks "same object?" (no) and <code>equals</code> asks "same characters?" (yes). On the right, <code>compareTo</code> walks both Strings from index 0 and returns the difference of the <b>first chars that differ</b>. If one String runs out first with no difference, it returns the <b>length difference</b>. Only the sign matters for sorting.</figcaption>
+</figure>
+<script type="text/x-java" data-file="ComparingStrings.java">
+import java.util.Objects;
+
+public class ComparingStrings {
+
+    public static void main(String[] args) {
+        String a = "Apple";
+        String b = new String("Apple");
+        String c = "apple";
+        String none = null;
+
+        System.out.println(a == b);                    // false  (different objects)
+        System.out.println(a.equals(b));               // true   (same characters)
+        System.out.println(a.equals(c));               // false  (case matters)
+        System.out.println(a.equalsIgnoreCase(c));     // true
+
+        System.out.println("apple".compareTo("banana"));   // -1  ('a' - 'b')
+        System.out.println("b".compareTo("a"));            // 1
+        System.out.println("app".compareTo("apple"));      // -2  (shorter: length difference)
+        System.out.println("Apple".compareTo("apple"));    // -32 ('A' is 65, 'a' is 97)
+        System.out.println("Apple".compareToIgnoreCase("apple"));   // 0
+
+        System.out.println("yes".equals(none));        // false (safe: literal first)
+        System.out.println(Objects.equals(none, null));    // true (null-safe helper)
+        // none.equals("yes") would throw NullPointerException
+    }
+}
+</script>
+</section>
+
+<!-- 6 -->
+<section id="chars">
+  <span class="num">06</span><h2>Characters, indexes and length</h2>
+  <ul>
+    <li>Indexes run from <b>0</b> to <code>length() - 1</code>. A bad index throws <code>StringIndexOutOfBoundsException</code>.</li>
+    <li><code>s.length()</code> is a method, <code>arr.length</code> is a field, and <code>list.size()</code> is for collections.</li>
+    <li>A <code>char</code> is a 16-bit number: <code>'a' + 1</code> is 98, <code>(char) ('a' + 1)</code> is <code>'b'</code>, <code>'7' - '0'</code> is 7, and <code>'d' - 'a'</code> is 3. The last one is the basis of the <b><code>int[26]</code></b> counting trick.</li>
+    <li>Useful values: <code>'0'</code> = 48, <code>'A'</code> = 65, <code>'a'</code> = 97, space = 32. Lower case minus upper case = 32.</li>
+  </ul>
+<figure class="fig" id="fig-charnum">
+  <div class="sv"><svg viewBox="0 0 760 404" role="img" aria-label="Code ranges: space 32, digits 48 to 57, upper case 65 to 90, lower case 97 to 122, with lower minus upper equal to 32. Below, subtracting 97 maps a to z onto int[26] slots 0 to 25."><defs><marker id="pa2a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ma"/></marker><marker id="pa2n" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="mn"/></marker></defs><text x="20" y="22" class="fhd" text-anchor="start">Every char is a number (its UTF-16 code)</text><rect x="40" y="74" width="70" height="36" rx="6" class="cell"/><text x="75" y="97" class="ft" text-anchor="middle">' '</text><text x="75" y="128" class="fts" text-anchor="middle">32</text><text x="75" y="148" class="zl" text-anchor="middle">SPACE</text><rect x="170" y="74" width="130" height="36" rx="6" class="cell nw"/><text x="235" y="97" class="ft" text-anchor="middle">'0' … '9'</text><text x="174" y="128" class="fts" text-anchor="start">48</text><text x="296" y="128" class="fts" text-anchor="end">57</text><text x="235" y="148" class="zl" text-anchor="middle">DIGITS</text><rect x="360" y="74" width="170" height="36" rx="6" class="cell nw"/><text x="445" y="97" class="ft" text-anchor="middle">'A' … 'Z'</text><text x="364" y="128" class="fts" text-anchor="start">65</text><text x="526" y="128" class="fts" text-anchor="end">90</text><text x="445" y="148" class="zl" text-anchor="middle">UPPER CASE</text><rect x="570" y="74" width="170" height="36" rx="6" class="cell nw"/><text x="655" y="97" class="ft" text-anchor="middle">'a' … 'z'</text><text x="574" y="128" class="fts" text-anchor="start">97</text><text x="736" y="128" class="fts" text-anchor="end">122</text><text x="655" y="148" class="zl" text-anchor="middle">LOWER CASE</text><text x="140" y="97" class="fs" text-anchor="middle">…</text><text x="330" y="97" class="fs" text-anchor="middle">…</text><text x="550" y="97" class="fs" text-anchor="middle">…</text><path d="M445 72 C 445 44, 655 44, 655 69" class="a ac" marker-end="url(#pa2a)"/><text x="550" y="42" class="fst" text-anchor="middle">'a' − 'A' = 32 (lower − upper)</text><line x1="20" y1="166" x2="740" y2="166" class="sep"/><text x="20" y="192" class="fhd" text-anchor="start">counts[c - 'a']++   turns 'a'..'z' into slots 0..25</text><text x="20" y="228" class="fst" text-anchor="start">char c</text><text x="20" y="244" class="fs" text-anchor="start">and its code</text><text x="20" y="310" class="fst" text-anchor="start">int[26] counts</text><text x="20" y="326" class="fs" text-anchor="start">after &quot;banana&quot;</text><rect x="170" y="212" width="56" height="42" rx="4" class="cell"/><text x="198" y="231" class="ft" text-anchor="middle">a</text><text x="198" y="247" class="fs" text-anchor="middle">97</text><line x1="198" y1="256" x2="198" y2="287" class="a ac" marker-end="url(#pa2a)"/><rect x="170" y="290" width="56" height="38" rx="4" class="cell nw"/><text x="198" y="314" class="ft" text-anchor="middle">3</text><text x="198" y="346" class="fs" text-anchor="middle">[0]</text><rect x="242" y="212" width="56" height="42" rx="4" class="cell"/><text x="270" y="231" class="ft" text-anchor="middle">b</text><text x="270" y="247" class="fs" text-anchor="middle">98</text><line x1="270" y1="256" x2="270" y2="287" class="a ac" marker-end="url(#pa2a)"/><rect x="242" y="290" width="56" height="38" rx="4" class="cell nw"/><text x="270" y="314" class="ft" text-anchor="middle">1</text><text x="270" y="346" class="fs" text-anchor="middle">[1]</text><rect x="314" y="212" width="56" height="42" rx="4" class="cell"/><text x="342" y="231" class="ft" text-anchor="middle">c</text><text x="342" y="247" class="fs" text-anchor="middle">99</text><line x1="342" y1="256" x2="342" y2="287" class="a ac" marker-end="url(#pa2a)"/><rect x="314" y="290" width="56" height="38" rx="4" class="cell"/><text x="342" y="314" class="ft" text-anchor="middle">0</text><text x="342" y="346" class="fs" text-anchor="middle">[2]</text><rect x="386" y="212" width="56" height="42" rx="4" class="cell"/><text x="414" y="231" class="ft" text-anchor="middle">d</text><text x="414" y="247" class="fs" text-anchor="middle">100</text><line x1="414" y1="256" x2="414" y2="287" class="a ac" marker-end="url(#pa2a)"/><rect x="386" y="290" width="56" height="38" rx="4" class="cell"/><text x="414" y="314" class="ft" text-anchor="middle">0</text><text x="414" y="346" class="fs" text-anchor="middle">[3]</text><text x="486" y="238" class="fs" text-anchor="middle">…</text><text x="486" y="318" class="fs" text-anchor="middle">…</text><rect x="530" y="212" width="56" height="42" rx="4" class="cell"/><text x="558" y="231" class="ft" text-anchor="middle">n</text><text x="558" y="247" class="fs" text-anchor="middle">110</text><line x1="558" y1="256" x2="558" y2="287" class="a ac" marker-end="url(#pa2a)"/><rect x="530" y="290" width="56" height="38" rx="4" class="cell nw"/><text x="558" y="314" class="ft" text-anchor="middle">2</text><text x="558" y="346" class="fs" text-anchor="middle">[13]</text><text x="630" y="238" class="fs" text-anchor="middle">…</text><text x="630" y="318" class="fs" text-anchor="middle">…</text><rect x="674" y="212" width="56" height="42" rx="4" class="cell"/><text x="702" y="231" class="ft" text-anchor="middle">z</text><text x="702" y="247" class="fs" text-anchor="middle">122</text><line x1="702" y1="256" x2="702" y2="287" class="a ac" marker-end="url(#pa2a)"/><rect x="674" y="290" width="56" height="38" rx="4" class="cell"/><text x="702" y="314" class="ft" text-anchor="middle">0</text><text x="702" y="346" class="fs" text-anchor="middle">[25]</text><text x="204" y="276" class="fs" text-anchor="start">− 97</text><rect x="20" y="366" width="230" height="26" rx="13" class="pok"/><text x="135" y="383" class="rt ok" text-anchor="middle">'7' − '0' = 55 − 48 = 7</text><rect x="262" y="366" width="220" height="26" rx="13" class="pok"/><text x="372" y="383" class="rt ok" text-anchor="middle">(char) ('a' + 1) = 'b'</text><rect x="494" y="366" width="246" height="26" rx="13" class="pok"/><text x="617" y="383" class="rt ok" text-anchor="middle">'a' + 1 = 98 (an int)</text></svg></div>
+  <figcaption><b>A char is a number.</b> Digits, upper-case and lower-case letters each sit in one unbroken run of codes, so arithmetic on chars works: a lower-case letter is always its upper-case partner <b>+ 32</b>, and <code>c - '0'</code> turns a digit char into its value. Subtracting <code>'a'</code> (97) maps <code>'a'..'z'</code> onto <code>0..25</code>, so an <code>int[26]</code> can count letters. After counting <code>"banana"</code>, slot 0 (a) is 3, slot 1 (b) is 1 and slot 13 (n) is 2.</figcaption>
+</figure>
+<script type="text/x-java" data-file="CharsAndIndexes.java">
+public class CharsAndIndexes {
+
+    public static void main(String[] args) {
+        String word = "code";
+        System.out.println(word.length());                   // 4
+        System.out.println(word.charAt(0));                  // c  (first)
+        System.out.println(word.charAt(word.length() - 1));  // e  (last)
+        // word.charAt(4) throws StringIndexOutOfBoundsException
+
+        // A char is a 16-bit number
+        char c = 'a';
+        System.out.println((int) c);                 // 97
+        System.out.println(c + 1);                   // 98  (char + int = int)
+        System.out.println((char) (c + 1));          // b
+        System.out.println('7' - '0');               // 7   (digit char → its value)
+        System.out.println('d' - 'a');               // 3   (position in the alphabet)
+
+        // Character helpers
+        System.out.println(Character.isLetter('x'));         // true
+        System.out.println(Character.isDigit('5'));          // true
+        System.out.println(Character.isWhitespace(' '));     // true
+        System.out.println(Character.toUpperCase('q'));      // Q
+
+        // Three ways to visit every character
+        for (int i = 0; i < word.length(); i++) {
+            System.out.print(word.charAt(i) + " ");          // c o d e
+        }
+        System.out.println();
+        for (char ch : word.toCharArray()) {
+            System.out.print(ch + "-");                      // c-o-d-e-
+        }
+        System.out.println();
+        word.chars().forEach(code -> System.out.print(code + " "));   // 99 111 100 101
+        System.out.println();
+    }
+}
+</script>
+</section>
+
+<!-- 7 -->
+<section id="methods">
+  <span class="num">07</span><h2>Essential String methods</h2>
+  <p>Try them live. Type any text, pick a method, and see what Java would return.</p>
+  <div class="viz" id="mx">
+    <div class="vbody">
+      <div class="vin"><input id="mxs" spellcheck="false" autocomplete="off" aria-label="String value" value="Hello, World"><select id="mxm" aria-label="Method"></select><span id="mxargs"></span></div>
+      <div class="stage" id="mxstage"></div>
+      <div class="msg" id="mxout"></div>
+    </div>
+  </div>
+  <p class="small muted">The explorer runs in your browser and imitates Java. Regex arguments use JavaScript&#39;s regex engine, which agrees with Java for common patterns but not for Java-only syntax such as <code>p{Punct}</code>, <code>(?i)</code> or possessive <code>a*+</code>. Run real Java to be sure.</p>
+  <div class="tw"><table>
+    <tr><th>Category</th><th>Methods</th></tr>
+    <tr><td><b>Inspect</b></td><td><code>length()</code> · <code>isEmpty()</code> · <code>isBlank()</code> (11+) · <code>charAt(i)</code></td></tr>
+    <tr><td><b>Search</b></td><td><code>indexOf</code> · <code>lastIndexOf</code> (−1 if not found) · <code>contains</code> · <code>startsWith</code> · <code>endsWith</code></td></tr>
+    <tr><td><b>Extract</b></td><td><code>substring(begin)</code> · <code>substring(begin, end)</code>, where <b>end is excluded</b></td></tr>
+    <tr><td><b>Transform</b></td><td><code>toUpperCase</code> · <code>toLowerCase</code> · <code>trim</code> · <code>strip</code> (11+) · <code>replace</code> · <code>replaceAll</code> · <code>repeat</code> (11+) · <code>concat</code></td></tr>
+    <tr><td><b>Split / join</b></td><td><code>split(regex[, limit])</code> · <code>String.join</code> · <code>lines()</code> (11+)</td></tr>
+    <tr><td><b>Convert</b></td><td><code>toCharArray</code> · <code>chars()</code> · <code>codePoints()</code> · <code>getBytes(charset)</code> · <code>String.valueOf</code></td></tr>
+    <tr><td><b>Check</b></td><td><code>matches(regex)</code> (whole String) · <code>equals</code> · <code>compareTo</code></td></tr>
+  </table></div>
+  <figure class="fig" id="fig-substr">
+  <div class="sv"><svg viewBox="0 0 760 284" role="img" aria-label="Hello, World as 12 indexed cells. indexOf o is 4 and lastIndexOf o is 8. substring 0 to 5 gives Hello, stopping before index 5. substring 7 to 12 gives World."><defs><marker id="pa3a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ma"/></marker></defs><text x="20" y="22" class="fhd" text-anchor="start">String s = &quot;Hello, World&quot;;   // length() = 12</text><text x="265" y="50" class="fst" text-anchor="middle">indexOf('o') → 4</text><text x="465" y="50" class="fst" text-anchor="middle">lastIndexOf('o') → 8</text><line x1="265" y1="56" x2="265" y2="79" class="a ac" marker-end="url(#pa3a)"/><line x1="465" y1="56" x2="465" y2="79" class="a ac" marker-end="url(#pa3a)"/><rect x="40" y="82" width="46" height="40" rx="4" class="cell"/><text x="63" y="107" class="ft" text-anchor="middle">H</text><text x="63" y="140" class="fs" text-anchor="middle">0</text><rect x="90" y="82" width="46" height="40" rx="4" class="cell"/><text x="113" y="107" class="ft" text-anchor="middle">e</text><text x="113" y="140" class="fs" text-anchor="middle">1</text><rect x="140" y="82" width="46" height="40" rx="4" class="cell"/><text x="163" y="107" class="ft" text-anchor="middle">l</text><text x="163" y="140" class="fs" text-anchor="middle">2</text><rect x="190" y="82" width="46" height="40" rx="4" class="cell"/><text x="213" y="107" class="ft" text-anchor="middle">l</text><text x="213" y="140" class="fs" text-anchor="middle">3</text><rect x="240" y="82" width="46" height="40" rx="4" class="cell nw"/><text x="263" y="107" class="ft" text-anchor="middle">o</text><text x="263" y="140" class="fs" text-anchor="middle">4</text><rect x="290" y="82" width="46" height="40" rx="4" class="cell"/><text x="313" y="107" class="ft" text-anchor="middle">,</text><text x="313" y="140" class="fs" text-anchor="middle">5</text><rect x="340" y="82" width="46" height="40" rx="4" class="cell"/><text x="363" y="107" class="ft" text-anchor="middle">␣</text><text x="363" y="140" class="fs" text-anchor="middle">6</text><rect x="390" y="82" width="46" height="40" rx="4" class="cell"/><text x="413" y="107" class="ft" text-anchor="middle">W</text><text x="413" y="140" class="fs" text-anchor="middle">7</text><rect x="440" y="82" width="46" height="40" rx="4" class="cell nw"/><text x="463" y="107" class="ft" text-anchor="middle">o</text><text x="463" y="140" class="fs" text-anchor="middle">8</text><rect x="490" y="82" width="46" height="40" rx="4" class="cell"/><text x="513" y="107" class="ft" text-anchor="middle">r</text><text x="513" y="140" class="fs" text-anchor="middle">9</text><rect x="540" y="82" width="46" height="40" rx="4" class="cell"/><text x="563" y="107" class="ft" text-anchor="middle">l</text><text x="563" y="140" class="fs" text-anchor="middle">10</text><rect x="590" y="82" width="46" height="40" rx="4" class="cell"/><text x="613" y="107" class="ft" text-anchor="middle">d</text><text x="613" y="140" class="fs" text-anchor="middle">11</text><text x="640" y="140" class="fs" text-anchor="start">12 = length</text><text x="640" y="154" class="fs" text-anchor="start">(no char here)</text><path d="M40 160 L40 168 L286 168 L286 160" class="a g"/><path d="M390 160 L390 168 L636 168 L636 160" class="a g"/><text x="163" y="190" class="ft" text-anchor="middle">substring(0, 5) → &quot;Hello&quot;</text><text x="163" y="208" class="fs" text-anchor="middle">chars 0..4 · length 5 − 0 = 5</text><text x="513" y="190" class="ft" text-anchor="middle">substring(7, 12) → &quot;World&quot;</text><text x="513" y="208" class="fs" text-anchor="middle">chars 7..11 · length 12 − 7 = 5</text><rect x="276" y="220" width="160" height="26" rx="13" class="pno"/><text x="356" y="237" class="rt no" text-anchor="middle">index 5 = end: ✕</text><text x="20" y="270" class="fs" text-anchor="start">begin is included · end is excluded · end may equal length() · indexOf returns −1 when the char is not found</text></svg></div>
+  <figcaption><b><code>substring</code> is half-open.</b> <code>substring(begin, end)</code> takes the chars from <code>begin</code> up to, but <b>not including</b>, <code>end</code>, so its length is always <code>end - begin</code>. That is why <code>substring(0, 5)</code> stops before the comma, and why <code>end</code> may be 12 even though the last index is 11. <code>indexOf</code> searches from the left and <code>lastIndexOf</code> from the right; both return the <b>index</b>, or −1.</figcaption>
+</figure>
+<div class="note"><b>Gotchas:</b> <code>substring</code> is half-open, so its length is <code>end - begin</code>. <code>split</code> drops <i>trailing</i> empty strings (pass <code>-1</code> to keep them) and takes a <b>regex</b>. <code>trim</code> removes every char up to U+0020 (spaces, tabs, newlines, ASCII control chars), while <code>strip</code> also handles Unicode spaces.</div>
+<script type="text/x-java" data-file="StringMethodsTour.java">
+import java.util.Arrays;
+
+public class StringMethodsTour {
+
+    public static void main(String[] args) {
+        String s = "  Hello, World  ";
+        String t = s.trim();                                  // "Hello, World"
+
+        // Inspect
+        System.out.println(t.length());                       // 12
+        System.out.println("".isEmpty());                     // true
+        System.out.println("   ".isBlank());                  // true  (Java 11+)
+
+        // Search
+        System.out.println(t.indexOf('o'));                   // 4
+        System.out.println(t.lastIndexOf('o'));               // 8
+        System.out.println(t.indexOf("xyz"));                 // -1  (not found)
+        System.out.println(t.contains("World"));              // true
+        System.out.println(t.startsWith("Hell"));             // true
+        System.out.println(t.endsWith("!"));                  // false
+
+        // Extract: substring(begin, end) includes begin, excludes end
+        System.out.println(t.substring(7));                   // World
+        System.out.println(t.substring(0, 5));                // Hello
+
+        // Transform (each returns a NEW String)
+        System.out.println(t.toUpperCase());                  // HELLO, WORLD
+        System.out.println(t.toLowerCase());                  // hello, world
+        System.out.println("[" + s.strip() + "]");            // [Hello, World]
+        System.out.println("[" + s.stripLeading() + "]");     // [Hello, World  ]
+        System.out.println(t.replace('l', 'L'));              // HeLLo, WorLd
+        System.out.println(t.replace("World", "Java"));       // Hello, Java
+        System.out.println("ab".repeat(3));                   // ababab
+        System.out.println("Hi".concat(" there"));            // Hi there
+
+        // Split and join
+        String[] parts = "red,green,blue".split(",");
+        System.out.println(Arrays.toString(parts));           // [red, green, blue]
+        System.out.println(String.join(" | ", parts));        // red | green | blue
+        System.out.println("a,b,,c,,".split(",").length);     // 4  (trailing empties dropped)
+        System.out.println("a,b,,c,,".split(",", -1).length); // 6  (limit -1 keeps them)
+        System.out.println("line1\nline2".lines().count());   // 2
+
+        // Convert
+        System.out.println(Arrays.toString("abc".toCharArray()));   // [a, b, c]
+        System.out.println(String.valueOf(3.5));              // 3.5
+    }
+}
+</script>
+</section>
+
+<!-- 8 -->
+<section id="build">
+  <span class="num">08</span><h2>Building Strings: +, StringBuilder, StringBuffer</h2>
+  <p><b><code>+</code> is evaluated left to right.</b> <code>"Total: " + 1 + 2</code> gives <code>"Total: 12"</code>, while <code>"Total: " + (1 + 2)</code> gives <code>"Total: 3"</code>.</p>
+  <div class="viz ol an" id="anTablet"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="note warn"><b><code>+=</code> in a loop is O(n²).</b> Each step copies everything built so far. Java 9+ optimises a single <code>a + b + c</code> expression, but not a loop. Use <b>one</b> <code>StringBuilder</code> instead.</div>
+  <div class="tw"><table>
+    <tr><th></th><th>String</th><th>StringBuilder</th><th>StringBuffer</th></tr>
+    <tr><td>Mutable</td><td>No</td><td class="good">Yes</td><td>Yes</td></tr>
+    <tr><td>Thread-safe</td><td>Yes (immutable)</td><td>No</td><td>Yes (synchronized)</td></tr>
+    <tr><td>Building speed</td><td class="bad">Slow in loops</td><td class="good">Fastest</td><td>Slower (locking)</td></tr>
+    <tr><td>Use when</td><td>Text is fixed</td><td><b>Default for building</b></td><td>Several threads share one buffer</td></tr>
+  </table></div>
+  <p class="small">Main <code>StringBuilder</code> methods are <code>append</code>, <code>insert</code>, <code>delete</code>, <code>deleteCharAt</code>, <code>replace</code>, <code>reverse</code>, <code>setCharAt</code>, <code>setLength</code> and <code>toString</code>. Most return <code>this</code>, so you can chain them. The default capacity is 16 and it grows to about 2×; pre-size it with <code>new StringBuilder(n)</code>. For joining, use <code>String.join</code>, <code>StringJoiner</code> or <code>Collectors.joining</code>.</p>
+<figure class="fig" id="fig-concat">
+  <div class="sv"><svg viewBox="0 0 760 290" role="img" aria-label="Left: each += creates a new, longer String and copies all chars so far, so 5 passes copy 15 chars and leave 4 garbage Strings. Right: one StringBuilder buffer with spare capacity receives each char in place, and toString copies once."><defs><marker id="pa4a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="ma"/></marker></defs><text x="20" y="22" class="fhd" text-anchor="start">s += &quot;x&quot;;   (5 times)</text><text x="20" y="59" class="fs" text-anchor="start">pass 1</text><rect x="80" y="40" width="26" height="28" rx="3" class="free"/><text x="93" y="59" class="fs" text-anchor="middle">x</text><text x="118" y="59" class="fs" text-anchor="start">garbage</text><text x="372" y="59" class="fts" text-anchor="end">copies 1</text><text x="20" y="99" class="fs" text-anchor="start">pass 2</text><rect x="80" y="80" width="26" height="28" rx="3" class="free"/><text x="93" y="99" class="fs" text-anchor="middle">x</text><rect x="108" y="80" width="26" height="28" rx="3" class="free"/><text x="121" y="99" class="fs" text-anchor="middle">x</text><text x="146" y="99" class="fs" text-anchor="start">garbage</text><text x="372" y="99" class="fts" text-anchor="end">copies 2</text><text x="20" y="139" class="fs" text-anchor="start">pass 3</text><rect x="80" y="120" width="26" height="28" rx="3" class="free"/><text x="93" y="139" class="fs" text-anchor="middle">x</text><rect x="108" y="120" width="26" height="28" rx="3" class="free"/><text x="121" y="139" class="fs" text-anchor="middle">x</text><rect x="136" y="120" width="26" height="28" rx="3" class="free"/><text x="149" y="139" class="fs" text-anchor="middle">x</text><text x="174" y="139" class="fs" text-anchor="start">garbage</text><text x="372" y="139" class="fts" text-anchor="end">copies 3</text><text x="20" y="179" class="fs" text-anchor="start">pass 4</text><rect x="80" y="160" width="26" height="28" rx="3" class="free"/><text x="93" y="179" class="fs" text-anchor="middle">x</text><rect x="108" y="160" width="26" height="28" rx="3" class="free"/><text x="121" y="179" class="fs" text-anchor="middle">x</text><rect x="136" y="160" width="26" height="28" rx="3" class="free"/><text x="149" y="179" class="fs" text-anchor="middle">x</text><rect x="164" y="160" width="26" height="28" rx="3" class="free"/><text x="177" y="179" class="fs" text-anchor="middle">x</text><text x="202" y="179" class="fs" text-anchor="start">garbage</text><text x="372" y="179" class="fts" text-anchor="end">copies 4</text><text x="20" y="219" class="fs" text-anchor="start">pass 5</text><rect x="80" y="200" width="26" height="28" rx="3" class="cell nw"/><text x="93" y="219" class="ft" text-anchor="middle">x</text><rect x="108" y="200" width="26" height="28" rx="3" class="cell nw"/><text x="121" y="219" class="ft" text-anchor="middle">x</text><rect x="136" y="200" width="26" height="28" rx="3" class="cell nw"/><text x="149" y="219" class="ft" text-anchor="middle">x</text><rect x="164" y="200" width="26" height="28" rx="3" class="cell nw"/><text x="177" y="219" class="ft" text-anchor="middle">x</text><rect x="192" y="200" width="26" height="28" rx="3" class="cell nw"/><text x="205" y="219" class="ft" text-anchor="middle">x</text><text x="230" y="219" class="fst" text-anchor="start">kept</text><text x="372" y="219" class="fts" text-anchor="end">copies 5</text><rect x="20" y="248" width="352" height="26" rx="13" class="pno"/><text x="196" y="265" class="rt no" text-anchor="middle">1+2+3+4+5 = 15 copies · n(n+1)/2 → O(n²)</text><line x1="392" y1="14" x2="392" y2="290" class="sep"/><text x="410" y="22" class="fhd" text-anchor="start">StringBuilder sb = new StringBuilder();</text><text x="410" y="40" class="fhd" text-anchor="start">sb.append('x');   (5 times)</text><text x="410" y="68" class="zl v" text-anchor="start">ONE BUFFER · CAPACITY 16</text><rect x="410" y="78" width="18" height="32" rx="3" class="used"/><text x="419" y="99" class="fts" text-anchor="middle">x</text><rect x="430" y="78" width="18" height="32" rx="3" class="used"/><text x="439" y="99" class="fts" text-anchor="middle">x</text><rect x="450" y="78" width="18" height="32" rx="3" class="used"/><text x="459" y="99" class="fts" text-anchor="middle">x</text><rect x="470" y="78" width="18" height="32" rx="3" class="used"/><text x="479" y="99" class="fts" text-anchor="middle">x</text><rect x="490" y="78" width="18" height="32" rx="3" class="used"/><text x="499" y="99" class="fts" text-anchor="middle">x</text><rect x="510" y="78" width="18" height="32" rx="3" class="free"/><rect x="530" y="78" width="18" height="32" rx="3" class="free"/><rect x="550" y="78" width="18" height="32" rx="3" class="free"/><rect x="570" y="78" width="18" height="32" rx="3" class="free"/><rect x="590" y="78" width="18" height="32" rx="3" class="free"/><rect x="610" y="78" width="18" height="32" rx="3" class="free"/><rect x="630" y="78" width="18" height="32" rx="3" class="free"/><rect x="650" y="78" width="18" height="32" rx="3" class="free"/><rect x="670" y="78" width="18" height="32" rx="3" class="free"/><rect x="690" y="78" width="18" height="32" rx="3" class="free"/><rect x="710" y="78" width="18" height="32" rx="3" class="free"/><text x="410" y="128" class="fs" text-anchor="start">count = 5 (used)</text><text x="728" y="128" class="fs" text-anchor="end">spare room: no copy needed</text><text x="410" y="154" class="fs" text-anchor="start">each append writes 1 char into the same array</text><text x="410" y="186" class="ft" text-anchor="start">sb.toString()</text><line x1="520" y1="181" x2="583" y2="181" class="a ac" marker-end="url(#pa4a)"/><rect x="588" y="164" width="140" height="34" rx="8" class="obj acc"/><text x="658" y="186" class="ft" text-anchor="middle">&quot;xxxxx&quot;</text><text x="410" y="222" class="fs" text-anchor="start">copies the 5 chars once into the final String</text><rect x="410" y="248" width="318" height="26" rx="13" class="pok"/><text x="569" y="265" class="rt ok" text-anchor="middle">5 + 5 = 10 copies · O(n) amortised</text></svg></div>
+  <figcaption><b>Why <code>+=</code> in a loop is slow.</b> A String can't grow, so every <code>+=</code> builds a <b>new</b> String and copies all the chars so far (left). After n passes that is 1 + 2 + … + n = n(n+1)/2 copies, which is O(n²), and every old String becomes garbage. A <code>StringBuilder</code> keeps <b>one</b> buffer with spare room (right), writes each char in place, and copies only when the buffer is full (then it roughly doubles) and once more in <code>toString()</code>.</figcaption>
+</figure>
+<script type="text/x-java" data-file="BuildingStrings.java">
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+public class BuildingStrings {
+
+    public static void main(String[] args) {
+        // + works with any type: once one side is a String, the rest becomes text
+        System.out.println("Total: " + 1 + 2);     // Total: 12
+        System.out.println("Total: " + (1 + 2));   // Total: 3
+        System.out.println(1 + 2 + " items");      // 3 items
+
+        // Building in a loop: use ONE StringBuilder
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= 5; i++) {
+            sb.append(i).append(' ');
+        }
+        System.out.println(sb.toString().trim());  // 1 2 3 4 5
+
+        // Common StringBuilder operations (they change the builder itself)
+        StringBuilder w = new StringBuilder("Java");
+        w.append("!");                  // Java!
+        w.insert(0, "I love ");         // I love Java!
+        w.replace(2, 6, "like");        // I like Java!
+        w.deleteCharAt(w.length() - 1); // I like Java
+        w.delete(0, 7);                 // Java
+        w.reverse();                    // avaJ
+        System.out.println(w);          // avaJ
+        System.out.println(w.length()); // 4
+
+        // Joining many values
+        StringJoiner joiner = new StringJoiner(", ", "[", "]");
+        joiner.add("a").add("b").add("c");
+        System.out.println(joiner);                                   // [a, b, c]
+        System.out.println(String.join("-", "2026", "10", "16"));     // 2026-10-16
+        List<String> names = List.of("Ann", "Bob", "Cy");
+        System.out.println(names.stream().collect(Collectors.joining("/")));   // Ann/Bob/Cy
+    }
+}
+</script>
+<div class="ia"><div class="iah">Interview answer</div><p>Use <code>+</code> for a few fixed pieces, and a <code>StringBuilder</code> when you build text in a loop: each <code>+=</code> copies the whole String so far, which is O(n²), while a builder appends into one growing buffer. <code>StringBuffer</code> is the same API with every method synchronized; it is a leftover from Java 1.0, and you rarely need it because builders are usually local to one thread. For joining collections, <code>String.join</code>, <code>StringJoiner</code> or <code>Collectors.joining</code> read better.</p><div class="fu"><b>Follow-ups</b><ul><li>Doesn't the compiler use a builder for <code>+</code> anyway? — For one expression, yes (or <code>invokedynamic</code> on Java 9+), but in a loop it creates a new one on every iteration.</li><li>Is StringBuffer fully thread-safe? — Each call is, but a sequence such as check-length-then-append is not atomic without your own lock.</li><li>How do you avoid regrowth? — Pass an expected capacity: <code>new StringBuilder(expectedSize)</code>.</li></ul></div></div>
+</section>
+
+<!-- 9 -->
+<section id="convert">
+  <span class="num">09</span><h2>Conversions</h2>
+  <div class="tw"><table>
+    <tr><th>From → To</th><th>How</th><th>Watch out</th></tr>
+    <tr><td>String → int</td><td><code>Integer.parseInt(s)</code></td><td><code>NumberFormatException</code> on bad input</td></tr>
+    <tr><td>String → Integer</td><td><code>Integer.valueOf(s)</code></td><td>Cached for −128..127</td></tr>
+    <tr><td>Number → String</td><td><code>String.valueOf(n)</code></td><td><code>n + ""</code> also works</td></tr>
+    <tr><td>char → String</td><td><code>String.valueOf(c)</code></td><td>or <code>Character.toString(c)</code></td></tr>
+    <tr><td>String ↔ char[]</td><td><code>toCharArray()</code> / <code>new String(arr)</code></td><td class="bad"><b>Not</b> <code>arr.toString()</code>, which prints <code>[C@…</code></td></tr>
+    <tr><td>String ↔ List</td><td><code>Arrays.asList(s.split(" "))</code> / <code>String.join</code></td><td></td></tr>
+  </table></div>
+<script type="text/x-java" data-file="Conversions.java">
+import java.util.Arrays;
+import java.util.List;
+
+public class Conversions {
+
+    public static void main(String[] args) {
+        // String → number
+        int n = Integer.parseInt("123");            // primitive int
+        Integer boxed = Integer.valueOf("123");     // Integer object
+        double d = Double.parseDouble("3.14");
+        boolean flag = Boolean.parseBoolean("TRUE");   // case-insensitive "true"
+        System.out.println(n + 1);                  // 124
+        System.out.println(boxed + d);              // 126.14
+        System.out.println(flag);                   // true
+
+        try {
+            Integer.parseInt("12a");
+        } catch (NumberFormatException e) {
+            System.out.println("Not a number: " + e.getMessage());   // Not a number: For input string: "12a"
+        }
+
+        // number → String
+        System.out.println(String.valueOf(7) + Integer.toString(8) + (9 + ""));   // 789
+
+        // char ↔ String
+        char c = "hey".charAt(0);
+        String fromChar = String.valueOf(c);        // or Character.toString(c)
+        System.out.println(fromChar + c);           // hh
+
+        // String ↔ char[]
+        char[] arr = "dog".toCharArray();
+        Arrays.sort(arr);
+        System.out.println(new String(arr));        // dgo
+        System.out.println(String.valueOf(arr));    // dgo
+        System.out.println(arr.toString().startsWith("[C@"));   // true  (NOT the text!)
+
+        // String ↔ List
+        List<String> list = Arrays.asList("x y z".split(" "));
+        System.out.println(list);                   // [x, y, z]
+        System.out.println(String.join("", list));  // xyz
+    }
+}
+</script>
+</section>
+
+<!-- 10 -->
+<section id="format">
+  <span class="num">10</span><h2>Formatting and text blocks</h2>
+  <div class="tw"><table>
+    <tr><th>Specifier</th><th>Meaning</th><th>Example → result</th></tr>
+    <tr><td><code>%s</code> / <code>%d</code></td><td>Any object / integer</td><td><code>"%s scored %d"</code> → <code>Asha scored 7</code></td></tr>
+    <tr><td><code>%.2f</code></td><td>2 decimal places (rounds)</td><td><code>82.456</code> → <code>82.46</code></td></tr>
+    <tr><td><code>%5d</code> / <code>%-6s</code></td><td>Width, right- or left-aligned</td><td><code>[    7]</code> / <code>[Asha  ]</code></td></tr>
+    <tr><td><code>%05d</code></td><td>Pad with zeros</td><td><code>[00007]</code></td></tr>
+    <tr><td><code>%x %c %b</code></td><td>Hex, char, boolean</td><td><code>ff A true</code></td></tr>
+    <tr><td><code>%n</code> / <code>%%</code></td><td>Newline / a literal %</td><td></td></tr>
+  </table></div>
+  <p><b>Text blocks</b> (<code>"""</code>, Java 15+) hold multi-line text. The position of the closing <code>"""</code> sets the left margin, a trailing <code>\</code> joins lines, and <code>\s</code> keeps a space.</p>
+<script type="text/x-java" data-file="FormattingDemo.java">
+public class FormattingDemo {
+
+    public static void main(String[] args) {
+        String name = "Asha";
+        int score = 7;
+        double avg = 82.456;
+
+        System.out.println(String.format("%s scored %d", name, score));   // Asha scored 7
+        System.out.println(String.format("Average: %.2f", avg));          // Average: 82.46
+        System.out.println(String.format("[%5d]", score));                // [    7]
+        System.out.println(String.format("[%-6s]", name));                // [Asha  ]
+        System.out.println(String.format("[%05d]", score));               // [00007]
+        System.out.println(String.format("%x %c %b %%", 255, 'A', true)); // ff A true %
+        System.out.println("%s is %d".formatted("Ravi", 30));             // Ravi is 30 (Java 15+)
+        System.out.printf("%-6s|%6.1f%n", "pi", Math.PI);                 // pi    |   3.1
+
+        // Text block: the closing """ sets the left margin
+        String json = """
+                {
+                  "name": "Asha",
+                  "score": 7
+                }
+                """;
+        System.out.print(json);
+        // {
+        //   "name": "Asha",
+        //   "score": 7
+        // }
+
+        String oneLine = """
+                one \
+                line""";
+        System.out.println(oneLine);                                      // one line
+    }
+}
+</script>
+</section>
+
+<!-- 11 -->
+<section id="regex">
+  <span class="num">11</span><h2>Regex with Strings</h2>
+  <div class="tw"><table>
+    <tr><th>Pattern</th><th>Meaning</th></tr>
+    <tr><td><code>\\d</code> <code>\\w</code> <code>\\s</code></td><td>Digit · word character <code>[A-Za-z0-9_]</code> · whitespace</td></tr>
+    <tr><td><code>+</code> <code>*</code> <code>?</code> <code>{n,m}</code></td><td>One or more · zero or more · optional · between n and m</td></tr>
+    <tr><td><code>[abc]</code> <code>[^abc]</code> <code>[a-z]</code></td><td>Any of · none of · a range</td></tr>
+    <tr><td><code>.</code></td><td><b>Any character except a line break</b> (unless <code>(?s)</code>). Write <code>\\.</code> for a literal dot</td></tr>
+  </table></div>
+  <ul>
+    <li><code>matches()</code> must match the <b>whole</b> String.</li>
+    <li><code>split(".")</code> returns an <b>empty array</b>. Escape it: <code>split("\\.")</code>.</li>
+    <li><code>replace</code> is literal and <code>replaceAll</code> uses regex. To find every match, use <code>Pattern</code> + <code>Matcher.find()</code>, and compile the pattern once.</li>
+  </ul>
+<figure class="fig" id="fig-split">
+  <div class="sv"><svg viewBox="0 0 760 352" role="img" aria-label="a,b,,c,, split on comma gives six pieces; split drops the two trailing empty pieces so the length is 4, while limit -1 keeps all 6. Splitting 1.2.3 on dot as a regex makes every char a separator, so the result has length 0; escaping the dot gives 3 pieces."><text x="20" y="22" class="fhd" text-anchor="start">String s = &quot;a,b,,c,,&quot;;</text><text x="20" y="58" class="fs" text-anchor="start">commas are separators</text><rect x="210" y="38" width="32" height="32" rx="4" class="cell"/><text x="226" y="59" class="ft" text-anchor="middle">a</text><rect x="246" y="38" width="32" height="32" rx="4" class="cell sh"/><text x="262" y="59" class="ft" text-anchor="middle">,</text><rect x="282" y="38" width="32" height="32" rx="4" class="cell"/><text x="298" y="59" class="ft" text-anchor="middle">b</text><rect x="318" y="38" width="32" height="32" rx="4" class="cell sh"/><text x="334" y="59" class="ft" text-anchor="middle">,</text><rect x="354" y="38" width="32" height="32" rx="4" class="cell sh"/><text x="370" y="59" class="ft" text-anchor="middle">,</text><rect x="390" y="38" width="32" height="32" rx="4" class="cell"/><text x="406" y="59" class="ft" text-anchor="middle">c</text><rect x="426" y="38" width="32" height="32" rx="4" class="cell sh"/><text x="442" y="59" class="ft" text-anchor="middle">,</text><rect x="462" y="38" width="32" height="32" rx="4" class="cell sh"/><text x="478" y="59" class="ft" text-anchor="middle">,</text><text x="20" y="112" class="fhd" text-anchor="start">s.split(&quot;,&quot;)</text><rect x="210" y="92" width="56" height="30" rx="4" class="cell"/><text x="238" y="112" class="ft" text-anchor="middle">&quot;a&quot;</text><rect x="274" y="92" width="56" height="30" rx="4" class="cell"/><text x="302" y="112" class="ft" text-anchor="middle">&quot;b&quot;</text><rect x="338" y="92" width="56" height="30" rx="4" class="cell"/><text x="366" y="112" class="ft" text-anchor="middle">&quot;&quot;</text><rect x="402" y="92" width="56" height="30" rx="4" class="cell"/><text x="430" y="112" class="ft" text-anchor="middle">&quot;c&quot;</text><rect x="466" y="92" width="56" height="30" rx="4" class="free"/><text x="494" y="112" class="fs" text-anchor="middle">&quot;&quot;</text><rect x="530" y="92" width="56" height="30" rx="4" class="free"/><text x="558" y="112" class="fs" text-anchor="middle">&quot;&quot;</text><rect x="604" y="94" width="136" height="26" rx="13" class="pno"/><text x="672" y="111" class="rt no" text-anchor="middle">→ length 4</text><text x="526" y="140" class="rt no" text-anchor="middle">✕ trailing &quot;&quot; dropped</text><text x="20" y="176" class="fhd" text-anchor="start">s.split(&quot;,&quot;, -1)</text><rect x="210" y="156" width="56" height="30" rx="4" class="cell"/><text x="238" y="176" class="ft" text-anchor="middle">&quot;a&quot;</text><rect x="274" y="156" width="56" height="30" rx="4" class="cell"/><text x="302" y="176" class="ft" text-anchor="middle">&quot;b&quot;</text><rect x="338" y="156" width="56" height="30" rx="4" class="cell"/><text x="366" y="176" class="ft" text-anchor="middle">&quot;&quot;</text><rect x="402" y="156" width="56" height="30" rx="4" class="cell"/><text x="430" y="176" class="ft" text-anchor="middle">&quot;c&quot;</text><rect x="466" y="156" width="56" height="30" rx="4" class="cell"/><text x="494" y="176" class="ft" text-anchor="middle">&quot;&quot;</text><rect x="530" y="156" width="56" height="30" rx="4" class="cell"/><text x="558" y="176" class="ft" text-anchor="middle">&quot;&quot;</text><rect x="604" y="158" width="136" height="26" rx="13" class="pok"/><text x="672" y="175" class="rt ok" text-anchor="middle">→ length 6</text><line x1="20" y1="206" x2="740" y2="206" class="sep"/><text x="20" y="232" class="fhd" text-anchor="start">&quot;1.2.3&quot;.split(&quot;.&quot;)</text><text x="20" y="250" class="fs" text-anchor="start">&quot;.&quot; is regex for ANY char</text><rect x="210" y="220" width="32" height="32" rx="4" class="cell sh"/><text x="226" y="241" class="ft" text-anchor="middle">1</text><rect x="246" y="220" width="32" height="32" rx="4" class="cell sh"/><text x="262" y="241" class="ft" text-anchor="middle">.</text><rect x="282" y="220" width="32" height="32" rx="4" class="cell sh"/><text x="298" y="241" class="ft" text-anchor="middle">2</text><rect x="318" y="220" width="32" height="32" rx="4" class="cell sh"/><text x="334" y="241" class="ft" text-anchor="middle">.</text><rect x="354" y="220" width="32" height="32" rx="4" class="cell sh"/><text x="370" y="241" class="ft" text-anchor="middle">3</text><text x="410" y="241" class="fs" text-anchor="start">every char is a separator → only empty pieces</text><rect x="604" y="266" width="136" height="26" rx="13" class="pno"/><text x="672" y="283" class="rt no" text-anchor="middle">→ length 0</text><text x="410" y="284" class="fs" text-anchor="start">all are trailing, so all are dropped</text><text x="20" y="322" class="fhd" text-anchor="start">&quot;1.2.3&quot;.split(&quot;\\.&quot;)</text><text x="20" y="340" class="fs" text-anchor="start">escaped: a literal dot</text><rect x="210" y="304" width="56" height="30" rx="4" class="cell"/><text x="238" y="324" class="ft" text-anchor="middle">&quot;1&quot;</text><rect x="274" y="304" width="56" height="30" rx="4" class="cell"/><text x="302" y="324" class="ft" text-anchor="middle">&quot;2&quot;</text><rect x="338" y="304" width="56" height="30" rx="4" class="cell"/><text x="366" y="324" class="ft" text-anchor="middle">&quot;3&quot;</text><rect x="604" y="306" width="136" height="26" rx="13" class="pok"/><text x="672" y="323" class="rt ok" text-anchor="middle">→ length 3</text></svg></div>
+  <figcaption><b>Two <code>split</code> rules.</b> 1. <code>split</code> removes <b>trailing</b> empty strings, but keeps empty ones in the middle; pass a limit of <code>-1</code> to keep them all. 2. The separator is a <b>regex</b>: an unescaped <code>"."</code> matches every char, so all pieces are empty and trailing, and the result is an empty array. Write <code>"\\."</code> in Java source to split on a real dot.</figcaption>
+</figure>
+<script type="text/x-java" data-file="RegexBasics.java">
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class RegexBasics {
+
+    public static void main(String[] args) {
+        // matches() must match the WHOLE string
+        System.out.println("12345".matches("\\d+"));          // true
+        System.out.println("123a".matches("\\d+"));           // false
+        System.out.println("abc@x.com".matches("[\\w.]+@[\\w.]+\\.\\w+"));   // true
+
+        // split on one or more spaces
+        System.out.println(Arrays.toString("a   b  c".split("\\s+")));     // [a, b, c]
+
+        // '.' is special in regex: escape it
+        System.out.println("1.2.3".split(".").length);                     // 0  (surprise!)
+        System.out.println(Arrays.toString("1.2.3".split("\\.")));         // [1, 2, 3]
+
+        // replaceAll uses regex, replace does not
+        System.out.println("A1-b2_C3!".replaceAll("[^A-Za-z]", ""));       // AbC
+        System.out.println("a.b.c".replace(".", "/"));                     // a/b/c
+        System.out.println("hello   world".replaceAll("\\s+", " "));       // hello world
+
+        // Pattern + Matcher to find every match
+        Matcher m = Pattern.compile("\\d+").matcher("Order 12 has 3 items for 450");
+        StringBuilder found = new StringBuilder();
+        while (m.find()) {
+            found.append(m.group()).append(' ');
+        }
+        System.out.println(found.toString().trim());          // 12 3 450
+    }
+}
+</script>
+</section>
+
+<!-- 12 -->
+<section id="unicode">
+  <span class="num">12</span><h2>Unicode, encoding and internals</h2>
+  <p>A Java <code>char</code> is one <b>UTF-16 code unit</b>. Emoji need <b>two</b> chars (a surrogate pair). Type below to see it.</p>
+  <div class="an-strip"><b>💡 Remember it</b><span>An emoji is a <b>two-seater</b>: it needs two <code>char</code> seats (a surrogate pair), so <code>"😀".length()</code> is 2 even though you see one character.</span></div>
+  <div class="viz" id="ci">
+    <div class="vbody">
+      <div class="vin"><input id="cis" spellcheck="false" autocomplete="off" aria-label="Text to inspect" value="Java é😀"><span id="cichips"></span></div>
+      <div class="facts" id="cistats"></div>
+      <div class="cgrid" id="cigrid"></div>
+    </div>
+  </div>
+  <div class="tw"><table>
+    <tr><th>Internal fact</th><th>Details</th></tr>
+    <tr><td>Storage</td><td>Java 9+ uses <b>Compact Strings</b>: a <code>byte[]</code> plus a <code>coder</code>. LATIN-1 text uses 1 byte per char, other text uses UTF-16. Before Java 9 it was <code>char[]</code>.</td></tr>
+    <tr><td><code>hashCode()</code></td><td><code>s[0]·31^(n-1) + … + s[n-1]</code>, <b>cached</b> after the first call. <code>"Aa"</code> and <code>"BB"</code> collide.</td></tr>
+    <tr><td><code>switch</code> on String</td><td>Switches on <code>hashCode()</code>, then confirms with <code>equals()</code></td></tr>
+    <tr><td>Encoding</td><td>Always use <code>getBytes(StandardCharsets.UTF_8)</code>. The platform default became UTF-8 only in Java 18.</td></tr>
+    <tr><td>Deduplication</td><td><code>-XX:+UseStringDeduplication</code> (G1 since 8u20, every collector since JDK 18) lets equal Strings share one array (this is not the pool)</td></tr>
+    <tr><td><code>substring</code></td><td>Copies the characters (since 7u6). Older versions shared the array and could leak memory.</td></tr>
+  </table></div>
+<figure class="fig" id="fig-utf">
+  <div class="sv"><svg viewBox="0 0 760 344" role="img" aria-label="The text hi plus a grinning-face emoji in three views: 4 UTF-16 chars because the emoji is a surrogate pair, 3 code points, and 6 UTF-8 bytes because the emoji takes 4 bytes."><text x="20" y="22" class="fhd" text-anchor="start">String e = &quot;hi😀&quot;;</text><text x="20" y="64" class="fst" text-anchor="start">What you see</text><text x="20" y="124" class="fst" text-anchor="start">UTF-16 chars</text><text x="20" y="141" class="fts" text-anchor="start">length() = 4</text><text x="20" y="196" class="fst" text-anchor="start">Code points</text><text x="20" y="213" class="fts" text-anchor="start">codePointCount = 3</text><text x="20" y="268" class="fst" text-anchor="start">UTF-8 bytes</text><text x="20" y="285" class="fts" text-anchor="start">getBytes(UTF_8).length = 6</text><rect x="220" y="44" width="70" height="40" rx="6" class="cell"/><text x="255" y="70" class="ft" text-anchor="middle">h</text><rect x="300" y="44" width="70" height="40" rx="6" class="cell"/><text x="335" y="70" class="ft" text-anchor="middle">i</text><rect x="390" y="44" width="280" height="40" rx="6" class="cell"/><text x="530" y="70" class="ft" text-anchor="middle">😀</text><rect x="220" y="104" width="70" height="50" rx="4" class="cell"/><text x="255" y="126" class="ft" text-anchor="middle">'h'</text><text x="255" y="144" class="fs" text-anchor="middle">[0] 0x68</text><rect x="300" y="104" width="70" height="50" rx="4" class="cell"/><text x="335" y="126" class="ft" text-anchor="middle">'i'</text><text x="335" y="144" class="fs" text-anchor="middle">[1] 0x69</text><rect x="390" y="104" width="136" height="50" rx="4" class="cell sh"/><text x="458" y="126" class="ft" text-anchor="middle">\uD83D</text><text x="458" y="144" class="fs" text-anchor="middle">[2] high surrogate</text><rect x="534" y="104" width="136" height="50" rx="4" class="cell sh"/><text x="602" y="126" class="ft" text-anchor="middle">\uDE00</text><text x="602" y="144" class="fs" text-anchor="middle">[3] low surrogate</text><text x="690" y="133" class="fs" text-anchor="start">2 chars</text><rect x="220" y="176" width="70" height="50" rx="4" class="cell"/><text x="255" y="198" class="ft" text-anchor="middle">U+0068</text><text x="255" y="216" class="fs" text-anchor="middle">h</text><rect x="300" y="176" width="70" height="50" rx="4" class="cell"/><text x="335" y="198" class="ft" text-anchor="middle">U+0069</text><text x="335" y="216" class="fs" text-anchor="middle">i</text><rect x="390" y="176" width="280" height="50" rx="4" class="cell nw"/><text x="530" y="198" class="ft" text-anchor="middle">U+1F600</text><text x="530" y="216" class="fs" text-anchor="middle">one code point (supplementary)</text><text x="690" y="205" class="fs" text-anchor="start">1 point</text><rect x="220" y="248" width="70" height="50" rx="4" class="cell"/><text x="255" y="270" class="ft" text-anchor="middle">68</text><text x="255" y="288" class="fs" text-anchor="middle">1 byte</text><rect x="300" y="248" width="70" height="50" rx="4" class="cell"/><text x="335" y="270" class="ft" text-anchor="middle">69</text><text x="335" y="288" class="fs" text-anchor="middle">1 byte</text><rect x="390" y="248" width="64" height="50" rx="4" class="cell sh"/><text x="422" y="270" class="ft" text-anchor="middle">F0</text><text x="422" y="288" class="fs" text-anchor="middle">byte 1</text><rect x="462" y="248" width="64" height="50" rx="4" class="cell sh"/><text x="494" y="270" class="ft" text-anchor="middle">9F</text><text x="494" y="288" class="fs" text-anchor="middle">byte 2</text><rect x="534" y="248" width="64" height="50" rx="4" class="cell sh"/><text x="566" y="270" class="ft" text-anchor="middle">98</text><text x="566" y="288" class="fs" text-anchor="middle">byte 3</text><rect x="606" y="248" width="64" height="50" rx="4" class="cell sh"/><text x="638" y="270" class="ft" text-anchor="middle">80</text><text x="638" y="288" class="fs" text-anchor="middle">byte 4</text><text x="690" y="277" class="fs" text-anchor="start">4 bytes</text><text x="20" y="330" class="fs" text-anchor="start">Count and index by chars with length() and charAt(); by real characters with codePoints(); by bytes only for files and networks.</text></svg></div>
+  <figcaption><b>One text, three counts.</b> Java stores <code>"hi😀"</code> as UTF-16 chars, and the emoji (U+1F600) is outside the 16-bit range, so it needs a <b>surrogate pair</b>: <code>length()</code> is 4. Counted as real characters (code points) it is 3. Encoded as UTF-8 it is 6 bytes: 1 each for <code>h</code> and <code>i</code>, and 4 for the emoji. Splitting a String in the middle of a surrogate pair breaks the emoji.</figcaption>
+</figure>
+<script type="text/x-java" data-file="UnicodeDemo.java">
+import java.nio.charset.StandardCharsets;
+
+public class UnicodeDemo {
+
+    public static void main(String[] args) {
+        String plain = "cafe";
+        String accent = "café";
+        String emoji = "hi😀";
+
+        System.out.println(plain.length());                                   // 4
+        System.out.println(accent.length());                                  // 4
+        System.out.println(emoji.length());                                   // 4  (the emoji uses 2 chars)
+        System.out.println(emoji.codePointCount(0, emoji.length()));          // 3  (real characters)
+
+        System.out.println(plain.getBytes(StandardCharsets.UTF_8).length);    // 4
+        System.out.println(accent.getBytes(StandardCharsets.UTF_8).length);   // 5  (é = 2 bytes)
+        System.out.println(emoji.getBytes(StandardCharsets.UTF_8).length);    // 6  (😀 = 4 bytes)
+
+        System.out.println(Character.isSurrogate(emoji.charAt(2)));          // true
+        System.out.println(Integer.toHexString(emoji.codePointAt(2)));        // 1f600
+
+        StringBuilder out = new StringBuilder();
+        emoji.codePoints().forEach(cp -> out.append(Character.toChars(cp)).append('|'));
+        System.out.println(out);                                              // h|i|😀|
+
+        // hashCode is computed from the characters and cached
+        System.out.println("ab".hashCode());                                  // 3105  (97*31 + 98)
+        System.out.println("Aa".hashCode() == "BB".hashCode());               // true  (a collision)
+
+        // switch on a String uses hashCode() and then equals()
+        String day = "SAT";
+        switch (day) {
+            case "SAT", "SUN" -> System.out.println("weekend");               // weekend
+            default -> System.out.println("weekday");
+        }
+    }
+}
+</script>
+</section>
+
+<!-- 13 -->
+<section id="mistakes">
+  <span class="num">13</span><h2>Common mistakes</h2>
+  <div class="tw"><table>
+    <tr><th>Mistake</th><th>What happens</th><th>Fix</th></tr>
+    <tr><td><code>a == b</code> for content</td><td>Works sometimes, fails other times</td><td><code>a.equals(b)</code></td></tr>
+    <tr><td><code>input.equals("yes")</code> when input is null</td><td>NullPointerException</td><td><code>"yes".equals(input)</code></td></tr>
+    <tr><td><code>s.toUpperCase();</code> without assigning</td><td>Nothing changes</td><td><code>s = s.toUpperCase();</code></td></tr>
+    <tr><td><code>+=</code> in a loop</td><td>O(n²)</td><td><code>StringBuilder</code></td></tr>
+    <tr><td><code>charAt(s.length())</code></td><td>StringIndexOutOfBoundsException</td><td>Last index is <code>length() - 1</code></td></tr>
+    <tr><td><code>split(".")</code>, <code>split("|")</code></td><td>Wrong result</td><td><code>split("\\.")</code>, <code>split("\\|")</code></td></tr>
+    <tr><td><code>charArray.toString()</code></td><td><code>[C@1b6d…</code></td><td><code>new String(arr)</code></td></tr>
+    <tr><td><code>Integer.parseInt(" 42")</code></td><td>NumberFormatException</td><td><code>trim()</code> first</td></tr>
+    <tr><td><code>getBytes()</code> with no charset</td><td>Differs between machines</td><td><code>getBytes(UTF_8)</code></td></tr>
+    <tr><td><code>length()</code> on emoji text</td><td>Counts code units, not characters</td><td><code>codePointCount</code></td></tr>
+    <tr><td>Expecting <code>substring(1, 3)</code> to include index 3</td><td>Off-by-one</td><td>The end is excluded</td></tr>
+  </table></div>
+</section>
+
+<!-- 14 -->
+<section id="qa">
+  <span class="num">14</span><h2>15 interview questions</h2>
+  <p class="small muted">Answer each one in your head before you open it.</p>
+  <details class="d"><summary><span class="q">01</span>What is a String? Is it a primitive?</summary><div class="b">An object of the <code>final</code> class <code>java.lang.String</code>: an immutable sequence of UTF-16 chars. It is not a primitive, but the language gives it special support (literals, <code>+</code>, <code>switch</code>).</div></details>
+  <details class="d"><summary><span class="q">02</span>Why is String immutable?</summary><div class="b">Pool sharing is safe, checked values can't change (security), it is thread-safe with no locks, the <code>hashCode</code> can be cached for fast HashMap keys, and class loading is reliable.</div></details>
+  <details class="d"><summary><span class="q">03</span>What is the String pool? Where is it?</summary><div class="b">A table holding one shared copy of each literal (and of each interned String). It moved from PermGen to the main heap in Java 7.</div></details>
+  <details class="d"><summary><span class="q">04</span>What is the difference between == and equals()?</summary><div class="b"><code>==</code> compares references and <code>equals()</code> compares characters. Always use <code>equals</code> for content.</div></details>
+  <details class="d"><summary><span class="q">05</span>How many objects does <code>new String("abc")</code> create?</summary><div class="b">One or two: the pooled literal (if it isn't already there) plus one new heap object.</div></details>
+  <details class="d"><summary><span class="q">06</span>What does intern() do?</summary><div class="b">It returns the canonical pooled copy with the same content, adding it if it is missing.</div></details>
+  <details class="d"><summary><span class="q">07</span>String vs StringBuilder vs StringBuffer?</summary><div class="b">String is immutable. StringBuilder is mutable, not synchronized, and fastest. StringBuffer is mutable and synchronized, so it is slower.</div></details>
+  <details class="d"><summary><span class="q">08</span>Why is <code>+=</code> in a loop slow?</summary><div class="b">Each iteration copies everything built so far, which is O(n²) in total. One StringBuilder makes it O(n).</div></details>
+  <details class="d"><summary><span class="q">09</span>Why is <code>"a" + "b" == "ab"</code> true, but <code>a + "b" == "ab"</code> false?</summary><div class="b">Literal concatenation is a compile-time constant, so it is pooled. With a non-final variable, the String is built at runtime as a new object. A <code>final</code> variable makes the result <code>true</code> again.</div></details>
+  <details class="d"><summary><span class="q">10</span>Why is char[] preferred over String for passwords?</summary><div class="b">A String stays in memory until garbage collection and can't be wiped. A <code>char[]</code> can be overwritten right after use, and it is less likely to be logged by accident.</div></details>
+  <details class="d"><summary><span class="q">11</span>Can String be extended? Why is it final?</summary><div class="b">No. Making it final protects immutability and security, and it allows JVM optimisations.</div></details>
+  <details class="d"><summary><span class="q">12</span>How does compareTo work?</summary><div class="b">It returns the difference of the first pair of characters that differ. If one String is a prefix of the other, it returns the length difference. The result is 0 when the Strings are equal.</div></details>
+  <details class="d"><summary><span class="q">13</span>What are Compact Strings?</summary><div class="b">Since Java 9, Strings store a <code>byte[]</code> plus a coder. LATIN-1 text uses 1 byte per char, which halves the character storage (the object header and fields stay the same, so "hello" goes from 56 to 48 bytes).</div></details>
+  <details class="d"><summary><span class="q">14</span>Why does <code>"hi😀".length()</code> return 4?</summary><div class="b"><code>length()</code> counts UTF-16 code units, and the emoji is a surrogate pair. <code>codePointCount</code> gives 3.</div></details>
+  <details class="d"><summary><span class="q">15</span>How does switch work with Strings?</summary><div class="b">The compiler switches on <code>hashCode()</code>, then calls <code>equals()</code> to confirm. A <code>null</code> selector throws NullPointerException (unless there is a <code>case null</code>, Java 21+).</div></details>
+</section>
+
+<!-- 15 -->
+<section id="practice">
+  <span class="num">15</span><h2>Practice</h2>
+  <p class="small muted">Try each one in the <a href="../practice.html#playground">Playground</a> first. The solutions are collapsed below.</p>
+  <ol>
+    <li><b>Easy:</b> count the vowels in <code>"Programming in Java"</code> → <code>6</code>.</li>
+    <li><b>Predict the output:</b> <code>String x = "Java"; String y = x; x = x + "Script"; String z = "Java";</code> then print <code>y + " " + (y == z) + " " + x.length()</code>.</li>
+    <li><b>Medium:</b> are two Strings anagrams? <code>("listen", "silent")</code> → <code>true</code>.</li>
+    <li><b>Medium:</b> capitalise each word: <code>"  hello   java WORLD "</code> → <code>"Hello Java World"</code>.</li>
+    <li><b>Medium:</b> letter frequency: <code>"banana"</code> → <code>"a3b1n2"</code>.</li>
+    <li><b>Hard:</b> run-length compression: <code>"aaabbc"</code> → <code>"a3b2c1"</code>.</li>
+  </ol>
+  <details class="d"><summary>Solutions</summary><div class="b">
+    <p><b>2.</b> <code>Java true 10</code>. <code>y</code> still points to the pooled <code>"Java"</code> (the same object as <code>z</code>), and <code>x</code> is a new <code>"JavaScript"</code>.</p>
+    <p><b>Key ideas:</b> use <code>"aeiou".indexOf(c)</code>, the <code>int[26]</code> count with <code>c - 'a'</code>, <code>split("\\s+")</code> with a StringBuilder, and walk each run of the same character.</p>
+<script type="text/x-java" data-file="Solutions.java">
+import java.util.Arrays;
+
+public class Solutions {
+
+    // 1. Count vowels (case-insensitive)
+    static int countVowels(String s) {
+        int count = 0;
+        for (char c : s.toLowerCase().toCharArray()) {
+            if ("aeiou".indexOf(c) >= 0) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    // 3. Anagram check: same letters, same counts
+    static boolean isAnagram(String a, String b) {
+        if (a.length() != b.length()) {
+            return false;
+        }
+        int[] counts = new int[26];
+        for (int i = 0; i < a.length(); i++) {
+            counts[a.charAt(i) - 'a']++;
+            counts[b.charAt(i) - 'a']--;
+        }
+        for (int c : counts) {
+            if (c != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // 4. Capitalize the first letter of every word
+    static String capitalizeWords(String sentence) {
+        StringBuilder sb = new StringBuilder();
+        for (String word : sentence.trim().split("\\s+")) {
+            if (sb.length() > 0) {
+                sb.append(' ');
+            }
+            sb.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase());
+        }
+        return sb.toString();
+    }
+
+    // 5. Character frequency for lowercase letters
+    static String frequency(String s) {
+        int[] counts = new int[26];
+        for (char c : s.toCharArray()) {
+            if (c >= 'a' && c <= 'z') {
+                counts[c - 'a']++;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 26; i++) {
+            if (counts[i] > 0) {
+                sb.append((char) ('a' + i)).append(counts[i]);
+            }
+        }
+        return sb.toString();
+    }
+
+    // 6. Run-length compression: "aaabbc" → "a3b2c1"
+    static String compress(String s) {
+        StringBuilder sb = new StringBuilder();
+        int i = 0;
+        while (i < s.length()) {
+            char c = s.charAt(i);
+            int run = 0;
+            while (i < s.length() && s.charAt(i) == c) {
+                i++;
+                run++;
+            }
+            sb.append(c).append(run);
+        }
+        return sb.toString();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(countVowels("Programming in Java"));   // 6
+        System.out.println(isAnagram("listen", "silent"));        // true
+        System.out.println(isAnagram("rat", "car"));              // false
+        System.out.println(capitalizeWords("  hello   java WORLD "));   // Hello Java World
+        System.out.println(frequency("banana"));                  // a3b1n2
+        System.out.println(compress("aaabbc"));                   // a3b2c1
+        System.out.println(compress(""));                         // (empty line)
+
+        // 2. Predict the output
+        String x = "Java";
+        String y = x;
+        x = x + "Script";
+        String z = "Java";
+        System.out.println(y + " " + (y == z) + " " + x.length());   // Java true 10
+        System.out.println(Arrays.toString("a-b".split("-")));      // [a, b]
+    }
+}
+</script>
+  </div></details>
+<h3>5 takeaways</h3><ul class="takeaways"><li>A String is an immutable object: every "change" returns a new String, so reassign the result.</li><li>Compare content with <code>equals</code> (null-safe as <code>"lit".equals(x)</code>); <code>==</code> only tells you if it is the same object.</li><li>Literals are pooled and shared; <code>new String</code> always makes a new heap object; <code>intern()</code> returns the pooled one.</li><li>Build text in loops with a <code>StringBuilder</code>; <code>+=</code> copies everything each time.</li><li><code>split</code> and <code>replaceAll</code> take regex, <code>substring</code>'s end is excluded, and an emoji is 2 chars.</li></ul>
+<h3>Check yourself</h3>
+<p class="small muted">Answer before you look. Each answer locks and explains itself; your answers are saved in this browser.</p>
+<div class="quiz" data-quiz="l01"><p class="small muted">This quiz needs JavaScript.</p></div>
+</section>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>Java: Zero to Advanced · every program compiled and run on JDK 25<span class="credits">3D models (CC BY 4.0): <a href="https://sketchfab.com/3d-models/1990-fatboy-inspired-cruiser-motorcycle-a38557914e324e418a407071eaedf6ec">cruiser motorcycle</a> by Alpha One · <a href="https://sketchfab.com/3d-models/skeleton-lord-a3f7b44275cf4c489ad62c535268ac16">Skeleton Lord</a> by DJMaesen · <a href="https://sketchfab.com/3d-models/horse-a6f860e43e364619bccb174a1ac7d0c9">Horse</a> by henrysteve973. Recoloured and posed for this page.</span></footer>
+</div>
+
+<script src="../../assets/data/course-index.js"></script>
+<script src="../../assets/data/quiz-data.js"></script>
+<script src="../../assets/js/course.js"></script>
+<script src="../../assets/js/effects.js"></script>
+<script src="../../assets/labs/labs-oop.js"></script>
+<script src="../../assets/labs/labs-collections.js"></script>
+<script src="../../assets/labs/labs-analogy.js"></script>
+<script src="../../assets/labs/labs-sorting.js"></script>
+<script src="../../assets/labs/labs-foundations.js"></script>
+<script src="../../assets/js/practice-tools.js"></script>
+<script src="../../assets/js/run-java.js"></script>
+</body>
+</html>

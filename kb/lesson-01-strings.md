@@ -1,152 +1,118 @@
-# Lesson 01 — Java Strings: From Zero to Advanced
+# Lesson 01 — What is a String, and where does it live?
 
-*This lesson covers everything about `String`, from "what is it?" to its internals. Later lessons (problems such as reversal, palindromes and anagrams) build on it.*
+Page: `java/lessons/01-strings.html` (`body data-page="l01"`, band `.band#str`, section ids `st-*`). Labs: `assets/labs/labs-strings.js` (analogy visuals `#anTwins`, `#anBook`); the String pool stepper `#poolviz` and the `[data-cells]` boxes are core widgets in `course.js`. Quiz `QZ.l01` (10, B/I/A) and recall prompts `RC.l01` in `quiz-data.js`. Figures `fig-jvm fig-anatomy fig-scp1 fig-scp2 fig-scp3 fig-newbc fig-count5 fig-cmp fig-immut` are the v1 SVGs (from `archive/java-v1`), reused unchanged. Every program below was run on JDK 25 (`java File.java`); outputs are in the comments.
 
-> Read it top to bottom the first time. For revision, use **Section 16**.
-> All code has been compiled and run on JDK 25. The output is shown in the comments.
-
-## Table of Contents
-
-1. What is a String?
-2. Creating Strings
-3. Memory and the String Pool
-4. Immutability
-5. Comparing Strings
-6. Characters, indexes and length
-7. Essential String methods
-8. Building Strings: `+`, `StringBuilder`, `StringBuffer`, joining
-9. Conversions
-10. Formatting and text blocks
-11. Regex with Strings
-12. Unicode, encoding and internals
-13. Common mistakes
-14. Interview questions (15)
-15. Practice (6 exercises)
-16. Revision
-17. Playground and live editor
-18. Your feedback
-
----
+Scope (user, 2026-10-24: "what is string and how it will store, SCP and all, give with the same visualization"): the object, the three ways to create one, stack / heap / pool, the SCP in depth, `new String()`, `==` vs `equals`, immutability, compile-time vs run-time concatenation. Methods, StringBuilder, formatting, regex and Unicode are later lessons.
 
 ## 1. What is a String?
 
-A **String is a sequence of characters**, such as `"Hello"`, `"42"` or `""`. In Java it is an **object** of the class `java.lang.String`. It is not a primitive like `int` or `char`.
+A String is a sequence of characters: an **object** of the `final` class `java.lang.String`, not a primitive. A String variable holds a **reference** to the object, never the letters themselves. Indexes start at 0; `length() - 1` is the last index. `char` holds exactly one character (single quotes, a 16-bit number, never null); `String` holds zero or more (double quotes, a reference type, can be `null`). `""` is an empty object; `null` is no object, so calling a method on it throws `NullPointerException`. Facts: `java.lang` needs no import, the class is `final`, the object is immutable, the variable is a reference.
 
-| | `char` | `String` |
-|---|---|---|
-| What it holds | Exactly one character | Zero or more characters |
-| Quotes | Single: `'H'` | Double: `"Hello"` |
-| Kind | Primitive (a 16-bit number) | Object (a reference type) |
-| Can be `null`? | No | Yes |
-| Empty value | Not possible | `""` (length 0) |
-
-Key facts to know from day one:
-
-- `String` lives in `java.lang`, so you never need to import it.
-- It is a **`final` class**, so nobody can extend it.
-- It is **immutable**: once created, its characters never change (section 4).
-- It implements `CharSequence`, `Comparable<String>` and `Serializable`.
-- `""` (empty) and `null` (no object) are different. Calling `null.length()` throws `NullPointerException`.
-
-```
- index:    0   1   2   3   4
-         ┌───┬───┬───┬───┬───┐
-"Hello"  │ H │ e │ l │ l │ o │      length() = 5, last index = length() - 1 = 4
-         └───┴───┴───┴───┴───┘
-```
+Analogy strip: a String variable is a **number plate**, not the car. Two plates can point at the same car; a plate can be moved; the car holds the letters.
 
 ```java
+// StringBasics.java
 public class StringBasics {
 
     public static void main(String[] args) {
         String greeting = "Hello";            // a String: text in double quotes
         char letter = 'H';                    // a char: ONE character in single quotes
 
-        System.out.println(greeting);             // Hello
-        System.out.println(greeting.length());    // 5
-        System.out.println(greeting.charAt(0));   // H
+        System.out.println(greeting);                       // Hello
+        System.out.println(greeting.length());              // 5
+        System.out.println(greeting.charAt(0));             // H
+        System.out.println(greeting.charAt(4));             // o   (last index = length - 1)
         System.out.println(letter == greeting.charAt(0));   // true
 
         String empty = "";                    // a real object with length 0
         String nothing = null;                // no object at all
-        System.out.println(empty.length());       // 0
-        System.out.println(nothing == null);      // true
+        System.out.println(empty.length());                 // 0
+        System.out.println(nothing == null);                // true
 
-        CharSequence seq = greeting;          // String implements CharSequence
-        System.out.println(seq.length());         // 5
+        System.out.println(greeting.getClass().getName());  // java.lang.String
     }
 }
 ```
 
----
+## 2. Three ways to create one
 
-## 2. Creating Strings
-
-| Way | Example | Notes |
-|---|---|---|
-| Literal | `"java"` | Most common. Uses the **String pool**. |
-| `new` | `new String("java")` | Always creates a **new** heap object. You rarely need it. |
-| From `char[]` | `new String(chars)` or `String.valueOf(chars)` | Copies the array. |
-| From bytes | `new String(bytes, StandardCharsets.UTF_8)` | Always pass a charset. |
-| From other types | `String.valueOf(42)`, `Integer.toString(42)` | |
-| From a builder | `sb.toString()` | |
-| Text block (Java 15+) | `"""` … `"""` | Multi-line text (section 10). |
+| Way | Example | Where the object comes from | Use it when |
+|---|---|---|---|
+| Literal | `String a = "car";` | The pool: one shared object per distinct text | Always, by default |
+| `new` | `new String("car")` | A fresh heap object, outside the pool | Practically never |
+| From data | `new String(chars)`, `String.valueOf(42)`, `a.toUpperCase()` | A fresh heap object, not pooled | Whenever the text is computed |
 
 ```java
-import java.nio.charset.StandardCharsets;
-
-public class CreatingStrings {
+// CreateStrings.java
+public class CreateStrings {
 
     public static void main(String[] args) {
-        String a = "java";                                  // 1. literal (uses the String pool)
-        String b = new String("java");                      // 2. new: always a new heap object
-        char[] letters = {'j', 'a', 'v', 'a'};
-        String c = new String(letters);                     // 3. from a char[]
-        byte[] bytes = {106, 97, 118, 97};
-        String d = new String(bytes, StandardCharsets.UTF_8);   // 4. from bytes + charset
-        String e = String.valueOf(42);                      // 5. from another type
-        String f = new StringBuilder("ja").append("va").toString();   // 6. from a builder
-        String g = """
-                java""";                                    // 7. text block (Java 15+)
+        // 1. A literal: the normal way. Goes through the String pool.
+        String a = "car";
 
-        System.out.println(a + " " + b + " " + c + " " + d + " " + e + " " + f + " " + g);
-        // java java java java 42 java java
+        // 2. new: always a separate object on the heap
+        String b = new String("car");
 
-        System.out.println(a.equals(b) && a.equals(c) && a.equals(d) && a.equals(f) && a.equals(g));   // true
-        System.out.println(a == g);    // true  (literal and text block share the pooled "java")
-        System.out.println(a == b);    // false (new always makes a new object)
+        // 3. From other data
+        char[] letters = {'c', 'a', 'r'};
+        String c = new String(letters);       // from a char array
+        String d = String.valueOf(42);        // "42" from an int
+        String e = "c" + "a" + "r";           // joined by the compiler: a literal again
+        String f = a.toUpperCase();           // a method result: a new object
+
+        System.out.println(a + " " + b + " " + c + " " + d + " " + e + " " + f);
+        // car car car 42 car CAR
+
+        // Same text, but how many objects? == asks "same object?"
+        System.out.println(a == b);           // false  (new made a second object)
+        System.out.println(a == c);           // false  (built from the array)
+        System.out.println(a == e);           // true   (same pooled literal)
+        System.out.println(a.equals(b));      // true   (same characters)
     }
 }
 ```
 
----
+## 3. Where a String lives: stack, heap, pool
 
-## 3. Memory and the String Pool
+Each thread has a **stack** of frames holding local variables (references and primitives). Objects never live there. Every String object and its `byte[]` live on the **heap**. The **String Constant Pool** (HotSpot's `StringTable`) is a table pointing at one canonical String per distinct literal; since Java 7 those pooled Strings are ordinary heap objects. **Metaspace** holds loaded classes and their constant tables (where the text of a literal sits before first use). Figure `fig-jvm`.
 
-The **String pool** (also called the string constant pool) stores **one shared copy of each literal**. Since Java 7 the pooled String objects live in the main heap; the lookup table itself (HotSpot's `StringTable`) is native JVM memory.
-
-```
- Stack (variables)           Heap
- ─────────────────           ──────────────────────────────────────
-                            ┌───────── String pool ─────────┐
- s1 ──────────────────────▶ │  "hello"                      │
- s2 ──────────────────────▶ │    ▲                          │
-                            └────┼──────────────────────────┘
- s4 = s3.intern() ───────────────┘
- s3 ──────────────────────▶  "hello"   (separate object made by new)
-```
-
-- `String s1 = "hello"; String s2 = "hello";` makes **one** object, so `s1 == s2` is `true`.
-- `new String("hello")` **always** makes a new object outside the pool, so `==` gives `false`.
-- `intern()` returns the pooled copy, adding the String to the pool if it isn't there yet.
-- **Compile-time constants** are joined by the compiler: `"hel" + "lo"` is the literal `"hello"`. The same is true when one part is a `final` variable initialised with a literal.
-- Concatenation at **runtime** (with a non-final variable) creates a new object.
-
-**Why have a pool?** Programs repeat the same text many times. Sharing one copy saves memory. Sharing is only safe *because* Strings are immutable.
-
-**Interview classic:** *How many objects does `new String("hello")` create?* Up to **two**. The literal `"hello"` goes into the pool, if it isn't already there, the first time that line runs (literals are resolved lazily, see Lesson 02). Then `new` creates one more object on the heap. If the literal is already pooled, only **one** new object is created.
+Passing a String to a method copies the **reference** (pass-by-value): the method reads the same object, but reassigning its parameter moves only its own copy.
 
 ```java
+// WhereItLives.java
+public class WhereItLives {
+
+    static void rename(String name) {         // 'name' is a COPY of the reference
+        name = name + "!";                    // builds a new String, moves only the copy
+        System.out.println("inside: " + name);
+    }
+
+    public static void main(String[] args) {
+        String model = "Swift";               // the variable (on the stack) -> the object (on the heap)
+        String alias = model;                 // a second reference to the SAME object
+
+        rename(model);                        // inside: Swift!
+        System.out.println("after:  " + model);           // after:  Swift
+        System.out.println(model == alias);               // true  (still the same object)
+
+        int n = 7;                            // a primitive: the VALUE 7 sits in the variable itself
+        int m = n;                            // copies the number, there is no object
+        m++;
+        System.out.println(n + " " + m);                  // 7 8
+    }
+}
+```
+
+Inside the object (figure `fig-anatomy`): header, `value` (a reference to a `byte[]`), `coder` (0 = Latin-1, 1 byte per char; 1 = UTF-16, 2 bytes), cached `hash`. The characters are in the array, a separate object.
+
+## 4. The String Constant Pool (SCP)
+
+One shared copy of each literal, to **save memory**; safe only because Strings are immutable. Visuals: figure `fig-scp1` (literal vs `new` vs `intern()`), the **pool stepper** `#poolviz` (8 lines: `s1 = "hello"`, `s2 = "hello"`, `s3 = new String("hello")`, `s4 = s3.intern()`, `s5 = "hel" + "lo"`, `part = "hel"`, `s6 = part + "lo"`, `s7 = s6.intern()`; the pool / heap / variables are drawn after each line and a `==` table fills in), and the **sticker book** analogy `#anBook` (press the four statements; literal = look in the book, `new` = private copy, `intern()` = hand it to the book).
+
+Pooled automatically: literals and text blocks, compile-time constants (`"a" + "b"`, `"a" + 1`, `FINAL + "x"`), `static final String` constants, anything interned. Not pooled: the heap object of `new String("abc")`, run-time concatenation, method results (`substring`, `toUpperCase`, `split`, `sb.toString()`), text read from files, Scanner, network, database.
+
+```java
+// StringPoolDemo.java
 public class StringPoolDemo {
 
     public static void main(String[] args) {
@@ -165,864 +131,153 @@ public class StringPoolDemo {
         System.out.println(s1 == s5);         // true
 
         String part = "hel";
-        String s6 = part + "lo";              // built at runtime → new object
+        String s6 = part + "lo";              // built at runtime -> new object
         System.out.println(s1 == s6);         // false
+        System.out.println(s1 == s6.intern()); // true
 
         final String constPart = "hel";
-        String s7 = constPart + "lo";         // final + literal → compile-time constant
+        String s7 = constPart + "lo";         // final + literal -> compile-time constant
         System.out.println(s1 == s7);         // true
     }
 }
 ```
 
-> **Rule:** never use `==` to compare String content. Use `equals()`. The `==` results above only show *where objects live*.
+History: Java 6 pool in PermGen (fixed size, `intern()` copies, `OutOfMemoryError: PermGen space`); Java 7 pool in the main heap (`intern()` stores a reference to the existing object, pooled Strings can be collected); Java 8 PermGen removed, Metaspace for class metadata; Java 11+ concurrent, self-resizing StringTable, default `StringTableSize` 65536 (checked on JDK 25). Figure `fig-scp3`.
 
----
+`intern()` rules: if the pool has an equal String, return that reference; otherwise add **this** object's reference and return it (the first object interned becomes canonical). Use rarely (a hash lookup each time). Entries are weak: an unreferenced pooled String can be collected; literals stay alive while their class is loaded.
 
-## 4. Immutability
+Interview answer: a JVM-wide table of unique String objects; every literal is resolved through it, so equal literals share one object (memory saving; `==` true between them); in the heap since Java 7; `new String("x")` always creates a separate heap object; `intern()` returns the pooled copy, adding one if needed. Follow-ups: why not intern everything (cost, only for many repeated long-lived values); the pool is not a cache for `==`; pooled Strings can be collected since Java 7.
 
-**Immutable** means a String's characters can never change after it is created. Every method that seems to modify a String (`toUpperCase`, `replace`, `trim`, `concat`, `substring`…) actually **returns a new String**. The original is left unchanged.
+## 5. What `new String("x")` really does
 
-```
- name ──▶ "java"            name.toUpperCase()  →  "JAVA" is created, but nothing points to it
- name ──▶ "JAVA"            name = name.toUpperCase()  →  the variable now points to the new object
-          "java"  ← still exists until the garbage collector removes it
-```
+Bytecode of `String s = new String("hi");` (javap, JDK 25): `new #7` (empty String on the heap), `dup`, `ldc #9` (the pooled `"hi"`, created on first use), `invokespecial #11` (`String.<init>(String)`: copies `value`, `coder`, `hash`; the `byte[]` is **shared**), `astore_1`. So `s == "hi"` is false, `s.equals("hi")` is true. Figure `fig-newbc`.
 
-**Why did Java's designers make String immutable?**
-
-1. **The pool is safe.** Many variables can share one object without affecting each other.
-2. **Security.** File paths, URLs, class names and passwords can't be changed after they are checked.
-3. **Thread safety.** Strings can be shared across threads with no locking.
-4. **Cached `hashCode`.** It is computed once and reused, which makes Strings fast `HashMap` keys.
-5. **Class loading.** Class names passed as Strings can't be altered.
-
-**Need to change text often?** Use `StringBuilder`, which is mutable (section 8).
+"How many String objects?" (nothing pooled before): `String s = "java";` 1 · `String a = "x"; String b = "x";` 1 · `new String("java");` 2 · `new String("x"); new String("x");` 3 · `String s = "a" + "b";` 1 (folded) · `String a = "a"; String b = a + "b";` 2 on JDK 9+ (`"b"` is in the invokedynamic recipe; 3 up to Java 8) · `new String("a") + new String("b");` 5 (figure `fig-count5`). Before Java 9 the run-time rows also created a temporary StringBuilder (an object, not a String).
 
 ```java
-public class ImmutabilityDemo {
+// NewStringCount.java
+public class NewStringCount {
 
     public static void main(String[] args) {
-        String name = "java";
-        name.toUpperCase();                   // creates "JAVA" ... and throws it away
-        System.out.println(name);             // java
+        String lit = "java";
+        String copy1 = new String("java");
+        String copy2 = new String("java");
 
-        name = name.toUpperCase();            // keep the result by reassigning
-        System.out.println(name);             // JAVA
+        System.out.println(lit == copy1);                 // false
+        System.out.println(copy1 == copy2);               // false (two separate heap objects)
+        System.out.println(copy1.equals(copy2));          // true
+        System.out.println(copy1.intern() == lit);        // true  (intern finds the pooled one)
+
+        // A String built at run time is NOT in the pool until you intern it
+        String built = new StringBuilder("sw").append("ift").toString();
+        System.out.println(built == "swift");             // false
+        System.out.println(built.intern() == "swift");    // true
+
+        // Since Java 7 the FIRST object interned becomes the pooled one (no copy is made)
+        String fresh = new StringBuilder("uniq").append("Text99").toString();
+        System.out.println(fresh.intern() == fresh);      // true
+    }
+}
+```
+
+The last line: `"java"` is pooled by the JDK itself before `main` runs, so interning a run-time `"java"` returns the JDK's object. `==` "sometimes works" for reasons like this; never use it for content.
+
+## 6. `==` vs `equals`
+
+`==` compares the arrows (same object?); `equals` compares the characters. The pool makes `==` true by accident between literals, which is why it is dangerous. Figure `fig-cmp` (two objects with the same text; `compareTo` walks to the first differing char). Analogy `#anTwins`: two `new String("Asha")` are identical twins (`==` false, `equals` true); a second variable is a nickname for one person (`==` true); two literals share one pooled person.
+
+```java
+// CompareStrings.java
+public class CompareStrings {
+
+    public static void main(String[] args) {
+        String a = "Swift";
+        String b = new String("Swift");
+        String c = "swift";
+
+        System.out.println(a == b);                       // false  same object?
+        System.out.println(a.equals(b));                  // true   same characters?
+        System.out.println(a.equals(c));                  // false  case matters
+        System.out.println(a.equalsIgnoreCase(c));        // true
+
+        System.out.println(a.compareTo(c));               // -32    'S' (83) - 's' (115)
+        System.out.println("apple".compareTo("banana"));  // -1     'a' - 'b'
+        System.out.println("car".compareTo("cars"));      // -1     length difference
+        System.out.println("car".compareTo("car"));       // 0
+
+        String input = null;
+        System.out.println("yes".equals(input));          // false  (null-safe: literal first)
+        try {
+            System.out.println(input.equals("yes"));
+        } catch (NullPointerException e) {
+            System.out.println("NPE: input is null");     // NPE: input is null
+        }
+    }
+}
+```
+
+Rule: compare content with `equals()`, literal first (`"yes".equals(input)`) so a null input gives false. The only honest use of `==` on Strings is a null test.
+
+## 7. Why a String can never change
+
+Characters are fixed for life; every "changing" method (`toUpperCase`, `trim`, `replace`, `+`) returns a new object. The class is `final`, `value` is private and never exposed. Figure `fig-immut` (after `original = original + "!"` only the variable moves; `alias` still sees `"hi"`). Five reasons: pool sharing, cached hash (safe HashMap key), thread safety without locks, security (checked paths / class names can't change), class loading.
+
+```java
+// Immutable.java
+public class Immutable {
+
+    public static void main(String[] args) {
+        String s = "java";
+        s.toUpperCase();                      // returns "JAVA"... and throws it away
+        System.out.println(s);                // java   (unchanged)
+
+        s = s.toUpperCase();                  // keep the NEW String by reassigning
+        System.out.println(s);                // JAVA
 
         String original = "hi";
-        String alias = original;              // both variables point to the same object
-        original = original + "!";            // original now points to a NEW object
-        System.out.println(alias);            // hi
+        String alias = original;              // both point to the same "hi"
+        original = original + "!";            // a NEW object; only 'original' moves
         System.out.println(original);         // hi!
+        System.out.println(alias);            // hi    (the shared object never changed)
 
-        StringBuilder sb = new StringBuilder("java");
-        sb.setCharAt(0, 'J');                 // StringBuilder IS mutable
-        System.out.println(sb);               // Java
+        // A String's hash is computed once and cached: safe because the text can't change
+        String key = "parking";
+        System.out.println(key.hashCode());   // -793201736
+        System.out.println(key.hashCode());   // -793201736  (same, read from the cache)
     }
 }
 ```
 
----
+Mistakes: `s.toUpperCase();` without assigning (nothing changes → `s = s.toUpperCase();`); `a == b` for content (→ `equals`); `input.equals("yes")` on null (→ `"yes".equals(input)`); expecting `rename(s)` to change the caller's `s` (only the method's copy of the reference moves → return and assign).
 
-## 5. Comparing Strings
+## 8. Compile time vs run time
 
-| Method | Compares | Returns | Use it for |
-|---|---|---|---|
-| `a == b` | **References** (same object?) | `boolean` | Almost never with Strings |
-| `a.equals(b)` | Content, case-sensitive | `boolean` | **The default choice** |
-| `a.equalsIgnoreCase(b)` | Content, ignoring case | `boolean` | User input, commands |
-| `a.compareTo(b)` | Dictionary order (by `char` values) | `int` (<0, 0, >0) | Sorting |
-| `a.compareToIgnoreCase(b)` | Dictionary order, ignoring case | `int` | Case-insensitive sorting |
-| `Objects.equals(a, b)` | Content, and null-safe | `boolean` | When either side may be `null` |
-| `a.contentEquals(sb)` | Content against any `CharSequence` | `boolean` | Comparing with a `StringBuilder` |
+The compiler folds `+` over constants (literals, `final` variables initialised with literals) into one pooled literal; anything with a plain variable runs at run time and gives a new heap object. Figure `fig-scp2`.
 
-How `compareTo` works: it compares character by character. At the first difference, it returns `charA - charB`. If one String is a prefix of the other, it returns the **difference in length**.
-
-**Null-safe habit:** write `"yes".equals(input)`, not `input.equals("yes")`. The first never throws.
-
-```java
-import java.util.Objects;
-
-public class ComparingStrings {
-
-    public static void main(String[] args) {
-        String a = "Apple";
-        String b = new String("Apple");
-        String c = "apple";
-        String none = null;
-
-        System.out.println(a == b);                    // false  (different objects)
-        System.out.println(a.equals(b));               // true   (same characters)
-        System.out.println(a.equals(c));               // false  (case matters)
-        System.out.println(a.equalsIgnoreCase(c));     // true
-
-        System.out.println("apple".compareTo("banana"));   // -1  ('a' - 'b')
-        System.out.println("b".compareTo("a"));            // 1
-        System.out.println("app".compareTo("apple"));      // -2  (shorter: length difference)
-        System.out.println("Apple".compareTo("apple"));    // -32 ('A' is 65, 'a' is 97)
-        System.out.println("Apple".compareToIgnoreCase("apple"));   // 0
-
-        System.out.println("yes".equals(none));        // false (safe: literal first)
-        System.out.println(Objects.equals(none, null));    // true (null-safe helper)
-        // none.equals("yes") would throw NullPointerException
-    }
-}
-```
-
----
-
-## 6. Characters, indexes and length
-
-- Indexes start at **0**. The last index is `length() - 1`.
-- `length()` is a **method** on String. Arrays use the `length` **field**, and collections use `size()`. Interviewers like to ask about this.
-- A bad index throws `StringIndexOutOfBoundsException`.
-- A `char` is an unsigned **16-bit number** (0–65535), so you can do arithmetic with it:
-  - `'a' + 1` is `98` (an `int`), while `(char) ('a' + 1)` is `'b'`.
-  - `c - '0'` turns the digit character `'7'` into the number `7`.
-  - `c - 'a'` gives a letter's position (0–25). This is the basis of the `int[26]` counting trick.
-- `Character` helpers include `isLetter`, `isDigit`, `isLetterOrDigit`, `isWhitespace`, `isUpperCase`, `toUpperCase` and `toLowerCase`.
-
-**Useful ASCII values:** `'0'` = 48, `'A'` = 65, `'a'` = 97, and space = 32. Lower case minus upper case = 32.
-
-```java
-public class CharsAndIndexes {
-
-    public static void main(String[] args) {
-        String word = "code";
-        System.out.println(word.length());                   // 4
-        System.out.println(word.charAt(0));                  // c  (first)
-        System.out.println(word.charAt(word.length() - 1));  // e  (last)
-        // word.charAt(4) throws StringIndexOutOfBoundsException
-
-        // A char is a 16-bit number
-        char c = 'a';
-        System.out.println((int) c);                 // 97
-        System.out.println(c + 1);                   // 98  (char + int = int)
-        System.out.println((char) (c + 1));          // b
-        System.out.println('7' - '0');               // 7   (digit char → its value)
-        System.out.println('d' - 'a');               // 3   (position in the alphabet)
-
-        // Character helpers
-        System.out.println(Character.isLetter('x'));         // true
-        System.out.println(Character.isDigit('5'));          // true
-        System.out.println(Character.isWhitespace(' '));     // true
-        System.out.println(Character.toUpperCase('q'));      // Q
-
-        // Three ways to visit every character
-        for (int i = 0; i < word.length(); i++) {
-            System.out.print(word.charAt(i) + " ");          // c o d e
-        }
-        System.out.println();
-        for (char ch : word.toCharArray()) {
-            System.out.print(ch + "-");                      // c-o-d-e-
-        }
-        System.out.println();
-        word.chars().forEach(code -> System.out.print(code + " "));   // 99 111 100 101
-        System.out.println();
-    }
-}
-```
-
----
-
-## 7. Essential String methods
-
-| Category | Method | Example → result |
+| Expression | Decided | `== "hello"` |
 |---|---|---|
-| **Inspect** | `length()` | `"Hello".length()` → `5` |
-| | `isEmpty()` | `"".isEmpty()` → `true` |
-| | `isBlank()` (11+) | `"  ".isBlank()` → `true` |
-| | `charAt(i)` | `"Hello".charAt(1)` → `'e'` |
-| **Search** | `indexOf(x)` / `indexOf(x, from)` | `"Hello".indexOf('l')` → `2` (or `-1` if not found) |
-| | `lastIndexOf(x)` | `"Hello".lastIndexOf('l')` → `3` |
-| | `contains(s)` | `"Hello".contains("ell")` → `true` |
-| | `startsWith(s)` / `endsWith(s)` | `"Hello".startsWith("He")` → `true` |
-| **Extract** | `substring(begin)` | `"Hello".substring(2)` → `"llo"` |
-| | `substring(begin, end)` | `"Hello".substring(1, 3)` → `"el"` (*end is excluded*) |
-| **Transform** | `toUpperCase()` / `toLowerCase()` | `"Hi".toUpperCase()` → `"HI"` |
-| | `trim()` | Removes characters ≤ space from both ends |
-| | `strip()` / `stripLeading()` / `stripTrailing()` (11+) | Unicode-aware trimming |
-| | `replace(old, new)` | Replaces **every** match, literally (no regex) |
-| | `replaceAll(regex, s)` / `replaceFirst(regex, s)` | Regex-based replacing |
-| | `repeat(n)` (11+) | `"ab".repeat(3)` → `"ababab"` |
-| | `concat(s)` | `"Hi".concat("!")` → `"Hi!"` |
-| **Split / join** | `split(regex)` / `split(regex, limit)` | `"a,b".split(",")` → `[a, b]` |
-| | `String.join(sep, parts…)` | `String.join("-", "a", "b")` → `"a-b"` |
-| | `lines()` (11+) | A stream of the lines |
-| **Convert** | `toCharArray()` | `"abc"` → `[a, b, c]` |
-| | `chars()` / `codePoints()` | Streams of the character values |
-| | `getBytes(charset)` | The encoded bytes |
-| | `String.valueOf(x)` | Any value → String |
-| **Check** | `matches(regex)` | Does the **whole** String match? |
-| | `equals`, `equalsIgnoreCase`, `compareTo` | See section 5 |
-
-Things to remember:
-
-- `substring(begin, end)` is **half-open**: it includes `begin` and excludes `end`, so its length is `end - begin`.
-- `split` drops **trailing** empty strings. Pass `-1` as the limit to keep them.
-- `split` takes a **regex**, so `.`, `|`, `$`, `*`, `+`, `?` and `\` must be escaped (section 11).
-- `trim()` removes every char up to U+0020 (spaces, tabs, newlines, ASCII control characters). `strip()` uses `Character.isWhitespace`, so it also removes Unicode spaces.
-
-```java
-import java.util.Arrays;
-
-public class StringMethodsTour {
-
-    public static void main(String[] args) {
-        String s = "  Hello, World  ";
-        String t = s.trim();                                  // "Hello, World"
-
-        // Inspect
-        System.out.println(t.length());                       // 12
-        System.out.println("".isEmpty());                     // true
-        System.out.println("   ".isBlank());                  // true  (Java 11+)
-
-        // Search
-        System.out.println(t.indexOf('o'));                   // 4
-        System.out.println(t.lastIndexOf('o'));               // 8
-        System.out.println(t.indexOf("xyz"));                 // -1  (not found)
-        System.out.println(t.contains("World"));              // true
-        System.out.println(t.startsWith("Hell"));             // true
-        System.out.println(t.endsWith("!"));                  // false
-
-        // Extract: substring(begin, end) includes begin, excludes end
-        System.out.println(t.substring(7));                   // World
-        System.out.println(t.substring(0, 5));                // Hello
-
-        // Transform (each returns a NEW String)
-        System.out.println(t.toUpperCase());                  // HELLO, WORLD
-        System.out.println(t.toLowerCase());                  // hello, world
-        System.out.println("[" + s.strip() + "]");            // [Hello, World]
-        System.out.println("[" + s.stripLeading() + "]");     // [Hello, World  ]
-        System.out.println(t.replace('l', 'L'));              // HeLLo, WorLd
-        System.out.println(t.replace("World", "Java"));       // Hello, Java
-        System.out.println("ab".repeat(3));                   // ababab
-        System.out.println("Hi".concat(" there"));            // Hi there
-
-        // Split and join
-        String[] parts = "red,green,blue".split(",");
-        System.out.println(Arrays.toString(parts));           // [red, green, blue]
-        System.out.println(String.join(" | ", parts));        // red | green | blue
-        System.out.println("a,b,,c,,".split(",").length);     // 4  (trailing empties dropped)
-        System.out.println("a,b,,c,,".split(",", -1).length); // 6  (limit -1 keeps them)
-        System.out.println("line1\nline2".lines().count());   // 2
-
-        // Convert
-        System.out.println(Arrays.toString("abc".toCharArray()));   // [a, b, c]
-        System.out.println(String.valueOf(3.5));              // 3.5
-    }
-}
-```
-
----
-
-## 8. Building Strings: `+`, `StringBuilder`, `StringBuffer`, joining
-
-**The `+` operator.** Evaluation goes **left to right**. Once one side is a String, the rest of the expression is joined as text:
-
-- `"Total: " + 1 + 2` gives `"Total: 12"`.
-- `"Total: " + (1 + 2)` gives `"Total: 3"`.
-- `1 + 2 + " items"` gives `"3 items"`.
-
-**The `+` operator inside a loop is O(n²).** Each `+=` creates a whole new String and copies every character built so far: 1 + 2 + … + n copies. Since Java 9 the compiler handles a *single* `a + b + c` expression efficiently (with `invokedynamic`), but it can't fix a loop. Use **one `StringBuilder`** instead.
-
-| | `String` | `StringBuilder` | `StringBuffer` |
-|---|---|---|---|
-| Mutable? | No | **Yes** | Yes |
-| Thread-safe? | Yes (because immutable) | No | Yes (`synchronized` methods) |
-| Speed for building | Slow in loops | **Fastest** | Slower (locking) |
-| Use when | Text doesn't change | Building or changing text (the default) | Several threads share one buffer (rare) |
-
-Main `StringBuilder` methods: `append`, `insert`, `delete(start, end)`, `deleteCharAt`, `replace(start, end, s)`, `reverse`, `setCharAt`, `setLength`, `charAt`, `length`, `capacity` and `toString`. Most return **`this`**, so you can chain them.
-
-**Capacity:** the default is 16. When it fills up, the builder grows to about twice the size. If you know the final size, pre-size it with `new StringBuilder(n)`.
-
-**Joining helpers:** `String.join(sep, …)`, `StringJoiner(sep, prefix, suffix)` and `Collectors.joining(sep)` for streams.
-
-```java
-import java.util.List;
-import java.util.StringJoiner;
-import java.util.stream.Collectors;
-
-public class BuildingStrings {
-
-    public static void main(String[] args) {
-        // + works with any type: once one side is a String, the rest becomes text
-        System.out.println("Total: " + 1 + 2);     // Total: 12
-        System.out.println("Total: " + (1 + 2));   // Total: 3
-        System.out.println(1 + 2 + " items");      // 3 items
-
-        // Building in a loop: use ONE StringBuilder
-        StringBuilder sb = new StringBuilder();
-        for (int i = 1; i <= 5; i++) {
-            sb.append(i).append(' ');
-        }
-        System.out.println(sb.toString().trim());  // 1 2 3 4 5
-
-        // Common StringBuilder operations (they change the builder itself)
-        StringBuilder w = new StringBuilder("Java");
-        w.append("!");                  // Java!
-        w.insert(0, "I love ");         // I love Java!
-        w.replace(2, 6, "like");        // I like Java!
-        w.deleteCharAt(w.length() - 1); // I like Java
-        w.delete(0, 7);                 // Java
-        w.reverse();                    // avaJ
-        System.out.println(w);          // avaJ
-        System.out.println(w.length()); // 4
-
-        // Joining many values
-        StringJoiner joiner = new StringJoiner(", ", "[", "]");
-        joiner.add("a").add("b").add("c");
-        System.out.println(joiner);                                   // [a, b, c]
-        System.out.println(String.join("-", "2026", "10", "16"));     // 2026-10-16
-        List<String> names = List.of("Ann", "Bob", "Cy");
-        System.out.println(names.stream().collect(Collectors.joining("/")));   // Ann/Bob/Cy
-    }
-}
-```
-
----
-
-## 9. Conversions
-
-| From → To | How | Watch out |
-|---|---|---|
-| String → `int` | `Integer.parseInt(s)` | Throws `NumberFormatException` on bad input |
-| String → `Integer` | `Integer.valueOf(s)` | Returns an object (cached for −128..127) |
-| String → `double` / `boolean` | `Double.parseDouble`, `Boolean.parseBoolean` | `parseBoolean` is `true` only for "true", in any case |
-| Number → String | `String.valueOf(n)`, `Integer.toString(n)`, `n + ""` | `valueOf` is the clearest |
-| `char` → String | `String.valueOf(c)`, `Character.toString(c)` | |
-| String → `char[]` | `s.toCharArray()` | It is a copy |
-| `char[]` → String | `new String(arr)`, `String.valueOf(arr)` | **Not** `arr.toString()`, which prints `[C@1b6d…` |
-| String → List | `Arrays.asList(s.split(" "))` / `List.of(...)` | |
-| List → String | `String.join(sep, list)` | |
-
-```java
-import java.util.Arrays;
-import java.util.List;
-
-public class Conversions {
-
-    public static void main(String[] args) {
-        // String → number
-        int n = Integer.parseInt("123");            // primitive int
-        Integer boxed = Integer.valueOf("123");     // Integer object
-        double d = Double.parseDouble("3.14");
-        boolean flag = Boolean.parseBoolean("TRUE");   // case-insensitive "true"
-        System.out.println(n + 1);                  // 124
-        System.out.println(boxed + d);              // 126.14
-        System.out.println(flag);                   // true
-
-        try {
-            Integer.parseInt("12a");
-        } catch (NumberFormatException e) {
-            System.out.println("Not a number: " + e.getMessage());   // Not a number: For input string: "12a"
-        }
-
-        // number → String
-        System.out.println(String.valueOf(7) + Integer.toString(8) + (9 + ""));   // 789
-
-        // char ↔ String
-        char c = "hey".charAt(0);
-        String fromChar = String.valueOf(c);        // or Character.toString(c)
-        System.out.println(fromChar + c);           // hh
-
-        // String ↔ char[]
-        char[] arr = "dog".toCharArray();
-        Arrays.sort(arr);
-        System.out.println(new String(arr));        // dgo
-        System.out.println(String.valueOf(arr));    // dgo
-        System.out.println(arr.toString().startsWith("[C@"));   // true  (NOT the text!)
-
-        // String ↔ List
-        List<String> list = Arrays.asList("x y z".split(" "));
-        System.out.println(list);                   // [x, y, z]
-        System.out.println(String.join("", list));  // xyz
-    }
-}
-```
-
----
-
-## 10. Formatting and text blocks
-
-**Format specifiers** for `String.format`, `formatted()` (15+) and `printf`:
-
-| Specifier | Meaning | Example → result |
-|---|---|---|
-| `%s` | String (any object) | `"%s", "hi"` → `hi` |
-| `%d` | Integer | `"%d", 7` → `7` |
-| `%.2f` | Decimal with 2 places (rounds) | `82.456` → `82.46` |
-| `%5d` / `%-6s` | Width 5, right-aligned / width 6, left-aligned | `[    7]` / `[Asha  ]` |
-| `%05d` | Pad with zeros | `[00007]` |
-| `%x` `%c` `%b` | Hex, char, boolean | `ff A true` |
-| `%n` / `%%` | Platform newline / a literal `%` | |
-
-**Text blocks** (Java 15+) are written with `"""`. The content starts on the line after the opening `"""`. Common leading spaces are removed, and the position of the closing `"""` decides the left margin. A `\` at the end of a line joins it with the next line. `\s` keeps a trailing space.
-
-```java
-public class FormattingDemo {
-
-    public static void main(String[] args) {
-        String name = "Asha";
-        int score = 7;
-        double avg = 82.456;
-
-        System.out.println(String.format("%s scored %d", name, score));   // Asha scored 7
-        System.out.println(String.format("Average: %.2f", avg));          // Average: 82.46
-        System.out.println(String.format("[%5d]", score));                // [    7]
-        System.out.println(String.format("[%-6s]", name));                // [Asha  ]
-        System.out.println(String.format("[%05d]", score));               // [00007]
-        System.out.println(String.format("%x %c %b %%", 255, 'A', true)); // ff A true %
-        System.out.println("%s is %d".formatted("Ravi", 30));             // Ravi is 30 (Java 15+)
-        System.out.printf("%-6s|%6.1f%n", "pi", Math.PI);                 // pi    |   3.1
-
-        // Text block: the closing """ sets the left margin
-        String json = """
-                {
-                  "name": "Asha",
-                  "score": 7
-                }
-                """;
-        System.out.print(json);
-        // {
-        //   "name": "Asha",
-        //   "score": 7
-        // }
-
-        String oneLine = """
-                one \
-                line""";
-        System.out.println(oneLine);                                      // one line
-    }
-}
-```
-
----
-
-## 11. Regex with Strings
-
-| Pattern | Meaning |
-|---|---|
-| `\\d` / `\\w` / `\\s` | Digit / word character `[A-Za-z0-9_]` / whitespace |
-| `+` `*` `?` `{n,m}` | One or more / zero or more / optional / between n and m |
-| `[abc]` / `[^abc]` / `[a-z]` | Any of / none of / a range |
-| `.` | **Any character except a line break** (unless `(?s)`). Write `\\.` for a literal dot |
-| `^` `$` | Start / end |
-
-In Java source you write `\\d`, because `\` must itself be escaped inside a string literal.
-
-- `matches()` must match the **whole** String.
-- `split(".")` returns an **empty array**: every character is a separator, and the trailing empties are dropped.
-- `replace` is literal and `replaceAll` uses regex. To find every match, use `Pattern` and `Matcher.find()`.
-- Calling `Pattern.compile` **once** and reusing it is faster than calling `s.matches()` in a loop.
-
-```java
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class RegexBasics {
-
-    public static void main(String[] args) {
-        // matches() must match the WHOLE string
-        System.out.println("12345".matches("\\d+"));          // true
-        System.out.println("123a".matches("\\d+"));           // false
-        System.out.println("abc@x.com".matches("[\\w.]+@[\\w.]+\\.\\w+"));   // true
-
-        // split on one or more spaces
-        System.out.println(Arrays.toString("a   b  c".split("\\s+")));     // [a, b, c]
-
-        // '.' is special in regex: escape it
-        System.out.println("1.2.3".split(".").length);                     // 0  (surprise!)
-        System.out.println(Arrays.toString("1.2.3".split("\\.")));         // [1, 2, 3]
-
-        // replaceAll uses regex, replace does not
-        System.out.println("A1-b2_C3!".replaceAll("[^A-Za-z]", ""));       // AbC
-        System.out.println("a.b.c".replace(".", "/"));                     // a/b/c
-        System.out.println("hello   world".replaceAll("\\s+", " "));       // hello world
-
-        // Pattern + Matcher to find every match
-        Matcher m = Pattern.compile("\\d+").matcher("Order 12 has 3 items for 450");
-        StringBuilder found = new StringBuilder();
-        while (m.find()) {
-            found.append(m.group()).append(' ');
-        }
-        System.out.println(found.toString().trim());          // 12 3 450
-    }
-}
-```
-
----
-
-## 12. Unicode, encoding and internals
-
-**A `char` is not always one "character".** Java uses **UTF-16**:
-
-- Most characters, including English, accented letters and Hindi, take **one** `char`.
-- Emoji and some rare scripts are **supplementary** characters that take **two** `char`s, called a *surrogate pair*.
-- So `"hi😀".length()` is **4**, while `codePointCount` is **3**.
-- To work with real characters, use `codePoints()`, `codePointAt()` and `Character.toChars()`.
-
-**Bytes ≠ chars.** `getBytes(UTF_8)` gives 1 byte for ASCII, 2 for `é`, 3 for most Indian scripts, and 4 for emoji. **Always pass a charset.** Without one, the platform default is used. That default was UTF-8 only from Java 18 onward.
-
-**Internals** (useful for interviews):
-
-| Fact | Details |
-|---|---|
-| Storage | Java 9+ uses **Compact Strings**: a `byte[] value` plus a `coder` flag. LATIN-1 text uses 1 byte per char, and other text uses UTF-16 (2 bytes). Before Java 9 it was `char[]`. |
-| `final` | Both the class and its `value` field are final. |
-| `hashCode()` | `s[0]*31^(n-1) + … + s[n-1]`, computed once and **cached**. `"Aa"` and `"BB"` have the same hash. |
-| `switch` on String (Java 7+) | Compiled to a `switch` on `hashCode()`, then `equals()` to confirm. |
-| String pool | It is a hash table in the heap. Its size can be tuned with `-XX:StringTableSize`. |
-| String Deduplication (G1 only before JDK 18) | `-XX:+UseStringDeduplication` lets equal Strings share one `byte[]` (this is not the pool). |
-| `substring` | Since Java 7u6 it copies the characters. Old versions shared the array, which could leak memory. |
-
-```java
-import java.nio.charset.StandardCharsets;
-
-public class UnicodeDemo {
-
-    public static void main(String[] args) {
-        String plain = "cafe";
-        String accent = "café";
-        String emoji = "hi😀";
-
-        System.out.println(plain.length());                                   // 4
-        System.out.println(accent.length());                                  // 4
-        System.out.println(emoji.length());                                   // 4  (the emoji uses 2 chars)
-        System.out.println(emoji.codePointCount(0, emoji.length()));          // 3  (real characters)
-
-        System.out.println(plain.getBytes(StandardCharsets.UTF_8).length);    // 4
-        System.out.println(accent.getBytes(StandardCharsets.UTF_8).length);   // 5  (é = 2 bytes)
-        System.out.println(emoji.getBytes(StandardCharsets.UTF_8).length);    // 6  (😀 = 4 bytes)
-
-        System.out.println(Character.isSurrogate(emoji.charAt(2)));          // true
-        System.out.println(Integer.toHexString(emoji.codePointAt(2)));        // 1f600
-
-        StringBuilder out = new StringBuilder();
-        emoji.codePoints().forEach(cp -> out.append(Character.toChars(cp)).append('|'));
-        System.out.println(out);                                              // h|i|😀|
-
-        // hashCode is computed from the characters and cached
-        System.out.println("ab".hashCode());                                  // 3105  (97*31 + 98)
-        System.out.println("Aa".hashCode() == "BB".hashCode());               // true  (a collision)
-
-        // switch on a String uses hashCode() and then equals()
-        String day = "SAT";
-        switch (day) {
-            case "SAT", "SUN" -> System.out.println("weekend");               // weekend
-            default -> System.out.println("weekday");
-        }
-    }
-}
-```
-
----
-
-## 13. Common mistakes
-
-| Mistake | What happens | Fix |
-|---|---|---|
-| `if (a == b)` for content | Works sometimes (pool), fails other times | `a.equals(b)` |
-| `input.equals("yes")` when `input` may be null | `NullPointerException` | `"yes".equals(input)` or `Objects.equals` |
-| `s.toUpperCase();` without assigning | Nothing changes | `s = s.toUpperCase();` |
-| `+=` in a loop | O(n²), slow on big input | `StringBuilder` |
-| `charAt(s.length())` | `StringIndexOutOfBoundsException` | Last index is `length() - 1` |
-| `arr.length()` / `s.length` | Doesn't compile | Array → `length`, String → `length()` |
-| `split(".")` or `split("|")` | Wrong result | `split("\\.")`, `split("\\|")` |
-| `charArray.toString()` | Prints `[C@1b6d…` | `new String(arr)` |
-| `Integer.parseInt(" 42")` | `NumberFormatException` | `trim()` first |
-| `new String("x")` everywhere | Extra objects | Use literals |
-| `getBytes()` with no charset | Different results on different machines | `getBytes(StandardCharsets.UTF_8)` |
-| `length()` on emoji text | Counts UTF-16 units, not characters | `codePointCount` |
-| `substring(1, 3)` expected to include index 3 | Off-by-one | The end is **excluded** |
-
----
-
-## 14. Interview questions
-
-<details><summary>1. What is a String in Java? Is it a primitive?</summary>
-
-An object of the `final` class `java.lang.String`: an immutable sequence of UTF-16 characters. It is **not** a primitive, but the language gives it special support: literals, `+`, and `switch`.
-</details>
-
-<details><summary>2. Why is String immutable?</summary>
-
-The pool can share objects safely, values that were checked (paths, URLs, class names) can't change, it is thread-safe with no locks, the `hashCode` can be cached for fast `HashMap` keys, and class loading is reliable.
-</details>
-
-<details><summary>3. What is the String pool? Where is it?</summary>
-
-A table holding one shared copy of each literal (and of each interned String). It moved from PermGen to the main heap in Java 7.
-</details>
-
-<details><summary>4. What is the difference between == and equals()?</summary>
-
-`==` compares references (same object?). `equals()` compares the characters. Always use `equals` for content.
-</details>
-
-<details><summary>5. How many objects does new String("abc") create?</summary>
-
-One or two: the pooled literal `"abc"` (if it isn't already there) plus one new heap object.
-</details>
-
-<details><summary>6. What does intern() do?</summary>
-
-It returns the canonical pooled copy with the same content, adding it to the pool if it is missing. After that, `==` works between interned Strings.
-</details>
-
-<details><summary>7. String vs StringBuilder vs StringBuffer?</summary>
-
-`String` is immutable. `StringBuilder` is mutable, not synchronized, and fastest. `StringBuffer` is mutable and synchronized, so it is slower. Use `StringBuilder` unless threads share the buffer.
-</details>
-
-<details><summary>8. Why is += in a loop slow?</summary>
-
-Each iteration creates a new String and copies everything built so far, which is O(n²) in total. One `StringBuilder` makes it O(n).
-</details>
-
-<details><summary>9. Why is "a" + "b" == "ab" true, but a + "b" == "ab" false (when a is a variable)?</summary>
-
-Literal concatenation is a compile-time constant, so it becomes the pooled `"ab"`. With a non-final variable, the String is built at runtime as a new object. If `a` is `final` and initialised with a literal, the result is `true` again.
-</details>
-
-<details><summary>10. Why is char[] preferred over String for passwords?</summary>
-
-A String stays in memory (and possibly the pool) until garbage collection, and it can't be wiped. A `char[]` can be overwritten with zeros right after use. It is also less likely to be printed in logs by accident.
-</details>
-
-<details><summary>11. Can String be extended? Why is it final?</summary>
-
-No. Making it final stops subclasses from breaking immutability or security, and it allows JVM optimisations.
-</details>
-
-<details><summary>12. How does compareTo work?</summary>
-
-It returns the difference of the first pair of characters that differ. If one String is a prefix of the other, it returns the difference in length. The result is 0 when the Strings are equal.
-</details>
-
-<details><summary>13. What are Compact Strings?</summary>
-
-Since Java 9, Strings store a `byte[]` plus a coder. LATIN-1 text uses 1 byte per character, which halves the character storage (the object header and fields stay the same, so "hello" goes from 56 to 48 bytes).
-</details>
-
-<details><summary>14. Why does "hi😀".length() return 4?</summary>
-
-`length()` counts UTF-16 code units. The emoji is a surrogate pair (2 units). `codePointCount` gives 3.
-</details>
-
-<details><summary>15. How does switch work with Strings?</summary>
-
-The compiler switches on `hashCode()`, then calls `equals()` to confirm and handle collisions. A `null` selector throws `NullPointerException`.
-</details>
-
----
-
-## 15. Practice
-
-1. **Easy:** count the vowels in `"Programming in Java"` → `6`.
-2. **Predict the output:**
-   ```java
-   String x = "Java";
-   String y = x;
-   x = x + "Script";
-   String z = "Java";
-   System.out.println(y + " " + (y == z) + " " + x.length());
-   ```
-3. **Medium:** are two Strings anagrams? `("listen", "silent")` → `true`, `("rat", "car")` → `false`.
-4. **Medium:** capitalise each word: `"  hello   java WORLD "` → `"Hello Java World"`.
-5. **Medium:** letter frequency: `"banana"` → `"a3b1n2"`.
-6. **Hard:** run-length compression: `"aaabbc"` → `"a3b2c1"`.
-
-<details><summary>Solutions</summary>
-
-**2.** `Java true 10`. `y` still points to the original `"Java"`, which is the same pooled object as `z`. `x` points to a new `"JavaScript"` with 10 characters.
-
-**Key ideas:** 1. Use `"aeiou".indexOf(c) >= 0`. 3. Count with `int[26]`: add for one String and subtract for the other, then check that every count is zero. This is O(n). 4. Use `split("\\s+")`, upper-case the first letter, lower-case the rest, and join with a `StringBuilder`. 5. Use `counts[c - 'a']++`. 6. Walk each run of the same character and append the character and its count.
-
-```java
-import java.util.Arrays;
-
-public class Solutions {
-
-    // 1. Count vowels (case-insensitive)
-    static int countVowels(String s) {
-        int count = 0;
-        for (char c : s.toLowerCase().toCharArray()) {
-            if ("aeiou".indexOf(c) >= 0) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    // 3. Anagram check: same letters, same counts
-    static boolean isAnagram(String a, String b) {
-        if (a.length() != b.length()) {
-            return false;
-        }
-        int[] counts = new int[26];
-        for (int i = 0; i < a.length(); i++) {
-            counts[a.charAt(i) - 'a']++;
-            counts[b.charAt(i) - 'a']--;
-        }
-        for (int c : counts) {
-            if (c != 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    // 4. Capitalize the first letter of every word
-    static String capitalizeWords(String sentence) {
-        StringBuilder sb = new StringBuilder();
-        for (String word : sentence.trim().split("\\s+")) {
-            if (sb.length() > 0) {
-                sb.append(' ');
-            }
-            sb.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase());
-        }
-        return sb.toString();
-    }
-
-    // 5. Character frequency for lowercase letters
-    static String frequency(String s) {
-        int[] counts = new int[26];
-        for (char c : s.toCharArray()) {
-            if (c >= 'a' && c <= 'z') {
-                counts[c - 'a']++;
-            }
-        }
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 26; i++) {
-            if (counts[i] > 0) {
-                sb.append((char) ('a' + i)).append(counts[i]);
-            }
-        }
-        return sb.toString();
-    }
-
-    // 6. Run-length compression: "aaabbc" → "a3b2c1"
-    static String compress(String s) {
-        StringBuilder sb = new StringBuilder();
-        int i = 0;
-        while (i < s.length()) {
-            char c = s.charAt(i);
-            int run = 0;
-            while (i < s.length() && s.charAt(i) == c) {
-                i++;
-                run++;
-            }
-            sb.append(c).append(run);
-        }
-        return sb.toString();
-    }
-
-    public static void main(String[] args) {
-        System.out.println(countVowels("Programming in Java"));   // 6
-        System.out.println(isAnagram("listen", "silent"));        // true
-        System.out.println(isAnagram("rat", "car"));              // false
-        System.out.println(capitalizeWords("  hello   java WORLD "));   // Hello Java World
-        System.out.println(frequency("banana"));                  // a3b1n2
-        System.out.println(compress("aaabbc"));                   // a3b2c1
-        System.out.println(compress(""));                         // (empty line)
-
-        // 2. Predict the output
-        String x = "Java";
-        String y = x;
-        x = x + "Script";
-        String z = "Java";
-        System.out.println(y + " " + (y == z) + " " + x.length());   // Java true 10
-        System.out.println(Arrays.toString("a-b".split("-")));      // [a, b]
-    }
-}
-```
-</details>
-
----
-
-## 16. Revision
-
-**Cheat sheet**
-
-```
-WHAT       String = immutable object, sequence of UTF-16 chars, final class, java.lang
-CREATE     "lit" (pool) · new String("x") (new heap object) · valueOf · new String(char[])
-COMPARE    equals (content) · == (reference) · equalsIgnoreCase · compareTo (order) · Objects.equals (null-safe)
-POOL       literals shared · new → not pooled · intern() → pooled · "a"+"b" compile-time constant
-IMMUTABLE  methods return NEW strings → reassign: s = s.trim()
-INDEX      0 .. length()-1 · charAt · substring(begin, end) end EXCLUDED
-CHAR MATH  c - '0' → digit · c - 'a' → 0..25 · (char)(c + 1) · 'a' = 97, 'A' = 65, '0' = 48
-BUILD      StringBuilder in loops · StringBuffer only if shared by threads · String.join / StringJoiner
-CONVERT    parseInt / valueOf · String.valueOf(x) · toCharArray / new String(arr) · NEVER arr.toString()
-REGEX      split/replaceAll/matches take regex → escape . | $ * + ? · split drops trailing ""
-UNICODE    emoji = 2 chars · codePoints() · getBytes(UTF_8) · Java 9 compact strings (byte[] + coder)
-```
-
-**Rapid fire**
-
-| Question | Answer |
-|---|---|
-| Does `String` need an import? | No, it is in `java.lang` |
-| `"" == null`? | `false`. Empty is an object |
-| Last index of `s`? | `s.length() - 1` |
-| `"abc".substring(1, 2)`? | `"b"` |
-| `"a,b,,".split(",").length`? | `2` |
-| `'a' + 1`? | `98` (an int) |
-| Which builder is thread-safe? | `StringBuffer` |
-| Is a String's `hashCode` cached? | Yes |
-| `"Apple".compareTo("apple")`? | `-32` |
-| `"1.2".split(".").length`? | `0` |
-
-**Self-check: can you explain these without notes?**
-
-- [ ] What a String is, and how it differs from `char` and from `null`
-- [ ] Literal vs `new`, the String pool, and `intern()`
-- [ ] Why String is immutable (5 reasons)
-- [ ] `==` vs `equals` vs `compareTo`, and the null-safe style
-- [ ] `char` arithmetic and the `int[26]` counting trick
-- [ ] The main methods by category, plus `substring` and `split` gotchas
-- [ ] String vs `StringBuilder` vs `StringBuffer`, and why `+=` in a loop is slow
-- [ ] Conversions, including the `toString()` trap with `char[]`
-- [ ] Format specifiers and text blocks
-- [ ] Regex escaping with `split` and `replaceAll`
-- [ ] UTF-16, surrogate pairs, Compact Strings, and the cached `hashCode`
-
----
-
-## 17. Playground and live editor
-
-The course page `java/lessons/01-strings.html` mirrors this lesson. It has these interactive parts:
-
-- **String Pool visualizer:** pick a line of code (literal, `new`, `intern()`, concatenation, a `final` constant) and watch where each variable points. It also shows the `==` and `equals` results.
-- **Method explorer:** type any text, choose a method (`length`, `charAt`, `indexOf`, `substring`, `split`, `replace`, `repeat`…), and see the result as Java would return it.
-- **Character inspector:** type text, including emoji, and see each `char`, its number, and its code point. It compares `length()`, the code-point count, and the UTF-8 byte count.
-- **Live editors:** every code block can be edited. Each has a **Suggestions on/off** switch (it applies to every editor and is remembered), Reset, Copy, an "● edited" marker, and a status bar.
-  - **What is suggested:** methods after a dot, based on the type (`s.`, `sb.`, `chars.`, `System.out.`, `Character.`, `Arrays.`, `Math.`, `Integer.`, `Objects.`, `String.`), your own variables and methods, keywords and class names. Partial matches work, such as `tCA` → `toCharArray`.
-  - **Snippets:** `sout`, `psvm`, `fori`, `forr`, `foreach`, `swap`, `ifnull`, `sb`, `tca`.
-  - **Keys:** `Ctrl`+`Space` opens suggestions, `↑`/`↓` choose, `Enter`/`Tab` accept, `Esc` closes, `Ctrl`+`/` comments lines, and `Tab`/`Shift`+`Tab` change the indent.
-- **Playground tasks** (drafts are saved in the browser):
-
-| Task | Expected output |
-|---|---|
-| Count vowels | `6` |
-| Anagram | `true` · `false` |
-| Capitalize words | `Hello Java World` |
-| Letter frequency | `a3b1n2` |
-| Compress | `a3b2c1` |
-| Pool predictions | `true` · `false` · `true` · `false` |
-| Blank | — |
-
-The page can't compile Java. To run your code, copy it and run `java Playground.java` (JDK 11+). The editor loads CodeMirror 5 from a CDN, so it needs internet the first time.
-
----
-
-## 18. Your feedback
-
-Rate each from 1 to 5 and add comments: visual explanation, depth, code quality, interview coverage, and overall usefulness. Then tell me which topic should come next. Suggested order: String problems (reversal, palindrome, anagram, frequency) → `StringBuilder` deep dive → regex → Unicode.
-
-
----
+| `"hel" + "lo"` | Compile time (folded) | true |
+| `final String p = "hel"; p + "lo"` | Compile time (`p` is a constant) | true |
+| `String p = "hel"; p + "lo"` | Run time (new object) | false |
+| `(p + "lo").intern()` | Run time, then pooled | true |
+
+Since Java 9 run-time `+` uses `invokedynamic` with a recipe such as `"\u0001lo"` and no StringBuilder; before that javac emitted a StringBuilder. Either way the result is a fresh object. (`+` in a loop and StringBuilder: next lesson.)
+
+## 9. 10 interview questions
+
+1. What is a String? Is it a primitive? — An object of the final class `java.lang.String`, an immutable sequence of characters in a `byte[]`; not a primitive, but with language support (literals, `+`, `switch`).
+2. Stack or heap? — The variable is a reference in a stack frame (or a field); the object and its `byte[]` are on the heap; pooled Strings are heap objects since Java 7.
+3. What is the SCP, where is it? — One shared copy per literal / interned String; PermGen → heap in Java 7, so collectable.
+4. `==` vs `equals()` — references vs characters; always `equals`, literal first.
+5. Objects in `new String("abc")` — one or two: the pooled literal (if new) plus one heap object sharing the `byte[]`.
+6. `intern()` — returns the canonical pooled copy, adding this object's reference if missing; no copy since Java 7.
+7. Why immutable? — pool sharing, cached hash, thread safety, security, class loading.
+8. `"a" + "b" == "ab"` true but `a + "b" == "ab"` false — compile-time constant vs run-time object; `final` restores true.
+9. Passed by reference? — Always pass-by-value of the reference; reassigning the parameter never touches the caller's variable.
+10. Can String be extended? — No, `final`: protects immutability and security, allows JVM optimisations.
+
+## 10. Review
+
+Takeaways: (1) a String is an immutable object, the variable is a reference, object and `byte[]` on the heap; (2) literals go through the pool, one object per text; `new` makes a separate object; `intern()` returns the pooled one; (3) compile-time constants are folded and pooled, run-time results are fresh objects; (4) compare content with `equals`, literal first; (5) "changing" methods return a new String: reassign.
+
+Quiz `QZ.l01` (10 questions, B/I/A), recall prompts `RC.l01` (day 1 / 3 / 7, rendered in `#rcp` on the page), feedback stars `#rates` + comment box (copies a text to paste in the chat).
