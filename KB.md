@@ -8,7 +8,8 @@ The full text of the course lives in `kb/`, one file per lesson. The project not
 
 | # | Lesson | Page sections | Programs |
 |---|---|---|---|
-| 01 | What is a String, and where does it live? (`java/lessons/01-strings.html`) | 01–10 (`.band#str`, ids `st-*`) | 7 |
+| 00 | Java, the JDK and the two kinds of types (`java/lessons/00-foundations.html`) | 01–06 (`.band#fnd`, ids `fn-*`) | 2 |
+| 01 | What is a String, and where does it live? + the String methods playground (`java/lessons/01-strings.html`) | 01–11 (`.band#str`, ids `st-*`; `#smPlay` in 08) | 8 |
 | 02 | What is a Class and an Object? (`java/lessons/02-classes-objects.html`) | 01–10 (`.band#cls`, ids `co-*`) | 7 |
 | S00 | SQL — Databases and SQL foundations (`sql/00-foundations.html`) | `.band#sqlf` | 5 live editors |
 | PG | Java Visual Playground (`java/playground.html`): step through any program (`kb/playground.md`) | no sections | 22 examples |
@@ -19,6 +20,7 @@ Each lesson file starts with `# Lesson NN — Title`, and its sections are `## N
 
 | File | Holds |
 |---|---|
+| `kb/lesson-00-foundations.md` | Lesson 00 — Java, the JDK and the two kinds of types (what Java is, javac → bytecode → JVM, JDK ⊃ JRE ⊃ JVM, stack / heap / Metaspace, the eight primitives vs reference types; live 2026-10-25) |
 | `kb/lesson-01-strings.md` | Lesson 01 — What is a String, and where does it live? (the object, creating one, stack/heap/SCP, new String(), == vs equals, immutability, compile-time vs run-time; live 2026-10-24) |
 | `kb/lesson-02-classes-objects.md` | Lesson 02 — What is a Class and an Object? (class vs object, members, what `new` does and defaults, stack/heap/Metaspace, references and null, constructors and `this`, static vs instance, toString/equals/hashCode, mistakes; live 2026-10-25) |
 | `kb/playground.md` | The Java Visual Playground (`java/playground.html`): how `jvm-lite.js` interprets Java and records steps, the supported subset and what is not supported, the step and record format, the page's drawing rules, measurements, testing recipes, and the 50 test programs with their JDK 25 output (2026-10-25) |

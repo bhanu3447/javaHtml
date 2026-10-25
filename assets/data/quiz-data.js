@@ -27,6 +27,40 @@ RC.s00={d1:[["Table, row, column, primary key: the four cabinet words?","Drawer,
  d7:[["WHERE vs HAVING?","Rows before grouping vs groups after; only HAVING can use aggregates."],["What does the database do with a statement that violates a key?","Refuses the whole statement; nothing is half-written."],["Is row order without ORDER BY guaranteed?","No. Only ORDER BY guarantees it."]]};
 
 /* Lesson 01 (What is a String? where it lives, the String Constant Pool). Every output was checked on JDK 25. */
+QZ.l00=[
+{lv:"B",q:`What does <code>javac Hello.java</code> produce?`,
+ o:[`A program that runs only on this computer`,`<code>Hello.class</code>: bytecode that any JVM can run`,`A JVM`,`The output of the program`],
+ a:1,e:`The compiler turns source text into <b>bytecode</b>, a <code>.class</code> file that is the same on every operating system. Running it is the job of the <code>java</code> command, which starts a JVM.`},
+{lv:"B",q:`Which one do you install to write Java programs?`,
+ o:[`The JVM`,`The JRE`,`The JDK`,`Bytecode`],
+ a:2,e:`Only the <b>JDK</b> has <code>javac</code> and the other tools. It contains the JRE (the class library) and the JVM, so one install gives you all three.`},
+{lv:"B",q:`How many primitive types does Java have?`,
+ o:[`4`,`6`,`8`,`As many as you declare`],
+ a:2,e:`Eight: <code>byte short int long float double char boolean</code>. Everything else, including <code>String</code> and arrays, is a reference type.`},
+{lv:"B",q:`<code>int a = 10; int b = a; b = b + 1;</code> What is <code>a</code> now?`,
+ o:[`10`,`11`,`0`,`It depends on the JVM`],
+ a:0,e:`A primitive variable holds the value itself, so <code>b = a</code> copied the number 10 into <code>b</code>. Changing <code>b</code> afterwards cannot touch <code>a</code>.`},
+{lv:"I",q:`<code>int[] x = {1, 2, 3}; int[] y = x; y[0] = 99;</code> What is <code>x[0]</code>?`,
+ o:[`1`,`99`,`0`,`Compile error`],
+ a:1,e:`An array is an object, so <code>x</code> and <code>y</code> are <b>references</b>. <code>y = x</code> copied the address: both names point at the same array, and the change is visible through either.`},
+{lv:"I",q:`Which line does <b>not</b> compile?`,
+ o:[`<code>String s = null;</code>`,`<code>int[] a = null;</code>`,`<code>int n = null;</code>`,`<code>Integer n = null;</code>`],
+ a:2,e:`<code>null</code> means "no object", so only reference variables can hold it. <code>int</code> is a primitive and always holds a number; <code>Integer</code> is the wrapper class, a reference, so it may be null.`},
+{lv:"I",q:`<code>System.out.println(7 / 2);</code> prints…`,
+ o:[`3.5`,`3`,`4`,`3.0`],
+ a:1,e:`Both operands are <code>int</code>, so the division is integer division and the fraction is dropped. Write <code>7 / 2.0</code> to get 3.5.`},
+{lv:"I",q:`Where does the JVM keep a method's local variables, the objects they point at, and the loaded classes?`,
+ o:[`All on the heap`,`Stack, heap, Metaspace`,`Heap, stack, Metaspace`,`Metaspace, heap, stack`],
+ a:1,e:`Local variables live in a <b>stack</b> frame, objects on the <b>heap</b>, and each loaded class in <b>Metaspace</b>. Lesson 01 uses this picture for Strings.`}
+];
+RC.l00={
+ d1:[[`What are JDK, JRE and JVM?`,`JVM runs bytecode; JRE = JVM + the class library; JDK = JRE + tools such as <code>javac</code>. Install the JDK.`],
+     [`Name the eight primitive types.`,`<code>byte short int long float double char boolean</code>. Everything else is a reference type.`]],
+ d3:[[`Why does the same <code>.class</code> file run on Windows and Linux?`,`It is bytecode, not machine code. Each OS has its own JVM that reads the same bytecode.`],
+     [`What happens when you copy a primitive variable, and when you copy a reference variable?`,`Primitive: the value is copied; the two variables are independent. Reference: the address is copied; both variables point at the same object.`]],
+ d7:[[`Explain stack, heap and Metaspace to a friend in three sentences.`,`The stack holds each running method's variables and is cleared when the method returns. The heap holds every object until the garbage collector finds nothing pointing at it. Metaspace holds the loaded classes.`],
+     [`Why can an <code>int</code> never be null, but an <code>Integer</code> can?`,`<code>int</code> is a primitive that always holds a number. <code>Integer</code> is a wrapper class, so the variable is a reference and may point at nothing.`]]
+};
 QZ.l01=[
 {lv:"B",q:`Which statement about <code>String</code> is true?`,
  o:[`It is a primitive type, like <code>char</code>`,`It is an object of the <code>final</code> class <code>java.lang.String</code>, and its characters can't change`,`It is a mutable object; methods such as <code>toUpperCase()</code> change it in place`,`It must be imported before use`],
@@ -64,6 +98,12 @@ System.out.println(built.intern() == built);</code></pre>`,
 {lv:"A",q:`<code>String a = "x"; String b = a + "y";</code> on JDK 9 or later. How many String objects, if nothing was pooled before?`,
  o:[`1`,`2: pooled <code>"x"</code> and <code>"xy"</code> on the heap`,`3: <code>"x"</code>, <code>"y"</code> and <code>"xy"</code>`,`4`],
  a:1,e:`<code>"x"</code> is pooled. <code>a + "y"</code> is a run-time concatenation (<code>a</code> is not <code>final</code>), so <code>"xy"</code> is a new heap object that is not pooled. Since Java 9 the constant part <code>"y"</code> lives inside the invokedynamic recipe, not as a pooled String; before Java 9 it was pooled, making 3.`}
+,{lv:"B",q:`<code>String s = "Hello"; s.toUpperCase(); System.out.println(s.substring(1, 3));</code> What is printed?`,
+ o:[`<code>EL</code>`,`<code>el</code>`,`<code>ell</code>`,`<code>ELL</code>`],
+ a:1,e:`<code>toUpperCase()</code> returned a new String that nobody kept, so <code>s</code> is still <code>"Hello"</code>. <code>substring(1, 3)</code> keeps indexes 1 and 2 (the end index is excluded): <code>"el"</code>. Try both in the methods playground.`},
+{lv:"I",q:`<code>"a.b.c".split(".")</code> returns…`,
+ o:[`<code>["a", "b", "c"]</code>`,`<code>["a.b.c"]</code>`,`an empty array`,`it throws PatternSyntaxException`],
+ a:2,e:`<code>split</code> takes a <b>regex</b>, and <code>.</code> matches every character, so every piece is empty and the trailing empty strings are removed: an empty array. Write <code>split("\\\\.")</code>, or avoid the regex with <code>replace</code>. The same trap exists for <code>replaceAll</code>, <code>replaceFirst</code> and <code>matches</code>.`}
 ];
 RC.l01={
  d1:[[`What is a String in Java?`,`An immutable object of the <code>final</code> class <code>java.lang.String</code>: a sequence of characters stored in a <code>byte[]</code>, with a cached hash.`],
