@@ -13,6 +13,7 @@ The full text of the course lives in `kb/`, one file per lesson. The project not
 | 02 | What is a Class and an Object? (`java/lessons/02-classes-objects.html`) | 01–10 (`.band#cls`, ids `co-*`) | 7 |
 | S00 | SQL — Databases and SQL foundations (`sql/00-foundations.html`) | `.band#sqlf` | 5 live editors |
 | PG | Java Visual Playground (`java/playground.html`): step through any program (`kb/playground.md`) | no sections | 22 examples |
+| SP | Spring Boot Annotations Lab (`spring/index.html`, notes `kb/spring-annotations-lab.md`): first run, basics + IoC lab, proxies, HTTP, pipeline, flow, 5-scenario simulator, data visuals, 75-card reference, recall, quiz | `#hello #basics #proxy #http #dispatch #flow #simulator #datavis #annotations #di #recall #quiz` | 9 files, 5 scenarios, 22 quiz Qs |
 
 Each lesson file starts with `# Lesson NN — Title`, and its sections are `## N. Title`. A new lesson gets a new `kb/lesson-NN-name.md` and a row in both tables.
 
@@ -26,6 +27,7 @@ Each lesson file starts with `# Lesson NN — Title`, and its sections are `## N
 | `kb/playground.md` | The Java Visual Playground (`java/playground.html`): how `jvm-lite.js` interprets Java and records steps, the supported subset and what is not supported, the step and record format, the page's drawing rules, measurements, testing recipes, and the 50 test programs with their JDK 25 output (2026-10-25) |
 | `kb/sql-00-foundations.md` | SQL 00 — Databases and SQL foundations (live, 2026-10-23) |
 | `kb/sql-course-plan.md` | Build prompt for the SQL course + course switcher (2026-10-23; phase 1 built, S00 live) |
+| `kb/spring-annotations-lab.md` | Spring Boot Annotations Lab (`spring/index.html`): sections, data model (`files`, `A`, `byName`, `scenarios`), test hook `window.SPRING`, headless test recipe (rebuilt 2026-10-26) |
 | `kb/site-internals.md` | How the engine works (editors, suggestions, themes, sidebar, palette, motion, localStorage keys), the testing recipes and the full change log. Its "Lessons in detail" part describes the v1 lessons, now in `archive/java-v1/`. |
 | `kb/style-audit-plan.md` | The theme-wise style and colour audit: the prompt (rules, method, acceptance), the findings of the 2026-10-24 run, the accepted exceptions and how to re-run it |
 | `kb/ux-pass-plan.md` | The UI/UX pass prompt (reading measure, button system, touch targets, focus, editors, mobile rhythm) with its findings and result |

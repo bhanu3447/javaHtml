@@ -51,6 +51,7 @@ h1 .grad{background:linear-gradient(92deg,var(--accent),var(--accent-2));-webkit
 .course.soon::before{display:none}
 .course.java{--c:#f97316;--c2:#ef4444}
 .course.sql{--c:#0ea5e9;--c2:#6366f1}
+.course.spring{--c:#22c55e;--c2:#06b6d4}
 footer{padding:0 0 40px;color:var(--muted);font-size:13px}
 footer a{color:inherit}
 @media (prefers-reduced-motion:reduce){.btn,.course,.course .go{transition:none}}
@@ -130,6 +131,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <div class="csw-m" role="menu" hidden>
       <a role="menuitem" tabindex="-1" data-c="java" href="java/index.html"><i class="k-java">J</i><span><b>Java</b><small>Zero to Advanced · Lessons 01–02 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="sql" href="sql/index.html"><i class="k-sql">S</i><span><b>SQL</b><small>Zero to Advanced · S00 live</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="spring" href="spring/index.html"><i class="k-sql">S</i><span><b>Spring Boot</b><small>Interactive annotations lab</small></span></a>
     </div>
   </div>
   <a class="gh" href="https://github.com/bhanu3447/javaHtml">GitHub</a>
@@ -161,6 +163,13 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <span class="st"><span><b>1</b> lesson live</span><span><b>10</b> planned</span><span><b>5</b> visual labs</span><span><b>5</b> live editors</span><span><b>12</b> quiz questions</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
+  <a class="course spring" href="spring/index.html">
+    <span class="ic" aria-hidden="true">S</span>
+    <b>Spring Boot: Annotations Lab</b>
+    <p>Trace a live API request through Controller, Service, Repository and Database. Click each layer, inspect the matching code, run GET and POST simulations, and learn the annotations that wire it together.</p>
+    <span class="st"><span><b>5</b> request stages</span><span><b>11</b> annotations</span><span><b>2</b> API simulations</span><span><b>7</b> code files</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
   <div class="course soon" aria-hidden="true">
     <span class="ic">+</span>
     <b>Next course</b>
@@ -174,7 +183,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 <script>
 /* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
 (function(){try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
-  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"){var a=document.getElementById("cont");a.href=c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":"Java";a.hidden=false;}}catch(e){}
+  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"){var a=document.getElementById("cont");a.href=c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":"Java";a.hidden=false;}}catch(e){}
   /* course menu: the same control as the nav of every course page (button + menu, Esc / arrows / click outside) */
   var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m"),items=function(){return Array.prototype.slice.call(m.querySelectorAll("a"));};
   function open(o){m.hidden=!o;bt.setAttribute("aria-expanded",String(o));if(o)items()[0].focus();}
