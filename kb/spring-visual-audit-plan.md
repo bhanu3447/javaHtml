@@ -68,5 +68,13 @@ Tools (scratchpad): `gallery.js` + `gx.sh` (state gallery: drives a visual throu
 
 Result: gallery reviewed in light and dark (proxy, IoC + lifecycle, pipeline + exits, transactions ok + fail, entity states, N+1, data morph, flow, stereotype tree, first run, HTTP anatomy, request map for get1, postBad, get99). Geometry and controls: 0 findings in 102 states (the same check finds 96 on the pre-audit page). Contrast: 0 failures in all nine themes; accepted exceptions: gradient text (`.grad` "Java", shared with the Java/SQL heroes) and the gradient `.btn.primary` (text `--bg` on `--accent`), which the checker cannot composite. Behaviour 42/42 at 1280, 900 and 500 px; all labels fit; no console errors on any page.
 
+### Run 2 (2026-10-27, user screenshot of proxy step 5: "not understanding where the stage is")
+| # | Finding | Fix |
+|---|---|---|
+| 13 | No lab said in the picture which step it shows; the caption sat beside the code | Every stepper gets a "STEP n / N · title" bar on top of its picture pane (`.stg-now`, written by `stepper()`) |
+| 14 | Proxy diagram: the three proxy jobs were plain text lines, the two methods one box, the self-call a tiny curl on the box edge | Redrawn (`.pxsvg`, 640 × 390): proxy jobs are rows that go current → ✓ done; `create()` and `audit()` are separate boxes; step 5 draws a red arrow `this.audit()` from create() to audit() and the route through the proxy dashed with a red ✗; a transaction bar shows OPEN → "audit() also runs inside #1, REQUIRES_NEW ignored" (amber) → COMMIT ✓ (green); arrows have heads; state per step is explicit (no hit-testing) |
+
+Checks after run 2: geometry 0 findings in 102 states, all labels fit, behaviour 42/42, contrast 0 non-gradient failures, no console errors.
+
 ### How to re-run
 Copy the scratchpad tools from a session that has them, or rebuild them from this description; run the gallery per visual in light and dark, then `geo.js`, `contrast.js`, `fit.js`, `test-v4.js`; review every frame against the rules before fixing.
