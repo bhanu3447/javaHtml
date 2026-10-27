@@ -29,6 +29,7 @@ Each lesson file starts with `# Lesson NN — Title`, and its sections are `## N
 | `kb/sql-course-plan.md` | Build prompt for the SQL course + course switcher (2026-10-23; phase 1 built, S00 live) |
 | `kb/spring-annotations-lab.md` | Spring Boot Annotations Lab (`spring/index.html`): sections, data model (`files`, `A`, `byName`, `scenarios`), test hook `window.SPRING`, headless test recipe (rebuilt 2026-10-26) |
 | `kb/site-internals.md` | How the engine works (editors, suggestions, themes, sidebar, palette, motion, localStorage keys), the testing recipes and the full change log. Its "Lessons in detail" part describes the v1 lessons, now in `archive/java-v1/`. |
+| `kb/spring-visual-audit-plan.md` | The Spring lab visual audit, state by state: the prompt (inventory of every visual and state, rules, method, acceptance) and the 2026-10-27 run (12 findings and fixes) |
 | `kb/style-audit-plan.md` | The theme-wise style and colour audit: the prompt (rules, method, acceptance), the findings of the 2026-10-24 run, the accepted exceptions and how to re-run it |
 | `kb/ux-pass-plan.md` | The UI/UX pass prompt (reading measure, button system, touch targets, focus, editors, mobile rhythm) with its findings and result |
 | `kb/appendix-effects.md` | Appendix — page effects internals (moved from CLAUDE.md on 2026-10-21) |
