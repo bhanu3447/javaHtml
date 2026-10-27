@@ -85,5 +85,10 @@ Checks after run 2: geometry 0 findings in 102 states, all labels fit, behaviour
 
 Checks after run 3: behaviour 42/42 at 1280 and 500 px, all labels fit, geometry 0 findings in 102 states, contrast clean, every related link resolves, no console errors.
 
+### Run 4 (2026-10-28, user: "in run request why next is not there, it goes fast, how will I understand")
+| # | Finding | Fix |
+|---|---|---|
+| 18 | The simulator ran a request on a 620 ms timer with no way to pause or step | Stepped simulator: Start shows step 1; Back / Next move one step (map, code panel and log together); Auto plays at 2.2 s per step and toggles to Pause; the pill shows STEP n / N; the log shows one line per step, the current one highlighted and earlier ones faded; choosing another request resets. `run(k)` (test hook) jumps straight to the last step. Checked by scratchpad `simtest.js` (12 checks) |
+
 ### How to re-run
 Copy the scratchpad tools from a session that has them, or rebuild them from this description; run the gallery per visual in light and dark, then `geo.js`, `contrast.js`, `fit.js`, `test-v4.js`; review every frame against the rules before fixing.
