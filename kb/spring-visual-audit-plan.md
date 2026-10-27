@@ -90,5 +90,8 @@ Checks after run 3: behaviour 42/42 at 1280 and 500 px, all labels fit, geometry
 |---|---|---|
 | 18 | The simulator ran a request on a 620 ms timer with no way to pause or step | Stepped simulator: Start shows step 1; Back / Next move one step (map, code panel and log together); Auto plays at 2.2 s per step and toggles to Pause; the pill shows STEP n / N; the log shows one line per step, the current one highlighted and earlier ones faded; choosing another request resets. `run(k)` (test hook) jumps straight to the last step. Checked by scratchpad `simtest.js` (12 checks) |
 
+### Run 5 (2026-10-28, user: "any annotations or concepts missed?" then "add all this")
+Added nine concept labs (auto-configuration, filter vs interceptor, Spring Security 401/403, propagation, isolation, pagination, calling other services, Kafka, observability, OpenAPI) and 48 annotation cards. The label-fit estimate was tightened from 0.60 to 0.63 em after one label rendered clipped while passing; four near-misses fixed. Checks: geometry 0 findings in 162 states, all labels fit (8,400+), behaviour 42/42 and simulator 12/12 at 1280 and 500 px, contrast clean, every related link resolves, no console errors.
+
 ### How to re-run
 Copy the scratchpad tools from a session that has them, or rebuild them from this description; run the gallery per visual in light and dark, then `geo.js`, `contrast.js`, `fit.js`, `test-v4.js`; review every frame against the rules before fixing.
