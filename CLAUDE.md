@@ -69,4 +69,5 @@ Skeleton: `<body data-page="l01" data-name="Lesson 01 · …" data-short="L01">`
 - Write files containing backslashes with the Write tool, not Bash heredocs or `node -e` (the Bash tool mangles `\`; a heredoc holding one fails with "unexpected EOF").
 
 ## Change log (recent; older entries in `kb/site-internals.md`)
+- 2026-10-28: **Spring lab v8**: pipeline as a vertical flowchart, request map step caption, 12 missing annotation cards added (87 cards). Run 3 in `kb/spring-visual-audit-plan.md`.
 - 2026-10-27: **Spring lab v6: visual audit, state by state** (user: "when next clicking proper visualization not there… first make prompt, use that"): prompt and findings in `kb/spring-visual-audit-plan.md` (14 fixes incl. a STEP n / N bar on every lab picture and a redrawn proxy diagram; one focus per step, pipeline exits, consistent tx numbers, label/arrow overlaps, morph and flow layouts, contrast in all nine themes). v5/v4 same day: shared theme + system, request map, data morph. Details: `kb/spring-annotations-lab.md`.

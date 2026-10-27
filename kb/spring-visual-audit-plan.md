@@ -76,5 +76,14 @@ Result: gallery reviewed in light and dark (proxy, IoC + lifecycle, pipeline + e
 
 Checks after run 2: geometry 0 findings in 102 states, all labels fit, behaviour 42/42, contrast 0 non-gradient failures, no console errors.
 
+### Run 3 (2026-10-28, user: "implement the visualization in a much more understandable way, this looks clumsy; are all annotations there?")
+| # | Finding | Fix |
+|---|---|---|
+| 15 | Pipeline: seven 70-px stops in one row, seven exits under them, 10-px text | Top-to-bottom flowchart (`.dpsvg`, 560 × 470): each stop a wide row with a title and one-line job, its exits to the right in red, the advice box bottom right; the dot rides the current row; same ids and logic; clicking an exit writes "EXIT 415 · the request leaves at …" into the step bar |
+| 16 | Request map: packet covered box titles, sub-labels on the box edge, no step number while running | Packet rides 8 px above the box; labels moved inward; caption shows "STEP n / N" plus the step text during a run |
+| 17 | Annotation coverage: 13 common annotations missing | 12 cards added (87 cards): @Conditional, @CookieValue, @RequestPart, @Past / @Future, @Transient, @Lob, @Secured, @AutoConfigureMockMvc, @TestConfiguration, @Sql, @DirtiesContext, @ActiveProfiles (ResponseEntity is a class, not an annotation) |
+
+Checks after run 3: behaviour 42/42 at 1280 and 500 px, all labels fit, geometry 0 findings in 102 states, contrast clean, every related link resolves, no console errors.
+
 ### How to re-run
 Copy the scratchpad tools from a session that has them, or rebuild them from this description; run the gallery per visual in light and dark, then `geo.js`, `contrast.js`, `fit.js`, `test-v4.js`; review every frame against the rules before fixing.
