@@ -26,6 +26,8 @@ Each lesson file starts with `# Lesson NN — Title`, and its sections are `## N
 | `kb/lesson-02-classes-objects.md` | Lesson 02 — What is a Class and an Object? (class vs object, members, what `new` does and defaults, stack/heap/Metaspace, references and null, constructors and `this`, static vs instance, toString/equals/hashCode, mistakes; live 2026-10-25) |
 | `kb/playground.md` | The Java Visual Playground (`java/playground.html`): how `jvm-lite.js` interprets Java and records steps, the supported subset and what is not supported, the step and record format, the page's drawing rules, measurements, testing recipes, and the 50 test programs with their JDK 25 output (2026-10-25) |
 | `kb/sql-00-foundations.md` | SQL 00 — Databases and SQL foundations (live, 2026-10-23) |
+| `kb/design-patterns-plan.md` | Build prompt for the Design Patterns course (`patterns/`, 8 lessons P00–P07, patterns in three interview tiers, 7 phases; written 2026-10-28, not built yet) |
+| `kb/lld-plan.md` | Build prompt for the later Low-Level Design course (`lld/`: concurrency, 7-step method, 19 case studies, timed machine coding; after the patterns course) |
 | `kb/sql-course-plan.md` | Build prompt for the SQL course + course switcher (2026-10-23; phase 1 built, S00 live) |
 | `kb/spring-annotations-lab.md` | Spring Boot Annotations Lab (`spring/index.html`): sections, data model (`files`, `A`, `byName`, `scenarios`), test hook `window.SPRING`, headless test recipe (rebuilt 2026-10-26) |
 | `kb/site-internals.md` | How the engine works (editors, suggestions, themes, sidebar, palette, motion, localStorage keys), the testing recipes and the full change log. Its "Lessons in detail" part describes the v1 lessons, now in `archive/java-v1/`. |
