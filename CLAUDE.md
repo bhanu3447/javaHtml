@@ -38,6 +38,7 @@ A multi-page static site, no build step (opens from `file://`; the folder is in 
 | `assets/data/sql-index.js` | **Generated** by `node scripts/build-index.mjs sql`. |
 | `assets/data/sql-seed.js` | The one database every SQL lesson uses (car dealership, 6 tables, 59 rows; facts in its header comment). |
 | `assets/labs/labs-sql.js` | SQL kit (`SQ.ready/run/grid/editor/stepper`; sql.js 1.13.0 from cdnjs; `<script type="text/x-sql" data-auto>` → editor with ▶ Run) + S00 labs (`sq-` classes). |
+| `spring/index.html` | **Spring Boot lab**, third course (`data-course="spring"`; index: `node scripts/build-index.mjs spring`). Lab CSS scoped under `.spl`, script in an IIFE. Notes: `kb/spring-annotations-lab.md`. |
 | `index.html` | **The hub**: the single entry page listing every course. Self-contained, loads no course script. New course = new folder + a card here. |
 
 Every Java page loads, in this order: `course-index, quiz-data, course, effects, [labs-<lesson>…], run-java` (classic scripts sharing one global scope: never reuse a top-level name across files). **Don't create other files** (no backups or `-v2` copies). A new lesson = `kb/lesson-NN-name.md` + `java/lessons/NN-name.html` (+ a `labs-*.js` only if it has many labs).
@@ -68,4 +69,4 @@ Skeleton: `<body data-page="l01" data-name="Lesson 01 · …" data-short="L01">`
 - Write files containing backslashes with the Write tool, not Bash heredocs or `node -e` (the Bash tool mangles `\`; a heredoc holding one fails with "unexpected EOF").
 
 ## Change log (recent; older entries in `kb/site-internals.md`)
-- 2026-10-27: **Spring lab v4: more visualization** (user: "more visualization I am expecting"): live request map `#rjMap` in the simulator, "one user, six shapes" `#dmLab` in the flow section, a where-it-acts map in every reference card, stereotype lineage on hover. 42/42 headless checks at 1280 and 500 px. Details: `kb/spring-annotations-lab.md`.
+- 2026-10-27: **Spring lab v5**: same theme and system as Java/SQL (user: "same as the sql and java"); string boxes, proxy labels and bean-scope row fixed. v4 same day: request map, data morph, where-it-acts maps. Details: `kb/spring-annotations-lab.md`.

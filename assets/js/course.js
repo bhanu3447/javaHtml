@@ -61,7 +61,7 @@ const thisPage=PAGES.find(p=>p.key===PAGE);
    jumps to the other course's home and remembers the choice (js1-course, read by index.html). */
 const COURSE_ID=document.body.dataset.course||"java";
 /* every course of the site, in hub order; a new course = one more row here + its folder + a card in index.html */
-const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 8 lessons",file:"java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · S00 live",file:"sql/index.html",k:"S"}];
+const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 8 lessons",file:"java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · S00 live",file:"sql/index.html",k:"S"},{id:"spring",name:"Spring Boot",sub:"Annotations lab · request lifecycle",file:"spring/index.html",k:"B"}];
 (function(){const b=$("nav .brand");if(!b)return;const cur=COURSES.find(c=>c.id===COURSE_ID)||COURSES[0];
   const w=document.createElement("div");w.className="csw";w.id="courseSel";w.dataset.value=cur.id;
   w.innerHTML='<button type="button" class="csw-b" aria-haspopup="menu" aria-expanded="false" aria-label="Switch course: '+cur.name+'"><span>'+cur.name+'</span>'+ICO.chev+'</button>'+
@@ -1180,7 +1180,7 @@ const THM=(function(){
   /* hero headline: words rise in */
   const h1=$("header h1");
   if(h1&&!$(".w",h1)){[...h1.childNodes].forEach(n=>{
-    if(n.nodeType===3&&n.textContent.trim()){const s=document.createElement("span");s.className="w";s.textContent=n.textContent.trim();h1.replaceChild(s,n);h1.insertBefore(document.createTextNode(" "),s.nextSibling);}
+    if(n.nodeType===3&&n.textContent.trim()){if(/^s/.test(n.textContent)&&n.previousSibling)h1.insertBefore(document.createTextNode(" "),n);const s=document.createElement("span");s.className="w";s.textContent=n.textContent.trim();h1.replaceChild(s,n);h1.insertBefore(document.createTextNode(" "),s.nextSibling);}
     else if(n.nodeType===1)n.classList.add("w");});}
 
   /* live code window: types a program, runs it, prints the real JDK 25 output, then moves to the next */

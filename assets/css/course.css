@@ -2452,7 +2452,8 @@ nav .csw-b svg,.csw-b svg{width:14px;height:14px;color:var(--muted);transition:t
 .csw-m a:hover,.csw-m a:focus-visible{background:var(--soft);outline:none}
 .csw-m a i{flex:none;width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font:700 .8rem "JetBrains Mono",monospace;font-style:normal;color:#fff;background:linear-gradient(135deg,var(--accent-fill),var(--accent-2-fill))}
 .csw-m a i.k-sql{background:linear-gradient(135deg,#0f766e,#1d4ed8)}
-.csw-m a i.k-hub{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.csw-m a i.k-spring{background:linear-gradient(135deg,#15803d,#0d9488)}
+.k-hub{background:var(--soft);color:var(--muted);border:1px solid var(--line)}
 .csw-m a i svg{width:16px;height:16px}
 .csw-m a span{display:flex;flex-direction:column;line-height:1.25;min-width:0}
 .csw-m a b{font:600 .86rem Inter,sans-serif}
