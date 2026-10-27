@@ -113,6 +113,78 @@ footer{border-top:1px solid var(--line);padding:35px 0 50px;color:var(--muted);f
 @media(max-width:900px){.hero,.sim,.stage-detail,.family{grid-template-columns:1fr}.hero{padding-top:55px}.annotation-grid{grid-template-columns:repeat(2,1fr)}.compare,.startup{grid-template-columns:1fr}.architecture{grid-template-columns:1fr 1fr}.arch:after{display:none}.navlinks{display:none}}
 @media(max-width:480px){.wrap{width:min(100% - 28px,1180px)}.annotation-grid{grid-template-columns:1fr}.title{font-size:31px}section{padding:48px 0}.architecture{grid-template-columns:1fr}.search{margin-left:0}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}html{scroll-behavior:auto}}
+/* v4 request journey map (rj-), data morph (dm-), where-it-acts map (wm-), stereotype lineage (2026-10-27) */
+.rj{padding:18px 18px 14px;margin:0 0 18px}
+.rj-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.rj-head .pill{align-self:center}
+.rj-cap{color:var(--muted);font-size:13px;margin:0;flex:1 1 260px}
+.rj svg{width:100%;height:auto;display:block;font-family:JetBrains Mono,monospace;overflow:visible}
+.rj-n rect{fill:#0a1624;stroke:#1d3952;stroke-width:1.5;transition:fill .35s,stroke .35s}
+.rj-n text{fill:#91a8ba;font-size:10.5px;text-anchor:middle;transition:fill .35s}
+.rj-n .rj-t{fill:#e9f3fb;font-weight:600;font-size:11.5px}
+.rj svg.narrow .rj-n .rj-t{font-size:10.5px}.rj svg.narrow .rj-n text{font-size:10px}
+.rj-n.done rect{stroke:#2f6f8f;fill:#0c1f31}
+.rj-n.on rect{stroke:var(--cyan);fill:#10283c;filter:drop-shadow(0 0 10px rgba(67,230,192,.55))}
+.rj-n.on text{fill:#e9f3fb}
+.rj-n.err rect{stroke:var(--red);fill:#3a1718;filter:drop-shadow(0 0 10px rgba(255,123,123,.5))}
+.rj-n.ok rect{stroke:var(--green);fill:#0f3324;filter:drop-shadow(0 0 10px rgba(128,223,112,.5))}
+.rj-l{fill:none;stroke:#1f425c;stroke-width:2;transition:stroke .35s}
+.rj-l.side{stroke-dasharray:5 5}
+.rj-l.done{stroke:#2f7fa3}
+.rj-badge{font-size:11px;fill:var(--cyan);text-anchor:middle;font-weight:600;opacity:0;transition:opacity .3s}
+.rj-badge.show{opacity:1}
+.rj-badge.err{fill:var(--red)}
+.rj-tx path{fill:rgba(67,230,192,.04);stroke:var(--cyan);stroke-width:1.5;stroke-dasharray:7 5;transition:stroke .35s,fill .35s,opacity .35s}
+.rj-tx text{font-size:10.5px;fill:var(--cyan);font-weight:600;transition:fill .35s}
+.rj-tx.commit path{stroke:var(--green);fill:rgba(128,223,112,.06)}.rj-tx.commit text{fill:var(--green)}
+.rj-tx.rollback path{stroke:var(--red);fill:rgba(255,123,123,.06)}.rj-tx.rollback text{fill:var(--red)}
+.rj-tx.off{opacity:0}
+.rj-pk{transition:transform .55s cubic-bezier(.45,.05,.3,1)}
+.rj-pk circle{fill:var(--orange);filter:drop-shadow(0 0 8px rgba(255,173,91,.8))}
+.rj-pk.back circle{fill:var(--cyan);filter:drop-shadow(0 0 8px rgba(67,230,192,.8))}
+.rj-pk.bad circle{fill:var(--red);filter:drop-shadow(0 0 8px rgba(255,123,123,.8))}
+.rj-pk.off{opacity:0}
+.rj-pk text{font-size:9px;fill:#07111b;font-weight:700;text-anchor:middle}
+.rj-status{font-size:13px;font-weight:700;text-anchor:middle;fill:var(--green)}
+.rj-status.err{fill:var(--red)}
+.rj-legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:12px;margin-top:8px}
+.rj-legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+.dm{padding:20px;margin-top:18px}
+.dm-head{display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.dm-head h3{margin:0 0 4px}
+.dm-head p{margin:0;color:var(--muted);font-size:14px}
+.dm-head>div{flex:1 1 320px;min-width:0}
+.dm-track{position:relative;height:28px;margin:16px 6px 6px}
+.dm-rail{position:absolute;left:0;right:0;top:13px;height:2px;background:#1d3952;border-radius:2px}
+.dm-fill{position:absolute;left:0;top:13px;height:2px;background:linear-gradient(90deg,var(--orange),var(--cyan));border-radius:2px;transition:width .6s ease}
+.dm-tok{position:absolute;top:2px;width:24px;height:24px;margin-left:-12px;border-radius:50%;background:var(--orange);box-shadow:0 0 14px rgba(255,173,91,.7);display:grid;place-items:center;font:700 10px JetBrains Mono,monospace;color:#07111b;transition:left .6s cubic-bezier(.45,.05,.3,1),background .4s}
+.dm-tok.back{background:var(--cyan);box-shadow:0 0 14px rgba(67,230,192,.7)}
+.dm-cards{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.dm-c{border:1px solid var(--line);border-radius:12px;background:#0a1624;padding:10px;min-width:0;opacity:.45;transform:translateY(6px);transition:opacity .4s,transform .4s,border-color .4s,box-shadow .4s;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.dm-c.seen{opacity:.75;transform:none}
+.dm-c.on{opacity:1;transform:translateY(-3px);border-color:var(--cyan);box-shadow:0 8px 24px rgba(67,230,192,.15)}
+.dm-c:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.dm-c small{display:block;font:600 10px JetBrains Mono,monospace;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+.dm-c b{display:block;font-size:13px;margin:3px 0 6px}
+.dm-c pre{margin:0;padding:8px;font-size:10.5px;line-height:1.45;white-space:pre-wrap;word-break:break-word;background:var(--code);border-radius:8px;min-height:92px}
+.dm-c .new{color:var(--orange);font-weight:700;animation:dmPulse 1.4s ease-in-out 2}
+.dm-c table{width:100%;border-collapse:collapse;font:10.5px JetBrains Mono,monospace;margin-top:4px}
+.dm-c td,.dm-c th{border:1px solid var(--line);padding:3px 4px;text-align:left}
+.dm-c th{color:var(--muted);font-weight:600}
+.dm-c .annos{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px}
+.dm-c .anno{font-size:10.5px;padding:3px 7px}
+@keyframes dmPulse{50%{color:#fff;text-shadow:0 0 10px var(--orange)}}
+.dm-note{margin:12px 0 0;color:var(--muted);font-size:14px;min-height:42px}
+.wm svg{width:100%;height:auto;display:block;font-family:JetBrains Mono,monospace;margin-top:6px}
+.wm .rj-n text{font-size:10px}
+.wm .rj-n.on rect{animation:wmGlow 1.6s ease-in-out infinite}
+.wm-cap{color:var(--muted);font-size:13px;margin:6px 0 0}
+@keyframes wmGlow{50%{filter:drop-shadow(0 0 16px rgba(67,230,192,.8))}}
+.tree .node.lit{border-color:var(--cyan);color:#e9f3fb;box-shadow:0 0 0 1px var(--cyan),0 0 16px rgba(67,230,192,.35)}
+.lineage{margin:12px 0 0;font:600 12.5px JetBrains Mono,monospace;color:var(--cyan);min-height:20px}
+@media(max-width:900px){.dm-cards{grid-template-columns:repeat(3,minmax(0,1fr))}.dm-track{display:none}}
+@media(max-width:560px){.dm-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){.rj-pk,.dm-tok,.dm-fill{transition:none}.dm-c .new,.wm .rj-n.on rect{animation:none}}
 </style></head>
 <body>
 <nav><div class="wrap"><a class="brand" href="../index.html"><span class="mark">S</span>Spring Lab</a><div class="navlinks"><a href="#hello">First run</a><a href="#basics">Basics</a><a href="#proxy">Proxies</a><a href="#http">HTTP</a><a href="#dispatch">Pipeline</a><a href="#flow">Flow</a><a href="#simulator">Simulator</a><a href="#annotations">Reference</a><a href="#datavis">Data</a><a href="#recall">Recall</a><a href="#quiz">Quiz</a></div></div></nav>
@@ -203,9 +275,9 @@ footer{border-top:1px solid var(--line);padding:35px 0 50px;color:var(--muted);f
 <circle class="dot hide" id="dDot" r="7" cx="44" cy="20"/>
 </svg><div class="bootnote" id="dExitNote">The red boxes are the exits. Click one to read why that status code is sent from that stop.</div></div></div></section>
 
-<section id="flow"><span class="eyebrow">CLICK A LAYER</span><h2 class="title">One request, five responsibilities.</h2><p class="intro">A controller speaks HTTP. A service holds business rules. A repository speaks to data. The entity mirrors a table. Keeping these jobs separate makes change safe and tests small. Click a layer to see its class and the annotations on it; click an annotation to open its reference card.</p><div class="card flow-shell"><div class="flow" id="flowNodes"><button class="flow-node active" style="--node:#55c7ff" data-stage="controller"><div class="icon">◫</div><b>Controller</b><small>HTTP in / JSON out</small></button><i class="arrow"></i><button class="flow-node" style="--node:#7fe39d" data-stage="service"><div class="icon">⚙</div><b>Service</b><small>Business logic + transaction</small></button><i class="arrow"></i><button class="flow-node" style="--node:#c0a5ff" data-stage="repository"><div class="icon">▣</div><b>Repository</b><small>Data access</small></button><i class="arrow"></i><button class="flow-node" style="--node:#ffbb72" data-stage="database"><div class="icon">⌁</div><b>Entity / DB</b><small>Object ↔ row</small></button><i class="arrow"></i><button class="flow-node" style="--node:#50dfc0" data-stage="response"><div class="icon">↩</div><b>Response</b><small>DTO → JSON</small></button></div><div class="stage-detail card"><div class="stage-copy"><h3 id="stageTitle"></h3><p id="stageText"></p><div class="annos" id="stageAnnos"></div></div><div class="codebox"><div class="caption" id="stageFile"></div><pre id="stageCode"></pre></div></div></div></section>
+<section id="flow"><span class="eyebrow">CLICK A LAYER</span><h2 class="title">One request, five responsibilities.</h2><p class="intro">A controller speaks HTTP. A service holds business rules. A repository speaks to data. The entity mirrors a table. Keeping these jobs separate makes change safe and tests small. Click a layer to see its class and the annotations on it; click an annotation to open its reference card.</p><div class="card flow-shell"><div class="flow" id="flowNodes"><button class="flow-node active" style="--node:#55c7ff" data-stage="controller"><div class="icon">◫</div><b>Controller</b><small>HTTP in / JSON out</small></button><i class="arrow"></i><button class="flow-node" style="--node:#7fe39d" data-stage="service"><div class="icon">⚙</div><b>Service</b><small>Business logic + transaction</small></button><i class="arrow"></i><button class="flow-node" style="--node:#c0a5ff" data-stage="repository"><div class="icon">▣</div><b>Repository</b><small>Data access</small></button><i class="arrow"></i><button class="flow-node" style="--node:#ffbb72" data-stage="database"><div class="icon">⌁</div><b>Entity / DB</b><small>Object ↔ row</small></button><i class="arrow"></i><button class="flow-node" style="--node:#50dfc0" data-stage="response"><div class="icon">↩</div><b>Response</b><small>DTO → JSON</small></button></div><div class="stage-detail card"><div class="stage-copy"><h3 id="stageTitle"></h3><p id="stageText"></p><div class="annos" id="stageAnnos"></div></div><div class="codebox"><div class="caption" id="stageFile"></div><pre id="stageCode"></pre></div></div></div><div class="card dm" id="dmLab"><div class="dm-head"><div><span class="pill">VISUAL LAB · ONE USER, SIX SHAPES</span><h3 data-t style="margin-top:10px"></h3><p data-d></p></div></div><div class="dm-track" aria-hidden="true"><div class="dm-rail"></div><div class="dm-fill"></div><div class="dm-tok">REQ</div></div><div class="dm-cards"></div><div class="ctl"><button class="btn" data-a="back">◀ Back</button><button class="btn primary" data-a="next">Next ▶</button><button class="btn" data-a="play">▶ Play</button><span class="pos" data-pos></span></div></div></section>
 
-<section id="simulator"><span class="eyebrow">LIVE CODE SIMULATOR</span><h2 class="title">Run a request. Watch the code wake up.</h2><p class="intro">Pick one of four requests and press Run. Each step prints what Spring does, opens the file responsible and highlights the annotation that made it happen. Two requests succeed, one fails validation (400) and one asks for a user that does not exist (404), so you also see <code>@Valid</code> and <code>@RestControllerAdvice</code> at work. It is a faithful simulation, not a JVM in the browser.</p><div class="sim"><div class="card sim-card"><div class="tabs" id="tabs"></div><div class="codebox"><pre id="fileCode"></pre></div></div><div class="card sim-card"><div class="api-row" id="apiRow"></div><div class="reqbox" id="reqBox"></div><div class="simhead"><span class="pill" id="simState">IDLE</span><button class="btn primary" id="run">▶ Run request</button></div><div class="terminal" id="terminal"><span class="ok">● Application ready</span>
+<section id="simulator"><span class="eyebrow">LIVE CODE SIMULATOR</span><h2 class="title">Run a request. Watch the code wake up.</h2><p class="intro">Pick one of five requests and press Run. The map above shows the packet travelling through every layer, while each step prints what Spring does, opens the file responsible and highlights the annotation that made it happen. Three requests succeed, one fails validation (400) and one asks for a user that does not exist (404), so you also see <code>@Valid</code> and <code>@RestControllerAdvice</code> at work. It is a faithful simulation, not a JVM in the browser.</p><div class="card rj" id="rjMap"><div class="rj-head"><span class="pill">REQUEST MAP · LIVE</span><p class="rj-cap"></p></div><svg role="img" aria-label="Map of a request travelling from the client through filters, the DispatcherServlet, the controller, validation, the service proxy and the repository to the database, and back"></svg><div class="rj-legend"><span><i style="background:var(--orange)"></i>request going in</span><span><i style="background:var(--cyan)"></i>response coming back</span><span><i style="background:var(--red)"></i>error path</span><span><i style="border:1.5px dashed var(--cyan);border-radius:3px"></i>transaction boundary</span></div></div><div class="sim"><div class="card sim-card"><div class="tabs" id="tabs"></div><div class="codebox"><pre id="fileCode"></pre></div></div><div class="card sim-card"><div class="api-row" id="apiRow"></div><div class="reqbox" id="reqBox"></div><div class="simhead"><span class="pill" id="simState">IDLE</span><button class="btn primary" id="run">▶ Run request</button></div><div class="terminal" id="terminal"><span class="ok">● Application ready</span>
 <span class="dim">Tomcat started on port 8080 (http)
 Choose a request, then press Run.</span></div></div></div></section>
 
@@ -228,14 +300,14 @@ Choose a request, then press Run.</span></div></div></div></section>
 
 <section id="annotations"><span class="eyebrow">ANNOTATION REFERENCE</span><h2 class="title">The annotations you will actually use.</h2><p class="intro">75 cards covering 95+ annotations, grouped the way a project is layered. The badge shows where the annotation goes: <b>C</b> class, <b>M</b> method, <b>F</b> field, <b>P</b> parameter. Click a card for what it does, its syntax, the attributes worth knowing, related annotations and the classic mistake.</p><div class="filters" id="filters"><input class="search" id="search" type="search" placeholder="Search… e.g. path, transaction, 404" aria-label="Search annotations"></div><div id="annotationList"></div></section>
 
-<section id="di"><span class="eyebrow">BEANS AND DEPENDENCY INJECTION</span><h2 class="title">One family of stereotypes, one container.</h2><p class="intro">Every stereotype is <code>@Component</code> underneath. The specialisations add intent (and, for <code>@Repository</code>, exception translation; for <code>@RestController</code>, <code>@ResponseBody</code>). The container creates one bean per class and hands each one the beans its constructor asks for.</p><div class="family"><div class="card tree"><span class="node" data-open="@Component">@Component</span><small>“make a bean of this class”</small><div class="lvl"><div><span class="node" data-open="@Controller">@Controller</span><div class="lvl"><div><span class="node" data-open="@RestController">@RestController</span><small>+ @ResponseBody</small></div></div></div><div><span class="node" data-open="@Service">@Service</span><small>business layer</small></div><div><span class="node" data-open="@Repository">@Repository</span><small>+ exception translation</small></div><div><span class="node" data-open="@Configuration">@Configuration</span><small>holds @Bean methods</small></div></div></div><div class="card"><h3>Constructor injection, the preferred way</h3><p>Fields are <code>final</code>, the object is complete the moment it exists, and a unit test can call <code>new UserService(fakeRepo)</code> with no Spring at all. With a single constructor, <code>@Autowired</code> is implied.</p><pre id="diCode" style="margin-top:14px"></pre></div></div><div class="architecture"><div class="arch"><strong>ApplicationContext</strong><span>the container</span></div><div class="arch"><strong>UserController</strong><span>@RestController bean</span></div><div class="arch"><strong>UserService</strong><span>@Service bean</span></div><div class="arch"><strong>UserRepository</strong><span>@Repository bean (JPA proxy)</span></div></div></section>
+<section id="di"><span class="eyebrow">BEANS AND DEPENDENCY INJECTION</span><h2 class="title">One family of stereotypes, one container.</h2><p class="intro">Every stereotype is <code>@Component</code> underneath. The specialisations add intent (and, for <code>@Repository</code>, exception translation; for <code>@RestController</code>, <code>@ResponseBody</code>). The container creates one bean per class and hands each one the beans its constructor asks for.</p><div class="family"><div class="card tree"><span class="node" data-open="@Component">@Component</span><small>“make a bean of this class”</small><div class="lvl"><div><span class="node" data-open="@Controller">@Controller</span><div class="lvl"><div><span class="node" data-open="@RestController">@RestController</span><small>+ @ResponseBody</small></div></div></div><div><span class="node" data-open="@Service">@Service</span><small>business layer</small></div><div><span class="node" data-open="@Repository">@Repository</span><small>+ exception translation</small></div><div><span class="node" data-open="@Configuration">@Configuration</span><small>holds @Bean methods</small></div></div></div><div class="card"><h3>Constructor injection, the preferred way</h3><p>Fields are <code>final</code>, the object is complete the moment it exists, and a unit test can call <code>new UserService(fakeRepo)</code> with no Spring at all. With a single constructor, <code>@Autowired</code> is implied.</p><pre id="diCode" style="margin-top:14px"></pre></div></div><p class="lineage" id="lineage" aria-live="polite"></p><div class="architecture"><div class="arch"><strong>ApplicationContext</strong><span>the container</span></div><div class="arch"><strong>UserController</strong><span>@RestController bean</span></div><div class="arch"><strong>UserService</strong><span>@Service bean</span></div><div class="arch"><strong>UserRepository</strong><span>@Repository bean (JPA proxy)</span></div></div></section>
 
 <section id="recall"><span class="eyebrow">RECALL AND INTERVIEW</span><h2 class="title">Say it out loud before you click.</h2><p class="intro">Recall beats rereading. Answer each prompt in your own words, then open it. Below, the ten questions interviewers actually ask, with answers you can give in thirty seconds.</p><div class="recall" id="recallBox"></div><div class="iv" id="ivBox"></div></section>
 
 <section id="quiz"><span class="eyebrow">CHECK YOURSELF</span><h2 class="title">Which annotation?</h2><p class="intro">Twenty-two questions. Filter by topic, pick an answer; the explanation appears immediately.</p><div class="qfilters" id="qfilters"></div><div class="quiz" id="quizBox"></div><div class="score" id="score"></div></section>
 </main>
 <footer><div class="wrap">Spring Boot Annotations Lab · A visual companion for learning the request lifecycle. Code targets Spring Boot 3.x / Spring Framework 6 / Jakarta EE 10.</div></footer>
-<div class="modal" id="modal" role="dialog" aria-modal="true"><article class="modal-box"><button class="close" aria-label="Close">×</button><h2 id="modalTitle"></h2><div class="meta" id="modalMeta"></div><p id="modalText"></p><h4>SYNTAX</h4><pre id="modalCode"></pre><h4 id="attrHead">ATTRIBUTES WORTH KNOWING</h4><ul id="modalAttrs"></ul><h4>RELATED</h4><div class="annos" id="modalRel"></div><h4>COMMON MISTAKE</h4><div class="mistake" id="modalMistake"></div></article></div>
+<div class="modal" id="modal" role="dialog" aria-modal="true"><article class="modal-box"><button class="close" aria-label="Close">×</button><h2 id="modalTitle"></h2><div class="meta" id="modalMeta"></div><p id="modalText"></p><h4>WHERE IT ACTS</h4><div class="wm" id="modalWhere"></div><h4>SYNTAX</h4><pre id="modalCode"></pre><h4 id="attrHead">ATTRIBUTES WORTH KNOWING</h4><ul id="modalAttrs"></ul><h4>RELATED</h4><div class="annos" id="modalRel"></div><h4>COMMON MISTAKE</h4><div class="mistake" id="modalMistake"></div></article></div>
 
 <script>
 /* ---------- the demo project (one source of truth for every code box) ---------- */
@@ -952,7 +1024,7 @@ Object.entries(scenarios).forEach(([k,s])=>{const b=document.createElement('butt
 function choose(k){chosen=k;document.querySelectorAll('.api').forEach(x=>x.classList.toggle('active',x.dataset.api===k));reqBox.textContent=scenarios[k].req;$('#heroReq').textContent=scenarios[k].req.split('\n')[0].replace(' HTTP/1.1','');$('#heroRes').textContent=scenarios[k].res}
 choose('get1');
 const wait=t=>new Promise(r=>setTimeout(r,t));const fast=matchMedia('(prefers-reduced-motion: reduce)').matches;
-async function run(k){if(running)return;if(k)choose(k);running=true;$('#run').disabled=true;simState.textContent='RUNNING';$('#simulator').scrollIntoView({behavior:fast?'auto':'smooth',block:'start'});terminal.textContent='';const s=scenarios[chosen];const t0=Date.now();for(const [cls,text,file,marks] of s.steps){if(file)showFile(file,marks);const span=document.createElement('span');span.className=cls;span.textContent=text+'\n';terminal.appendChild(span);terminal.scrollTop=terminal.scrollHeight;await wait(fast?60:620)}const d=document.createElement('span');d.className='dim';d.textContent='— '+(s.bad?'request rejected':'request completed')+' in '+(Date.now()-t0)+' ms (simulated). Click any tab to read the full file.\n';terminal.appendChild(d);terminal.scrollTop=terminal.scrollHeight;simState.textContent='DONE';running=false;$('#run').disabled=false}
+async function run(k){if(running)return;if(k)choose(k);running=true;$('#run').disabled=true;simState.textContent='RUNNING';$('#simulator').scrollIntoView({behavior:fast?'auto':'smooth',block:'start'});terminal.textContent='';const s=scenarios[chosen];const t0=Date.now();if(rj)rj.reset(chosen);let si=0;for(const [cls,text,file,marks] of s.steps){if(file)showFile(file,marks);if(rj)rj.step(chosen,si);si++;const span=document.createElement('span');span.className=cls;span.textContent=text+'\n';terminal.appendChild(span);terminal.scrollTop=terminal.scrollHeight;await wait(fast?60:620)}const d=document.createElement('span');d.className='dim';d.textContent='— '+(s.bad?'request rejected':'request completed')+' in '+(Date.now()-t0)+' ms (simulated). Click any tab to read the full file.\n';terminal.appendChild(d);terminal.scrollTop=terminal.scrollHeight;simState.textContent='DONE';running=false;$('#run').disabled=false}
 $('#run').onclick=()=>run();$('#runTop').onclick=()=>run('get1');
 
 
@@ -1291,6 +1363,131 @@ const qbox=$('#quizBox');let answered=0,correct=0;
 const quizTags=['anno','anno','beans','beans','data','beans','anno','beans','anno','http','beans','http','http','http'];quiz.forEach(([q,opts,ans,why,tag],i)=>{const d=document.createElement('div');d.className='card qq';d.dataset.g=tag||quizTags[i]||'anno';d.innerHTML='<h3>'+(i+1)+'. '+esc(q)+'</h3><div class="opts"></div><p class="why"></p>';const o=d.querySelector('.opts');opts.forEach((t,j)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=esc(t).replace(/(@[\w"().]+)/g,'<code>$1</code>');b.onclick=()=>{if(d.classList.contains('done'))return;d.classList.add('done');answered++;if(j===ans)correct++;o.querySelectorAll('.opt').forEach((x,k)=>{x.disabled=true;if(k===ans)x.classList.add('ok');else if(k===j)x.classList.add('no')});d.querySelector('.why').textContent=(j===ans?'Correct. ':'Not quite. ')+why;$('#score').textContent='Score: '+correct+' / '+answered+(answered===quiz.length?(correct===quiz.length?' · perfect.':correct>=16?' · solid, reread the ones you missed.':' · open the reference cards above and try again later.'):'')};o.appendChild(b)});qbox.appendChild(d)});
 
 const qTags={all:'All',anno:'Annotations',beans:'Beans & proxies',http:'HTTP & pipeline',data:'Data'};const qf=$('#qfilters');Object.entries(qTags).forEach(([k,l])=>{const b=document.createElement('button');b.className='chip'+(k==='all'?' active':'');b.dataset.q=k;b.textContent=l;b.onclick=()=>{document.querySelectorAll('#qfilters .chip').forEach(c=>c.classList.toggle('active',c===b));document.querySelectorAll('.qq').forEach(q=>q.style.display=(k==='all'||q.dataset.g===k)?'':'none')};qf.appendChild(b)});
+
+/* ---------- v4: request journey map (rj-), driven by run() ---------- */
+const SVGNS='http://www.w3.org/2000/svg';
+const rjNodes=[
+['client','Client','browser / curl'],['filter','Filters','security · CORS'],['disp','DispatcherServlet','front controller'],
+['ctrl','@RestController','UserController'],['valid','@Valid','Bean Validation'],['svc','@Service proxy','UserService'],
+['repo','@Repository','Spring Data proxy'],['db','Database','users table'],
+['json','Jackson','JSON ↔ object'],['advice','@RestControllerAdvice','exception → JSON']];
+const rjMain=['client','filter','disp','ctrl','valid','svc','repo','db'];
+/* node centres per layout; wide = one row + two side nodes, narrow = a snake that fits a phone.
+   bw2 = width of the two side nodes; tx = transaction outline around service, repository and database
+   (an L shape on phones so @Valid stays outside); sides = dashed links to Jackson and the advice. */
+const rjLayouts={
+wide:{w:1100,h:266,bw:124,bw2:172,big:['json','advice'],bh:54,pos:{client:[68,84],filter:[203,84],disp:[338,84],ctrl:[473,84],valid:[608,84],svc:[743,84],repo:[878,84],db:[1013,84],json:[405,206],advice:[608,206]},
+  tx:{d:'M671,24 H1087 V123 H671 Z',x:683,y:41},sides:{ljson:'M473,111 L405,179',ladvice:'M608,111 L608,179',ladvice2:'M500,111 L560,179'}},
+narrow:{w:400,h:440,bw:116,bw2:196,big:['advice'],bh:52,pos:{client:[62,50],filter:[190,50],disp:[318,50],ctrl:[318,160],valid:[190,160],svc:[62,160],repo:[62,280],db:[190,280],json:[318,280],advice:[216,390]},
+  tx:{d:'M0,120 H128 V242 H256 V318 H0 Z',x:8,y:113},sides:{ljson:'M318,186 L318,254',ladvice2:'M376,160 C398,160 398,390 314,390'}}};
+const rjW=(L,id)=>L.big.includes(id)?L.bw2:L.bw;
+/* which node each scenario step lands on (same length as scenarios[k].steps) */
+const rjRoutes={
+get1:['disp','ctrl','ctrl','svc','repo','db','repo','svc','json','client'],
+postOk:['disp','ctrl','json','valid','svc','svc','repo','db','repo','ctrl','client'],
+postBad:['disp','json','valid','valid','valid','advice','advice','client'],
+getQ:['disp','ctrl','ctrl','svc','repo','db','repo','svc','client'],
+get99:['ctrl','svc','db','svc','svc','advice','advice','client']};
+const rj=(()=>{
+  const box=document.getElementById('rjMap');if(!box)return null;
+  const svg=box.querySelector('svg'),cap=box.querySelector('.rj-cap');let L=null,mode='',cur='client',el={};
+  const mk=(tag,attrs,parent)=>{const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||svg).appendChild(e);return e};
+  function build(){
+    mode=box.clientWidth<640?'narrow':'wide';L=rjLayouts[mode];svg.innerHTML='';el={};
+    svg.setAttribute('viewBox','0 0 '+L.w+' '+L.h);svg.setAttribute('class',mode);
+    const P=L.pos;
+    el.tx=mk('g',{class:'rj-tx off'});mk('path',{d:L.tx.d},el.tx);el.txT=mk('text',{x:L.tx.x,y:L.tx.y},el.tx);el.txT.textContent='@Transactional · transaction open';
+    for(let i=0;i<rjMain.length-1;i++){const a=P[rjMain[i]],b=P[rjMain[i+1]];el['l'+rjMain[i+1]]=mk('path',{class:'rj-l',d:'M'+a[0]+','+a[1]+' L'+b[0]+','+b[1]})}
+    ['ljson','ladvice','ladvice2'].forEach(id=>{el[id]=L.sides[id]?mk('path',{class:'rj-l side',d:L.sides[id]}):document.createElementNS(SVGNS,'path')});
+    rjNodes.forEach(([id,t,s])=>{const [x,y]=P[id],w=rjW(L,id);const g=mk('g',{class:'rj-n','data-n':id});mk('rect',{x:x-w/2,y:y-L.bh/2,width:w,height:L.bh,rx:12},g);const a=mk('text',{x,y:y-3,class:'rj-t'},g);a.textContent=t;const b=mk('text',{x,y:y+14},g);b.textContent=s;el[id]=g;
+      el['b'+id]=mk('text',{class:'rj-badge',x,y:y+L.bh/2+16})});
+    const [cx,cy]=P.client;el.status=mk('text',{class:'rj-status',x:cx,y:cy+L.bh/2+18});
+    el.pk=mk('g',{class:'rj-pk off'});mk('circle',{r:11},el.pk);el.pkT=mk('text',{y:3},el.pk);el.pkT.textContent='REQ';
+    place('client',true);
+  }
+  function place(id,instant){const x=L.pos[id][0],y=L.pos[id][1]-L.bh/2;/* the packet rides on the top edge so it never hides a label */if(instant){el.pk.style.transition='none';el.pk.getBoundingClientRect()}el.pk.setAttribute('transform','translate('+x+','+y+')');el.pk.style.transform='translate('+x+'px,'+y+'px)';if(instant)requestAnimationFrame(()=>{el.pk.style.transition=''})}
+  function badge(id,txt,err){rjNodes.forEach(([n])=>el['b'+n].classList.remove('show'));if(!txt)return;const b=el['b'+id];b.textContent=txt.length>30?txt.slice(0,29)+'…':txt;b.classList.toggle('err',!!err);b.classList.add('show')}
+  function tx(state){el.tx.classList.remove('off','commit','rollback');if(!state){el.tx.classList.add('off');return}if(state!=='open')el.tx.classList.add(state);el.txT.textContent=state==='open'?'@Transactional · transaction open':state==='commit'?'@Transactional · committed ✓':'@Transactional · rolled back ✗'}
+  let txState=null;
+  function reset(k){if(!L)build();txState=null;tx(null);cur='client';el.status.textContent='';el.status.classList.remove('err');
+    rjNodes.forEach(([n])=>el[n].classList.remove('on','done','err','ok'));Object.keys(el).filter(x=>x[0]==='l').forEach(x=>el[x].classList.remove('done'));badge(null);
+    el.pk.classList.remove('off','back','bad');el.pkT.textContent='REQ';place('client',true);el.client.classList.add('on');
+    cap.textContent=scenarios[k].label+': the packet follows the request; each box lights up as its annotation does the work.'}
+  function step(k,i){const s=scenarios[k],[cls,text,,marks]=s.steps[i],to=rjRoutes[k][i],from=cur;
+    const ia=rjMain.indexOf(from),ib=rjMain.indexOf(to);
+    if(ia>=0&&ib>=0){const lo=Math.min(ia,ib),hi=Math.max(ia,ib);for(let j=lo;j<=hi;j++){if(j===lo||j===hi||['filter','disp','repo'].includes(rjMain[j]))el[rjMain[j]].classList.add('done');if(j>lo)el['l'+rjMain[j]].classList.add('done')}}
+    if(to==='json')el.ljson.classList.add('done');if(to==='advice'){el.ladvice.classList.add('done');el.ladvice2.classList.add('done')}
+    rjNodes.forEach(([n])=>el[n].classList.remove('on'));el[from].classList.add('done');
+    const err=cls==='err',last=i===s.steps.length-1;
+    const goingBack=to==='client'||(ia>=0&&ib>=0&&ib<ia)||to==='advice';
+    el.pk.classList.toggle('back',goingBack&&!(s.bad&&last));el.pk.classList.toggle('bad',err||(s.bad&&(to==='advice'||last)));
+    el.pkT.textContent=last?(s.res.split(' ')[0]):goingBack?'RES':(cls==='warn'?'SQL':'REQ');
+    place(to,false);cur=to;
+    if(last){el[to].classList.add(s.bad?'err':'ok');el.status.textContent=s.res.split('\n')[0];el.status.classList.toggle('err',s.bad);badge(null);
+      if(txState==='open')tx('commit');}
+    else{el[to].classList.add(err?'err':'on');
+      const anno=(marks||[]).map(m=>m.replace(/^=/,'')).find(m=>m.startsWith('@'));
+      badge(to,cls==='warn'?'SQL query':(err?'✗ ':'')+(anno||(marks&&marks[0])||''),err)}
+    if(/rolled back/i.test(text)){txState='rollback';tx('rollback')}
+    else if(/committed/i.test(text)&&txState){txState='commit';tx('commit')}
+    else if(/transaction/i.test(text)&&!/no transaction/i.test(text)&&!txState){txState='open';tx('open')}
+  }
+  build();let rw=0;addEventListener('resize',()=>{const m=box.clientWidth<640?'narrow':'wide';if(m!==mode&&!running){clearTimeout(rw);rw=setTimeout(()=>{build();reset(chosen)},150)}});
+  reset('get1');return{reset,step,build,get mode(){return mode}};
+})();
+
+/* ---------- v4: one user, six shapes (data morph in the flow section) ---------- */
+const dmShapes=[
+{st:'controller',k:'HTTP request',b:'JSON text arrives',code:'POST /api/users\nContent-Type: application/json\n\n{"name":"Mira",\n "email":"mira@demo.dev"}',an:['@PostMapping','@RequestBody'],t:'The request is just text: a method, a path, headers and a JSON body.',d:'<b>Controller layer.</b> <code>@PostMapping</code> picks the method and <code>@RequestBody</code> asks Jackson to read the body. Nothing is a Java object yet.'},
+{st:'controller',k:'Request DTO',b:'a validated record',code:'CreateUserRequest[\n  name  = "Mira",\n  email = "mira@demo.dev"\n]\n<span class="new">@Valid ✓ passed</span>',an:['@Valid','@NotBlank','@Email'],t:'Jackson builds a CreateUserRequest; @Valid checks it.',d:'<b>Still the controller.</b> The JSON became a <code>record</code>. Bean Validation runs <code>@NotBlank</code> and <code>@Email</code> before your method body; a failure stops here with 400.'},
+{st:'service',k:'Entity, transient',b:'a new Java object',code:'User {\n  id    = <span class="new">null</span>,\n  name  = "Mira",\n  email = "mira@demo.dev"\n}  // not saved yet',an:['@Transactional','@Service'],t:'The service turns the DTO into a User entity inside a transaction.',d:'<b>Service layer.</b> The <code>@Transactional</code> proxy has opened a transaction. <code>new User(…)</code> is <i>transient</i>: Hibernate does not know it yet, and it has no id.'},
+{st:'database',k:'Table row',b:'Hibernate writes SQL',code:'insert into users\n  (email, name)\nvalues (?, ?)',row:true,an:['@Entity','@Table','@Id','@GeneratedValue'],t:'repository.save() makes Hibernate write a row; the database picks the id.',d:'<b>Repository and database.</b> <code>@Entity</code>/<code>@Table</code> map the class to the <code>users</code> table. With <code>@GeneratedValue(IDENTITY)</code> the database assigns <code>id = 7</code> and Hibernate copies it back onto the entity.'},
+{st:'response',k:'Response DTO',b:'only what the client may see',code:'UserResponse[\n  id    = <span class="new">7</span>,\n  name  = "Mira",\n  email = "mira@demo.dev"\n]',an:['@RestController'],t:'UserResponse.from(user): the entity stays inside, a DTO goes out.',d:'<b>Back in the service.</b> The transaction commits. The entity never leaves the service; a small <code>UserResponse</code> record carries only the public fields.'},
+{st:'response',k:'HTTP response',b:'JSON text leaves',code:'201 Created\nContent-Type: application/json\n\n{"id":<span class="new">7</span>,"name":"Mira",\n "email":"mira@demo.dev"}',an:['@ResponseStatus','@ResponseBody'],t:'Jackson writes the DTO as JSON; @ResponseStatus sets 201.',d:'<b>Controller layer again.</b> <code>@RestController</code> implies <code>@ResponseBody</code>, so the return value is serialised to JSON. <code>@ResponseStatus(HttpStatus.CREATED)</code> turns 200 into 201.'}];
+const dmStage={controller:0,service:2,repository:3,database:3,response:4};
+const dm=(()=>{
+  const root=document.getElementById('dmLab');if(!root)return null;const wrap=root.querySelector('.dm-cards'),tok=root.querySelector('.dm-tok'),fill=root.querySelector('.dm-fill');
+  dmShapes.forEach((s,i)=>{const c=document.createElement('button');c.type='button';c.className='dm-c';c.dataset.i=i;
+    c.innerHTML='<small>'+(i+1)+' · '+esc(s.k)+'</small><b>'+esc(s.b)+'</b><pre>'+s.code+'</pre>'+(s.row?'<table aria-label="users table"><tr><th>id</th><th>name</th><th>email</th></tr><tr><td><span class="new">7</span></td><td>Mira</td><td>mira@…</td></tr></table>':'')+'<div class="annos"></div>';
+    const an=c.querySelector('.annos');s.an.forEach(a=>{const b=document.createElement('span');b.className='anno';b.textContent=a;b.onclick=e=>{e.stopPropagation();openAnno(a)};an.appendChild(b)});
+    wrap.appendChild(c)});
+  const cards=[...wrap.children];
+  const st=stepper(root,dmShapes,(s,i)=>{cards.forEach((c,j)=>{c.classList.toggle('on',j===i);c.classList.toggle('seen',j<i)});
+    const pct=(i+.5)/dmShapes.length*100;tok.style.left=pct+'%';fill.style.width=pct+'%';tok.classList.toggle('back',i>=4);tok.textContent=i>=4?'RES':'REQ'},2600);
+  cards.forEach((c,i)=>c.onclick=()=>{st.stop();st.show(i)});
+  document.querySelectorAll('.flow-node').forEach(n=>n.addEventListener('click',()=>{st.stop();st.show(dmStage[n.dataset.stage]||0)}));
+  return st;
+})();
+
+/* ---------- v4: where an annotation acts (mini map in the modal) ---------- */
+const wmGroup={
+boot:[['disp','ctrl','svc','repo'],'Read once at startup, while the container is built. Every box below is a bean it creates or configures.'],
+bean:[['ctrl','svc','repo'],'Decides which classes become beans and how the container wires them together.'],
+web:[['disp','ctrl'],'Works where the DispatcherServlet maps the request to a controller method and binds its parts.'],
+valid:[['valid'],'Runs between the request body and your method; a failure goes straight to the exception handler.'],
+data:[['repo','db'],'Lives in the data layer: the repository proxy and the mapping between objects and rows.'],
+error:[['advice'],'Catches exceptions thrown anywhere in the chain and turns them into an HTTP response.'],
+cross:[['svc'],'A proxy wraps the bean and adds behaviour around the call: before, after, or on another thread.'],
+security:[['filter'],'Runs in the filter chain, before the DispatcherServlet sees the request.'],
+json:[['json'],'Shapes how Jackson reads the request body and writes the response body.'],
+test:[[],'Test time: loads all of this picture, or one slice of it, without a real client.']};
+const wmName={'@Transactional':['svc','repo','db'],'@Service':['svc'],'@Repository':['repo'],'@Controller':['ctrl'],'@RestController':['ctrl','json'],'@RequestBody':['ctrl','json'],'@ResponseBody':['ctrl','json'],'@ResponseStatus':['ctrl','advice'],'@Valid':['valid'],'@Validated':['valid'],'@Entity':['db'],'@Table':['db'],'@Id':['db'],'@GeneratedValue':['db'],'@Column':['db'],'@Query':['repo','db'],'@EnableWebSecurity':['filter'],'@PreAuthorize':['svc'],'@Cacheable':['svc'],'@Async':['svc'],'@WebMvcTest':['disp','ctrl','json','advice'],'@DataJpaTest':['repo','db'],'@SpringBootTest':['filter','disp','ctrl','valid','svc','repo','db'],'@MockBean':['svc']};
+function wmShow(x){const host=document.getElementById('modalWhere');if(!host)return;const L=rjLayouts.wide;
+  const lit=wmName[x.n.split(/[\s/,]/)[0]]||(wmGroup[x.g]||[[]])[0];
+  let h='<svg viewBox="0 0 '+L.w+' '+L.h+'" role="img" aria-label="Where '+esc(x.n).replace(/"/g,'&quot;')+' acts in a request: '+(lit.join(', ')||'test setup')+'">';
+  for(let i=0;i<rjMain.length-1;i++){const a=L.pos[rjMain[i]],b=L.pos[rjMain[i+1]];h+='<path class="rj-l" d="M'+a+' L'+b+'"/>'}
+  Object.values(L.sides).forEach(d=>{h+='<path class="rj-l side" d="'+d+'"/>'});
+  rjNodes.forEach(([id,t,s])=>{const [cx,cy]=L.pos[id],w=rjW(L,id);h+='<g class="rj-n'+(lit.includes(id)?' on':'')+'"><rect x="'+(cx-w/2)+'" y="'+(cy-L.bh/2)+'" width="'+w+'" height="'+L.bh+'" rx="12"/><text x="'+cx+'" y="'+(cy-3)+'" class="rj-t">'+esc(t)+'</text><text x="'+cx+'" y="'+(cy+14)+'">'+esc(s)+'</text></g>'});
+  host.innerHTML=h+'</svg><p class="wm-cap">'+esc((wmGroup[x.g]||['',''])[1])+'</p>'}
+const _openAnno=openAnno;openAnno=function(name){_openAnno(name);const x=byName[name]||byName[(name||'').trim()];if(x)wmShow(x)};
+
+/* ---------- v4: stereotype lineage (hover or focus a node) ---------- */
+(()=>{const out=document.getElementById('lineage');if(!out)return;const nodes=[...document.querySelectorAll('.tree .node')];
+  const chain=n=>{const c=[n];let e=n;let lvl;while((lvl=e.parentElement&&e.parentElement.closest('.lvl'))){const owner=lvl.parentElement.querySelector(':scope > .node');if(!owner)break;c.push(owner);e=lvl}return c};
+  const lit=n=>{nodes.forEach(x=>x.classList.remove('lit'));if(!n){out.textContent='Hover or focus a stereotype to see what it is underneath.';return}const c=chain(n);c.forEach(x=>x.classList.add('lit'));out.textContent=c.map(x=>x.textContent).join('  is a  ')};
+  nodes.forEach(n=>{n.addEventListener('mouseenter',()=>lit(n));n.addEventListener('focus',()=>lit(n));n.addEventListener('mouseleave',()=>lit(null));n.addEventListener('blur',()=>lit(null))});lit(null)})();
+document.querySelectorAll('#apiRow .api').forEach(b=>b.addEventListener('click',()=>{if(rj&&!running)rj.reset(chosen)}));
+
 /* test hook */
-window.SPRING={files,stages,A,byName,scenarios,quiz,run,openAnno,showFile,buildList,SC,methods,iocSteps,iocShow,scShow,scBuild,hit,proxySteps,dispSteps,txStepsOk,txStepsFail,esActions,n1Run,recallQs,ivQs,bootLines};
+window.SPRING={files,stages,A,byName,scenarios,quiz,run,openAnno,showFile,buildList,SC,methods,iocSteps,iocShow,scShow,scBuild,hit,proxySteps,dispSteps,txStepsOk,txStepsFail,esActions,n1Run,recallQs,ivQs,bootLines,rj,rjRoutes,rjLayouts,dm,dmShapes,wmShow};
 </script></body></html>

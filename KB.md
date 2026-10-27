@@ -13,7 +13,7 @@ The full text of the course lives in `kb/`, one file per lesson. The project not
 | 02 | What is a Class and an Object? (`java/lessons/02-classes-objects.html`) | 01–10 (`.band#cls`, ids `co-*`) | 7 |
 | S00 | SQL — Databases and SQL foundations (`sql/00-foundations.html`) | `.band#sqlf` | 5 live editors |
 | PG | Java Visual Playground (`java/playground.html`): step through any program (`kb/playground.md`) | no sections | 22 examples |
-| SP | Spring Boot Annotations Lab (`spring/index.html`, notes `kb/spring-annotations-lab.md`): first run, basics + IoC lab, proxies, HTTP, pipeline, flow, 5-scenario simulator, data visuals, 75-card reference, recall, quiz | `#hello #basics #proxy #http #dispatch #flow #simulator #datavis #annotations #di #recall #quiz` | 9 files, 5 scenarios, 22 quiz Qs |
+| SP | Spring Boot Annotations Lab (`spring/index.html`, notes `kb/spring-annotations-lab.md`): first run, basics + IoC lab, proxies, HTTP, pipeline, flow + "one user, six shapes", live request map + 5-scenario simulator, data visuals, 75-card reference with a where-it-acts map, recall, quiz | `#hello #basics #proxy #http #dispatch #flow #simulator #datavis #annotations #di #recall #quiz` | 9 files, 5 scenarios, 22 quiz Qs |
 
 Each lesson file starts with `# Lesson NN — Title`, and its sections are `## N. Title`. A new lesson gets a new `kb/lesson-NN-name.md` and a row in both tables.
 
