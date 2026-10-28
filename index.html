@@ -220,7 +220,10 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");};
   if(!window.AUTH||!AUTH.on){show();return;}   /* lock off (file:// use): open as before */
-  var acct=document.getElementById("auAcct"),me=await AUTH.me();acct.hidden=false;
+  /* never leave the hub blank: if the check fails or hangs, show it (the cards hold no lesson content) */
+  var fail=setTimeout(show,8000),acct=document.getElementById("auAcct"),me=null;
+  try{me=await AUTH.me();}catch(e){clearTimeout(fail);show();return;}
+  clearTimeout(fail);acct.hidden=false;
   if(me&&!me.face){await AUTH.signOut();me=null;}   /* a login without the face check counts as logged out */
   if(!me){location.replace("login.html?next=index.html");return;}   /* logged-in people only */
   show();
