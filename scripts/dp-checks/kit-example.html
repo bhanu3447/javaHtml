@@ -1,0 +1,47 @@
+<!-- Reference for pattern pages: one working example of every kit widget (Refactor add/del/meter, Sequence view, Playground, Predict, Explain it back, revision card, Spring snippet, pattern header, home map). Open it from this folder; it is not part of the site. -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>kit demo</title>
+<link rel="stylesheet" href="../../assets/css/course.css">
+</head>
+<body data-page="zz" data-course="patterns" data-name="demo" data-short="ZZ">
+<nav><div class="wrap"><a class="brand" href="index.html"><i>P</i><span>Design Patterns</span></a><div class="links"></div><button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button></div><div id="prog"></div></nav>
+<div class="wrap">
+<section id="zz-a"><span class="num">01</span><h2>Demo</h2>
+<div class="dp-pat" data-p="Strategy"></div>
+<div class="viz dp" id="dp-zref"></div>
+<div class="viz dp" id="dp-zseq"></div>
+<div class="dp-play" id="dpp-zplay"></div>
+<div class="dp-pred" data-ans="1"><p>Which runs?</p><ol><li>A</li><li>B</li><li>C</li></ol><div class="dp-pe">Because B.</div></div>
+<div class="dp-xb" data-k="zz"><p>Explain Strategy.</p><div class="dp-xm">Model answer.</div></div>
+<div class="dp-rev"><div><b>Intent</b><span>x</span></div><div><b>Use</b><span>y</span></div></div>
+<pre class="dp-spring"><code>@Service class X {}</code></pre>
+<div id="dpMap"></div>
+</section>
+</div>
+<script src="../../assets/data/patterns-index.js"></script>
+<script src="../../assets/data/quiz-data.js"></script>
+<script src="../../assets/js/course.js"></script>
+<script src="../../assets/labs/labs-patterns.js"></script>
+<script>
+DPL.add({
+  zref:{pill:"REFACTOR DEMO",views:[{name:"Refactor",h:200,
+    nodes:[{id:"co",x:30,y:20,w:200,name:"Checkout",f:["- rule: Discount"],m:["+ total(price)"]},{id:"di",x:330,y:20,w:220,name:"Discount",st:"interface",m:["+ apply(price): long"]},{id:"fe",x:330,y:120,w:220,name:"FestivalDiscount",m:["+ apply(price): long"]}],
+    edges:[["e1","co","di","has"],["e2","fe","di","impl"]],
+    steps:[{t:"Before",d:"if/else",code:"class Checkout {\n  long total(long p, String t) {\n    if (t.equals(\"festival\")) return p * 90 / 100;\n    return p;\n  }\n}",hide:["di","fe","e1","e2"],meter:["places to edit per new offer",3,4]},
+      {t:"Extract",d:"interface",code:"interface Discount { long apply(long p); }\nclass Checkout {\n  long total(long p, String t) {\n    if (t.equals(\"festival\")) return p * 90 / 100;\n    return p;\n  }\n}",add:["interface Discount"],del:["if (t.equals"],hide:["fe","e2"],lines:["e1"],meter:["places to edit per new offer",1,4]}]}]},
+  zseq:{pill:"SEQUENCE DEMO",views:[{name:"Runtime",alt:"sequence",seq:{lanes:[["m","main",""],["co","checkout","Checkout"],["di","rule","Festival"]],
+    msgs:[["m","co","total(700000)"],["co","di","apply(700000)"],["di","co","630000","ret"],["co","co","log()","self"],["co","m","630000","ret"]]},
+    steps:[{t:"call",d:"main calls",upto:1,cur:0},{t:"delegate",d:"checkout asks",upto:2,cur:1},{t:"all",d:"done",upto:5,cur:4}]}]}
+});
+DPL.play({zplay:{pill:"PICK A DISCOUNT",init:()=>({rule:"none",gst:false,n:0}),
+  controls:[{id:"rule",type:"select",label:"Rule",options:[["none","No discount"],["fest","Festival 10%"]]},{id:"gst",type:"toggle",label:"Add GST"},{id:"buy",type:"button",label:"Buy"}],
+  act:(s,id)=>{if(id==="buy")s.n++;},
+  render:s=>{const p=s.rule==="fest"?630000:700000;return {h:110,nodes:[["co",40,30,200,"Checkout","total()"],["r",360,30,200,s.rule==="fest"?"FestivalDiscount":"NoDiscount","apply()"]],edges:[["e","co","r","calls"]],lines:["e"],good:["r"],out:"total = "+p+(s.gst?" + GST":"")+" · bought "+s.n};}}});
+DPL.map(document.getElementById("dpMap"),"");
+</script>
+</body>
+</html>

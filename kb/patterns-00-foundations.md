@@ -18,7 +18,7 @@ Page: `patterns/00-foundations.html` (`data-page="p00"`, band `#ptf`, section id
 - **Data:** `CATALOG` rows `{n, slug, f, mv, t, d, p, i, rel, conf, k, file}` in learning order (`k` = `p01…p23`, `file` = `NN-slug.html`); `BYN[name]`; `MOVE`, `TIER` (★ ◆ ○). A page counts as live once `build-index` lists it. `GLYPH` (23 inner-SVG strings, 48 × 48, `currentColor`) via `DPL.glyph(name)`.
 - **Course home:** `DPL.map(host, base)` = pattern map + catalogue in one: 5 move columns × glyph cards with real progress (sections marked understood in `js1-done` / sections on the page), filters (search, GoF family, move, tier, difficulty, status), hover/focus highlights used-with (green) and confused-with (amber).
 - **Move colours:** `--mv-swap/create/wrap/talk/compose`, light and dark sets (Nord swap lightened to pass 4.5:1); `.dp-mv-*` sets `--mv`.
-- **Checks (scratchpad tools):** `run.sh <page> <width> [test]` with `dptest.js` (geometry/controls), `widgets.js` (headers, add/del/meter, sequence counts, playgrounds change output, predict, explain-back storage, map filters), `contrast.js` (labs + the new widgets, nine themes); `gx.sh <theme> <h> <png> <labs> <page>` (state gallery); `node dpmatch.js <page>` (every class box and method in non-"Roles" views exists in the page's Java); `qmerge.js` (merges a lesson's `QZ.pNN`/`RC.pNN` into quiz-data.js and validates answer indexes).
+- **Checks (`scripts/dp-checks/`, see its README part in `kb/patterns-page-brief.md`):** `run.sh <page> <width> [test]` with `dptest.js` (geometry/controls), `widgets.js` (headers, add/del/meter, sequence counts, playgrounds change output, predict, explain-back storage, map filters), `contrast.js` (labs + the new widgets, nine themes); `gx.sh <theme> <h> <png> <labs> <page>` (state gallery); `node dpmatch.js <page>` (every class box and method in non-"Roles" views exists in the page's Java); `qmerge.js` (merges a lesson's `QZ.pNN`/`RC.pNN` into quiz-data.js and validates answer indexes).
 - CSS block "design patterns kit v1" at the end of `course.css`.
 
 ## Sections
@@ -39,11 +39,11 @@ Page: `patterns/00-foundations.html` (`data-page="p00"`, band `#ptf`, section id
 15. **13 interview questions** (`pf-qa`): cards 11 overload vs override, 12 functional interface, 13 anonymous class vs lambda added.
 16. **Review** (`pf-review`): 9 takeaways (tiers takeaway replaced by the five moves), quiz, recall, feedback.
 
-Quiz/recall for sections 6, 13, 14: 4 questions + 3 recall prompts handed to the lead as `p00-add.js` (scratchpad) to merge into `QZ.p00` / `RC.p00`.
+Quiz/recall for sections 6, 13, 14: 4 questions + 3 recall prompts merged into `QZ.p00` / `RC.p00`.
 
 ## Checks (2026-10-28)
 Phase B additions (sections 6, 13, 14): 4 new programs run on JDK 25 (25.0.4.1), outputs in comments; 11 labs at 1280 and 500 px with 0 dptest findings, no console errors, no horizontal scroll; contrast 0 failures in nine themes; galleries of dispatch, lambda, refactor reviewed in light and dark.
-All 13 programs run on JDK 25 (outputs below are in the comments; the two "compile error" comments were verified by uncommenting). Headless Chrome: 8 labs, 69 states, at 1280 and 500 px: 0 label-fit, overlap, edge-through-box, controls or step-bar failures; no console errors; no horizontal scroll. Contrast: 11 601 text checks in the nine themes, 0 below 4.5:1 (lowest 4.51; dimmed and hidden nodes excluded). State galleries reviewed in light (all labs) and dark (uml, srp, ocp). Scratchpad tools: `run.sh` + `dptest.js` (geometry/controls), `gx.sh` + `gallery.js` (state gallery), `contrast.js`.
+All 13 programs run on JDK 25 (outputs below are in the comments; the two "compile error" comments were verified by uncommenting). Headless Chrome: 8 labs, 69 states, at 1280 and 500 px: 0 label-fit, overlap, edge-through-box, controls or step-bar failures; no console errors; no horizontal scroll. Contrast: 11 601 text checks in the nine themes, 0 below 4.5:1 (lowest 4.51; dimmed and hidden nodes excluded). State galleries reviewed in light (all labs) and dark (uml, srp, ocp). Tools (now in `scripts/dp-checks/`): `run.sh` + `dptest.js` (geometry/controls), `gx.sh` + `gallery.js` (state gallery), `contrast.js`.
 
 ## Programs
 

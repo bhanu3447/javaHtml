@@ -1,6 +1,24 @@
 # Design Patterns course — final plan (merged 2026-10-28)
 
-**Status:** phase A (inspect + plan) done 2026-10-28. Phase 1 of the first plan is live: course shell, kit `DPL` (`assets/labs/labs-patterns.js`), P00. Next: phase B (kit additions + P00 additions) and phase C (Move 1 · Swap: Strategy, Template Method, State). **After each move: stop, report, wait for the user's rating** (user, 2026-10-28).
+**Status (2026-10-28):** phases A, B and C done and pushed: plan, kit v2, P00 (16 sections), **01 Strategy, 02 Template Method, 03 State** (Move 1 · Swap complete). Next: Move 2 · Create (04 Factory Method, 05 Builder, 06 Singleton, 07 Prototype, 08 Abstract Factory). **After each move: stop, report, wait for the user's rating** (user, 2026-10-28).
+
+## How to continue (any session, any Claude account, any machine)
+Everything needed is in the repo; nothing depends on a previous conversation.
+1. Read `CLAUDE.md` (loads automatically), then this plan, then `kb/patterns-page-brief.md` (the step-by-step brief for ONE pattern page).
+2. Build one pattern per session: "Build pattern 04 Factory Method following kb/patterns-page-brief.md". Reference pages: `patterns/01-strategy.html`, `02-template-method.html`, `03-state.html` and their `assets/labs/labs-patterns-pNN.js`; widget examples: `scripts/dp-checks/kit-example.html`.
+3. Checks are in `scripts/dp-checks/` (run.sh + dptest.js / widgets.js / contrast.js, gx.sh gallery, shot.sh, dpmatch.js, javacheck.sh, qmerge.js). They need Node, a JDK (25) and Chrome; on a non-Windows machine set `CHROME=/path/to/chrome`.
+4. Finish: merge the quiz with `node scripts/dp-checks/qmerge.js lesson <quiz.js>`, `node scripts/build-index.mjs patterns`, `KB.md` row, change-log line in `CLAUDE.md`, update the status line above, commit and push (`main` deploys to GitHub Pages).
+5. Cheapest: one page per session, `/clear` between pages, Sonnet for building and Opus for review; measured cost on Move 1 was about 200k tokens per pattern page when built by one agent.
+
+| # | Pattern | Status |
+|---|---|---|
+| 00 | Foundations | live |
+| 01–03 | Strategy, Template Method, State | live |
+| 04–08 | Factory Method, Builder, Singleton, Prototype, Abstract Factory | next (Move 2) |
+| 09–13 | Adapter, Decorator, Proxy, Facade, Bridge | planned |
+| 14–18 | Observer, Command, Chain of Responsibility, Mediator, Memento | planned |
+| 19–23 | Composite, Iterator, Visitor, Interpreter, Flyweight | planned |
+| 24–26 | Integration, Capstone, Interview | planned |
 
 History: first plan by interview tier (2026-10-28) → reviewed as "partly a good learning curve" (Singleton first, tiers split related ideas, no refactor step, one depth, late practice, no modern Java) → revised into five moves and four levels → the user wrote a master prompt ("Build a Complete Visual Java Design Patterns Course — Beginner to Expert") → reviewed (prerequisite order in TALK/WRAP, approval checkpoints, page structure, project constraints, what can and cannot run) → merged here. "merge and start, use multiple agents if needed".
 
@@ -13,7 +31,7 @@ A beginner who knows basic Java becomes able to **explain, choose, code and defe
 - Every Java program runs on **JDK 25** (`java File.java`) before it goes in; output in comments; editors are `<script type="text/x-java" data-file="X.java" data-hl="…">` (CodeMirror + ▶ Run via Wandbox, needs internet). Never `</script>` or `${` inside quiz strings; quiz explanation classes `qok`/`qno`.
 - Spring code cannot run here: shown as read-only `<pre><code>` marked "Spring · not runnable here", only real class/annotation names, conceptual sketches labelled as such.
 - Tests in the capstone are plain `main` programs printing PASS/FAIL (no JUnit/Maven here).
-- Shared files are edited **only by the lead**: `course.css`, `course.js`, `quiz-data.js`, `labs-patterns.js`, `patterns/index.html`, hub `index.html`, `KB.md`, `CLAUDE.md`, this plan. Agents write their own page, their own data file, their own `kb/patterns-NN-*.md`, and hand quiz/recall data and CSS needs back as scratchpad files.
+- Shared files are edited **only by the lead**: `course.css`, `course.js`, `quiz-data.js`, `labs-patterns.js`, `patterns/index.html`, hub `index.html`, `KB.md`, `CLAUDE.md`, this plan. Agents write their own page, their own data file, their own `kb/patterns-NN-*.md`, and hand quiz/recall data and CSS needs back as files in a temp folder outside the project (TMP, see kb/patterns-page-brief.md).
 - Checks (there is no lint or unit-test suite): `node --check` on JS; `node scripts/build-index.mjs patterns`; JDK 25 on every program; headless Chrome: geometry/controls (`dptest.js`), state gallery in light and dark, contrast in nine themes, console errors, no horizontal scroll at 500 px; reduced motion; keyboard ← → Space on labs.
 - Prose under ~250 words per section outside `<details class="d">`. A term is defined before any figure or code uses it. Glossary terms link to P00.
 - One running story: **the car dealership** (payments, notifications, caching, orders all happen inside it).

@@ -1,6 +1,6 @@
 # Patterns 03 — State
 
-Page: `patterns/03-state.html` (`data-page="p03"`, band `#p03`, section ids `sta-*`). Labs: `assets/labs/labs-patterns-p03.js` (data only, wrapped in an IIFE, no globals) drawn by the kit `assets/labs/labs-patterns.js`. Quiz `QZ.p03` (12: 4 B, 5 I, 3 A) and recall `RC.p03` (3 per day) are handed to the lead in the scratchpad `state/quiz.js` (not yet merged into quiz-data.js). Built 2026-10-28 (phase C, Move 1 · Swap, last page of the move).
+Page: `patterns/03-state.html` (`data-page="p03"`, band `#p03`, section ids `sta-*`). Labs: `assets/labs/labs-patterns-p03.js` (data only, wrapped in an IIFE, no globals) drawn by the kit `assets/labs/labs-patterns.js`. Quiz `QZ.p03` (12: 4 B, 5 I, 3 A) and recall `RC.p03` (3 per day) are merged into `assets/data/quiz-data.js` (2026-10-28). Built 2026-10-28 (phase C, Move 1 · Swap, last page of the move).
 
 ## Sections
 1. **See it** (`sta-see`, Level 1): pattern header (`.dp-pat data-p="State"`), In 30 seconds, the dealership problem (order lifecycle Booked → Paid → Delivered, Cancelled from Booked / Paid with refund from Paid, never after delivery), analogy **traffic light** (light box = context `Order`, current lamp = `state` field, "what every lamp must answer" = `OrderState`, red/amber/green = concrete states, timer tick = a request), **Pain lab** `dp-stapain` (1 view "Naive Order", 6 steps, meter "switches to edit when the statuses change" 2 → 6: day 1, cancel, Allocated change request, status leaks to screens/reports, "Payed" typo compiles, rules of Paid scattered over four methods).
