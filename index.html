@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Zero to Advanced · all courses</title>
+<!-- hub lock: hidden until the login check passes (logged-out visitors go to login.html) -->
+<style>html.au-wait body{visibility:hidden}</style><script>document.documentElement.className+=" au-wait";</script>
 <meta name="description" content="The one entry page: every course in this folder (Java, SQL, and the ones added later), each with its own lessons, labs, quizzes and mock interview.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -215,10 +217,13 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/js/auth.js"></script>
 <script>
-/* hub lock v1: account link + one status pill per course card; does nothing while the lock is not set up (kb/access-lock.md) */
-(async function(){if(!window.AUTH||!AUTH.on)return;
+/* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/access-lock.md) */
+(async function(){var show=function(){document.documentElement.classList.remove("au-wait");};
+  if(!window.AUTH||!AUTH.on){show();return;}   /* lock off (file:// use): open as before */
   var acct=document.getElementById("auAcct"),me=await AUTH.me();acct.hidden=false;
   if(me&&!me.face){await AUTH.signOut();me=null;}   /* a login without the face check counts as logged out */
+  if(!me){location.replace("login.html?next=index.html");return;}   /* logged-in people only */
+  show();
   var LABEL={approved:"OPEN",pending:"WAITING",rejected:"NOT APPROVED",none:"LOCKED",account:"ACCOUNT PENDING"};
   document.querySelectorAll(".course[href]").forEach(function(a){var c=a.getAttribute("href").split("/")[0];
     var s=me?(me.approved?(me.access[c]||"none"):"account"):"none",p=document.createElement("span");p.className="pill au-st";p.textContent=LABEL[s];a.appendChild(p);});
