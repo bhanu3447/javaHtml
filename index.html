@@ -137,7 +137,8 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
       <a role="menuitem" tabindex="-1" data-c="patterns" href="patterns/index.html"><i class="k-patterns">P</i><span><b>Design Patterns</b><small>Beginner to expert · Moves 1–2 live</small></span></a>
     </div>
   </div>
-  <a class="gh" href="https://github.com/bhanu3447/javaHtml">GitHub</a>
+  <a class="gh" id="auAdmin" href="admin.html" hidden>Admin</a>
+  <a class="gh" id="auAcct" href="login.html" hidden>Log in</a>
 </div></nav>
 <div class="wrap">
 <header>
@@ -206,6 +207,21 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     else if(e.key==="ArrowDown"){e.preventDefault();if(m.hidden)open(true);else it[(i+1)%it.length].focus();}
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
+</script>
+<script src="assets/js/auth-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+/* hub lock v1: account link + one status pill per course card; does nothing while the lock is not set up (kb/access-lock.md) */
+(async function(){if(!window.AUTH||!AUTH.on)return;
+  var acct=document.getElementById("auAcct"),me=await AUTH.me();acct.hidden=false;
+  var LABEL={approved:"OPEN",pending:"WAITING",rejected:"NOT APPROVED",none:"LOCKED"};
+  document.querySelectorAll(".course[href]").forEach(function(a){var c=a.getAttribute("href").split("/")[0];
+    var s=me?(me.access[c]||"none"):"none",p=document.createElement("span");p.className="pill";p.textContent=LABEL[s];a.appendChild(p);});
+  if(!me){acct.textContent="Log in";return;}
+  acct.textContent="Log out ("+(me.profile.name||me.profile.email)+")";acct.href="#";
+  acct.onclick=async function(e){e.preventDefault();await AUTH.signOut();location.reload();};
+  if(me.admin)document.getElementById("auAdmin").hidden=false;})();
 </script>
 </body>
 </html>

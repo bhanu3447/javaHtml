@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin · Zero to Advanced</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body class="au">
+<div class="au-top"><a class="au-brand" href="index.html"><i>Z</i> Zero to Advanced</a><span class="au-sp"></span><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
+<main class="au-wrap" id="app"><p class="au-empty">Loading…</p></main>
+<script src="assets/js/auth-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+/* admin v1: course requests, approved photos (invites), people, roles. Owner and admins only; the database checks every action again. */
+(function(){
+  try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
+  var app=document.getElementById("app"),esc=AUTH.esc,C=AUTH.COURSES,ME=null,D={people:[],access:[],invites:[]};
+  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns"};
+  function card(t,actions){app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">🔒</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
+
+  async function load(){
+    var p=await AUTH.sb.from("profiles").select("id,name,email,role,created_at").order("created_at");
+    var a=await AUTH.sb.from("course_access").select("user_id,course_id,status,requested_at");
+    var i=await AUTH.sb.from("invites").select("id,email,name,attempts,used_at,created_at").order("created_at",{ascending:false});
+    var err=p.error||a.error||i.error;if(err){card(esc(err.message));return;}
+    D={people:p.data,access:a.data,invites:i.data};render();
+  }
+  function person(id){return D.people.find(function(x){return x.id===id;})||{email:"?"};}
+  function statusOf(uid,c){var r=D.access.find(function(x){return x.user_id===uid&&x.course_id===c;});return r?r.status:"none";}
+
+  function render(){
+    var pend=D.access.filter(function(x){return x.status==="pending";});
+    var h='<h1>Admin</h1><p>Approve people by photo, approve course requests and choose admins. Owner and admins open every course.</p>';
+
+    h+='<section class="au-panel"><h2>Course requests <span class="au-count">'+pend.length+'</span></h2><p>People asking to open a course.</p><div class="au-rows">';
+    h+=pend.length?pend.map(function(r){var u=person(r.user_id);
+      return '<div class="au-row"><div class="au-who"><b>'+esc(u.name||u.email)+'</b><small>'+esc(u.email)+' · wants <b>'+esc(C[r.course_id])+'</b></small></div>'+
+        '<button class="au-btn sm ok" data-dec="approved" data-u="'+r.user_id+'" data-c="'+r.course_id+'">Approve</button>'+
+        '<button class="au-btn sm no" data-dec="rejected" data-u="'+r.user_id+'" data-c="'+r.course_id+'">Reject</button></div>';}).join(""):'<div class="au-empty">No requests waiting.</div>';
+    h+='</div></section>';
+
+    h+='<section class="au-panel"><h2>Approve a new person</h2><p>Add their name, email and a clear photo of their face. Only this person can then register with this email, and their selfie must match. The photo is turned into face numbers and not stored.</p>'+
+      '<div class="au-grid2"><form class="au-form" id="inv"><label>Name<input id="ivName" required></label><label>Email<input id="ivMail" type="email" required></label>'+
+      '<label>Photo<input id="ivPhoto" type="file" accept="image/*" required></label><button class="au-btn pri" type="submit">Approve person</button><p class="au-msg" id="ivMsg" role="status"></p></form>'+
+      '<div class="au-rows">'+(D.invites.length?D.invites.map(function(v){
+        var st=v.used_at?'<span class="au-chip" data-s="approved" disabled>Registered</span>':v.attempts>=5?'<span class="au-chip" data-s="rejected">Locked: 5 failed tries</span>':'<span class="au-chip" data-s="pending">Waiting to register</span>';
+        return '<div class="au-row"><div class="au-who"><b>'+esc(v.name)+'</b><small>'+esc(v.email)+'</small></div>'+st+(v.used_at?'':'<button class="au-btn sm no" data-delinv="'+v.id+'">Remove</button>')+'</div>';}).join(""):'<div class="au-empty">No one approved yet.</div>')+
+      '</div></div></section>';
+
+    h+='<section class="au-panel"><h2>People <span class="au-count">'+D.people.length+'</span></h2><p>Click a course to give or take away access.'+(ME.profile.role==="owner"?' Only you (the owner) can make admins.':'')+'</p><div class="au-rows">';
+    h+=D.people.map(function(u){
+      var staff=u.role==="owner"||u.role==="admin",chips;
+      if(staff)chips='<span class="au-chip" data-s="approved">All courses</span>';
+      else chips=Object.keys(C).map(function(c){var s=statusOf(u.id,c);
+        return '<button class="au-chip" data-s="'+s+'" data-tog="'+c+'" data-u="'+u.id+'" title="'+(s==="approved"?"Click to take away":"Click to approve")+'">'+SHORT[c]+(s==="pending"?" · asked":s==="rejected"?" · rejected":"")+'</button>';}).join("");
+      var role='';
+      if(ME.profile.role==="owner"&&u.role!=="owner")role=u.role==="admin"?'<button class="au-btn sm" data-role="learner" data-u="'+u.id+'">Remove admin</button>':'<button class="au-btn sm" data-role="admin" data-u="'+u.id+'">Make admin</button>';
+      return '<div class="au-row"><div class="au-who"><b>'+esc(u.name||u.email)+'</b><small>'+esc(u.email)+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span><div class="au-chips">'+chips+'</div>'+role+'</div>';}).join("");
+    h+='</div></section>';
+    app.innerHTML=h;
+    document.getElementById("inv").onsubmit=invite;
+  }
+
+  async function rpc(name,args){var r=await AUTH.sb.rpc(name,args);if(r.error)alert(r.error.message);await load();}
+  app.addEventListener("click",async function(e){var b=e.target.closest("button");if(!b||b.disabled)return;
+    if(b.dataset.dec){b.disabled=true;await rpc("decide_access",{p_user:b.dataset.u,p_course:b.dataset.c,p_status:b.dataset.dec});}
+    else if(b.dataset.tog){var s=statusOf(b.dataset.u,b.dataset.tog);
+      if(s==="approved"&&!confirm("Take away access to "+C[b.dataset.tog]+"?"))return;
+      b.disabled=true;await rpc("decide_access",{p_user:b.dataset.u,p_course:b.dataset.tog,p_status:s==="approved"?"none":"approved"});}
+    else if(b.dataset.role){if(!confirm(b.dataset.role==="admin"?"Make this person an admin? Admins can approve people and courses.":"Remove admin rights?"))return;
+      b.disabled=true;await rpc("set_role",{p_user:b.dataset.u,p_role:b.dataset.role});}
+    else if(b.dataset.delinv){if(!confirm("Remove this approval? They will not be able to register."))return;
+      b.disabled=true;var r=await AUTH.sb.from("invites").delete().eq("id",b.dataset.delinv);if(r.error)alert(r.error.message);await load();}
+  });
+
+  /* the photo is shrunk to 640px wide in the browser before it is sent */
+  function shrink(file){return new Promise(function(ok,no){var img=new Image();img.onload=function(){
+      var w=Math.min(640,img.naturalWidth),h=Math.round(w*img.naturalHeight/img.naturalWidth),c=document.createElement("canvas");
+      c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);URL.revokeObjectURL(img.src);ok(c.toDataURL("image/jpeg",.9));};
+    img.onerror=function(){no(new Error("That file is not a picture."));};img.src=URL.createObjectURL(file);});}
+  async function invite(e){e.preventDefault();var m=document.getElementById("ivMsg"),f=document.getElementById("ivPhoto").files[0];
+    var btn=e.target.querySelector("button");btn.disabled=true;m.className="au-msg";m.textContent="Reading the face… (can take up to a minute if the face server was asleep)";
+    try{var image=await shrink(f);}catch(x){m.className="au-msg err";m.textContent=x.message;btn.disabled=false;return;}
+    var r=await AUTH.fn("invite",{name:document.getElementById("ivName").value,email:document.getElementById("ivMail").value,image:image});
+    if(!r.ok){m.className="au-msg err";m.textContent=r.error||"Failed.";btn.disabled=false;return;}
+    await load();var m2=document.getElementById("ivMsg");m2.className="au-msg good";m2.textContent="Approved. Tell them to register at login.html#register with that email.";}
+
+  (async function(){
+    if(!AUTH.on){card("The course lock is not set up yet (assets/js/auth-config.js).");return;}
+    ME=await AUTH.me();
+    if(!ME){card("Log in first.",'<a class="au-btn pri" href="login.html?next=admin.html">Log in</a>');return;}
+    document.getElementById("who").textContent=ME.profile.email+" · "+ME.profile.role;
+    var o=document.getElementById("out");o.hidden=false;o.onclick=async function(){await AUTH.signOut();location.href="index.html";};
+    if(!ME.admin){card("This page is for the owner and admins only.",'<a class="au-btn" href="index.html">All courses</a>');return;}
+    load();
+  })();
+})();
+</script>
+</body>
+</html>

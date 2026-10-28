@@ -47,4 +47,5 @@ Each lesson file starts with `# Lesson NN — Title`, and its sections are `## N
 | `kb/style-audit-plan.md` | The theme-wise style and colour audit: the prompt (rules, method, acceptance), the findings of the 2026-10-24 run, the accepted exceptions and how to re-run it |
 | `kb/ux-pass-plan.md` | The UI/UX pass prompt (reading measure, button system, touch targets, focus, editors, mobile rhythm) with its findings and result |
 | `kb/appendix-effects.md` | Appendix — page effects internals (moved from CLAUDE.md on 2026-10-21) |
+| `kb/access-lock.md` | The course lock (2026-10-28, not live yet): face-matched registration, owner/admin/learner roles, per-course approval, locked pages served from Supabase; setup steps and workflow |
 | `archive/java-v1/` | The whole first Java course (pages, labs, quizzes, lesson notes, practice layer and course-tools notes). Reference only, nothing loads it. |

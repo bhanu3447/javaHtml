@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in · Zero to Advanced</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/auth.css">
+</head>
+<body class="au">
+<div class="au-top"><a class="au-brand" href="index.html"><i>Z</i> Zero to Advanced</a></div>
+<main class="au-center">
+  <div class="au-card">
+    <div class="au-tabs" role="tablist">
+      <button type="button" role="tab" id="tIn" aria-selected="true">Log in</button>
+      <button type="button" role="tab" id="tUp" aria-selected="false">Register</button>
+    </div>
+
+    <form class="au-form" id="fIn">
+      <label>Email<input type="email" id="inMail" autocomplete="email" required></label>
+      <label>Password<input type="password" id="inPass" autocomplete="current-password" required></label>
+      <button class="au-btn pri" type="submit">Log in</button>
+      <p class="au-msg" id="inMsg" role="status"></p>
+    </form>
+
+    <form class="au-form" id="fUp" hidden>
+      <p class="au-msg" style="color:var(--muted)">Registration is only for people the course owner has approved. Use the email they approved, then take a selfie: it must match the photo they added.</p>
+      <label>Email<input type="email" id="upMail" autocomplete="email" required></label>
+      <label>Password (8+ characters)<input type="password" id="upPass" autocomplete="new-password" minlength="8" required></label>
+      <div class="au-cam" id="cam">
+        <video id="vid" playsinline muted hidden></video>
+        <img id="shot" alt="Your selfie" hidden>
+        <span class="au-oval" id="oval" hidden></span>
+        <span class="au-ph" id="camPh">Your camera is used only for this one picture. It is checked and then thrown away.</span>
+      </div>
+      <button class="au-btn" type="button" id="camBtn">Turn on camera</button>
+      <button class="au-btn pri" type="submit" id="upBtn" disabled>Register</button>
+      <p class="au-msg" id="upMsg" role="status"></p>
+    </form>
+  </div>
+</main>
+<script src="assets/js/auth-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="assets/js/auth.js"></script>
+<script>
+/* login v1: log in, or register with a selfie (the register edge function checks it against the approved photo) */
+(function(){
+  try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
+  var $=function(id){return document.getElementById(id);};
+  var next=AUTH.safeNext(new URLSearchParams(location.search).get("next"));
+  function say(el,t,kind){el.textContent=t;el.className="au-msg"+(kind?" "+kind:"");}
+  if(!AUTH.on){say($("inMsg"),"The course lock is not set up yet (assets/js/auth-config.js).","err");}
+
+  function tab(up){$("tIn").setAttribute("aria-selected",String(!up));$("tUp").setAttribute("aria-selected",String(up));$("fIn").hidden=up;$("fUp").hidden=!up;if(!up)stopCam();}
+  $("tIn").onclick=function(){tab(false);};$("tUp").onclick=function(){tab(true);};
+  if(location.hash==="#register")tab(true);
+
+  $("fIn").onsubmit=async function(e){e.preventDefault();if(!AUTH.on)return;
+    say($("inMsg"),"Logging in…");
+    var r=await AUTH.sb.auth.signInWithPassword({email:$("inMail").value.trim(),password:$("inPass").value});
+    if(r.error)say($("inMsg"),r.error.message,"err");else location.href=next;};
+
+  /* camera: live preview, then one frame as a 640px JPEG */
+  var stream=null,photo=null;
+  function stopCam(){if(stream){stream.getTracks().forEach(function(t){t.stop();});stream=null;}}
+  $("camBtn").onclick=async function(){
+    if(photo){photo=null;$("shot").hidden=true;$("upBtn").disabled=true;}
+    if(!stream){
+      try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:960},height:{ideal:720}},audio:false});}
+      catch(err){say($("upMsg"),"Camera not available: allow camera access in the browser and try again.","err");return;}
+      $("vid").srcObject=stream;$("vid").hidden=false;$("oval").hidden=false;$("camPh").hidden=true;await $("vid").play();
+      $("camBtn").textContent="Take selfie";return;
+    }
+    var v=$("vid"),w=640,h=Math.round(w*v.videoHeight/v.videoWidth),c=document.createElement("canvas");
+    c.width=w;c.height=h;c.getContext("2d").drawImage(v,0,0,w,h);
+    photo=c.toDataURL("image/jpeg",.9);stopCam();
+    $("shot").src=photo;$("shot").hidden=false;v.hidden=true;$("oval").hidden=true;
+    $("camBtn").textContent="Retake";$("upBtn").disabled=false;
+  };
+
+  $("fUp").onsubmit=async function(e){e.preventDefault();if(!AUTH.on||!photo)return;
+    var mail=$("upMail").value.trim(),pass=$("upPass").value;
+    $("upBtn").disabled=true;say($("upMsg"),"Checking your face… (the first check of the day can take up to a minute)");
+    var r=await AUTH.fn("register",{email:mail,password:pass,image:photo});
+    if(!r.ok){say($("upMsg"),r.error||"Registration failed.","err");$("upBtn").disabled=false;return;}
+    say($("upMsg"),"Face matched. Your account is ready: logging you in…","good");
+    var s=await AUTH.sb.auth.signInWithPassword({email:mail,password:pass});
+    if(s.error)say($("upMsg"),s.error.message,"err");else location.href="index.html";};
+})();
+</script>
+</body>
+</html>

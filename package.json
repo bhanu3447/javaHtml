@@ -1,0 +1,9 @@
+{
+  "name": "zero-to-advanced",
+  "private": true,
+  "description": "Only for Render: lets the face server (face-server/) build and start with Render's default commands (yarn / npm start) from the repo root. The site itself has no build step.",
+  "scripts": {
+    "postinstall": "cd face-server && npm install --no-audit --no-fund",
+    "start": "cd face-server && npm start"
+  }
+}
