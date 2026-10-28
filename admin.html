@@ -53,7 +53,8 @@
         '<button class="au-btn sm no" data-dec="rejected" data-u="'+r.user_id+'" data-c="'+r.course_id+'">Reject</button></div>';}).join(""):'<div class="au-empty">No requests waiting.</div>';
     h+='</div></section>';
 
-    h+='<section class="au-panel"><h2>Pre-approve by photo <span class="au-count">optional</span></h2><p>Add someone you already know with a clear photo of their face. When they register with this email and their selfie matches, their account is approved automatically. The photo is turned into face numbers and not stored.</p>'+
+    /* People and courses comes before the pre-approve form, so on a phone the list is not buried under the form */
+    var pre='<section class="au-panel"><h2>Pre-approve by photo <span class="au-count">optional</span></h2><p>Add someone you already know with a clear photo of their face. When they register with this email and their selfie matches, their account is approved automatically. The photo is turned into face numbers and not stored.</p>'+
       '<div class="au-grid2"><form class="au-form" id="inv"><label>Name<input id="ivName" required></label><label>Email<input id="ivMail" type="email" required></label>'+
       '<label>Photo<input id="ivPhoto" type="file" accept="image/*" required></label><button class="au-btn pri" type="submit">Pre-approve</button><p class="au-msg" id="ivMsg" role="status"></p></form>'+
       '<div class="au-rows">'+(D.invites.length?D.invites.map(function(v){
@@ -79,7 +80,7 @@
       return '<div class="au-row au-person" data-find="'+esc(find)+'">'+face(u)+'<div class="au-who"><b>'+esc(u.name||u.email)+(me?' (you)':'')+'</b><small>'+(u.username?'@'+esc(u.username)+' · ':'')+esc(u.email)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span>'+acct+role+del+
         '<div class="au-chips au-courses">'+chips+'</div></div>';}).join("");
     h+='<div class="au-empty" id="pplNone" hidden>No one matches.</div></div></section>';
-    app.innerHTML=h;
+    app.innerHTML=h+pre;
     document.getElementById("inv").onsubmit=invite;
     document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();
   }
