@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="assets/css/auth.css">
 </head>
 <body class="au">
-<div class="au-top"><a class="au-brand" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a><span class="au-sp"></span><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
+<div class="au-top"><a class="au-brand" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a><span class="au-sp"></span><a class="au-btn sm" href="index.html">All courses</a><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
 <main class="au-wrap" id="app"><p class="au-empty">Loading…</p></main>
 <script src="assets/js/auth-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -79,6 +79,8 @@
       var find=[u.name,u.username,u.email].join(" ").toLowerCase();
       return '<div class="au-row au-person" data-find="'+esc(find)+'">'+face(u)+'<div class="au-who"><b>'+esc(u.name||u.email)+(me?' (you)':'')+'</b><small>'+(u.username?'@'+esc(u.username)+' · ':'')+esc(u.email)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span>'+acct+role+del+
         '<div class="au-chips au-courses">'+chips+'</div></div>';}).join("");
+    if(!D.people.some(function(u){return u.role==="learner";}))
+      h+='<div class="au-empty"><b>No learners yet.</b> Course buttons (+ Java, ✓ SQL…) appear on each learner row. Owner and admins always open every course, so their rows have none. Share the site link: when someone registers, they appear here.</div>';
     h+='<div class="au-empty" id="pplNone" hidden>No one matches.</div></div></section>';
     app.innerHTML=h+pre;
     document.getElementById("inv").onsubmit=invite;
