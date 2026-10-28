@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P06: Singleton · Design Patterns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../assets/css/course.css">
+</head>
+<body data-page="p06" data-course="patterns" data-name="P06 · Singleton" data-short="P06">
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><i>P</i><span>Design Patterns</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top" class="ph">
+  <div class="tag">PATTERNS 06 · MOVE 2 · CREATE</div>
+  <h1>Singleton: <span class="grad">one object for the whole program</span></h1>
+  <p class="lead">In <a href="04-factory-method.html">Factory Method</a> and <a href="05-builder.html">Builder</a> you controlled <i>how</i> objects are made. Singleton goes further: it controls <i>how many</i>. A dealership has one stock register, and every desk must use that same book. You will see what goes wrong when each desk makes its own copy, fix it in small steps, and learn when one shared object is right and when it is a trap.</p>
+  <div class="pager"></div>
+</header>
+
+<div class="band" id="p06">
+  <div class="tag">PATTERNS 06</div>
+  <h2>Singleton: one stock register for the whole showroom</h2>
+  <p>Seven sections, four levels: a beginner can stop after section 04; sections 05 to 07 add the interview depth.</p>
+</div>
+
+<!-- 1 -->
+<section id="sgl-see">
+  <span class="num">01</span><h2>See it: the problem Singleton solves</h2>
+  <span class="dp-lv l1">Level 1 · See it</span>
+  <div class="dp-pat" data-p="Singleton"></div>
+  <div class="tldr"><b>In 30 seconds</b> Some things must exist <b>once</b>: the stock register, the settings, a cache. Singleton makes the class itself guarantee that. The constructor is private, the class keeps its one instance in a static field, and everyone asks for it through <code>getInstance()</code>. Every caller then shares the same object.</div>
+  <p><b>The dealership problem.</b> The showroom keeps a <code>VehicleRegistry</code>: the list of cars in stock, found by <b>chassis number</b> (the number stamped on each car, like <code>CH-101</code>). The sales desk, the service desk and the month-end reports all need it. Each of them writes <code>new VehicleRegistry()</code>, so each gets its <b>own</b> copy. When the sales desk sells a car, only its own copy changes.</p>
+  <p>Words used here. A <b>class</b> is the blueprint; an <b>object</b> (or <b>instance</b>) is one thing built from it with <code>new</code>. <b>Static</b> means "belongs to the class, not to one object". A <b>constructor</b> is the method that builds an object. <b>Private</b> means only the class itself may use it. A <b>client</b> is code that uses a class.</p>
+  <div class="an-strip"><b>💡 Remember it</b><span>The showroom has <b>one stock register book</b>. Sales, service and reports all write in and read from that same book. If every desk photocopied its own book, the copies would drift apart. A glyph for it: <b>one key on one hook</b>: anyone may borrow it, nobody may cut a second.</span></div>
+  <div class="tw"><table><tr><th>Dealership</th><th>Role</th><th>In our code</th></tr>
+    <tr><td>the one register book</td><td>Singleton</td><td><code>VehicleRegistry</code></td></tr>
+    <tr><td>the locked cupboard: no new books</td><td>private constructor</td><td><code>private VehicleRegistry()</code></td></tr>
+    <tr><td>the hook that holds the book</td><td>static field</td><td><code>INSTANCE</code></td></tr>
+    <tr><td>"please hand me the book"</td><td>global access point</td><td><code>VehicleRegistry.getInstance()</code></td></tr>
+    <tr><td>sales, service, reports</td><td>Clients</td><td>the three desks in <code>main()</code></td></tr></table></div>
+  <p>First, see what happens <b>without</b> the pattern. Each step is a new request from the dealership.</p>
+  <div class="viz dp" id="dp-sglpain"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p>Earlier patterns decided <i>which</i> class (<a href="04-factory-method.html">Factory Method</a>) and <i>how</i> to assemble one object (<a href="05-builder.html">Builder</a>). Singleton decides <b>how many</b>: exactly one.</p>
+</section>
+
+<!-- 2 -->
+<section id="sgl-build">
+  <span class="num">02</span><h2>Build it: from <code>new</code> everywhere to one instance</h2>
+  <span class="dp-lv l2">Level 2 · Build it</span>
+  <div class="tldr"><b>In 30 seconds</b> Three steps. 1) Make the constructor <code>private</code>. 2) Keep the single object in a <code>private static final</code> field. 3) Add <code>public static getInstance()</code> that returns it. Then replace every <code>new VehicleRegistry()</code> with <code>VehicleRegistry.getInstance()</code>.</div>
+  <div class="dp-ba before">Before: every desk builds its own registry</div>
+<script type="text/x-java" data-file="SingletonBefore.java" data-hl="5-7,25">
+import java.util.*;
+
+public class SingletonBefore {
+    public static void main(String[] args) {
+        VehicleRegistry salesDesk = new VehicleRegistry();     // every desk builds its own registry
+        VehicleRegistry serviceDesk = new VehicleRegistry();
+        VehicleRegistry reports = new VehicleRegistry();
+        // new VehicleRegistry created   (printed three times above)
+
+        salesDesk.sell("CH-101");                              // the sale is recorded in ONE copy only
+        System.out.println("Sales desk: CH-101 in stock? " + salesDesk.isInStock("CH-101"));
+        // Sales desk: CH-101 in stock? false
+        System.out.println("Reports:    CH-101 in stock? " + reports.isInStock("CH-101"));
+        // Reports:    CH-101 in stock? true
+        System.out.println("Cars counted: sales " + salesDesk.count() + ", service " + serviceDesk.count() + ", reports " + reports.count());
+        // Cars counted: sales 2, service 3, reports 3
+        System.out.println("Same object? " + (salesDesk == reports));
+        // Same object? false
+    }
+}
+
+class VehicleRegistry {
+    private final Set<String> inStock = new TreeSet<>(List.of("CH-101", "CH-102", "CH-103"));
+
+    VehicleRegistry() { System.out.println("new VehicleRegistry created"); }   // anyone can call this
+
+    void sell(String chassis) { inStock.remove(chassis); }
+    boolean isInStock(String chassis) { return inStock.contains(chassis); }
+    int count() { return inStock.size(); }
+}
+</script>
+  <p><b>What breaks.</b> The program prints "created" three times: three registries. After <code>salesDesk.sell("CH-101")</code> the sales desk says the car is gone but Reports still says it is in stock, and the counts are 2, 3 and 3. <code>salesDesk == reports</code> is <code>false</code>: they are different objects. Nothing in the class stops a fourth copy.</p>
+  <p><b>The refactor.</b> Use the lab to see each step and why it is made.</p>
+  <div class="viz dp" id="dp-sglref"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="dp-ba after">After: a private constructor, a static field and getInstance()</div>
+<script type="text/x-java" data-file="SingletonPattern.java" data-hl="23,27,29">
+import java.util.*;
+
+public class SingletonPattern {
+    public static void main(String[] args) {
+        VehicleRegistry salesDesk = VehicleRegistry.getInstance();     // the one and only registry
+        VehicleRegistry serviceDesk = VehicleRegistry.getInstance();
+        VehicleRegistry reports = VehicleRegistry.getInstance();
+
+        salesDesk.sell("CH-101");
+        System.out.println("Sales desk: CH-101 in stock? " + salesDesk.isInStock("CH-101"));
+        // Sales desk: CH-101 in stock? false
+        System.out.println("Reports:    CH-101 in stock? " + reports.isInStock("CH-101"));
+        // Reports:    CH-101 in stock? false
+        System.out.println("Cars counted: sales " + salesDesk.count() + ", service " + serviceDesk.count() + ", reports " + reports.count());
+        // Cars counted: sales 2, service 2, reports 2
+        System.out.println("Same object? " + (salesDesk == reports));
+        // Same object? true
+        // new VehicleRegistry() would not compile here: the constructor is private
+    }
+}
+
+final class VehicleRegistry {
+    private static final VehicleRegistry INSTANCE = new VehicleRegistry();   // eager: created once, when the class loads
+
+    private final Set<String> inStock = new TreeSet<>(List.of("CH-101", "CH-102", "CH-103"));
+
+    private VehicleRegistry() { System.out.println("VehicleRegistry created"); }   // private: nobody else can call new
+
+    public static VehicleRegistry getInstance() { return INSTANCE; }          // the one global way in
+
+    void sell(String chassis) { inStock.remove(chassis); }
+    boolean isInStock(String chassis) { return inStock.contains(chassis); }
+    int count() { return inStock.size(); }
+}
+</script>
+  <p>The desks never write <code>new</code>. All three get the <b>same</b> object, so a sale at the sales desk is visible in Reports, and <code>salesDesk == reports</code> is <code>true</code>. This is <b>eager initialisation</b>: the registry is created when the class loads, which is simple and safe with several threads (the JVM loads a class only once). Printing "created" once, before <code>main</code> runs its first line, shows when it happened.</p>
+  <details class="d"><summary>Go deeper: why <code>final</code> on the class?</summary><div class="b">A subclass could add a public constructor or a second instance. Marking the class <code>final</code> closes that door. It also tells the reader "this really is the only one".</div></details>
+</section>
+
+<!-- 3 -->
+<section id="sgl-run">
+  <span class="num">03</span><h2>Watch it run: three desks, one object</h2>
+  <span class="dp-lv l2">Level 2 · Watch it run</span>
+  <div class="tldr"><b>In 30 seconds</b> The first <code>getInstance()</code> finds the field empty and creates the object. Every later call finds it filled and just returns it, so all callers hold the same object.</div>
+  <p>This is a <b>sequence diagram</b>: each column is an object, time runs downwards, a solid arrow is a call, a dashed arrow is a return. This version creates the registry <b>lazily</b> (on the first call), so you can see the moment it is made. Program: <code>SingletonRun.java</code> below.</p>
+  <div class="viz dp" id="dp-sglrun"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+<script type="text/x-java" data-file="SingletonRun.java" data-hl="5,6,7,22,28-33">
+import java.util.*;
+
+public class SingletonRun {
+    public static void main(String[] args) {
+        System.out.println("main starts");
+        // main starts
+        VehicleRegistry salesDesk = VehicleRegistry.getInstance();     // 1st call: creates the registry (lazy)
+        // VehicleRegistry created
+        VehicleRegistry serviceDesk = VehicleRegistry.getInstance();   // 2nd call: returns the same object
+        VehicleRegistry reports = VehicleRegistry.getInstance();       // 3rd call: same again
+        System.out.println(salesDesk == serviceDesk);
+        // true
+        System.out.println(serviceDesk == reports);
+        // true
+        salesDesk.sell("CH-101");
+        System.out.println(reports.isInStock("CH-101"));
+        // false
+    }
+}
+
+final class VehicleRegistry {
+    private static VehicleRegistry instance;                        // empty until the first call
+
+    private final Set<String> inStock = new TreeSet<>(List.of("CH-101", "CH-102", "CH-103"));
+
+    private VehicleRegistry() { System.out.println("VehicleRegistry created"); }
+
+    public static VehicleRegistry getInstance() {
+        if (instance == null) {                                     // first caller only
+            instance = new VehicleRegistry();
+        }
+        return instance;
+    }
+
+    void sell(String chassis) { inStock.remove(chassis); }
+    boolean isInStock(String chassis) { return inStock.contains(chassis); }
+}
+</script>
+  <p><b>Your turn.</b> Press the three desk buttons in any order. With the toggle off, only the first press prints "VehicleRegistry created", and the diagram always shows one object. Then press <b>Reset</b>, switch on <b>naive new (no Singleton)</b>, press the desks and sell <code>CH-101</code>: every press builds a copy, and the copies disagree. The output is exactly what the Java code prints.</p>
+  <div class="dp-play" id="dpp-sglplay"><p class="small muted" style="padding:16px">This playground needs JavaScript.</p></div>
+  <p class="small muted">Selling before the sales desk has a registry throws the real <code>NullPointerException</code> message: <code>salesDesk</code> is still <code>null</code>.</p>
+</section>
+
+<!-- 4 -->
+<section id="sgl-practise">
+  <span class="num">04</span><h2>Practise: make one, then make it testable</h2>
+  <span class="dp-lv l2">Level 2 · Practise</span>
+  <div class="dp-ex" data-t="Beginner exercise">
+    <p>The dealership numbers its invoices with an <code>InvoiceNumbers</code> class that counts <code>INV-1</code>, <code>INV-2</code>... Two desks must never produce the same number, so there must be exactly one counter. Make <code>InvoiceNumbers</code> a Singleton. Expected lines: <code>INV-1</code>, <code>INV-2</code>, <code>true</code>.</p>
+    <details class="d"><summary>Hint</summary><div class="b">The three pieces from section 02: a <code>private</code> constructor, a <code>private static final</code> field that holds the one object, and a <code>public static getInstance()</code> that returns it. Then both callers use <code>getInstance()</code>.</div></details>
+    <details class="d"><summary>Solution</summary><div class="b"><p>Ran on JDK 25:</p>
+<pre style="overflow-x:auto;margin:10px 0;padding:12px 14px;border-radius:12px;background:var(--code-bg);color:var(--code-text);font:12.5px/1.6 'JetBrains Mono',monospace"><code>public class ExInvoice {
+    public static void main(String[] args) {
+        InvoiceNumbers a = InvoiceNumbers.getInstance();
+        InvoiceNumbers b = InvoiceNumbers.getInstance();
+        System.out.println(a.next());      // INV-1
+        System.out.println(b.next());      // INV-2
+        System.out.println(a == b);        // true
+    }
+}
+
+final class InvoiceNumbers {
+    private static final InvoiceNumbers INSTANCE = new InvoiceNumbers();   // 1. private static field
+    private int last;
+
+    private InvoiceNumbers() { }                                            // 2. private constructor
+
+    public static InvoiceNumbers getInstance() { return INSTANCE; }        // 3. the one way in
+
+    String next() { return "INV-" + (++last); }
+}</code></pre></div></details>
+  </div>
+  <div class="dp-ex" data-t="Intermediate exercise">
+    <p><code>StockReport</code> calls <code>VehicleRegistry.getInstance()</code> inside its method, so you cannot test it without the real registry. Refactor so a test can pass a fake: add an interface <code>StockLookup</code> with <code>isInStock(String)</code>, let <code>VehicleRegistry</code> implement it, and give <code>StockReport</code> a constructor that takes a <code>StockLookup</code>. Expected lines: <code>CH-101: in stock</code>, <code>CH-999: sold out</code>, <code>CH-102: in stock</code>.</p>
+    <details class="d"><summary>Hint</summary><div class="b">The class that <i>uses</i> the registry should not know it is a Singleton. Pass it in (constructor injection) as the interface type. Only the place that wires the program together calls <code>getInstance()</code>, once.</div></details>
+    <details class="d"><summary>Solution</summary><div class="b"><p>The fake is a one-line lambda, because <code>StockLookup</code> has one method. Ran on JDK 25:</p>
+<pre style="overflow-x:auto;margin:10px 0;padding:12px 14px;border-radius:12px;background:var(--code-bg);color:var(--code-text);font:12.5px/1.6 'JetBrains Mono',monospace"><code>import java.util.*;
+
+public class ExTestable {
+    public static void main(String[] args) {
+        StockLookup fake = chassis -&gt; chassis.equals("CH-101");        // a test double: no real registry needed
+        StockReport report = new StockReport(fake);
+        System.out.println(report.line("CH-101"));    // CH-101: in stock
+        System.out.println(report.line("CH-999"));    // CH-999: sold out
+
+        StockReport real = new StockReport(VehicleRegistry.getInstance());   // production wiring, done once
+        System.out.println(real.line("CH-102"));      // CH-102: in stock
+    }
+}
+
+interface StockLookup { boolean isInStock(String chassis); }
+
+final class VehicleRegistry implements StockLookup {
+    private static final VehicleRegistry INSTANCE = new VehicleRegistry();
+    private final Set&lt;String&gt; inStock = new TreeSet&lt;&gt;(List.of("CH-101", "CH-102", "CH-103"));
+    private VehicleRegistry() { }
+    public static VehicleRegistry getInstance() { return INSTANCE; }
+    public boolean isInStock(String chassis) { return inStock.contains(chassis); }
+}
+
+final class StockReport {
+    private final StockLookup stock;                                    // depends on the interface, not on getInstance()
+    StockReport(StockLookup stock) { this.stock = stock; }
+    String line(String chassis) { return chassis + ": " + (stock.isInStock(chassis) ? "in stock" : "sold out"); }
+}</code></pre></div></details>
+  </div>
+  <div class="dp-xb" data-k="p06"><p>Explain Singleton to a new teammate with the stock register: what three things does the class need, why is the constructor private, and what goes wrong when each desk writes <code>new VehicleRegistry()</code>?</p>
+    <div class="dp-xm"><b>Model answer.</b> Singleton guarantees one instance and one global way to reach it. The class needs a <code>private</code> constructor (nobody outside can build another), a <code>private static</code> field holding the single object, and a <code>public static getInstance()</code> that returns it. If every desk writes <code>new VehicleRegistry()</code>, each gets its own copy of the stock: a sale at the sales desk changes only that copy, so Reports still shows the car in stock, and nothing stops more copies. With Singleton all desks share one object, so they always agree.</div></div>
+</section>
+
+<!-- 5 -->
+<section id="sgl-choose">
+  <span class="num">05</span><h2>Choose it: when one shared object is right</h2>
+  <span class="dp-lv l3">Level 3 · Choose it</span>
+  <div class="tldr"><b>In 30 seconds</b> Use Singleton for something that is truly <b>one per application</b>: a registry, configuration, a cache. Do <b>not</b> use it as a convenient global variable: shared mutable state, hidden dependencies and hard tests are the price. In a Spring backend, let the container make the one instance and inject it.</div>
+  <div class="viz dp" id="dp-sgluml"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <h3>Use it when</h3>
+  <ul><li>There must be <b>exactly one</b> of something for the whole application: a vehicle registry, a configuration object, a cache, a connection-pool manager.</li>
+    <li>Everyone must see the <b>same state</b>, and the object is created once and kept for the life of the program.</li></ul>
+  <h3>Do not use it when</h3>
+  <ul><li>You only want <b>easy access</b> from everywhere. That is a global variable in disguise: any code can change it, so bugs travel far.</li>
+    <li>The class hides a <b>dependency</b>: <code>getInstance()</code> inside a method means the method's signature does not show it needs a registry, and tests cannot replace it. <b>Simpler alternative:</b> create one object and <b>pass it in</b> (dependency injection), as in the intermediate exercise.</li>
+    <li>The values are <b>stateless and shared</b>: a stateless object is safe to share without any pattern. (The states in <a href="03-state.html">State</a> are often exactly this: stateless state objects, kept as shared single instances.)</li></ul>
+  <div class="tw"><table><tr><th></th><th>Singleton</th><th>Static utility class</th><th>Spring singleton scope</th><th>Flyweight (lesson 23, coming)</th></tr>
+    <tr><td>What it is</td><td>a class with one instance</td><td>a class with only static methods, never instantiated</td><td>the container keeps one bean per name</td><td>many shared objects, one per distinct value</td></tr>
+    <tr><td>How many objects</td><td>exactly one</td><td>none (no object at all)</td><td>one per <code>ApplicationContext</code>, not per JVM</td><td>one per shared value (many)</td></tr>
+    <tr><td>Implements an interface?</td><td>yes</td><td>no</td><td>yes</td><td>yes</td></tr>
+    <tr><td>Can be replaced in a test?</td><td>hard (unless injected)</td><td>hard</td><td>yes (inject a fake)</td><td>n/a</td></tr>
+    <tr><td>Created</td><td>eager or lazy</td><td>when the class loads</td><td>at startup (default)</td><td>on demand, from a factory</td></tr>
+    <tr><td>Dealership</td><td><code>VehicleRegistry.getInstance()</code></td><td><code>Math.max(a, b)</code>-style helpers</td><td><code>@Component class VehicleRegistry</code></td><td>thousands of cars sharing one model spec</td></tr></table></div>
+  <h3>Trade-offs</h3>
+  <ul><li><b>Complexity:</b> tiny to write; the cost comes later, in concurrency and tests.</li>
+    <li><b>Coupling:</b> callers depend on the concrete class and on <code>getInstance()</code>, a global name. This is the biggest complaint.</li>
+    <li><b>Testing:</b> one shared object keeps its state between tests. Fix: depend on an interface and inject it.</li>
+    <li><b>Concurrency:</b> shared mutable state needs thread safety (section 06; also gathered in lesson 24, coming).</li>
+    <li><b>Performance:</b> a single object saves memory and set-up time; locking, if you add it, costs a little per call.</li></ul>
+  <h3>In a Spring Boot backend</h3>
+  <p>A conceptual sketch. You rarely write <code>getInstance()</code> in Spring: a bean is a <b>singleton by default</b> (one per <code>ApplicationContext</code>), the container builds it once and injects it. You get the benefit of one shared object without the global name, and tests can inject a fake.</p>
+<pre class="dp-spring"><code>@Component                                   // default scope = singleton: one per ApplicationContext
+class VehicleRegistry implements StockLookup {
+    private final Set&lt;String&gt; inStock = ConcurrentHashMap.newKeySet();   // shared state must be thread-safe
+    public boolean isInStock(String chassis) { return inStock.contains(chassis); }
+}
+
+@Service
+class StockReportService {
+    private final StockLookup stock;
+    StockReportService(StockLookup stock) {  // injected: no getInstance(), easy to replace in a test
+        this.stock = stock;
+    }
+}
+
+@Component
+@Scope("prototype")                          // the opposite: a NEW object for every injection
+class TestDriveSession { }</code></pre>
+  <h3>Where Java and Spring already use it</h3>
+  <ul><li><code>Runtime.getRuntime()</code>: the one <code>Runtime</code> of the running program. A real Singleton: the constructor is private.</li>
+    <li><code>Desktop.getDesktop()</code> (<code>java.awt</code>): returns the one <code>Desktop</code> of the application (it can throw on a headless machine).</li>
+    <li><code>Collections.emptyList()</code>: returns a shared immutable empty list. A <b>similar idea</b> (one shared instance), though not a Singleton class.</li>
+    <li>Spring: the default bean scope is <code>singleton</code>; the container, not a static field, guarantees "one".</li></ul>
+  <div class="dp-pred spot" data-ans="2"><p>In this program (it ran on JDK 25), how many lines print <code>true</code>?</p>
+<pre style="overflow-x:auto;margin:10px 0;padding:12px 14px;border-radius:12px;background:var(--code-bg);color:var(--code-text);font:12.5px/1.6 'JetBrains Mono',monospace"><code>import java.util.*;
+
+public class SpotSingleton {
+    public static void main(String[] args) {
+        Runtime a = Runtime.getRuntime();
+        Runtime b = Runtime.getRuntime();
+        List&lt;String&gt; x = Collections.emptyList();
+        List&lt;String&gt; y = Collections.emptyList();
+        System.out.println(a == b);                                         // true
+        System.out.println(x == y);                                         // true
+        System.out.println(new ArrayList&lt;String&gt;() == new ArrayList&lt;String&gt;());   // false
+    }
+}</code></pre>
+    <ol><li>none</li><li>one</li><li>two</li><li>three</li></ol>
+    <div class="dp-pe"><code>Runtime.getRuntime()</code> returns the one <code>Runtime</code>, so <code>a == b</code> is <code>true</code>. <code>Collections.emptyList()</code> returns the same shared empty list each time (in OpenJDK), so <code>x == y</code> is <code>true</code>: a similar idea. Two <code>new ArrayList</code> are two different objects, so the last line is <code>false</code>. Two lines are <code>true</code>.</div></div>
+</section>
+
+<!-- 6 -->
+<section id="sgl-master">
+  <span class="num">06</span><h2>Master it: threads, reflection and enums</h2>
+  <span class="dp-lv l4">Level 4 · Master it</span>
+  <div class="tldr"><b>In 30 seconds</b> The simple lazy version is not safe with several threads. Your options: eager (simplest), lazy with <code>synchronized</code> (safe, slower), double-checked locking with <code>volatile</code>, the holder idiom (lazy and lock-free), or an <b>enum</b> (also safe against reflection and serialization). This is the Level 4 depth; it is also gathered in lesson 24 (coming).</div>
+  <h3>Four thread-safe versions</h3>
+  <p>The program asks each version for its instance from 8 threads at once and counts the distinct objects. The output only shows that these safe versions give one instance; it cannot show the broken ones, so none is claimed.</p>
+<script type="text/x-java" data-file="SingletonVariants.java" data-hl="26-33,35-47,50-53,56-58">
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
+
+public class SingletonVariants {
+    public static void main(String[] args) throws Exception {
+        check("synchronized getInstance", Synced::getInstance);
+        check("double-checked locking  ", Dcl::getInstance);
+        check("holder idiom            ", Holder::getInstance);
+        check("enum                    ", () -> EnumRegistry.INSTANCE);
+        // synchronized getInstance: 1 distinct instance from 8 threads
+        // double-checked locking  : 1 distinct instance from 8 threads
+        // holder idiom            : 1 distinct instance from 8 threads
+        // enum                    : 1 distinct instance from 8 threads
+    }
+
+    static void check(String name, Supplier<Object> getter) throws Exception {
+        Set<Object> seen = ConcurrentHashMap.newKeySet();
+        List<Thread> threads = new ArrayList<>();
+        for (int i = 0; i < 8; i++) threads.add(Thread.ofPlatform().start(() -> seen.add(getter.get())));
+        for (Thread t : threads) t.join();
+        System.out.println(name + ": " + seen.size() + " distinct instance from 8 threads");
+    }
+}
+
+final class Synced {                                    // 1. lazy + synchronized: safe, but every call takes the lock
+    private static Synced instance;
+    private Synced() { }
+    public static synchronized Synced getInstance() {
+        if (instance == null) instance = new Synced();
+        return instance;
+    }
+}
+
+final class Dcl {                                       // 2. double-checked locking: lock only while it is still null
+    private static volatile Dcl instance;               // volatile is REQUIRED here
+    private Dcl() { }
+    public static Dcl getInstance() {
+        Dcl local = instance;                           // first check, no lock
+        if (local == null) {
+            synchronized (Dcl.class) {
+                local = instance;                       // second check, inside the lock
+                if (local == null) instance = local = new Dcl();
+            }
+        }
+        return local;
+    }
+}
+
+final class Holder {                                    // 3. initialization-on-demand holder: lazy and lock-free
+    private Holder() { }
+    private static class Lazy { static final Holder INSTANCE = new Holder(); }   // loaded on first getInstance()
+    public static Holder getInstance() { return Lazy.INSTANCE; }
+}
+
+enum EnumRegistry {                                     // 4. enum: one constant, the JVM guarantees one instance
+    INSTANCE
+}
+</script>
+  <div class="tw"><table><tr><th>Version</th><th>Lazy?</th><th>Cost</th><th>Notes</th></tr>
+    <tr><td>Eager <code>static final</code></td><td>no</td><td>none per call</td><td>Simplest; created at class load even if never used.</td></tr>
+    <tr><td><code>synchronized getInstance()</code></td><td>yes</td><td>a lock on <b>every</b> call</td><td>Correct and simple; the lock is only needed once, at the start.</td></tr>
+    <tr><td>Double-checked locking</td><td>yes</td><td>one volatile read per call</td><td>Needs <code>volatile</code>; easy to get wrong.</td></tr>
+    <tr><td>Holder idiom</td><td>yes</td><td>none per call</td><td>Class loading is lazy and thread-safe, so no locks are written.</td></tr>
+    <tr><td>Enum</td><td>on first use</td><td>none per call</td><td>Safe against threads, reflection and serialization; cannot extend a class.</td></tr></table></div>
+  <details class="d"><summary>Why <code>volatile</code> is required in double-checked locking</summary><div class="b"><p>The line <code>instance = new Dcl()</code> looks like one step but is three: <b>1</b> reserve memory, <b>2</b> run the constructor to fill the fields, <b>3</b> point <code>instance</code> at the object. The compiler or CPU may <b>reorder</b> steps 2 and 3. Another thread doing the first check <b>without a lock</b> could then see <code>instance != null</code> while the constructor has not finished, and use a half-built object.</p><p><code>volatile</code> forbids that reordering and makes the new value visible to all threads straight away (Java 5 and later). Without it the code is wrong, even though it usually seems to work. This is explained, not demonstrated: the race is rare and depends on the CPU and the JIT compiler.</p><p>Why two checks? The first (no lock) keeps the common case fast. The second (inside the lock) stops two threads that both passed the first check from building two objects.</p></div></details>
+  <details class="d"><summary>The holder idiom and the enum singleton</summary><div class="b"><p><b>Holder.</b> The nested class <code>Lazy</code> is not loaded until <code>getInstance()</code> first touches it. The JVM guarantees a class is initialised once, safely, so the instance is created lazily with no lock in your code.</p><p><b>Enum</b> (Effective Java, Item 3). <code>enum EnumRegistry { INSTANCE }</code>: the JVM creates each constant once. <b>Pros:</b> one line, thread-safe, survives serialization and reflection (next card). <b>Cons:</b> it cannot extend another class (it can implement interfaces), it has no lazy-with-arguments option, and it is harder to replace in tests; some teams find it unfamiliar.</p></div></details>
+  <details class="d"><summary>How reflection, serialization and cloning break a class-based Singleton</summary><div class="b"><p><b>Reflection.</b> <code>setAccessible(true)</code> switches off the <code>private</code> check, so code can call the constructor and make a second object. A guard in the constructor (throw if <code>INSTANCE</code> is set) helps for an eager singleton. An enum constructor cannot be called by reflection at all.</p>
+<script type="text/x-java" data-file="SingletonBreakers.java" data-hl="6-8,14-17,24-26">
+import java.lang.reflect.Constructor;
+
+public class SingletonBreakers {
+    public static void main(String[] args) throws Exception {
+        // 1. reflection against a class-based singleton
+        Constructor<ClassRegistry> c = ClassRegistry.class.getDeclaredConstructor();
+        c.setAccessible(true);                                        // switches off the private check
+        ClassRegistry second = c.newInstance();
+        System.out.println("class: same object? " + (second == ClassRegistry.getInstance()));
+        // class: same object? false
+
+        // 2. the same attack against an enum singleton
+        try {
+            Constructor<EnumRegistry> e = EnumRegistry.class.getDeclaredConstructor(String.class, int.class);
+            e.setAccessible(true);
+            e.newInstance("INSTANCE", 0);
+        } catch (IllegalArgumentException ex) {
+            System.out.println("enum: " + ex.getMessage());
+            // enum: Cannot reflectively create enum objects
+        }
+
+        // 3. a guard in the class-based constructor stops the second copy
+        try {
+            Constructor<GuardedRegistry> g = GuardedRegistry.class.getDeclaredConstructor();
+            g.setAccessible(true);
+            g.newInstance();
+        } catch (ReflectiveOperationException ex) {
+            System.out.println("guarded: " + ex.getCause().getMessage());
+            // guarded: Use getInstance()
+        }
+    }
+}
+
+final class ClassRegistry {
+    private static final ClassRegistry INSTANCE = new ClassRegistry();
+    private ClassRegistry() { }
+    public static ClassRegistry getInstance() { return INSTANCE; }
+}
+
+final class GuardedRegistry {
+    private static final GuardedRegistry INSTANCE = new GuardedRegistry();
+    private GuardedRegistry() {
+        if (INSTANCE != null) throw new IllegalStateException("Use getInstance()");   // true only for a 2nd attempt
+    }
+    public static GuardedRegistry getInstance() { return INSTANCE; }
+}
+
+enum EnumRegistry { INSTANCE }
+</script>
+<p><b>Serialization and cloning.</b> Reading a <code>Serializable</code> object back builds a <b>new</b> object. Fix: add <code>readResolve()</code> returning the instance. Cloning only matters if someone makes the singleton <code>Cloneable</code>: <code>clone()</code> then copies it, so do not implement it (or throw from <code>clone()</code>). An enum handles both for you.</p>
+<script type="text/x-java" data-file="SingletonSerial.java" data-hl="7,22-23,28-32,37-40">
+import java.io.*;
+
+public class SingletonSerial {
+    public static void main(String[] args) throws Exception {
+        System.out.println("plain Serializable singleton, same object? " + (roundTrip(Plain.getInstance()) == Plain.getInstance()));
+        // plain Serializable singleton, same object? false
+        System.out.println("with readResolve(),          same object? " + (roundTrip(Fixed.getInstance()) == Fixed.getInstance()));
+        // with readResolve(),          same object? true
+        System.out.println("enum singleton,              same object? " + (roundTrip(Mode.INSTANCE) == Mode.INSTANCE));
+        // enum singleton,              same object? true
+        System.out.println("clone() of a Cloneable singleton, same object? " + (Cloned.getInstance().copy() == Cloned.getInstance()));
+        // clone() of a Cloneable singleton, same object? false
+    }
+
+    static Object roundTrip(Object o) throws Exception {          // write to bytes and read back
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try (ObjectOutputStream out = new ObjectOutputStream(bytes)) { out.writeObject(o); }
+        try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes.toByteArray()))) { return in.readObject(); }
+    }
+}
+
+final class Plain implements Serializable {
+    private static final Plain INSTANCE = new Plain();
+    private Plain() { }
+    static Plain getInstance() { return INSTANCE; }
+}
+
+final class Fixed implements Serializable {
+    private static final Fixed INSTANCE = new Fixed();
+    private Fixed() { }
+    static Fixed getInstance() { return INSTANCE; }
+    private Object readResolve() { return INSTANCE; }              // reading hands back the real instance
+}
+
+enum Mode { INSTANCE }
+
+final class Cloned implements Cloneable {                         // someone made the singleton Cloneable
+    private static final Cloned INSTANCE = new Cloned();
+    private Cloned() { }
+    static Cloned getInstance() { return INSTANCE; }
+    Cloned copy() {
+        try { return (Cloned) super.clone(); } catch (CloneNotSupportedException e) { throw new AssertionError(e); }
+    }
+}
+</script>
+</div></details>
+  <details class="d"><summary>Common mistakes</summary><div class="b"><ul>
+    <li><b>Lazy without synchronisation:</b> two threads can each see <code>null</code> and build two objects.</li>
+    <li><b>Double-checked locking without <code>volatile</code>:</b> another thread may see a half-built object.</li>
+    <li><b>Mutable global state:</b> any code can change it, bugs appear far from the cause. Make it thread-safe or immutable.</li>
+    <li><b>Hidden dependencies:</b> <code>getInstance()</code> deep inside methods; tests cannot swap it. Inject an interface.</li>
+    <li><b>"One per JVM" is not exact:</b> it is one per <b>class loader</b>. Two class loaders (some application servers) can each hold one.</li>
+    <li><b>A Singleton that holds per-request data:</b> one shared object must not remember one user's order.</li>
+    <li><b>Using it when a plain object plus injection is enough.</b></li></ul></div></details>
+  <div class="dp-pred" data-ans="3"><p><b>A new requirement.</b> The showroom's stock report must be unit-tested with a fake registry, and a second showroom application running in the same JVM (another Spring context) needs its <b>own</b> registry. Which design do you choose?</p>
+    <ol><li>An enum singleton, called as <code>VehicleRegistry.INSTANCE</code> from every service</li><li>Double-checked locking with <code>volatile</code>, called as <code>VehicleRegistry.getInstance()</code> inside each service</li><li>A static utility class with a static <code>HashMap</code></li><li>A plain class behind a <code>StockLookup</code> interface, created once per application at startup (a Spring singleton-scoped bean) and injected</li></ol>
+    <div class="dp-pe">Options 1 to 3 are all JVM-wide globals: one registry for both showrooms, and a fake cannot be injected. Option 4 still gives "one registry" inside each application (singleton scope is one per <code>ApplicationContext</code>), but each application has its own, and tests pass a fake through the constructor.</div></div>
+  <h3>Patterns it works with</h3>
+  <ul><li><a href="03-state.html">State</a>: stateless state objects can be shared as singletons, since they hold no data.</li>
+    <li><a href="04-factory-method.html">Factory Method</a>: a factory may return the same shared instance each time.</li>
+    <li><a href="05-builder.html">Builder</a>: build the object once (configuration, say), then keep it as the one shared instance.</li>
+    <li><b>Abstract Factory</b> (lesson 08, coming): a concrete factory is often a singleton.</li>
+    <li><b>Facade</b> (lesson 12, coming): a facade is often the one entry point, kept as one shared object.</li>
+    <li><b>Flyweight</b> (lesson 23, coming): many shared objects, one per value, instead of one overall.</li></ul>
+</section>
+
+<!-- 7 -->
+<section id="sgl-review">
+  <span class="num">07</span><h2>Interview and review</h2>
+  <span class="dp-lv lr">Interview and review</span>
+  <p class="small muted">Answer out loud first, then open the card.</p>
+  <details class="d"><summary><span class="q">01</span>What is the Singleton pattern? (the 30-second answer)</summary><div class="b"><b>B ·</b> Singleton ensures a class has <b>exactly one instance</b> and gives a global access point to it. In Java: a <code>private</code> constructor, a <code>private static</code> field holding the instance, and a <code>public static getInstance()</code>. Example: the dealership's <code>VehicleRegistry</code>, shared by the sales desk, service desk and reports; in the JDK, <code>Runtime.getRuntime()</code>.</div></details>
+  <details class="d"><summary><span class="q">02</span>Walk me through the thread-safe options.</summary><div class="b"><b>I ·</b> 1) <b>Eager</b> <code>static final</code> field: simplest, thread-safe because class loading is. 2) Lazy with <b><code>synchronized</code> getInstance()</b>: correct, but every call takes the lock. 3) <b>Double-checked locking</b> with a <code>volatile</code> field: lock only while the field is null. 4) <b>Holder idiom</b>: a private static nested class holds the instance, loaded on first use, lazy and lock-free. 5) <b>Enum</b>: one constant, also safe against reflection and serialization. In practice: eager or holder, or let Spring manage it.</div></details>
+  <details class="d"><summary><span class="q">03</span>Why must the field be <code>volatile</code> in double-checked locking?</summary><div class="b"><b>A ·</b> <code>instance = new X()</code> is allocate, run the constructor, assign the reference, and the compiler or CPU may reorder the last two. A thread passing the unlocked first check could then see a non-null reference to an object whose constructor has not finished. <code>volatile</code> forbids that reordering (a happens-before edge between the write and later reads) and makes the value visible to all threads. Without it the code is broken even if it usually works.</div></details>
+  <details class="d"><summary><span class="q">04</span>What are the pros and cons of an enum singleton?</summary><div class="b"><b>I ·</b> <b>Pros:</b> shortest code, thread-safe, serialization-safe (the JVM guarantees one constant), reflection cannot create another ("Cannot reflectively create enum objects"). <b>Cons:</b> cannot extend a class (interfaces are fine), eager-ish, no constructor arguments from outside, and awkward to mock; the style can surprise teammates. Joshua Bloch recommends it in Effective Java.</div></details>
+  <details class="d"><summary><span class="q">05</span>How can a Singleton be broken, and how do you stop it?</summary><div class="b"><b>A ·</b> <b>Reflection:</b> <code>setAccessible(true)</code> on the private constructor; guard in the constructor, or use an enum. <b>Serialization:</b> deserializing creates a new object; add <code>readResolve()</code> returning the instance, or use an enum. <b>Cloning:</b> only if the class is <code>Cloneable</code>; do not implement it, or throw from <code>clone()</code>. <b>Several class loaders:</b> each can load its own copy. <b>Several threads:</b> an unsafe lazy version.</div></details>
+  <details class="d"><summary><span class="q">06</span>Singleton vs a static utility class?</summary><div class="b"><b>B ·</b> A static class has no object: only static methods, no interface, no polymorphism, and its state is hard to replace. A Singleton is a real object, so it can implement an interface, be passed around and (with care) be mocked, and it can be created lazily. Use a static class for pure, stateless helpers (like <code>Math</code>); use a Singleton (or better an injected bean) when there is one shared object with state.</div></details>
+  <details class="d"><summary><span class="q">07</span>Singleton vs a Spring singleton-scoped bean?</summary><div class="b"><b>I ·</b> The GoF Singleton is enforced by the class: one per class loader (about one per JVM), reached by a static method. A Spring singleton bean is one instance <b>per <code>ApplicationContext</code></b>, created and injected by the container; the class itself is an ordinary class that could be instantiated twice. Two contexts mean two beans. Spring's is easier to test and has no global name.</div></details>
+  <details class="d"><summary><span class="q">08</span>Why is Singleton called an anti-pattern, and what are the testing problems?</summary><div class="b"><b>I ·</b> It is global mutable state with a hidden dependency: a method calls <code>getInstance()</code> inside, so its signature does not show it, tests cannot replace the object, and state leaks from one test to the next. It also couples callers to a concrete class and complicates concurrency.</div></details>
+  <details class="d"><summary><span class="q">09</span>How do you fix the testing problem?</summary><div class="b"><b>I ·</b> Depend on an <b>interface</b> (<code>StockLookup</code>) and pass the object in through the constructor (dependency injection). Production code wires the one real instance once; tests pass a fake. Keep "one" as a decision of the application (one bean), not of the class.</div></details>
+  <details class="d"><summary><span class="q">10</span>Eager or lazy: how do you choose?</summary><div class="b"><b>B ·</b> Eager is simplest and thread-safe; choose it when creation is cheap or the object is always needed. Choose lazy (holder idiom) when creation is expensive or may never be needed, or when it depends on something not ready at class load. A failing eager constructor breaks class loading, which gives an <code>ExceptionInInitializerError</code>.</div></details>
+  <div class="dp-rev">
+    <div><b>Intent</b><span>Ensure a class has exactly one instance and give one global way to reach it.</span></div>
+    <div><b>Structure</b><span>Private constructor + private static instance field + public static getInstance(). Clients only call getInstance().</span></div>
+    <div><b>Use when</b><span>Something is truly one per application and all code must share its state: registry, configuration, cache.</span></div>
+    <div><b>Trade-off</b><span>Global state, hidden dependencies, hard to test, needs thread safety. Prefer an injected single bean.</span></div>
+    <div><b>Remember</b><span>One stock register book for the whole showroom: every desk reads and writes the same book.</span></div>
+  </div>
+  <h3>8 takeaways</h3><ul class="takeaways"><li>Singleton: exactly one instance, one global way to reach it.</li><li>Three parts: private constructor, private static field, public static <code>getInstance()</code>.</li><li>Without it, each <code>new VehicleRegistry()</code> is a separate copy, and the copies disagree.</li><li>Eager initialisation is the simplest and thread-safe; lazy needs care with threads.</li><li>Double-checked locking needs <code>volatile</code> because construction and publication can be reordered.</li><li>The holder idiom is lazy and lock-free; the enum is also safe against reflection and serialization.</li><li>Use it for true one-per-application resources; avoid it as a global variable.</li><li>In Spring the default scope is singleton (one per <code>ApplicationContext</code>): inject an interface instead of calling <code>getInstance()</code>.</li></ul>
+  <h3>Check yourself</h3>
+  <p class="small muted">Answer before you look. Each answer locks and explains itself; your answers are saved in this browser.</p>
+  <div class="quiz" data-quiz="p06"><p class="small muted">This quiz needs JavaScript.</p></div>
+  <h3>Recall prompts</h3>
+  <p class="small muted">Come back after 1, 3 and 7 days and answer out loud before opening each one.</p>
+  <div id="rcp"></div>
+  <h3>Your feedback</h3>
+  <div id="rates"></div>
+  <textarea id="fbt" placeholder="What should change, and was the step from many copies to exactly one clear?"></textarea>
+  <p><button class="btn pri" id="fbc">Copy feedback</button> <span id="fbm" class="small" style="color:var(--good)"></span></p>
+</section>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>Design Patterns for Interviews · every program compiled and run on JDK 25</footer>
+</div>
+
+<script src="../assets/data/patterns-index.js"></script>
+<script src="../assets/data/quiz-data.js"></script>
+<script src="../assets/js/course.js"></script>
+<script src="../assets/js/effects.js"></script>
+<script src="../assets/labs/labs-patterns.js"></script>
+<script src="../assets/labs/labs-patterns-p06.js"></script>
+<script src="../assets/js/run-java.js"></script>
+</body>
+</html>
