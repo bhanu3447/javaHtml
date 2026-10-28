@@ -67,3 +67,4 @@ Sections (ids), labs (keys, views, step counts), playground key, programs (file 
 - Sequence views reserve their full height from step 1; keep a scenario to about 10–18 messages.
 - Network drops end long agents: write the page's files early so a resumed agent can continue from disk.
 - Verify JDK/Spring class names against the docs before writing them; say "conceptually similar" when it is not a literal implementation.
+- UML arrows: a class implementing an interface uses `impl` (dashed), never `ext`; an interface extending an interface uses `ext`. Lead found `ext` on 08 and fixed it (2026-10-28).

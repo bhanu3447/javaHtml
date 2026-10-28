@@ -1,6 +1,6 @@
 # Design Patterns course — final plan (merged 2026-10-28)
 
-**Status (2026-10-28):** phases A, B and C done and pushed: plan, kit v2, P00 (16 sections), **01 Strategy, 02 Template Method, 03 State** (Move 1 · Swap complete). Move 2 · Create in progress: 04 Factory Method, 05 Builder, 06 Singleton, 07 Prototype live; next 08 Abstract Factory (then, 06 Singleton, 07 Prototype, 08 Abstract Factory). **After each move: stop, report, wait for the user's rating** (user, 2026-10-28).
+**Status (2026-10-28):** phases A, B and C done and pushed: plan, kit v2, P00 (16 sections), **01 Strategy, 02 Template Method, 03 State** (Move 1 · Swap complete). Move 2 · Create in progress: 04 Factory Method, 05 Builder, Move 2 complete (04–08 live). Next: Move 3 · Wrap, starting with 09 Adapter (then, 06 Singleton, 07 Prototype, 08 Abstract Factory). **After each move: stop, report, wait for the user's rating** (user, 2026-10-28).
 
 ## How to continue (any session, any Claude account, any machine)
 Everything needed is in the repo; nothing depends on a previous conversation.
@@ -18,8 +18,8 @@ Everything needed is in the repo; nothing depends on a previous conversation.
 | 05 | Builder | live |
 | 06 | Singleton | live |
 | 07 | Prototype | live |
-| 08 | Abstract Factory | next (last of Move 2) |
-| 09–13 | Adapter, Decorator, Proxy, Facade, Bridge | planned |
+| 08 | Abstract Factory | live (Move 2 complete) |
+| 09–13 | Adapter, Decorator, Proxy, Facade, Bridge | next (Move 3) |
 | 14–18 | Observer, Command, Chain of Responsibility, Mediator, Memento | planned |
 | 19–23 | Composite, Iterator, Visitor, Interpreter, Flyweight | planned |
 | 24–26 | Integration, Capstone, Interview | planned |

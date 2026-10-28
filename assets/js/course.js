@@ -61,7 +61,7 @@ const thisPage=PAGES.find(p=>p.key===PAGE);
    jumps to the other course's home and remembers the choice (js1-course, read by index.html). */
 const COURSE_ID=document.body.dataset.course||"java";
 /* every course of the site, in hub order; a new course = one more row here + its folder + a card in index.html */
-const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 8 lessons",file:"java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · S00 live",file:"sql/index.html",k:"S"},{id:"spring",name:"Spring Boot",sub:"Annotations lab · request lifecycle",file:"spring/index.html",k:"B"},{id:"patterns",name:"Design Patterns",sub:"Beginner to expert · Move 1 live",file:"patterns/index.html",k:"P"}];
+const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 8 lessons",file:"java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · S00 live",file:"sql/index.html",k:"S"},{id:"spring",name:"Spring Boot",sub:"Annotations lab · request lifecycle",file:"spring/index.html",k:"B"},{id:"patterns",name:"Design Patterns",sub:"Beginner to expert · Moves 1–2 live",file:"patterns/index.html",k:"P"}];
 (function(){const b=$("nav .brand");if(!b)return;const cur=COURSES.find(c=>c.id===COURSE_ID)||COURSES[0];
   const w=document.createElement("div");w.className="csw";w.id="courseSel";w.dataset.value=cur.id;
   w.innerHTML='<button type="button" class="csw-b" aria-haspopup="menu" aria-expanded="false" aria-label="Switch course: '+cur.name+'"><span>'+cur.name+'</span>'+ICO.chev+'</button>'+
