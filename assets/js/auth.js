@@ -8,15 +8,16 @@
   function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 
   async function session(){if(!sb)return null;try{return (await sb.auth.getSession()).data.session;}catch(e){return null;}}
-  /* the logged-in person: {user, profile:{name,email,role}, admin, access:{java:"approved",...}} or null */
+  /* the logged-in person: {user, profile:{name,email,username,role,status}, face (this login passed the face check), admin, approved (account), access:{java:"approved",...}} or null */
   async function me(){
     var s=await session();if(!s)return null;
-    var p=await sb.from("profiles").select("id,name,email,role").eq("id",s.user.id).maybeSingle();
+    var p=await sb.from("profiles").select("id,name,email,username,role,status").eq("id",s.user.id).maybeSingle();
     var a=await sb.from("course_access").select("course_id,status").eq("user_id",s.user.id);
+    var f=await sb.rpc("face_ok");
     var access={};(a.data||[]).forEach(function(r){access[r.course_id]=r.status;});
     var prof=p.data||{email:s.user.email,role:"learner"},admin=prof.role==="owner"||prof.role==="admin";
     if(admin)Object.keys(COURSES).forEach(function(k){access[k]="approved";});
-    return {user:s.user,profile:prof,admin:admin,access:access};
+    return {user:s.user,profile:prof,face:f.data===true,admin:admin,approved:admin||prof.status==="approved",access:access};
   }
   /* call an edge function with the person's token; always resolves to an object (+ .httpStatus) */
   async function fn(name,body){
@@ -49,6 +50,9 @@
       return;
     }
     if(r.status==="login"){card("","Your session has ended. Log in again.",login);return;}
+    if(r.status==="face"){await signOut();card("🙂","A face login lasts 1 hour. Log in again with your face to open this course.",login);return;}
+    if(r.status==="account_pending"){card("⏳","Your account is waiting for the owner's approval. Once it is approved you can ask for this course.","");return;}
+    if(r.status==="account_rejected"){card("✋","Your registration was not approved. Ask the course owner if you think this is a mistake.","");return;}
     var ask='<button class="au-btn pri" type="button" id="auAsk">Request access</button>';
     if(r.status==="pending")card("⏳","Your request is waiting for approval. You can open the course as soon as it is approved.","");
     else if(r.status==="rejected")card("✋","Your earlier request was not approved. You can ask again.",ask);

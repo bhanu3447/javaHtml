@@ -9,84 +9,269 @@
 <link rel="stylesheet" href="assets/css/auth.css">
 </head>
 <body class="au">
-<div class="au-top"><a class="au-brand" href="index.html"><i>Z</i> Zero to Advanced</a></div>
-<main class="au-center">
-  <div class="au-card">
-    <div class="au-tabs" role="tablist">
-      <button type="button" role="tab" id="tIn" aria-selected="true">Log in</button>
-      <button type="button" role="tab" id="tUp" aria-selected="false">Register</button>
+<div class="lg">
+  <aside class="lg-side" aria-hidden="true">
+    <span class="lg-orb a"></span><span class="lg-orb b"></span>
+    <a class="lg-brand" href="index.html" tabindex="-1"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a>
+    <!-- the learning loop: the site's ∞, one glowing learner travelling through the four courses -->
+    <svg class="lg-loop" viewBox="0 0 400 200" role="img" aria-label="The learning loop through Java, SQL, Spring and Design Patterns">
+      <defs>
+        <linearGradient id="lgInfG" x1="0" x2="1"><stop offset="0" stop-color="#67e8f9"/><stop offset=".5" stop-color="#c4b5fd"/><stop offset="1" stop-color="#f9a8d4"/></linearGradient>
+        <filter id="lgGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="4"/></filter>
+      </defs>
+      <path id="lgInf" class="lg-loop-track" d="M200,100 C240,40 360,40 360,100 C360,160 240,160 200,100 C160,40 40,40 40,100 C40,160 160,160 200,100 Z"/>
+      <use href="#lgInf" class="lg-loop-flow"/>
+      <g class="lg-node" transform="translate(360 100)"><circle r="7"/><text x="14" y="5">Java</text></g>
+      <g class="lg-node" transform="translate(280 55)"><circle r="7"/><text x="0" y="-14" text-anchor="middle">Spring</text></g>
+      <g class="lg-node" transform="translate(40 100)"><circle r="7"/><text x="-14" y="5" text-anchor="end">SQL</text></g>
+      <g class="lg-node" transform="translate(120 145)"><circle r="7"/><text x="0" y="27" text-anchor="middle">Patterns</text></g>
+      <g class="lg-me"><circle r="9" filter="url(#lgGlow)"/><circle r="5"/>
+        <animateMotion dur="9s" repeatCount="indefinite" rotate="0"><mpath href="#lgInf"/></animateMotion></g>
+    </svg>
+    <h1>Every expert was once<br>a <span>beginner.</span></h1>
+    <p class="lg-lead">Short lessons, a visual lab for every idea and real code you can run. One concept at a time, for as long as you want to keep growing.</p>
+    <p class="lg-tk" aria-live="off">Today you could learn <b id="lgTopic">why a String never changes</b></p>
+    <ul class="lg-chips"><li>4 courses</li><li>Visual labs</li><li>▶ Run real Java</li><li>Interview-ready</li></ul>
+    <ol class="lg-how">
+      <li><b>1</b><span><strong>Register</strong>with a quick selfie</span></li>
+      <li><b>2</b><span><strong>Get approved</strong>by the course owner</span></li>
+      <li><b>3</b><span><strong>Learn</strong>log in with your face</span></li>
+    </ol>
+  </aside>
+
+  <main class="lg-main">
+    <a class="lg-brand lg-mob" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a>
+    <div class="au-card lg-card" id="card">
+
+      <!-- logged in: approved / waiting / rejected -->
+      <section id="vMe" hidden>
+        <span class="au-lock" id="meIcon" aria-hidden="true">👋</span>
+        <h1 id="meTitle">Welcome back</h1>
+        <p id="meText"></p>
+        <div class="au-acts"><a class="au-btn pri" id="meGo" href="index.html">Continue</a><button class="au-btn" type="button" id="meRe" hidden>Check again</button><button class="au-btn" type="button" id="meOut">Log out</button></div>
+      </section>
+
+      <section id="vAuth">
+        <div class="lg-tabs" role="tablist" aria-label="Log in or register">
+          <span class="lg-pill" aria-hidden="true"></span>
+          <button type="button" role="tab" id="tIn" aria-selected="true" aria-controls="fIn">Log in</button>
+          <button type="button" role="tab" id="tUp" aria-selected="false" aria-controls="fUp">Register</button>
+        </div>
+
+        <!-- LOG IN: 1 password, 2 face -->
+        <form class="au-form" id="fIn" novalidate>
+          <div id="l1" class="lg-stack">
+            <h2 class="lg-h">Welcome back, learner 👋</h2>
+            <p class="lg-note">Pick up right where you left off.</p>
+            <label>Username or email<input id="inId" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+            <label>Password<span class="lg-pw"><input type="password" id="inPass" autocomplete="current-password" required><button type="button" class="lg-eye" aria-label="Show password">👁</button></span></label>
+            <button class="au-btn pri lg-go" type="submit" id="inGo"><span>Continue</span></button>
+            <p class="au-msg" id="inMsg" role="status"></p>
+            <p class="lg-alt">New here? <a href="#register" id="toUp">Create an account</a></p>
+          </div>
+          <div id="l2" class="lg-stack" hidden>
+            <h2 class="lg-h" id="l2Title">Show your face</h2>
+            <p class="lg-note" id="l2Note">Password correct. Follow the arrows on the camera to finish logging in.</p>
+            <div class="lg-camslot" id="inCam"></div>
+            <div class="lg-row"><button class="au-btn" type="button" id="l2Back">← Back</button><button class="au-btn pri" type="button" id="l2Snap" disabled>Start face check</button></div>
+            <ul class="lg-checks" id="inChecks" hidden><li data-k="face">Live check: real face, real head turns</li><li data-k="match">Matching it with your account</li></ul>
+            <p class="au-msg" id="l2Msg" role="status"></p>
+          </div>
+        </form>
+
+        <!-- REGISTER: 1 details, 2 selfie, 3 done -->
+        <form class="au-form" id="fUp" hidden novalidate>
+          <div class="lg-steps" aria-label="Registration steps"><span class="on">Details</span><span>Selfie</span><span>Done</span><i class="lg-bar"><b id="bar"></b></i></div>
+          <div id="s1" class="lg-stack">
+            <label>Full name<input id="upName" autocomplete="name" required maxlength="80"><small class="lg-err" data-for="upName"></small></label>
+            <label>Username<input id="upUser" autocomplete="username" autocapitalize="none" spellcheck="false" required maxlength="20" placeholder="e.g. bhanu_g"><small class="lg-err" data-for="upUser"></small></label>
+            <label>Email<input type="email" id="upMail" autocomplete="email" required><small class="lg-err" data-for="upMail"></small></label>
+            <label>Password<span class="lg-pw"><input type="password" id="upPass" autocomplete="new-password" minlength="8" required><button type="button" class="lg-eye" aria-label="Show password">👁</button></span>
+              <span class="lg-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></span><small class="lg-err" data-for="upPass"></small></label>
+            <button class="au-btn pri lg-go" type="button" id="next1"><span>Next: take a selfie →</span></button>
+          </div>
+          <div id="s2" class="lg-stack" hidden>
+            <p class="lg-note">Good light, alone in the picture. The camera asks you to look straight, then to turn your head left and right (random order). This face is checked at every login, and the owner sees it when approving you.</p>
+            <div class="lg-camslot" id="upCam"></div>
+            <div class="lg-row"><button class="au-btn" type="button" id="back2">← Back</button><button class="au-btn pri" type="button" id="snap" disabled>Start face check</button></div>
+            <ul class="lg-checks" id="checks" hidden><li data-k="face">Live check: real face, real head turns</li><li data-k="dup">Checking it isn't already registered</li><li data-k="acct">Creating your account</li></ul>
+            <p class="au-msg" id="upMsg" role="status"></p>
+          </div>
+          <div id="s3" hidden class="lg-done">
+            <svg class="lg-tick" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M15 27l7 7 15-15"/></svg>
+            <h2 class="lg-h" id="doneTitle">Account created</h2>
+            <p id="doneText"></p>
+            <a class="au-btn pri" href="index.html" id="doneGo">Go to the courses</a>
+          </div>
+        </form>
+      </section>
     </div>
-
-    <form class="au-form" id="fIn">
-      <label>Email<input type="email" id="inMail" autocomplete="email" required></label>
-      <label>Password<input type="password" id="inPass" autocomplete="current-password" required></label>
-      <button class="au-btn pri" type="submit">Log in</button>
-      <p class="au-msg" id="inMsg" role="status"></p>
-    </form>
-
-    <form class="au-form" id="fUp" hidden>
-      <p class="au-msg" style="color:var(--muted)">Registration is only for people the course owner has approved. Use the email they approved, then take a selfie: it must match the photo they added.</p>
-      <label>Email<input type="email" id="upMail" autocomplete="email" required></label>
-      <label>Password (8+ characters)<input type="password" id="upPass" autocomplete="new-password" minlength="8" required></label>
-      <div class="au-cam" id="cam">
-        <video id="vid" playsinline muted hidden></video>
-        <img id="shot" alt="Your selfie" hidden>
-        <span class="au-oval" id="oval" hidden></span>
-        <span class="au-ph" id="camPh">Your camera is used only for this one picture. It is checked and then thrown away.</span>
-      </div>
-      <button class="au-btn" type="button" id="camBtn">Turn on camera</button>
-      <button class="au-btn pri" type="submit" id="upBtn" disabled>Register</button>
-      <p class="au-msg" id="upMsg" role="status"></p>
-    </form>
-  </div>
-</main>
+  </main>
+</div>
 <script src="assets/js/auth-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/js/auth.js"></script>
 <script>
-/* login v1: log in, or register with a selfie (the register edge function checks it against the approved photo) */
+/* login v4: log in = username/email + password, then a LIVE face check every time (login function; lasts 1 hour);
+   register = details + live selfie (register function, account waits for the owner). Live check: the server sends a random
+   head-turn order; the camera takes 3 pictures (straight, then each turn) and the server checks pose, anti-spoofing and identity.
+   Docs: kb/access-lock.md */
 (function(){
   try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
   var $=function(id){return document.getElementById(id);};
   var next=AUTH.safeNext(new URLSearchParams(location.search).get("next"));
-  function say(el,t,kind){el.textContent=t;el.className="au-msg"+(kind?" "+kind:"");}
-  if(!AUTH.on){say($("inMsg"),"The course lock is not set up yet (assets/js/auth-config.js).","err");}
+  var calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function say(el,t,kind){el.textContent=t||"";el.className="au-msg"+(kind?" "+kind:"");}
+  function busy(b,on){b.disabled=on;b.classList.toggle("is-busy",on);}
+  function shake(){var c=$("card");c.classList.remove("shake");void c.offsetWidth;if(!calm)c.classList.add("shake");}
+  if(!AUTH.on)say($("inMsg"),"The course lock is not set up yet (assets/js/auth-config.js).","err");
 
-  function tab(up){$("tIn").setAttribute("aria-selected",String(!up));$("tUp").setAttribute("aria-selected",String(up));$("fIn").hidden=up;$("fUp").hidden=!up;if(!up)stopCam();}
-  $("tIn").onclick=function(){tab(false);};$("tUp").onclick=function(){tab(true);};
-  if(location.hash==="#register")tab(true);
+  /* side panel: a new "today you could learn" topic every few seconds (real lessons); still when motion is reduced */
+  var TOPICS=["why a String never changes","what really happens on new","stack vs heap, drawn live","your first SELECT query","the order a query really runs in",
+    "how Spring wires a controller","Strategy: swap behaviour, no if-else","Builder: objects step by step","Singleton, done right","Adapter: make two APIs fit"];
+  if(calm){var mv=document.querySelector(".lg-me animateMotion");if(mv){mv.parentNode.setAttribute("transform","translate(200 100)");mv.remove();}}
+  else{var ti=0,tp=$("lgTopic");setInterval(function(){tp.classList.add("out");setTimeout(function(){ti=(ti+1)%TOPICS.length;tp.textContent=TOPICS[ti];tp.classList.remove("out");},350);},3200);}
 
-  $("fIn").onsubmit=async function(e){e.preventDefault();if(!AUTH.on)return;
-    say($("inMsg"),"Logging in…");
-    var r=await AUTH.sb.auth.signInWithPassword({email:$("inMail").value.trim(),password:$("inPass").value});
-    if(r.error)say($("inMsg"),r.error.message,"err");else location.href=next;};
-
-  /* camera: live preview, then one frame as a 640px JPEG */
-  var stream=null,photo=null;
-  function stopCam(){if(stream){stream.getTracks().forEach(function(t){t.stop();});stream=null;}}
-  $("camBtn").onclick=async function(){
-    if(photo){photo=null;$("shot").hidden=true;$("upBtn").disabled=true;}
-    if(!stream){
+  /* one camera widget, used by the face login and by the register selfie */
+  function Cam(slot){
+    slot.innerHTML='<div class="au-cam lg-cam"><video playsinline muted hidden></video><img alt="Your photo" hidden><span class="au-oval lg-oval" hidden></span>'+
+      '<span class="lg-scan" hidden></span><span class="lg-say" hidden></span><span class="lg-count" hidden></span><span class="lg-flash"></span><span class="au-ph"><button class="au-btn pri" type="button">📷 Turn on camera</button></span></div>';
+    var q=function(s){return slot.querySelector(s);},v=q("video"),img=q("img"),stream=null,me={photo:null,onReady:null};
+    me.stop=function(){if(stream){stream.getTracks().forEach(function(t){t.stop();});stream=null;}q(".lg-scan").hidden=true;};
+    me.start=async function(){me.photo=null;img.hidden=true;
       try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:960},height:{ideal:720}},audio:false});}
-      catch(err){say($("upMsg"),"Camera not available: allow camera access in the browser and try again.","err");return;}
-      $("vid").srcObject=stream;$("vid").hidden=false;$("oval").hidden=false;$("camPh").hidden=true;await $("vid").play();
-      $("camBtn").textContent="Take selfie";return;
-    }
-    var v=$("vid"),w=640,h=Math.round(w*v.videoHeight/v.videoWidth),c=document.createElement("canvas");
-    c.width=w;c.height=h;c.getContext("2d").drawImage(v,0,0,w,h);
-    photo=c.toDataURL("image/jpeg",.9);stopCam();
-    $("shot").src=photo;$("shot").hidden=false;v.hidden=true;$("oval").hidden=true;
-    $("camBtn").textContent="Retake";$("upBtn").disabled=false;
-  };
+      catch(e){return "Camera not available: allow camera access for this site in the browser, then try again.";}
+      v.srcObject=stream;v.hidden=false;q(".lg-oval").hidden=false;q(".lg-scan").hidden=calm;q(".au-ph").hidden=true;await v.play();
+      if(me.onReady)me.onReady();return "";};
+    me.snap=function(){return new Promise(function(done){
+      function take(){var w=640,h=Math.round(w*v.videoHeight/v.videoWidth),c=document.createElement("canvas");c.width=w;c.height=h;
+        c.getContext("2d").drawImage(v,0,0,w,h);me.photo=c.toDataURL("image/jpeg",.9);me.stop();img.src=me.photo;img.hidden=false;v.hidden=true;q(".lg-oval").hidden=true;
+        var f=q(".lg-flash");f.classList.remove("go");void f.offsetWidth;if(!calm)f.classList.add("go");done(me.photo);}
+      if(calm){take();return;}var c=q(".lg-count"),n=3;c.hidden=false;
+      (function tick(){if(!n){c.hidden=true;take();return;}c.textContent=n;c.classList.remove("pop");void c.offsetWidth;c.classList.add("pop");n--;setTimeout(tick,700);})();});};
+    function grab(){var w=640,h=Math.round(w*v.videoHeight/v.videoWidth),c=document.createElement("canvas");c.width=w;c.height=h;
+      c.getContext("2d").drawImage(v,0,0,w,h);var f=q(".lg-flash");f.classList.remove("go");void f.offsetWidth;if(!calm)f.classList.add("go");return c.toDataURL("image/jpeg",.9);}
+    function wait(ms){return new Promise(function(r){setTimeout(r,ms);});}
+    async function prompt(text,cls,ms){var s=q(".lg-say"),c=q(".lg-count");s.hidden=false;s.className="lg-say "+cls;s.innerHTML=text;
+      for(var n=Math.round(ms/700);n>0;n--){c.hidden=false;c.textContent=n;c.classList.remove("pop");void c.offsetWidth;if(!calm)c.classList.add("pop");await wait(700);}
+      c.hidden=true;}
+    /* steps = ["left","right"] in the server's random order -> [straight, turn 1, turn 2] JPEGs. The preview is mirrored,
+       so the arrow on screen points the same way the person turns. */
+    me.live=async function(steps){var shots=[];q(".lg-oval").hidden=false;
+      await prompt("Look straight at the camera","mid",2100);shots.push(grab());
+      for(var i=0;i<steps.length;i++){var left=steps[i]==="left";
+        await prompt((i?"Now turn ":"Turn ")+"your head <b>"+(left?"← left":"right →")+"</b>",left?"to-l":"to-r",2100);shots.push(grab());}
+      q(".lg-say").hidden=true;me.stop();me.photo=shots[0];img.src=shots[0];img.hidden=false;v.hidden=true;q(".lg-oval").hidden=true;
+      return shots;};
+    me.reset=function(){q(".lg-say").hidden=true;me.stop();me.photo=null;img.hidden=true;v.hidden=true;q(".lg-oval").hidden=true;q(".au-ph").hidden=false;};
+    me.button=q(".au-ph button");
+    return me;
+  }
+  function mark(list,k,s){var li=$(list).querySelector('[data-k="'+k+'"]');if(li)li.className=s||"";}
+  function marks(list,keys,failK){var i=keys.indexOf(failK);keys.forEach(function(k,j){mark(list,k,failK?(j<i?"ok":j===i?"bad":""):"ok");});}
 
-  $("fUp").onsubmit=async function(e){e.preventDefault();if(!AUTH.on||!photo)return;
-    var mail=$("upMail").value.trim(),pass=$("upPass").value;
-    $("upBtn").disabled=true;say($("upMsg"),"Checking your face… (the first check of the day can take up to a minute)");
-    var r=await AUTH.fn("register",{email:mail,password:pass,image:photo});
-    if(!r.ok){say($("upMsg"),r.error||"Registration failed.","err");$("upBtn").disabled=false;return;}
-    say($("upMsg"),"Face matched. Your account is ready: logging you in…","good");
-    var s=await AUTH.sb.auth.signInWithPassword({email:mail,password:pass});
-    if(s.error)say($("upMsg"),s.error.message,"err");else location.href="index.html";};
+  /* tabs */
+  function tab(up){$("tIn").setAttribute("aria-selected",String(!up));$("tUp").setAttribute("aria-selected",String(up));
+    document.querySelector(".lg-tabs").classList.toggle("up",up);$("fIn").hidden=up;$("fUp").hidden=!up;inCam.stop();upCam.stop();
+    (up?$("upName"):$("inId")).focus({preventScroll:true});}
+  $("tIn").onclick=function(){tab(false);};$("tUp").onclick=function(){tab(true);};
+  $("toUp").onclick=function(e){e.preventDefault();tab(true);};
+  document.querySelector(".lg-tabs").addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();var up=$("tIn").getAttribute("aria-selected")==="true";tab(up);(up?$("tUp"):$("tIn")).focus();}});
+  document.querySelectorAll(".lg-eye").forEach(function(b){b.onclick=function(){var i=b.previousElementSibling,show=i.type==="password";i.type=show?"text":"password";b.setAttribute("aria-label",show?"Hide password":"Show password");b.classList.toggle("on",show);};});
+
+  /* logged in (with the face check): approved → continue, else the account status */
+  async function showMe(){
+    var me=await AUTH.me();if(!me)return null;
+    if(!me.face){await AUTH.signOut();return null;}
+    $("vAuth").hidden=true;$("vMe").hidden=false;inCam.stop();upCam.stop();
+    var name=me.profile.name||me.profile.username||me.profile.email;
+    if(me.approved){$("meIcon").textContent="👋";$("meTitle").textContent="Hi, "+name;$("meText").textContent="You're logged in"+(me.admin?" as "+me.profile.role+".":".");$("meGo").hidden=false;$("meRe").hidden=true;$("meGo").href=next;}
+    else if(me.profile.status==="rejected"){$("meIcon").textContent="✋";$("meTitle").textContent="Not approved";$("meText").textContent="The owner did not approve this account. Ask them if you think this is a mistake.";$("meGo").hidden=true;$("meRe").hidden=true;}
+    else{$("meIcon").textContent="⏳";$("meTitle").textContent="Waiting for approval";$("meText").textContent="Hi "+name+", your account is created. The owner will check your selfie and approve it; log in again later to see the result.";$("meGo").hidden=true;$("meRe").hidden=false;}
+    return me;
+  }
+  $("meOut").onclick=async function(){await AUTH.signOut();$("vMe").hidden=true;$("vAuth").hidden=false;loginStep(1);tab(false);};
+  $("meRe").onclick=async function(){busy($("meRe"),true);await showMe();busy($("meRe"),false);};
+
+  /* LOG IN step 1: password */
+  var inCam=Cam($("inCam")),upCam=Cam($("upCam"));
+  function loginStep(n){$("l1").hidden=n!==1;$("l2").hidden=n!==2;if(n===1){inCam.reset();$("inChecks").hidden=true;say($("l2Msg"),"");}}
+  $("fIn").onsubmit=async function(e){e.preventDefault();if(!AUTH.on)return;
+    var id=$("inId").value.trim(),pw=$("inPass").value;
+    if(!id||!pw){say($("inMsg"),"Enter your username (or email) and password.","err");return;}
+    busy($("inGo"),true);say($("inMsg"),"");
+    var r=await AUTH.fn("login",{id:id,password:pw});busy($("inGo"),false);
+    if(r.code==="no_account"){say($("inMsg"),"No account found for “"+id+"”. Register first: it takes a minute.","err");shake();
+      if(id.indexOf("@")>0)$("upMail").value=id;else $("upUser").value=id.toLowerCase();return;}
+    if(r.code==="wrong_password"){say($("inMsg"),"Wrong password. Try again.","err");shake();$("inPass").select();return;}
+    if(!r.ok){say($("inMsg"),r.error||"Could not log in.","err");return;}
+    chal=r;
+    $("l2Title").textContent=r.face==="enroll"?"Save your face":"Show your face";
+    $("l2Note").textContent=r.face==="enroll"?"Password correct. Your account has no face yet: this check saves it for every future login. Follow the arrows on the camera.":"Password correct. Follow the arrows on the camera: look straight, then turn your head the way it says.";
+    loginStep(2);var err=await inCam.start();if(err)say($("l2Msg"),err,"err");};
+  inCam.button.onclick=async function(){var err=await inCam.start();if(err)say($("l2Msg"),err,"err");};
+  var chal=null;
+  inCam.onReady=function(){$("l2Snap").disabled=false;$("l2Snap").textContent="Start face check";};
+  $("l2Back").onclick=function(){loginStep(1);};
+
+  /* LOG IN step 2: face */
+  $("l2Snap").onclick=async function(){var b=this;b.disabled=true;say($("l2Msg"),"");$("inChecks").hidden=true;
+    if(!chal||!chal.challenge){chal=await AUTH.fn("login",{id:$("inId").value.trim(),password:$("inPass").value});}
+    if(!chal.challenge){say($("l2Msg"),chal.error||"Could not start the face check.","err");b.disabled=false;return;}
+    if(!inCam.photo&&!$("inCam").querySelector("video").srcObject){var e0=await inCam.start();if(e0){say($("l2Msg"),e0,"err");b.disabled=false;return;}}
+    var shots=await inCam.live(chal.steps),used=chal;chal=null;
+    busy(b,true);say($("l2Msg"),"");$("inChecks").hidden=false;mark("inChecks","face","run");mark("inChecks","match","");
+    var t=setTimeout(function(){mark("inChecks","face","ok");mark("inChecks","match","run");},2000);
+    var r=await AUTH.fn("login",{id:$("inId").value.trim(),password:$("inPass").value,images:shots,challenge:used.challenge});
+    clearTimeout(t);busy(b,false);
+    if(!r.access_token){marks("inChecks",["face","match"],r.code==="face_mismatch"?"match":"face");say($("l2Msg"),r.error||"Face check failed.","err");shake();
+      inCam.photo=null;var err=await inCam.start();if(err)say($("l2Msg"),err,"err");b.textContent="Try again";b.disabled=false;return;}
+    marks("inChecks",["face","match"]);
+    await AUTH.sb.auth.setSession({access_token:r.access_token,refresh_token:r.refresh_token});
+    var me=await showMe();if(me&&me.approved)setTimeout(function(){location.href=next;},calm?0:600);};
+
+  /* REGISTER step 1: details with live checks */
+  var steps=document.querySelectorAll(".lg-steps span");
+  function step(n){["s1","s2","s3"].forEach(function(id,i){$(id).hidden=i!==n-1;});steps.forEach(function(s,i){s.className=i<n?"on":"";});$("bar").style.width=((n-1)*50)+"%";}
+  function err(id,t){var e=document.querySelector('.lg-err[data-for="'+id+'"]');e.textContent=t||"";$(id).classList.toggle("bad",!!t);return !t;}
+  function strength(p){return (p.length>=8)+(/[A-Z]/.test(p)&&/[a-z]/.test(p))+/\d/.test(p)+(/[^\w]/.test(p)||p.length>=14);}
+  $("upPass").addEventListener("input",function(){document.querySelector(".lg-meter").dataset.n=this.value?strength(this.value):0;if(this.value.length>=8)err("upPass","");});
+  $("upUser").addEventListener("input",function(){var v=this.value.toLowerCase().replace(/[^a-z0-9._]/g,"");if(v!==this.value)this.value=v;});
+  ["upName","upUser","upMail"].forEach(function(id){$(id).addEventListener("input",function(){if(this.classList.contains("bad"))check1();});});
+  function check1(){var ok=err("upName",$("upName").value.trim()?"":"Enter your name.");
+    ok=err("upUser",/^[a-z0-9._]{3,20}$/.test($("upUser").value)?"":"3 to 20 letters, numbers, dots or underscores.")&&ok;
+    ok=err("upMail",/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($("upMail").value.trim())?"":"Enter a valid email.")&&ok;
+    ok=err("upPass",$("upPass").value.length>=8?"":"At least 8 characters.")&&ok;return ok;}
+  $("next1").onclick=async function(){if(!check1())return;step(2);var e=await upCam.start();if(e)say($("upMsg"),e,"err");};
+  $("back2").onclick=function(){upCam.reset();$("snap").disabled=true;$("snap").textContent="Take selfie";step(1);};
+  upCam.button.onclick=async function(){var e=await upCam.start();if(e)say($("upMsg"),e,"err");};
+  upCam.onReady=function(){$("snap").disabled=false;$("snap").textContent="Start face check";$("snap").dataset.m="snap";$("checks").hidden=true;say($("upMsg"),"");};
+  var upShots=null,upChal=null;
+
+  /* REGISTER step 2: selfie → register function */
+  $("snap").onclick=async function(){var b=this;
+    if(b.dataset.m==="snap"){b.disabled=true;say($("upMsg"),"");upChal=await AUTH.fn("register",{challenge:true});
+      if(!upChal.challenge){say($("upMsg"),upChal.error||"Could not start the face check.","err");b.disabled=false;return;}
+      if(!$("upCam").querySelector("video").srcObject){var e0=await upCam.start();if(e0){say($("upMsg"),e0,"err");b.disabled=false;return;}}
+      upShots=await upCam.live(upChal.steps);b.textContent="Use this photo";b.dataset.m="send";b.disabled=false;return;}
+    busy(b,true);$("back2").disabled=true;say($("upMsg"),"");$("checks").hidden=false;["face","dup","acct"].forEach(function(k){mark("checks",k,"");});
+    mark("checks","face","run");
+    var t1=setTimeout(function(){mark("checks","face","ok");mark("checks","dup","run");},2500),t2=setTimeout(function(){mark("checks","dup","ok");mark("checks","acct","run");},4500);
+    var r=await AUTH.fn("register",{name:$("upName").value.trim(),username:$("upUser").value,email:$("upMail").value.trim(),password:$("upPass").value,images:upShots,challenge:upChal&&upChal.challenge});
+    clearTimeout(t1);clearTimeout(t2);busy(b,false);$("back2").disabled=false;
+    if(!r.ok){var m=r.error||"",faceErr=/no_face|pose|spoof|challenge/.test(r.code||"")||/waking/i.test(m);
+      marks("checks",["face","dup","acct"],faceErr?"face":r.code==="duplicate"?"dup":"acct");say($("upMsg"),m||"Registration failed.","err");
+      if(faceErr||r.code==="duplicate"){b.dataset.m="snap";b.textContent="Try the face check again";upCam.start();}
+      else{b.textContent="Use this photo";if(/username|email|password|name/i.test(m)){step(1);}}
+      return;}
+    marks("checks",["face","dup","acct"]);
+    if(r.access_token)await AUTH.sb.auth.setSession({access_token:r.access_token,refresh_token:r.refresh_token});
+    setTimeout(function(){step(3);
+      if(r.status==="approved"){$("doneTitle").textContent="You're in!";$("doneText").textContent="Your selfie matched the photo the owner approved, so your account is ready. Open a course and ask for access.";$("doneGo").hidden=false;}
+      else{$("doneTitle").textContent="Account created";$("doneText").textContent="The owner will check your selfie and approve your account. Next time, log in with your username, password and face.";$("doneGo").hidden=true;}
+    },calm?0:500);};
+
+  (async function(){if(location.hash==="#register")tab(true);if(AUTH.on)await showMe();})();
 })();
 </script>
 </body>

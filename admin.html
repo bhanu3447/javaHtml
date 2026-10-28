@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="assets/css/auth.css">
 </head>
 <body class="au">
-<div class="au-top"><a class="au-brand" href="index.html"><i>Z</i> Zero to Advanced</a><span class="au-sp"></span><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
+<div class="au-top"><a class="au-brand" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a><span class="au-sp"></span><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
 <main class="au-wrap" id="app"><p class="au-empty">Loading…</p></main>
 <script src="assets/js/auth-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -23,18 +23,28 @@
   function card(t,actions){app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">🔒</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
 
   async function load(){
-    var p=await AUTH.sb.from("profiles").select("id,name,email,role,created_at").order("created_at");
+    var p=await AUTH.sb.from("profiles").select("id,name,email,role,status,selfie_path,matched_invite,created_at").order("created_at",{ascending:false});
     var a=await AUTH.sb.from("course_access").select("user_id,course_id,status,requested_at");
     var i=await AUTH.sb.from("invites").select("id,email,name,attempts,used_at,created_at").order("created_at",{ascending:false});
     var err=p.error||a.error||i.error;if(err){card(esc(err.message));return;}
-    D={people:p.data,access:a.data,invites:i.data};render();
+    /* selfies are private: short-lived signed links, owner/admins only */
+    var paths=p.data.filter(function(u){return u.selfie_path;}).map(function(u){return u.selfie_path;}),urls={};
+    if(paths.length){var sg=await AUTH.sb.storage.from("selfies").createSignedUrls(paths,3600);(sg.data||[]).forEach(function(x,k){if(x.signedUrl)urls[paths[k]]=x.signedUrl;});}
+    D={people:p.data,access:a.data,invites:i.data,urls:urls};render();
   }
   function person(id){return D.people.find(function(x){return x.id===id;})||{email:"?"};}
+  function face(u,big){var src=u.selfie_path&&D.urls[u.selfie_path];return src?'<img class="au-face'+(big?' big':'')+'" src="'+esc(src)+'" alt="Selfie of '+esc(u.name||u.email)+'" loading="lazy">':'<span class="au-face'+(big?' big':'')+'" aria-hidden="true">'+esc((u.name||u.email||"?").charAt(0).toUpperCase())+'</span>';}
   function statusOf(uid,c){var r=D.access.find(function(x){return x.user_id===uid&&x.course_id===c;});return r?r.status:"none";}
 
   function render(){
     var pend=D.access.filter(function(x){return x.status==="pending";});
-    var h='<h1>Admin</h1><p>Approve people by photo, approve course requests and choose admins. Owner and admins open every course.</p>';
+    var h='<h1>Admin</h1><p>Approve new accounts, approve course requests and choose admins. Owner and admins open every course.</p>';
+    var fresh=D.people.filter(function(u){return u.role==="learner"&&u.status==="pending";});
+    h+='<section class="au-panel"><h2>New registrations <span class="au-count">'+fresh.length+'</span></h2><p>People who registered with a selfie. Check the face and the name, then approve or reject the account.</p><div class="au-rows">';
+    h+=fresh.length?fresh.map(function(u){
+      return '<div class="au-row">'+face(u,true)+'<div class="au-who"><b>'+esc(u.name||"(no name)")+'</b><small>'+esc(u.email)+' · registered '+new Date(u.created_at).toLocaleString()+'</small></div>'+
+        '<button class="au-btn sm ok" data-acct="approved" data-u="'+u.id+'">Approve account</button><button class="au-btn sm no" data-acct="rejected" data-u="'+u.id+'">Reject</button></div>';}).join(""):'<div class="au-empty">No one is waiting.</div>';
+    h+='</div></section>';
 
     h+='<section class="au-panel"><h2>Course requests <span class="au-count">'+pend.length+'</span></h2><p>People asking to open a course.</p><div class="au-rows">';
     h+=pend.length?pend.map(function(r){var u=person(r.user_id);
@@ -43,9 +53,9 @@
         '<button class="au-btn sm no" data-dec="rejected" data-u="'+r.user_id+'" data-c="'+r.course_id+'">Reject</button></div>';}).join(""):'<div class="au-empty">No requests waiting.</div>';
     h+='</div></section>';
 
-    h+='<section class="au-panel"><h2>Approve a new person</h2><p>Add their name, email and a clear photo of their face. Only this person can then register with this email, and their selfie must match. The photo is turned into face numbers and not stored.</p>'+
+    h+='<section class="au-panel"><h2>Pre-approve by photo <span class="au-count">optional</span></h2><p>Add someone you already know with a clear photo of their face. When they register with this email and their selfie matches, their account is approved automatically. The photo is turned into face numbers and not stored.</p>'+
       '<div class="au-grid2"><form class="au-form" id="inv"><label>Name<input id="ivName" required></label><label>Email<input id="ivMail" type="email" required></label>'+
-      '<label>Photo<input id="ivPhoto" type="file" accept="image/*" required></label><button class="au-btn pri" type="submit">Approve person</button><p class="au-msg" id="ivMsg" role="status"></p></form>'+
+      '<label>Photo<input id="ivPhoto" type="file" accept="image/*" required></label><button class="au-btn pri" type="submit">Pre-approve</button><p class="au-msg" id="ivMsg" role="status"></p></form>'+
       '<div class="au-rows">'+(D.invites.length?D.invites.map(function(v){
         var st=v.used_at?'<span class="au-chip" data-s="approved" disabled>Registered</span>':v.attempts>=5?'<span class="au-chip" data-s="rejected">Locked: 5 failed tries</span>':'<span class="au-chip" data-s="pending">Waiting to register</span>';
         return '<div class="au-row"><div class="au-who"><b>'+esc(v.name)+'</b><small>'+esc(v.email)+'</small></div>'+st+(v.used_at?'':'<button class="au-btn sm no" data-delinv="'+v.id+'">Remove</button>')+'</div>';}).join(""):'<div class="au-empty">No one approved yet.</div>')+
@@ -57,9 +67,10 @@
       if(staff)chips='<span class="au-chip" data-s="approved">All courses</span>';
       else chips=Object.keys(C).map(function(c){var s=statusOf(u.id,c);
         return '<button class="au-chip" data-s="'+s+'" data-tog="'+c+'" data-u="'+u.id+'" title="'+(s==="approved"?"Click to take away":"Click to approve")+'">'+SHORT[c]+(s==="pending"?" · asked":s==="rejected"?" · rejected":"")+'</button>';}).join("");
-      var role='';
+      var role='',acct=u.role!=="learner"||u.status==="approved"?'':u.status==="rejected"?'<span class="au-chip" data-s="rejected">account rejected</span><button class="au-btn sm ok" data-acct="approved" data-u="'+u.id+'">Approve account</button>':'<span class="au-chip" data-s="pending">account waiting</span>';
       if(ME.profile.role==="owner"&&u.role!=="owner")role=u.role==="admin"?'<button class="au-btn sm" data-role="learner" data-u="'+u.id+'">Remove admin</button>':'<button class="au-btn sm" data-role="admin" data-u="'+u.id+'">Make admin</button>';
-      return '<div class="au-row"><div class="au-who"><b>'+esc(u.name||u.email)+'</b><small>'+esc(u.email)+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span><div class="au-chips">'+chips+'</div>'+role+'</div>';}).join("");
+      if(u.role==="learner"&&u.status!=="approved")chips='';
+      return '<div class="au-row">'+face(u)+'<div class="au-who"><b>'+esc(u.name||u.email)+'</b><small>'+esc(u.email)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span>'+acct+'<div class="au-chips">'+chips+'</div>'+role+'</div>';}).join("");
     h+='</div></section>';
     app.innerHTML=h;
     document.getElementById("inv").onsubmit=invite;
@@ -67,7 +78,9 @@
 
   async function rpc(name,args){var r=await AUTH.sb.rpc(name,args);if(r.error)alert(r.error.message);await load();}
   app.addEventListener("click",async function(e){var b=e.target.closest("button");if(!b||b.disabled)return;
-    if(b.dataset.dec){b.disabled=true;await rpc("decide_access",{p_user:b.dataset.u,p_course:b.dataset.c,p_status:b.dataset.dec});}
+    if(b.dataset.acct){if(b.dataset.acct==="rejected"&&!confirm("Reject this account? They will not be able to open any course."))return;
+      b.disabled=true;await rpc("decide_user",{p_user:b.dataset.u,p_status:b.dataset.acct});}
+    else if(b.dataset.dec){b.disabled=true;await rpc("decide_access",{p_user:b.dataset.u,p_course:b.dataset.c,p_status:b.dataset.dec});}
     else if(b.dataset.tog){var s=statusOf(b.dataset.u,b.dataset.tog);
       if(s==="approved"&&!confirm("Take away access to "+C[b.dataset.tog]+"?"))return;
       b.disabled=true;await rpc("decide_access",{p_user:b.dataset.u,p_course:b.dataset.tog,p_status:s==="approved"?"none":"approved"});}
@@ -87,12 +100,13 @@
     try{var image=await shrink(f);}catch(x){m.className="au-msg err";m.textContent=x.message;btn.disabled=false;return;}
     var r=await AUTH.fn("invite",{name:document.getElementById("ivName").value,email:document.getElementById("ivMail").value,image:image});
     if(!r.ok){m.className="au-msg err";m.textContent=r.error||"Failed.";btn.disabled=false;return;}
-    await load();var m2=document.getElementById("ivMsg");m2.className="au-msg good";m2.textContent="Approved. Tell them to register at login.html#register with that email.";}
+    await load();var m2=document.getElementById("ivMsg");m2.className="au-msg good";m2.textContent="Pre-approved. When they register at login.html#register with this email and their selfie matches, they are in.";}
 
   (async function(){
     if(!AUTH.on){card("The course lock is not set up yet (assets/js/auth-config.js).");return;}
     ME=await AUTH.me();
-    if(!ME){card("Log in first.",'<a class="au-btn pri" href="login.html?next=admin.html">Log in</a>');return;}
+    if(ME&&!ME.face){await AUTH.signOut();ME=null;}
+    if(!ME){card("Log in first (with your face).",'<a class="au-btn pri" href="login.html?next=admin.html">Log in</a>');return;}
     document.getElementById("who").textContent=ME.profile.email+" · "+ME.profile.role;
     var o=document.getElementById("out");o.hidden=false;o.onclick=async function(){await AUTH.signOut();location.href="index.html";};
     if(!ME.admin){card("This page is for the owner and admins only.",'<a class="au-btn" href="index.html">All courses</a>');return;}

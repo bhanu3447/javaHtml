@@ -45,6 +45,8 @@ h1 .grad{background:linear-gradient(92deg,var(--accent),var(--accent-2));-webkit
 .course .st span b{font:600 13px/1 "JetBrains Mono",ui-monospace,monospace;color:var(--text);letter-spacing:0}
 .course .go{position:absolute;right:22px;top:26px;font-size:22px;color:var(--c);opacity:.7;transition:transform .2s,opacity .2s}
 .course:hover .go{transform:translateX(4px);opacity:1}
+.course .pill.au-st{right:54px}
+nav .gh[hidden]{display:none}
 .course .pill{position:absolute;right:22px;top:24px;font:600 11px/1 Inter,sans-serif;letter-spacing:.08em;padding:6px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
 .course.soon{border-style:dashed;box-shadow:none;background:transparent}
 .course.soon .ic{background:var(--soft);color:var(--muted);box-shadow:none}
@@ -61,6 +63,7 @@ footer a{color:inherit}
 nav{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 80%,transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
 nav .wrap{display:flex;gap:2px;align-items:center;padding-top:9px;padding-bottom:9px}
 nav .brand{display:flex;align-items:center;gap:8px;color:var(--text);text-decoration:none}
+nav .brand i .inf-mark{width:78%;height:78%}
 nav .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent-2));display:grid;place-items:center;color:#fff;font:700 .68rem "JetBrains Mono",ui-monospace,monospace;font-style:normal}
 .csw{position:relative;margin:0 auto 0 -2px}
 .csw-b{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 6px 0 8px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--text);font:700 .85rem Inter,sans-serif;cursor:pointer;transition:background .15s,border-color .15s}
@@ -127,7 +130,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 </head>
 <body>
 <nav><div class="wrap">
-  <a class="brand" href="index.html"><i>Z</i></a>
+  <a class="brand" href="index.html" aria-label="Zero to Advanced, all courses"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i></a>
   <div class="csw" id="courseSel">
     <button type="button" class="csw-b" aria-haspopup="menu" aria-expanded="false" aria-label="Open a course"><span>Courses</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
     <div class="csw-m" role="menu" hidden>
@@ -215,9 +218,10 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 /* hub lock v1: account link + one status pill per course card; does nothing while the lock is not set up (kb/access-lock.md) */
 (async function(){if(!window.AUTH||!AUTH.on)return;
   var acct=document.getElementById("auAcct"),me=await AUTH.me();acct.hidden=false;
-  var LABEL={approved:"OPEN",pending:"WAITING",rejected:"NOT APPROVED",none:"LOCKED"};
+  if(me&&!me.face){await AUTH.signOut();me=null;}   /* a login without the face check counts as logged out */
+  var LABEL={approved:"OPEN",pending:"WAITING",rejected:"NOT APPROVED",none:"LOCKED",account:"ACCOUNT PENDING"};
   document.querySelectorAll(".course[href]").forEach(function(a){var c=a.getAttribute("href").split("/")[0];
-    var s=me?(me.access[c]||"none"):"none",p=document.createElement("span");p.className="pill";p.textContent=LABEL[s];a.appendChild(p);});
+    var s=me?(me.approved?(me.access[c]||"none"):"account"):"none",p=document.createElement("span");p.className="pill au-st";p.textContent=LABEL[s];a.appendChild(p);});
   if(!me){acct.textContent="Log in";return;}
   acct.textContent="Log out ("+(me.profile.name||me.profile.email)+")";acct.href="#";
   acct.onclick=async function(e){e.preventDefault();await AUTH.signOut();location.reload();};
