@@ -197,7 +197,7 @@
   var inCam=Cam($("inCam")),upCam=Cam($("upCam"));
   function loginStep(n){$("l1").hidden=n!==1;$("l2").hidden=n!==2;if(n===1){inCam.reset();$("inChecks").hidden=true;say($("l2Msg"),"");}}
   $("fIn").onsubmit=async function(e){e.preventDefault();if(!AUTH.on)return;
-    var id=$("inId").value.trim(),pw=$("inPass").value;
+    var id=$("inId").value.trim(),pw=$("inPass").value.trim();
     if(!id||!pw){say($("inMsg"),"Enter your username (or email) and password.","err");return;}
     busy($("inGo"),true);say($("inMsg"),"");
     var r=await AUTH.fn("login",{id:id,password:pw});busy($("inGo"),false);
@@ -216,13 +216,13 @@
 
   /* LOG IN step 2: face */
   $("l2Snap").onclick=async function(){var b=this;b.disabled=true;say($("l2Msg"),"");$("inChecks").hidden=true;
-    if(!chal||!chal.challenge){chal=await AUTH.fn("login",{id:$("inId").value.trim(),password:$("inPass").value});}
+    if(!chal||!chal.challenge){chal=await AUTH.fn("login",{id:$("inId").value.trim(),password:$("inPass").value.trim()});}
     if(!chal.challenge){say($("l2Msg"),chal.error||"Could not start the face check.","err");b.disabled=false;return;}
     if(!inCam.photo&&!$("inCam").querySelector("video").srcObject){var e0=await inCam.start();if(e0){say($("l2Msg"),e0,"err");b.disabled=false;return;}}
     var shots=await inCam.live(chal.steps),used=chal;chal=null;
     busy(b,true);say($("l2Msg"),"");$("inChecks").hidden=false;mark("inChecks","face","run");mark("inChecks","match","");
     var t=setTimeout(function(){mark("inChecks","face","ok");mark("inChecks","match","run");},2000);
-    var r=await AUTH.fn("login",{id:$("inId").value.trim(),password:$("inPass").value,images:shots,challenge:used.challenge});
+    var r=await AUTH.fn("login",{id:$("inId").value.trim(),password:$("inPass").value.trim(),images:shots,challenge:used.challenge});
     clearTimeout(t);busy(b,false);
     if(!r.access_token){marks("inChecks",["face","match"],r.code==="face_mismatch"?"match":"face");say($("l2Msg"),r.error||"Face check failed.","err");shake();
       inCam.photo=null;var err=await inCam.start();if(err)say($("l2Msg"),err,"err");b.textContent="Try again";b.disabled=false;return;}
@@ -241,7 +241,7 @@
   function check1(){var ok=err("upName",$("upName").value.trim()?"":"Enter your name.");
     ok=err("upUser",/^[a-z0-9._]{3,20}$/.test($("upUser").value)?"":"3 to 20 letters, numbers, dots or underscores.")&&ok;
     ok=err("upMail",/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($("upMail").value.trim())?"":"Enter a valid email.")&&ok;
-    ok=err("upPass",$("upPass").value.length>=8?"":"At least 8 characters.")&&ok;return ok;}
+    ok=err("upPass",$("upPass").value.trim().length>=8?"":"At least 8 characters.")&&ok;return ok;}
   $("next1").onclick=async function(){if(!check1())return;step(2);var e=await upCam.start();if(e)say($("upMsg"),e,"err");};
   $("back2").onclick=function(){upCam.reset();$("snap").disabled=true;$("snap").textContent="Take selfie";step(1);};
   upCam.button.onclick=async function(){var e=await upCam.start();if(e)say($("upMsg"),e,"err");};
@@ -257,7 +257,7 @@
     busy(b,true);$("back2").disabled=true;say($("upMsg"),"");$("checks").hidden=false;["face","dup","acct"].forEach(function(k){mark("checks",k,"");});
     mark("checks","face","run");
     var t1=setTimeout(function(){mark("checks","face","ok");mark("checks","dup","run");},2500),t2=setTimeout(function(){mark("checks","dup","ok");mark("checks","acct","run");},4500);
-    var r=await AUTH.fn("register",{name:$("upName").value.trim(),username:$("upUser").value,email:$("upMail").value.trim(),password:$("upPass").value,images:upShots,challenge:upChal&&upChal.challenge});
+    var r=await AUTH.fn("register",{name:$("upName").value.trim(),username:$("upUser").value,email:$("upMail").value.trim(),password:$("upPass").value.trim(),images:upShots,challenge:upChal&&upChal.challenge});
     clearTimeout(t1);clearTimeout(t2);busy(b,false);$("back2").disabled=false;
     if(!r.ok){var m=r.error||"",faceErr=/no_face|pose|spoof|challenge/.test(r.code||"")||/waking/i.test(m);
       marks("checks",["face","dup","acct"],faceErr?"face":r.code==="duplicate"?"dup":"acct");say($("upMsg"),m||"Registration failed.","err");
