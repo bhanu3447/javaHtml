@@ -4,63 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Design Patterns, Beginner to Expert</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="../assets/css/course.css">
+<meta name="robots" content="noindex">
+<link rel="stylesheet" href="../assets/css/auth.css">
 </head>
-<body data-page="home" data-course="patterns" data-name="Design Patterns home" data-short="DP">
-
-<nav><div class="wrap">
-  <a class="brand" href="index.html"><i>P</i><span>Design Patterns</span></a>
-  <div class="links"></div>
-  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
-</div><div id="prog"></div></nav>
-
-<div class="wrap">
-<header id="top">
-  <div class="tag">DESIGN PATTERNS · BEGINNER TO EXPERT · MOVES 1–2 LIVE</div>
-  <h1>Learn every <span class="grad">design pattern</span> by watching it run</h1>
-  <p class="lead">All 23 classic (Gang of Four) patterns, from <b>"never heard of it"</b> to <b>"can defend it in an interview"</b>. They are taught in five <b>moves</b>, easiest first: <b>swap</b> behaviour, <b>create</b> objects, <b>wrap</b> objects, make objects <b>talk</b>, <b>compose</b> structures. Every pattern starts from a painful car-dealership problem, is refactored step by step while the class diagram grows, runs in front of you call by call, and goes four levels deep: see it, build it, choose it, master it. Every program runs on a real JDK.</p>
-  <div class="cta"><a class="btn pri big" href="00-foundations.html">Start with the foundations <span aria-hidden="true">→</span></a><a class="btn big" href="01-strategy.html">First pattern: Strategy</a><a class="btn big ghost" href="#dpFast">1-week interview track</a></div>
-  <div class="meta" id="dpMeta"></div>
-  <h2 class="dp-hh">The pattern map</h2>
-  <p class="small muted">Each card is one pattern page. Search or filter by official GoF family, learning move, interview frequency (★ asked constantly · ◆ asked often · ○ know the idea), difficulty or your status. Progress comes from the sections you mark as understood.</p>
-  <div id="dpMap"><p class="small muted">The pattern map needs JavaScript.</p></div>
-  <h2 class="dp-hh">Before and after the 23</h2>
-  <div class="lessons">
-    <a class="lcard" href="00-foundations.html" data-l="p00"><span class="ln">P00</span><b>Foundations and SOLID</b><span class="d">What a pattern is, interfaces vs abstract classes, class diagrams, how Java picks the method, composition, SOLID before and after, lambdas, and your first refactor.</span><i>start here</i><span class="go" aria-hidden="true">→</span></a>
-    <a class="lcard soon"><span class="ln">P24</span><b>Advanced integration</b><span class="d">All 23 by GoF family, patterns working together, JDK and Spring internals, thread-safe Singleton, modern Java, testing, anti-patterns, when simple beats a pattern.</span><i>planned</i></a>
-    <a class="lcard soon"><span class="ln">P25</span><b>Capstone: the dealership app</b><span class="d">One program, eight change requests; each brings in a pattern only when the requirement justifies it, with tests.</span><i>planned</i></a>
-    <a class="lcard soon"><span class="ln">P26</span><b>Interview and low-level design</b><span class="d">Look-alikes side by side, "which pattern?" drills, code reading, LLD exercises, mock interviews with follow-ups.</span><i>planned</i></a>
-  </div>
-  <div class="dp-pick" id="dpPicker"><p class="small muted">The pattern picker needs JavaScript.</p></div>
-  <details class="roadmap" id="dpFast">
-    <summary>The 1-week interview track (a shortcut, not a replacement)</summary>
-    <p class="small">Already know the basics and have an interview soon? Do these in order, Levels 1 to 3 of each (Level 4 if time allows), then come back for the full course.</p>
-    <ol class="rmap">
-      <li><span>1</span><b>Day 1</b><em>P00: interfaces, dispatch, composition, SOLID · Strategy · Template Method</em></li>
-      <li><span>2</span><b>Day 2</b><em>State · Factory Method · Builder</em></li>
-      <li><span>3</span><b>Day 3</b><em>Singleton (plus the thread-safety part of P24) · Adapter · Decorator</em></li>
-      <li><span>4</span><b>Day 4</b><em>Proxy · Facade · Observer</em></li>
-      <li><span>5</span><b>Day 5</b><em>Command · Chain of Responsibility · the ◆ patterns at Level 1</em></li>
-      <li><span>6</span><b>Day 6</b><em>P26: look-alikes and the "which pattern?" drill</em></li>
-      <li><span>7</span><b>Day 7</b><em>P26 mock interview; redo every quiz you scored under 80%</em></li>
-    </ol>
-  </details>
-</header>
-
-<button id="totop" aria-label="Back to top">↑</button>
-<footer>Design Patterns for Interviews · every program compiled and run on JDK 25 · then: Low-Level Design</footer>
-</div>
-
-<script src="../assets/data/patterns-index.js"></script>
-<script src="../assets/data/quiz-data.js"></script>
-<script src="../assets/js/course.js"></script>
-<script src="../assets/js/effects.js"></script>
-<script src="../assets/labs/labs-patterns.js"></script>
-<script>DPL.map(document.getElementById("dpMap"),"");DPL.picker(document.getElementById("dpPicker"),"");
-(function(){const live=COURSE.pages.filter(p=>/^p\d\d$/.test(p.key)&&p.key!=="p00"&&+p.key.slice(1)<=23).length,sec=COURSE.pages.reduce((n,p)=>n+p.sections.length,0);
-document.getElementById("dpMeta").innerHTML="<span><b>"+live+"</b> / 23 patterns live</span><span><b>5</b> moves</span><span><b>4</b> levels per pattern</span><span><b>"+sec+"</b> sections</span><span><b>"+COURSE.qa.length+"</b> interview questions</span>";})();</script>
+<body class="au">
+<main class="au-gate" id="auGate"><div class="au-card"><span class="au-lock" aria-hidden="true">⏳</span><p>Loading…</p></div></main>
+<script src="../assets/js/auth-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="../assets/js/auth.js"></script>
+<script>AUTH.gate("patterns/index.html", "../");</script>
 </body>
 </html>
