@@ -1,6 +1,6 @@
 # Design Patterns course — final plan (merged 2026-10-28)
 
-**Status (2026-10-28):** phases A, B and C done and pushed: plan, kit v2, P00 (16 sections), **01 Strategy, 02 Template Method, 03 State** (Move 1 · Swap complete). Next: Move 2 · Create (04 Factory Method, 05 Builder, 06 Singleton, 07 Prototype, 08 Abstract Factory). **After each move: stop, report, wait for the user's rating** (user, 2026-10-28).
+**Status (2026-10-28):** phases A, B and C done and pushed: plan, kit v2, P00 (16 sections), **01 Strategy, 02 Template Method, 03 State** (Move 1 · Swap complete). Move 2 · Create in progress: 04 Factory Method live; next 05 Builder (then 06 Singleton, 06 Singleton, 07 Prototype, 08 Abstract Factory). **After each move: stop, report, wait for the user's rating** (user, 2026-10-28).
 
 ## How to continue (any session, any Claude account, any machine)
 Everything needed is in the repo; nothing depends on a previous conversation.
@@ -14,7 +14,8 @@ Everything needed is in the repo; nothing depends on a previous conversation.
 |---|---|---|
 | 00 | Foundations | live |
 | 01–03 | Strategy, Template Method, State | live |
-| 04–08 | Factory Method, Builder, Singleton, Prototype, Abstract Factory | next (Move 2) |
+| 04 | Factory Method | live (built by one Sonnet agent, about 160k tokens) |
+| 05–08 | Builder, Singleton, Prototype, Abstract Factory | next (Move 2) |
 | 09–13 | Adapter, Decorator, Proxy, Facade, Bridge | planned |
 | 14–18 | Observer, Command, Chain of Responsibility, Mediator, Memento | planned |
 | 19–23 | Composite, Iterator, Visitor, Interpreter, Flyweight | planned |
