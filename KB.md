@@ -12,6 +12,10 @@ The full text of the course lives in `kb/`, one file per lesson. The project not
 | 01 | What is a String, and where does it live? + the String methods playground (`java/lessons/01-strings.html`) | 01–11 (`.band#str`, ids `st-*`; `#smPlay` in 08) | 8 |
 | 02 | What is a Class and an Object? (`java/lessons/02-classes-objects.html`) | 01–10 (`.band#cls`, ids `co-*`) | 7 |
 | S00 | SQL — Databases and SQL foundations (`sql/00-foundations.html`) | `.band#sqlf` | 5 live editors |
+| P00 | Design Patterns — Foundations and SOLID (`patterns/00-foundations.html`): what a pattern is, GoF families and the five moves, interface vs abstract class, class diagrams, program to an interface, dynamic dispatch, composition, S O L I D before/after, lambdas, first refactor | 01–16 (`.band#ptf`, ids `pf-*`) | 17 |
+| P01 | Strategy (`patterns/01-strategy.html`, Move 1 · Swap): 7 sections, 4 levels, Pain / Refactor / Sequence / Structure labs, playground | `#p01`, ids `stg-*` | 7 |
+| P02 | Template Method (`patterns/02-template-method.html`, Move 1): built, quiz and notes still missing (agent stopped) | `#p02`, ids `tpl-*` | 6 |
+| P03 | State (`patterns/03-state.html`, Move 1): 7 sections, Move 1 recap | `#p03`, ids `sta-*` | 7 |
 | PG | Java Visual Playground (`java/playground.html`): step through any program (`kb/playground.md`) | no sections | 22 examples |
 | SP | Spring Boot Annotations Lab (`spring/index.html`, the third course: 21 sections, 135-card reference, nine concept labs from auto-configuration to Kafka; notes `kb/spring-annotations-lab.md`): first run, basics + IoC lab, proxies, HTTP, pipeline, flow + "one user, six shapes", live request map + 5-scenario simulator, data visuals, 75-card reference with a where-it-acts map, recall, quiz | `#hello #basics #proxy #http #dispatch #flow #simulator #datavis #annotations #di #recall #quiz` | 9 files, 5 scenarios, 22 quiz Qs |
 
@@ -26,7 +30,9 @@ Each lesson file starts with `# Lesson NN — Title`, and its sections are `## N
 | `kb/lesson-02-classes-objects.md` | Lesson 02 — What is a Class and an Object? (class vs object, members, what `new` does and defaults, stack/heap/Metaspace, references and null, constructors and `this`, static vs instance, toString/equals/hashCode, mistakes; live 2026-10-25) |
 | `kb/playground.md` | The Java Visual Playground (`java/playground.html`): how `jvm-lite.js` interprets Java and records steps, the supported subset and what is not supported, the step and record format, the page's drawing rules, measurements, testing recipes, and the 50 test programs with their JDK 25 output (2026-10-25) |
 | `kb/sql-00-foundations.md` | SQL 00 — Databases and SQL foundations (live, 2026-10-23) |
-| `kb/design-patterns-plan.md` | Build prompt for the Design Patterns course (`patterns/`, 8 lessons P00–P07, patterns in three interview tiers, 7 phases; written 2026-10-28, not built yet) |
+| `kb/design-patterns-plan.md` | Build prompt for the Design Patterns course (`patterns/`; revised 2026-10-28 into a beginner-to-expert path: 9 lessons P00–P08 grouped by five moves (swap, create, wrap, talk, compose), four levels per pattern, Refactor/Playground/Sequence views, capstone; phase 1 done: shell, kit, P00; revision awaiting the user's review) |
+| `kb/patterns-01-strategy.md`, `kb/patterns-03-state.md` | Pattern pages 01 and 03: sections, labs, checks, programs |
+| `kb/patterns-00-foundations.md` | Patterns 00 — Foundations and SOLID (live 2026-10-28): the lab kit `DPL` (data format, class boxes, edge kinds, tabs, catalog, test hook), the 13 sections, the checks, and the 13 JDK 25 programs |
 | `kb/lld-plan.md` | Build prompt for the later Low-Level Design course (`lld/`: concurrency, 7-step method, 19 case studies, timed machine coding; after the patterns course) |
 | `kb/sql-course-plan.md` | Build prompt for the SQL course + course switcher (2026-10-23; phase 1 built, S00 live) |
 | `kb/spring-annotations-lab.md` | Spring Boot Annotations Lab (`spring/index.html`): sections, data model (`files`, `A`, `byName`, `scenarios`), test hook `window.SPRING`, headless test recipe (rebuilt 2026-10-26) |

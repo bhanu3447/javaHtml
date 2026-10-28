@@ -52,7 +52,7 @@ const COURSE=window.COURSE||{pages:[],qa:[]};
 const PAGE=document.body.dataset.page||"";
 const ROOT=new URL("../..",document.currentScript.src).href; /* site root: assets/js/course.js is two levels down */
 const PAGES=COURSE.pages,SECP={};PAGES.forEach(p=>p.sections.forEach(s=>SECP[s.id]=p));
-const LESSONS=PAGES.filter(p=>/^[ls]\d/.test(p.key));
+const LESSONS=PAGES.filter(p=>/^[lsp]\d/.test(p.key));
 const pageUrl=(p,id)=>p.key===PAGE?(id?"#"+id:"#top"):ROOT+p.file+(id?"#"+id:"");
 const secUrl=id=>SECP[id]?pageUrl(SECP[id],id):"#"+id;
 const thisPage=PAGES.find(p=>p.key===PAGE);
@@ -61,7 +61,7 @@ const thisPage=PAGES.find(p=>p.key===PAGE);
    jumps to the other course's home and remembers the choice (js1-course, read by index.html). */
 const COURSE_ID=document.body.dataset.course||"java";
 /* every course of the site, in hub order; a new course = one more row here + its folder + a card in index.html */
-const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 8 lessons",file:"java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · S00 live",file:"sql/index.html",k:"S"},{id:"spring",name:"Spring Boot",sub:"Annotations lab · request lifecycle",file:"spring/index.html",k:"B"}];
+const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 8 lessons",file:"java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · S00 live",file:"sql/index.html",k:"S"},{id:"spring",name:"Spring Boot",sub:"Annotations lab · request lifecycle",file:"spring/index.html",k:"B"},{id:"patterns",name:"Design Patterns",sub:"Beginner to expert · Move 1 live",file:"patterns/index.html",k:"P"}];
 (function(){const b=$("nav .brand");if(!b)return;const cur=COURSES.find(c=>c.id===COURSE_ID)||COURSES[0];
   const w=document.createElement("div");w.className="csw";w.id="courseSel";w.dataset.value=cur.id;
   w.innerHTML='<button type="button" class="csw-b" aria-haspopup="menu" aria-expanded="false" aria-label="Switch course: '+cur.name+'"><span>'+cur.name+'</span>'+ICO.chev+'</button>'+
@@ -1132,7 +1132,7 @@ const THM=(function(){
     A("Commands","›","Back to top",()=>scrollTo({top:0}));
     PAGES.forEach(p=>{if(p.key!==PAGE)A("Pages","▸",p.name,()=>{location.href=pageUrl(p);});});
     TOOLS.forEach(([t,s,sec])=>{const el=$(s);if(el)A("Tools","◆",t,()=>jump(el,s!=="#playground"&&s!=="#bigo"&&s!=="#revise"));else if(SECP[sec])A("Tools","◆",t,()=>{location.href=secUrl(sec);},SECP[sec].short);});
-    $$(".quiz[data-quiz]").forEach(q=>A("Quizzes","?",/^l\d+$/.test(q.dataset.quiz)?"Quiz · Lesson "+q.dataset.quiz.slice(1):/^s\d+$/.test(q.dataset.quiz)?"Quiz · SQL "+q.dataset.quiz.slice(1):"Quiz · "+(((thisPage&&thisPage.sections.find(s=>s.id===(q.closest("section")||{}).id))||{}).t||"Check yourself"),()=>jump(q)));
+    $$(".quiz[data-quiz]").forEach(q=>A("Quizzes","?",/^l\d+$/.test(q.dataset.quiz)?"Quiz · Lesson "+q.dataset.quiz.slice(1):/^s\d+$/.test(q.dataset.quiz)?"Quiz · SQL "+q.dataset.quiz.slice(1):/^p\d+$/.test(q.dataset.quiz)?"Quiz · Patterns "+q.dataset.quiz.slice(1):"Quiz · "+(((thisPage&&thisPage.sections.find(s=>s.id===(q.closest("section")||{}).id))||{}).t||"Check yourself"),()=>jump(q)));
     $$("#pgTasks .chip").forEach(b=>A("Playground","▶","Playground task · "+b.textContent,()=>{b.click();jump($("#playground"));}));
     $$("#toc .ti").forEach(a=>{const el=document.getElementById(a.dataset.id);A("Sections",$("span",a).textContent,$("b",a).textContent,()=>{if(el)jump(el);else location.href=a.href;},el?"":(SECP[a.dataset.id]||{}).short);});
     return L;}

@@ -1,107 +1,103 @@
-# Design Patterns course — build prompt and status (written 2026-10-28)
+# Design Patterns course — final plan (merged 2026-10-28)
 
-**Status:** prompt written, nothing built yet. History: the user asked "one more I need: design patterns; first give prompt, then will start", then asked what top-tech (MAANG-style) interviews need, then decided (same day): "first understand and learn all the important design patterns asked in MAANG, then separately learn the rest". So this course is **patterns only**, ordered by how often each pattern comes up in interviews. Low-level design (method, case studies, concurrency, machine coding) moved to its own prompt, `kb/lld-plan.md`, for later.
+**Status:** phase A (inspect + plan) done 2026-10-28. Phase 1 of the first plan is live: course shell, kit `DPL` (`assets/labs/labs-patterns.js`), P00. Next: phase B (kit additions + P00 additions) and phase C (Move 1 · Swap: Strategy, Template Method, State). **After each move: stop, report, wait for the user's rating** (user, 2026-10-28).
 
-Say "start" to begin phase 1, or paste one phase into a session.
+History: first plan by interview tier (2026-10-28) → reviewed as "partly a good learning curve" (Singleton first, tiers split related ideas, no refactor step, one depth, late practice, no modern Java) → revised into five moves and four levels → the user wrote a master prompt ("Build a Complete Visual Java Design Patterns Course — Beginner to Expert") → reviewed (prerequisite order in TALK/WRAP, approval checkpoints, page structure, project constraints, what can and cannot run) → merged here. "merge and start, use multiple agents if needed".
 
----
+## Goal
+A beginner who knows basic Java becomes able to **explain, choose, code and defend** all 23 GoF patterns. Not definitions: why each exists, seeing it work, building it from a painful version, choosing between look-alikes, applying it in a Java backend. Every visual teaches; nothing is decorative; no control without working behaviour; no progress shown that is not real.
 
-## The prompt
+## Project constraints (break these and the site breaks)
+- Static site, no build step, opens from `file://`, folder in OneDrive: no `node_modules`, no frameworks, CDN libraries only. Plain HTML + `assets/css/course.css` + classic scripts sharing one global scope (never reuse a top-level name across files).
+- Pages load in order: `patterns-index.js, quiz-data.js, course.js, effects.js, labs-patterns.js, labs-patterns-pNN.js, run-java.js`. Lab data files are data only (plus small pure functions for Playgrounds); classes and ids are prefixed `dp-`.
+- Every Java program runs on **JDK 25** (`java File.java`) before it goes in; output in comments; editors are `<script type="text/x-java" data-file="X.java" data-hl="…">` (CodeMirror + ▶ Run via Wandbox, needs internet). Never `</script>` or `${` inside quiz strings; quiz explanation classes `qok`/`qno`.
+- Spring code cannot run here: shown as read-only `<pre><code>` marked "Spring · not runnable here", only real class/annotation names, conceptual sketches labelled as such.
+- Tests in the capstone are plain `main` programs printing PASS/FAIL (no JUnit/Maven here).
+- Shared files are edited **only by the lead**: `course.css`, `course.js`, `quiz-data.js`, `labs-patterns.js`, `patterns/index.html`, hub `index.html`, `KB.md`, `CLAUDE.md`, this plan. Agents write their own page, their own data file, their own `kb/patterns-NN-*.md`, and hand quiz/recall data and CSS needs back as scratchpad files.
+- Checks (there is no lint or unit-test suite): `node --check` on JS; `node scripts/build-index.mjs patterns`; JDK 25 on every program; headless Chrome: geometry/controls (`dptest.js`), state gallery in light and dark, contrast in nine themes, console errors, no horizontal scroll at 500 px; reduced motion; keyboard ← → Space on labs.
+- Prose under ~250 words per section outside `<details class="d">`. A term is defined before any figure or code uses it. Glossary terms link to P00.
+- One running story: **the car dealership** (payments, notifications, caching, orders all happen inside it).
 
-You are extending the static course site in this folder (read `CLAUDE.md` first). It has three courses: **Java** (`java/`), **SQL** (`sql/`) and the **Spring Boot lab** (`spring/`). Add a fourth course, **Design Patterns for Interviews**, built like the Java lessons and visual like the Spring lab: every pattern is understood by *seeing* it run, and every pattern comes with the exact questions interviewers ask about it.
+## Learning path: five moves, GoF family kept in the catalogue
+| # | Page | Pattern | GoF family | Move | Interview tier |
+|---|---|---|---|---|---|
+| 00 | `00-foundations.html` | Foundations and SOLID (+ dispatch, lambdas, first refactor) | | | |
+| 01 | `01-strategy.html` | Strategy | Behavioral | Swap | ★ |
+| 02 | `02-template-method.html` | Template Method | Behavioral | Swap | ★ |
+| 03 | `03-state.html` | State | Behavioral | Swap | ★ |
+| 04 | `04-factory-method.html` | Factory Method (Simple Factory as a non-GoF stepping stone) | Creational | Create | ★ |
+| 05 | `05-builder.html` | Builder | Creational | Create | ★ |
+| 06 | `06-singleton.html` | Singleton (purpose; thread safety in 24) | Creational | Create | ★ |
+| 07 | `07-prototype.html` | Prototype | Creational | Create | ◆ |
+| 08 | `08-abstract-factory.html` | Abstract Factory | Creational | Create | ◆ |
+| 09 | `09-adapter.html` | Adapter | Structural | Wrap | ★ |
+| 10 | `10-decorator.html` | Decorator | Structural | Wrap | ★ |
+| 11 | `11-proxy.html` | Proxy | Structural | Wrap | ★ |
+| 12 | `12-facade.html` | Facade | Structural | Wrap | ★ |
+| 13 | `13-bridge.html` | Bridge (taught as Adapter vs Bridge) | Structural | Wrap | ○ |
+| 14 | `14-observer.html` | Observer | Behavioral | Talk | ★ |
+| 15 | `15-command.html` | Command | Behavioral | Talk | ★ |
+| 16 | `16-chain-of-responsibility.html` | Chain of Responsibility | Behavioral | Talk | ★ |
+| 17 | `17-mediator.html` | Mediator | Behavioral | Talk | ○ |
+| 18 | `18-memento.html` | Memento (after Command's undo) | Behavioral | Talk | ○ |
+| 19 | `19-composite.html` | Composite | Structural | Compose | ◆ |
+| 20 | `20-iterator.html` | Iterator | Behavioral | Compose | ◆ |
+| 21 | `21-visitor.html` | Visitor (after Composite) | Behavioral | Compose | ○ |
+| 22 | `22-interpreter.html` | Interpreter (a Composite of expressions) | Behavioral | Compose | ○ |
+| 23 | `23-flyweight.html` | Flyweight | Structural | Compose | ○ |
+| 24 | `24-integration.html` | Advanced integration: all 23 by GoF family, combinations, JDK/Spring internals, DI and extension points, thread-safe Singleton (DCL, `volatile`, holder, enum; reflection/serialization/cloning), modern Java, testing, anti-patterns, refactoring to patterns, when simple beats a pattern | | | |
+| 25 | `25-capstone.html` | Dealership app, eight change requests | | | |
+| 26 | `26-interview.html` | Look-alikes, "which pattern?" drill, code-reading and refactoring questions, LLD exercises, mock interviews with follow-ups, one-week fast track | | | |
 
-### Rules that carry over unchanged
-- No new tooling: plain HTML, `assets/css/course.css`, classic scripts in one global scope, CDN libraries only. No `node_modules`, no backups, no `-v2` files.
-- Same theme and system as Java/SQL/Spring: `<body data-course="patterns">`, the shared nav, contents panel, search, theme toggle; a row in `COURSES` (course.js) and a card on the hub `index.html`; its own index `node scripts/build-index.mjs patterns` → `assets/data/patterns-index.js`.
-- **Every Java program runs on JDK 25 before it goes in**; outputs go in comments; editors are `<script type="text/x-java" data-file="X.java">` so ▶ Run (Wandbox) works as on the Java pages.
-- Learning order: a term is defined before any figure or code uses it. Prose under 250 words per section outside `<details class="d">Go deeper</details>`.
-- Every visual passes the checks from `kb/spring-visual-audit-plan.md`: state gallery reviewed in light and dark, labels fit (0.63 em), no overlaps, controls (Back/Next/Play, STEP n / N bar), contrast in all nine themes, no console errors, no horizontal scroll at 500 px.
-- Reduced motion honoured; keyboard ← → Space on every lab; no copyrighted characters; record everything in `kb/` and the change log.
+Moves: **Swap** replace behaviour without rewriting the client · **Create** control how objects are made · **Wrap** compatibility, extra responsibilities, controlled access · **Talk** communication, requests, responsibilities · **Compose** structures of many objects. 3 + 5 + 5 + 5 + 5 = 23; each pattern appears exactly once in the tracker; later mentions link back. Page key = `pNN` (`data-page`), `data-short="PNN"`, `data-name="PNN · Name"`.
 
-### Which patterns, in which order: by interview importance
-Interviews do not weigh the 23 classic (Gang of Four) patterns equally. The course teaches them in three tiers, most-asked first, so the reader is interview-ready after Tier 1 and complete after Tier 3.
+## Every pattern page: 7 sections, 4 levels, the 22 items of the master prompt
+Section ids use the pattern's 3-letter prefix (`stg` Strategy, `tpl` Template Method, `sta` State, `fac`, `bld`, `sgl`, `pro`, `abf`, `adp`, `dec`, `prx`, `fcd`, `brg`, `obs`, `cmd`, `cor`, `med`, `mem`, `cmp`, `itr`, `vis`, `int`, `fly`). Band id `#pNN`.
 
-| Tier | Patterns | Why this tier |
+| § | id | Level | Contains (master-prompt items) |
+|---|---|---|---|
+| 01 | `xxx-see` | 1 · See it | `DPL.header` block; one-line intent (1); the real problem (2); everyday analogy mapped to software (3, table "analogy → class"); **Pain lab** (4, 6): the problem as a diagram getting worse as change requests arrive, with the "places to edit" meter. Every arrow, box and relationship explained in the step text. No jargon left undefined. |
+| 02 | `xxx-build` | 2 · Build it | Before code, runnable (5); what breaks (6); **Refactor lab** (7): 4–7 small steps, code and diagram change together, added lines green, removed lines struck, each step says *why*; final code, runnable, with output (8). |
+| 03 | `xxx-run` | 2 · Watch it run | **Runtime lab** (Sequence view) (9): object creation, calls, returns, and how execution reaches each output line; **Playground** (driven by the reader). |
+| 04 | `xxx-practise` | 2 · Practise | Beginner exercise with hints and solution (17), intermediate exercise (18), **Explain it back**. |
+| 05 | `xxx-choose` | 3 · Choose it | **Structure lab** (UML, two tabs: Roles / Dealership); when to use (12), when not + simpler alternative (13); comparison with look-alikes (14, table); trade-offs (15); backend application (11); JDK/Spring connection, verified names (16); **Spot it** predict widget. |
+| 06 | `xxx-master` | 4 · Master it | Modern Java alternative, runnable (10); advanced details (concurrency/performance only where relevant); common mistakes; advanced scenario as a **Predict** widget (19); patterns it cooperates with. |
+| 07 | `xxx-review` | Interview + review | 30-second answer, deeper answer, follow-ups as interview cards (20); **revision card** (21); quiz `QZ.pNN` B/I/A (22), recall `RC.pNN`, feedback. |
+
+A beginner can stop after § 04 of every pattern and has a complete beginner course; §§ 05–06 add depth without changing §§ 01–04.
+
+## Visual language
+- **Moves** have one colour token each (`--mv-swap`, `--mv-create`, `--mv-wrap`, `--mv-talk`, `--mv-compose`) defined for light and dark, passing contrast in nine themes; GoF family shown as text chips.
+- **Glyph per pattern** (`DPL.GLYPH`, 48×48 SVG, `currentColor`): Strategy socket with swappable plugs · Template Method form with blanks · State traffic light · Factory Method machine with an order slot · Builder parts snapping onto a frame · Singleton one key on a hook · Prototype photocopier · Abstract Factory set of matching machines · Adapter plug converter · Decorator onion rings · Proxy guard at a door · Facade front desk · Bridge two dials · Observer broadcaster with listeners · Command ticket · Chain linked hands passing a note · Mediator control tower · Memento camera snapshot · Composite tree · Iterator cursor along a shelf · Visitor inspector touring rooms · Interpreter parse tree · Flyweight shared stamp.
+- **Motion meanings:** a highlighted arrow = a call happening now; a box appearing = `new`; green = good/added, red = bad/removed; dashed outline = interface; dimmed = not involved in this step.
+- **Diagrams match code:** every class box name in a pattern's Structure and Refactor labs appears in that page's final code (checked by `dpmatch.js`).
+- **Pattern map + catalogue** on the course home: 23 glyph cards by move, real progress from "Mark as understood" (`js1-done`), filters (GoF family, move, tier, level), search, related/confused-with highlighting.
+
+## Kit additions (phase B, in `labs-patterns.js`; documented in `kb/patterns-00-foundations.md` → Kit)
+1. Step fields `add`, `del` (substrings → green / struck lines) and `meter:[label, value, max]` (the "places to edit" bar). Used by Pain and Refactor labs.
+2. **Sequence view**: `view.seq = {lanes:[[id, title, sub]], msgs:[[from, to, label, kind]]}` (kind `call` | `ret` | `new` | `self`); steps use `upto` (messages shown) and `cur` (message index highlighted). Same controls, keyboard and checks as other views.
+3. **Playground**: `DPL.play({key:{pill, init(), controls:[{id, type:'select'|'toggle'|'button', label, options}], act?(state, id), render(state) → {h, nodes, edges, on, good, bad, lines, out, log}}})` into `<div class="dp-play" id="dpp-KEY">`. Reset button; output `aria-live`.
+4. `DPL.header(host)` for `<div class="dp-pat" data-p="Strategy">`: glyph, name, GoF family, move, tier, one-line intent, related / confused-with links.
+5. Widgets bound by markup: **Predict** `<div class="dp-pred" data-ans="1">` (question, option buttons, explanation revealed after a choice); **Explain it back** `<div class="dp-xb" data-k="p01">` (textarea, model answer, got it / almost / not yet stored in `js1-dpxb`); **revision card** `.dp-rev`; **level chip** `.dp-lv.l1…l4` in each `h2`'s preceding tag.
+6. `DPL.catalog(host)` and `DPL.map(host)` for the course home; `CATALOG` rows carry `{n, key, file, fam, move, tier, p (dealership problem), i (intent), rel:[], conf:[]}`.
+
+## Capstone (25): the dealership app, eight change requests
+discounts → Strategy · creating cars → Factory Method + Builder · add-ons → Decorator · legacy payment gateway → Adapter · checkout → Facade · order lifecycle → State · price alerts → Observer · workshop jobs with undo → Command + Memento. For each: requirement, existing code, the problem, "think first" Predict, refactor (Refactor view), updated class + sequence diagram, PASS/FAIL test program, alternatives and trade-offs, architecture after the change. A pattern appears only where the requirement justifies it.
+
+## Phases and agents
+| Phase | Work | Who |
 |---|---|---|
-| **Tier 1: asked constantly** | Singleton, Factory Method (with Simple Factory), Builder, Strategy, Observer, Decorator, Adapter, Proxy, Facade, State, Command, Template Method, Chain of Responsibility | come up directly ("implement a thread-safe Singleton", "Decorator vs inheritance?") and inside almost every design problem |
-| **Tier 2: asked often** | Abstract Factory, Composite, Iterator, Prototype | asked as follow-ups and in comparisons |
-| **Tier 3: know the idea** | Bridge, Flyweight, Mediator, Memento, Visitor, Interpreter | explain intent, one example, when to use; rarely coded in an interview |
+| A | inspect, this plan | lead (done) |
+| B | kit additions, CSS, CATALOG, home catalogue + map, P00 additions (dispatch, lambdas/anonymous classes/method references, first refactor exercise; fix stale lesson references) | lead (kit, shared files) + 1 agent (P00) + 1 agent (glyphs) |
+| C | Move 1 · Swap: 01 Strategy, 02 Template Method, 03 State | 3 agents in parallel (one page each) + 1 QA agent; lead integrates |
+| D1–D4 | Create (5) · Wrap (5) · Talk (5) · Compose (5): one move per session | ≤ 5 agents per move + QA |
+| E | 24 integration + 25 capstone | 2 agents + QA |
+| F | 26 interview, fast track, final quality gate across the course | 1 agent + QA; lead runs the full gate |
 
-### One story for the whole course: the car dealership
-The Java course's metaphor is the car and SQL uses a car dealership database, so patterns live in the same world. Every pattern solves one dealership problem:
+The user rates after every phase from C on. Never claim an agent ran unless it did.
 
-| Pattern | Dealership problem it solves |
-|---|---|
-| Singleton | one shared vehicle registry for the whole showroom |
-| Factory Method | `CarFactory.create("SUV")` without `new` scattered everywhere |
-| Builder | a car with 12 optional extras, readable and immutable |
-| Strategy | interchangeable discount rules (festival, loyalty, none) |
-| Observer | customers notified when a price drops |
-| Decorator | add-ons (sunroof, GPS, warranty) each adding to the price |
-| Adapter | plug an old payment gateway into the new checkout |
-| Proxy | a test-drive key: checks access, loads lazily, logs use |
-| Facade | one `buyCar()` hiding finance, insurance, registration |
-| State | an order moving booked → paid → delivered → cancelled |
-| Command | workshop jobs as objects: queue, log, undo |
-| Template Method | a fixed inspection checklist with model-specific steps |
-| Chain of Responsibility | a loan approval chain (clerk → manager → bank) |
-| Abstract Factory | a family of parts per market (India vs EU: engine, lights, plates) |
-| Composite | a car as a tree of parts; price = sum of the tree |
-| Iterator | walk the inventory without knowing how it is stored |
-| Prototype | clone a configured demo car instead of rebuilding it |
-| Bridge | vehicle type × engine type without a class explosion |
-| Flyweight | thousands of cars sharing one model spec and paint record |
-| Mediator | a showroom coordinator instead of everyone calling everyone |
-| Memento | undo in the car configurator |
-| Visitor | tax and valuation over different vehicle types |
-| Interpreter | a tiny search language ("brand:Tata price<10L") |
+## Acceptance per pattern
+All 7 sections with the items above; Pain, Refactor, Runtime (sequence) and Structure labs; a Playground; Predict + Spot it + Explain it back; every program run on JDK 25 with outputs in comments; Spring snippets marked not runnable; `dpmatch.js` green; `dptest.js` 0 findings at 1280 and 500 px; gallery reviewed light + dark; contrast 0 failures in nine themes; no console errors; quiz (≥ 10, B/I/A) and recall (3 per day) merged; `kb/patterns-NN-name.md`; `KB.md` row; change-log line; index rebuilt.
 
-### Shared lab kit (`assets/labs/labs-patterns.js`, built in phase 1)
-- Port the Spring lab's data-driven engine (`LABS2` + `buildLab2`: boxes, arrows, curved edges, per-lab arrowheads, steps with cur/on/good/bad/dim/lines/txt/note, STEP n / N bar) into a shared kit so every pattern lab is **data only**.
-- Add a **class-box renderer**: UML-lite boxes (name, key fields, key methods) with arrow kinds for *implements* (dashed, hollow head), *extends* (solid, hollow head), *has-a* (diamond) and *calls* (plain arrow), and a tiny legend. P00 teaches how to read them; every pattern then has one.
-- Two views per pattern, toggled by tabs: **Structure** (the class diagram) and **Runtime** (objects and calls stepping through one scenario, e.g. a price drop notifying three customers).
-- **Before / After** code pair per pattern: the painful version first, then the pattern, both runnable.
-
-### Every pattern section has the same shape
-1. **In 30 seconds**: intent in one line + the dealership problem.
-2. **Before**: the naive code and why it hurts (runnable).
-3. **Visual lab**: Structure and Runtime, stepped.
-4. **After**: the pattern in code (runnable), with the output.
-5. **When to use / when not** (2 + 2 bullets) and the classic mistake.
-6. **Where you already use it**: JDK and Spring examples (list below).
-7. **The interview angle**: the questions actually asked about this pattern, each with a 30-second spoken answer and, where they ask for code, the code. Examples: Singleton → lazy vs eager, `synchronized` cost, double-checked locking and why `volatile` is needed, the enum Singleton, how reflection, serialization and cloning break it, Singleton vs Spring singleton scope. Decorator → why not subclasses, Decorator vs Proxy. Factory → Factory Method vs Abstract Factory vs Simple Factory. Observer → push vs pull, memory leaks from forgotten listeners, Observer vs pub-sub.
-8. **Quiz** (`QZ.pNN`, labelled B/I/A) and **recall prompts** (`RC.pNN`).
-
-### Where Java and Spring already use them (shown in every section, collected in P07)
-Singleton → Spring's default bean scope, `Runtime.getRuntime()` · Factory → `BeanFactory`, `Calendar.getInstance()`, `List.of` · Builder → `StringBuilder`, `ResponseEntity`, `RestClient.builder()`, `HttpRequest.newBuilder()` · Strategy → `Comparator`, `HandlerMapping`, `PasswordEncoder` · Observer → `ApplicationEvent` / `@EventListener`, `PropertyChangeListener` · Decorator → `BufferedInputStream`, `Collections.unmodifiableList` · Adapter → `HandlerAdapter`, `Arrays.asList`, `InputStreamReader` · Proxy → `@Transactional`, AOP, JPA lazy loading · Facade → `JdbcTemplate` over JDBC, `SpringApplication.run` · State → thread states, order workflows · Command → `Runnable`, `Callable` · Template Method → `JdbcTemplate`, `AbstractList`, `HttpServlet.service` · Chain of Responsibility → servlet filters, Spring Security filter chain · Iterator → `Iterable`, `Iterator` · Composite → `CompositeHealthContributor`, UI trees · Prototype → `Object.clone`, prototype scope · Flyweight → `Integer.valueOf` cache, string pool · Memento → serialization snapshots · Visitor → `FileVisitor`, annotation processing.
-
-### Lessons (one page each)
-| # | Page | Content |
-|---|---|---|
-| P00 | `patterns/00-foundations.html` | What a pattern is (and is not); the three families (creational, structural, behavioral); interface vs abstract class; composition over inheritance; program to an interface; reading a class diagram; **SOLID** with one before/after lab per principle (the thing every pattern builds on) |
-| P01 | `patterns/01-creational.html` | **Tier 1:** Singleton (every variant and how it breaks), Factory Method + Simple Factory, Builder |
-| P02 | `patterns/02-strategy-observer.html` | **Tier 1:** Strategy, Observer (the two most used behavioral patterns) |
-| P03 | `patterns/03-wrappers.html` | **Tier 1:** Decorator, Adapter, Proxy, Facade (four "wrappers" that look alike, taught together so the differences are clear) |
-| P04 | `patterns/04-behaviour.html` | **Tier 1:** State, Command, Template Method, Chain of Responsibility |
-| P05 | `patterns/05-tier2.html` | **Tier 2:** Abstract Factory, Composite, Iterator, Prototype |
-| P06 | `patterns/06-tier3.html` | **Tier 3:** Bridge, Flyweight, Mediator, Memento, Visitor, Interpreter (intent, one visual, one example, when to use) |
-| P07 | `patterns/07-interview.html` | Look-alikes side by side (Strategy vs State, Decorator vs Proxy vs Adapter vs Facade, Factory Method vs Abstract Factory vs Builder, Template Method vs Strategy, Observer vs Mediator); every pattern inside JDK and Spring; a "which pattern?" scenario drill; the most-asked pattern questions with spoken answers; anti-patterns (God object, Singleton abuse, pattern overuse); a mock quiz across all patterns |
-
-`patterns/index.html` is the course home: hero, lesson cards with progress, the three tiers as a roadmap, and a "pattern picker" (problem → pattern).
-
-### Phases (one per session)
-1. Course shell: `COURSES` row, hub card, `patterns/index.html`, index build, the shared lab kit with the class-box renderer, and **P00** (foundations + SOLID).
-2. **P01** Singleton, Factory, Builder.
-3. **P02** Strategy, Observer.
-4. **P03** Decorator, Adapter, Proxy, Facade.
-5. **P04** State, Command, Template Method, Chain of Responsibility.
-6. **P05** Tier 2 + **P06** Tier 3.
-7. **P07** interview lesson + a full visual audit of the course (gallery in light and dark, all checks green).
-
-### Acceptance (what "done" means for a lesson)
-- Every pattern: before/after code run on JDK 25 with output, a Structure view and a Runtime view, all states reviewed in the gallery in light and dark, and an interview-angle block with spoken answers.
-- Checks green: labels fit, no overlaps, controls, contrast in nine themes, no console errors on any page, no horizontal scroll at 500 px.
-- `kb/patterns-NN-name.md` written, `QZ`/`RC` added, `KB.md` row, change-log line, index rebuilt.
-
-### After this course
-`kb/lld-plan.md` holds the next step: the low-level design round (the 7-step method, concurrency, 19 case studies such as parking lot, elevator, LRU cache and rate limiter, timed machine coding). It builds on every pattern here.
+## Final quality gate (phase F)
+All 23 in the tracker, correctly classified; every pattern has the 4 levels and the visual sequence; diagrams match code; all programs run; exercises, predicts, explain-back, quizzes, playgrounds, filters, map and progress work; desktop and 500 px usable; reduced motion; no regressions on the Java, SQL and Spring pages; report per pattern: which items exist and pass.

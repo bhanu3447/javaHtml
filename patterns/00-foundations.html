@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P00: Foundations and SOLID · Design Patterns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../assets/css/course.css">
+</head>
+<body data-page="p00" data-course="patterns" data-name="P00 · Foundations and SOLID" data-short="P00">
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><i>P</i><span>Design Patterns</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top" class="ph">
+  <div class="tag">PATTERNS 00 · FOUNDATIONS AND SOLID</div>
+  <h1>Before the patterns: <span class="grad">the ideas they are made of</span></h1>
+  <p class="lead">Every design pattern is built from a handful of ideas: interfaces, composition, programming to an interface, and the five <b>SOLID</b> principles. Learn to read a class diagram, see how Java picks the method that runs, why "has-a" usually beats "is-a", and watch each SOLID principle fix a real dealership problem, before and after. Then meet lambdas and do your first refactor to a pattern. Every program runs.</p>
+  <div class="pager"></div>
+</header>
+
+<div class="band" id="ptf">
+  <div class="tag">PATTERNS 00</div>
+  <h2>Foundations: what patterns are built from</h2>
+  <p>Sixteen short sections. Each idea has a lab you step through and a program you can run; the last two are the interview questions and the review.</p>
+</div>
+
+<!-- 1 -->
+<section id="pf-what">
+  <span class="num">01</span><h2>What is a design pattern (and what is it not)?</h2>
+  <div class="tldr"><b>In 30 seconds</b> A <b>design pattern</b> is a named, proven solution to a design problem that keeps coming back, described as an arrangement of classes and objects. It is not code you copy, not a library and not an algorithm: it is an idea you write yourself, in your own classes, every time.</div>
+  <p>In 1994 four authors (the "Gang of Four", GoF) collected 23 such solutions in a book. Their names became a shared vocabulary: say "use a Strategy for the discounts" and every developer in the room pictures the same classes.</p>
+  <div class="an-strip"><b>💡 Remember it</b><span>A pattern is like a <b>body style</b> in the car world: "SUV" or "hatchback" names a proven shape that every engineer understands, but each manufacturer still builds its own car. A pattern names the shape; you build the classes.</span></div>
+  <p>Every pattern in this course is described with the same four parts:</p>
+  <div class="dp-anat">
+    <div><b>Name</b><span>Two words that carry the whole idea: Strategy, Observer.</span></div>
+    <div><b>Problem</b><span>When it applies: the recurring pain, here always a dealership problem.</span></div>
+    <div><b>Solution</b><span>The classes, their roles and how they call each other (the diagram).</span></div>
+    <div><b>Consequences</b><span>What you gain, what it costs, when not to use it.</span></div>
+  </div>
+  <div class="tw"><table><tr><th>A pattern is…</th><th>A pattern is not…</th></tr>
+    <tr><td>a design idea with a name</td><td>a library you import</td></tr>
+    <tr><td>adapted to your classes every time</td><td>code to paste unchanged</td></tr>
+    <tr><td>about how objects are arranged</td><td>an algorithm (sorting, searching)</td></tr>
+    <tr><td>a tool for a real problem</td><td>a goal: no pattern is better than a needless one</td></tr></table></div>
+  <details class="d"><summary>Go deeper: patterns, principles and idioms</summary><div class="b"><b>Principles</b> (SOLID, composition over inheritance) are general rules; <b>patterns</b> are concrete arrangements that follow them; <b>idioms</b> are language-level habits (try-with-resources in Java). Architectural patterns (MVC, microservices) work at a larger scale than the 23 GoF patterns, which work at the level of a few classes.</div></details>
+</section>
+
+<!-- 2 -->
+<section id="pf-families">
+  <span class="num">02</span><h2>The three families, and the five moves of this course</h2>
+  <div class="tldr"><b>In 30 seconds</b> The 23 patterns fall into three GoF families: <b>creational</b> (how objects are created), <b>structural</b> (how objects are put together) and <b>behavioral</b> (how objects talk and share work). The families stay the official classification; this course <b>teaches</b> the patterns in five <b>moves</b>, one lesson per pattern.</div>
+  <p>The five moves, in learning order:</p>
+  <ul>
+    <li><b>Swap</b> (lessons 01–03): replace behaviour without rewriting the client. Strategy, Template Method, State.</li>
+    <li><b>Create</b> (04–08): control how objects are made. Factory Method, Builder, Singleton, Prototype, Abstract Factory.</li>
+    <li><b>Wrap</b> (09–13): compatibility, extra responsibilities, controlled access. Adapter, Decorator, Proxy, Facade, Bridge.</li>
+    <li><b>Talk</b> (14–18): communication, requests, responsibilities. Observer, Command, Chain of Responsibility, Mediator, Memento.</li>
+    <li><b>Compose</b> (19–23): structures of many objects. Composite, Iterator, Visitor, Interpreter, Flyweight.</li>
+  </ul>
+  <p>Each lesson also shows an interview badge: <b>★</b> asked constantly (tier 1, 13 patterns), <b>◆</b> follow-ups and comparisons (tier 2, 4), <b>○</b> explain with one example (tier 3, 6). The map shows the families and lets you filter by tier:</p>
+  <div class="viz dp" id="dpFam"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p>Notice that tier 1 is spread across all three families: interviewers want one or two from each. Every pattern in the map solves one dealership problem; lessons 24–26 then combine them, build a capstone app and drill interview questions.</p>
+</section>
+
+<!-- 3 -->
+<section id="pf-iface">
+  <span class="num">03</span><h2>Interface vs abstract class</h2>
+  <div class="tldr"><b>In 30 seconds</b> An <b>interface</b> is a promise of what a class can do: method signatures, no instance fields, no constructor. An <b>abstract class</b> is a half-built class: it can hold fields, a constructor and finished methods, but leaves some methods for subclasses. Neither can be created with <code>new</code>.</div>
+  <p>A class <b>implements</b> an interface (any number of them) and <b>extends</b> at most one class. Since Java 8 an interface may also carry <b>default</b> methods with a body, which narrows the gap, but it still has no state of its own.</p>
+  <div class="tw"><table><tr><th></th><th>interface</th><th>abstract class</th></tr>
+    <tr><td>Purpose</td><td>a capability: "can drive"</td><td>a shared base: "is a vehicle"</td></tr>
+    <tr><td>Fields</td><td>constants only (<code>static final</code>)</td><td>any fields, state</td></tr>
+    <tr><td>Constructor</td><td>no</td><td>yes (called by <code>super(…)</code>)</td></tr>
+    <tr><td>Method bodies</td><td><code>default</code>, <code>static</code>, <code>private</code> only</td><td>any</td></tr>
+    <tr><td>How many per class</td><td>many: <code>implements A, B</code></td><td>one: <code>extends X</code></td></tr>
+    <tr><td>Use when</td><td>unrelated classes share a role</td><td>related classes share code and state</td></tr></table></div>
+<script type="text/x-java" data-file="Vehicles.java" data-hl="3,7">
+public class Vehicles {
+    public static void main(String[] args) {
+        Drivable a = new Swift("KA-01-1234");    // the variable's type is the interface
+        a.drive(40);                             // Swift KA-01-1234 drives at 40 km/h
+        a.honk();                                // Beep! (default method from the interface)
+
+        Vehicle b = new Nexon("KA-05-9876");     // or the abstract class
+        b.drive(90);                             // Nexon KA-05-9876 drives at 90 km/h
+        System.out.println(b.wheels());          // 4 (written once, in the abstract class)
+        System.out.println(b instanceof Drivable); // true: a Nexon is both
+        // new Vehicle("X");                     // compile error: Vehicle is abstract; cannot be instantiated
+    }
+}
+
+// interface: a promise of WHAT can be done. No fields (only constants), no constructor.
+interface Drivable {
+    void drive(int speed);                       // abstract: every class must write it
+    default void honk() {                        // default method: a shared body (Java 8+)
+        System.out.println("Beep!");
+    }
+}
+
+// abstract class: a half-built class. It CAN hold fields, a constructor and finished methods.
+abstract class Vehicle implements Drivable {
+    protected final String plate;                // state shared by every vehicle
+    Vehicle(String plate) { this.plate = plate; }
+    int wheels() { return 4; }                   // finished method, inherited as is
+    // drive(int) is still missing, so the class must stay abstract
+}
+
+class Swift extends Vehicle {
+    Swift(String plate) { super(plate); }
+    public void drive(int speed) { System.out.println("Swift " + plate + " drives at " + speed + " km/h"); }
+}
+
+class Nexon extends Vehicle {
+    Nexon(String plate) { super(plate); }
+    public void drive(int speed) { System.out.println("Nexon " + plate + " drives at " + speed + " km/h"); }
+}
+</script>
+  <details class="d"><summary>Go deeper: the diamond problem and default methods</summary><div class="b">If a class implements two interfaces with the same default method, the compiler refuses it until the class overrides the method (it may call one of them with <code>A.super.honk()</code>). Classes win over interfaces: an inherited class method beats a default method. That is why multiple inheritance of <i>behaviour</i> through interfaces stays safe while multiple inheritance of <i>state</i> is not allowed at all.</div></details>
+</section>
+
+<!-- 4 -->
+<section id="pf-uml">
+  <span class="num">04</span><h2>Reading a class diagram</h2>
+  <div class="tldr"><b>In 30 seconds</b> Every pattern comes with a <b>class diagram</b>: boxes are classes, lines are relationships. You need four arrows: <b>implements</b> (dashed, hollow triangle), <b>extends</b> (solid, hollow triangle), <b>has-a</b> (a diamond at the owner) and <b>calls / uses</b> (a plain arrow).</div>
+  <p>The diagrams in this course use a light version of UML (the Unified Modeling Language) with only what interviews need. "Has-a" means one class keeps another in a field; this is called <b>composition</b>, and section 7 shows why it matters. Step through the code from section 3, drawn:</p>
+  <div class="viz dp" id="dp-uml"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p>In an interview, draw boxes with just the name and the one or two methods that matter; nobody expects full UML. Say the arrows out loud as you draw them: "Swift extends Vehicle, which implements Drivable".</p>
+</section>
+
+<!-- 5 -->
+<section id="pf-prog">
+  <span class="num">05</span><h2>Program to an interface, not an implementation</h2>
+  <div class="tldr"><b>In 30 seconds</b> Declare variables, fields and parameters with the <b>interface</b> type, and name the concrete class in one place only (where the object is created). The code that uses the object then works with any class that keeps the promise, including ones written later.</div>
+  <p>The checkout needs to take a payment. If its field were a <code>CardGateway</code>, adding UPI would mean editing the checkout. With a <code>PaymentGateway</code> field, the checkout calls <code>pay</code> and the <b>object</b> decides which code runs. That run-time choice is <b>polymorphism</b>. The lab has two views: <b>Structure</b> is the class diagram, <b>Runtime</b> shows the objects and calls of one run.</p>
+  <div class="viz dp" id="dp-iface"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+<script type="text/x-java" data-file="Checkout.java" data-hl="5,14-15">
+import java.util.ArrayList;
+import java.util.List;
+
+public class Checkout {
+    private final PaymentGateway gateway;          // the field's type is the INTERFACE
+
+    Checkout(PaymentGateway gateway) { this.gateway = gateway; }
+
+    void buy(String car, int lakhs) {
+        System.out.println(car + ": " + gateway.pay(lakhs));
+    }
+
+    public static void main(String[] args) {
+        new Checkout(new CardGateway()).buy("Swift", 7);   // Swift: paid 7 lakh by card
+        new Checkout(new UpiGateway()).buy("Nexon", 12);   // Nexon: paid 12 lakh by UPI
+
+        List<String> cars = new ArrayList<>();             // same idea in the JDK: List, not ArrayList
+        cars.add("Swift");
+        System.out.println(cars);                          // [Swift]
+    }
+}
+
+interface PaymentGateway {
+    String pay(int lakhs);
+}
+
+class CardGateway implements PaymentGateway {
+    public String pay(int lakhs) { return "paid " + lakhs + " lakh by card"; }
+}
+
+class UpiGateway implements PaymentGateway {
+    public String pay(int lakhs) { return "paid " + lakhs + " lakh by UPI"; }
+}
+</script>
+</section>
+
+<!-- 6 -->
+<section id="pf-dispatch">
+  <span class="num">06</span><h2>How Java picks the method: overriding and dynamic dispatch</h2>
+  <div class="tldr"><b>In 30 seconds</b> A variable has a <b>declared type</b> (what you wrote on the left: <code>Discount discount</code>); the object it points to has a <b>runtime type</b> (the class after <code>new</code>). The compiler checks every call against the declared type; at run time the JVM runs the method of the <b>object's class</b>. That run-time choice is <b>dynamic dispatch</b>, the machinery behind polymorphism.</div>
+  <p>Two words that interviews love to mix up. An <b>override</b> is a method in a subclass (or implementing class) with the <i>same</i> name and parameter types as the parent's; <code>@Override</code> asks the compiler to check that. Which override runs is decided at <b>run time</b>, by the object. An <b>overload</b> is another method with the same name but <i>different</i> parameter types; which overload is called is decided at <b>compile time</b>, from the declared types of the arguments. Step through one call, with two different objects behind the same variable:</p>
+  <div class="an-strip"><b>💡 Remember it</b><span>The declared type is the <b>sign on a parking bay</b> ("a car with a discount"); the object is the <b>car actually parked there</b>. The attendant checks the sign before you may call (compile time); what happens when you press start depends on the car in the bay (run time).</span></div>
+  <div class="viz dp" id="dp-dispatch"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="tw"><table><tr><th></th><th>override</th><th>overload</th></tr>
+    <tr><td>Signature</td><td>same name, same parameter types</td><td>same name, different parameter types</td></tr>
+    <tr><td>Where</td><td>a subclass or implementing class</td><td>usually the same class</td></tr>
+    <tr><td>Chosen</td><td>at run time, by the object</td><td>at compile time, by the declared types</td></tr>
+    <tr><td>Patterns use it?</td><td>always: it is polymorphism</td><td>rarely (Visitor works around it)</td></tr></table></div>
+<script type="text/x-java" data-file="Dispatch.java" data-hl="4,7,11,15">
+public class Dispatch {
+    public static void main(String[] args) {
+        long price = 700000;
+        Discount discount = new FestivalDiscount();     // declared type: Discount · object: FestivalDiscount
+        System.out.println(discount.apply(price));      // 630000  (FestivalDiscount.apply ran)
+
+        discount = new LoyaltyDiscount();               // same variable, a different object
+        System.out.println(discount.apply(price));      // 680000  (LoyaltyDiscount.apply ran)
+
+        Car car = new ElectricCar("Nexon EV");          // declared type: Car · object: ElectricCar
+        car.describe();                                 // Nexon EV: battery, 0 litres of petrol
+                                                        //   OVERRIDE: chosen at run time by the object
+
+        Showroom s = new Showroom();
+        s.welcome(car);                                 // Welcome! Any car is fine here.
+                                                        //   OVERLOAD: chosen at compile time by the declared type (Car)
+        s.welcome(new ElectricCar("Ioniq 5"));          // Welcome! The charging bay is on the left.
+        s.welcome((ElectricCar) car);                   // Welcome! The charging bay is on the left.
+    }
+}
+
+interface Discount {
+    long apply(long price);
+}
+
+class FestivalDiscount implements Discount {
+    @Override public long apply(long price) { return price * 90 / 100; }   // 10% off
+}
+
+class LoyaltyDiscount implements Discount {
+    @Override public long apply(long price) { return price - 20000; }      // flat 20,000 off
+}
+
+class Car {
+    protected final String name;
+    Car(String name) { this.name = name; }
+    void describe() { System.out.println(name + ": petrol tank"); }
+}
+
+class ElectricCar extends Car {
+    ElectricCar(String name) { super(name); }
+    @Override void describe() { System.out.println(name + ": battery, 0 litres of petrol"); }   // same signature = override
+}
+
+class Showroom {                                        // same name, different parameter types = overloads
+    void welcome(Car c)         { System.out.println("Welcome! Any car is fine here."); }
+    void welcome(ElectricCar c) { System.out.println("Welcome! The charging bay is on the left."); }
+}
+</script>
+  <p>The surprise is line 15: the object is an <code>ElectricCar</code>, yet the <code>Car</code> overload runs, because overloads are picked before the program runs, from the declared type. Patterns rely on overriding, never on this.</p>
+  <details class="d"><summary>Go deeper: what is not dispatched dynamically</summary><div class="b"><b>static</b>, <b>private</b> and <b>final</b> methods and constructors are bound at compile time (static binding): a static method with the same signature in a subclass <i>hides</i> the parent's instead of overriding it. <b>Fields are not polymorphic</b> either: <code>car.name</code> reads the field of the declared type. Inside the JVM, a call on a class type compiles to <code>invokevirtual</code> and on an interface to <code>invokeinterface</code>; HotSpot looks the method up in the class's method table and caches the result, so dispatch is cheap. Visitor (lesson 21) exists because Java dispatches on one object only (single dispatch), not on the argument's runtime type too.</div></details>
+</section>
+
+<!-- 7 -->
+<section id="pf-comp">
+  <span class="num">07</span><h2>Composition over inheritance</h2>
+  <div class="tldr"><b>In 30 seconds</b> Prefer building a class out of parts it <b>has</b> (composition) over inheriting from a parent it <b>is</b>. Inheritance is fixed at compile time and multiplies classes for every combination; composition lets you mix parts and swap them at run time.</div>
+  <p>Inheritance ("is-a") is right when the child really is a kind of the parent and keeps all its promises. But using it to <b>combine features</b> (body type and engine type) creates a class for every combination. Composition ("has-a") keeps each feature in its own small class and lets the car <b>delegate</b> the work to its part. Switch between the two views:</p>
+  <div class="viz dp" id="dp-comp"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+<script type="text/x-java" data-file="Garage.java" data-hl="3,6">
+public class Garage {
+    public static void main(String[] args) {
+        Car suv = new Car("SUV", new PetrolEngine());   // the car HAS an engine
+        suv.start();                                    // SUV: petrol engine, vroom
+
+        suv.setEngine(new ElectricEngine());            // swap the part at run time
+        suv.start();                                    // SUV: electric motor, hum
+
+        Car sedan = new Car("Sedan", new ElectricEngine());
+        sedan.start();                                  // Sedan: electric motor, hum
+        // 2 body types x 2 engines = 4 combinations, but only 1 Car class + 2 engine classes
+    }
+}
+
+interface Engine {
+    String sound();
+}
+
+class PetrolEngine implements Engine {
+    public String sound() { return "petrol engine, vroom"; }
+}
+
+class ElectricEngine implements Engine {
+    public String sound() { return "electric motor, hum"; }
+}
+
+class Car {
+    private final String body;
+    private Engine engine;                          // has-a: composition
+
+    Car(String body, Engine engine) { this.body = body; this.engine = engine; }
+
+    void setEngine(Engine engine) { this.engine = engine; }
+
+    void start() { System.out.println(body + ": " + engine.sound()); }   // delegate to the part
+}
+</script>
+  <p>Strategy, Decorator, Bridge, State and Observer are all composition with a specific purpose. When you meet them, look for the field typed as an interface.</p>
+  <details class="d"><summary>Go deeper: when inheritance is still right</summary><div class="b">Use inheritance when the subclass is truly substitutable for the parent (section 10), the hierarchy is shallow and stable, and you control both classes. Template Method (lesson 02) is a pattern built on inheritance. Inheriting from a class you do not control is fragile: a change in the parent can silently break the child (the "fragile base class" problem).</div></details>
+</section>
+
+<!-- 8 -->
+<section id="pf-srp">
+  <span class="num">08</span><h2>SOLID · S: Single Responsibility</h2>
+  <div class="tldr"><b>In 30 seconds</b> <b>SOLID</b> is five design principles named by Robert C. Martin; every pattern follows at least one of them. <b>S</b>: a class should have <b>one reason to change</b>, meaning it answers to one group of people. It does not mean "one method".</div>
+  <p>An invoice that computes its total, prints itself and saves itself answers to three teams. Each change by one team re-opens code the other two depend on. Split by reason to change, and each team edits only its own class. Compare the two views:</p>
+  <div class="viz dp" id="dp-srp"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="dp-ba before">Before: one class, three jobs</div>
+<script type="text/x-java" data-file="SrpBefore.java">
+public class SrpBefore {
+    public static void main(String[] args) {
+        Invoice inv = new Invoice("Swift", 700000, 50000);
+        System.out.println(inv.total());   // 650000
+        inv.print();                       // INVOICE  Swift  Rs 650000
+        inv.save();                        // saved invoice-Swift.txt
+    }
+}
+
+// one class, three jobs: a change to tax rules, to the print layout
+// or to storage all edit this same class
+class Invoice {
+    private final String car;
+    private final int price, discount;
+
+    Invoice(String car, int price, int discount) {
+        this.car = car; this.price = price; this.discount = discount;
+    }
+
+    int total() { return price - discount; }                    // job 1: business rule
+
+    void print() {                                              // job 2: presentation
+        System.out.println("INVOICE  " + car + "  Rs " + total());
+    }
+
+    void save() {                                               // job 3: storage
+        System.out.println("saved invoice-" + car + ".txt");
+    }
+}
+</script>
+  <div class="dp-ba after">After: one reason to change per class</div>
+<script type="text/x-java" data-file="SrpAfter.java">
+public class SrpAfter {
+    public static void main(String[] args) {
+        Invoice inv = new Invoice("Swift", 700000, 50000);
+        System.out.println(inv.total());          // 650000
+        new InvoicePrinter().print(inv);          // INVOICE  Swift  Rs 650000
+        new InvoiceRepository().save(inv);        // saved invoice-Swift.txt
+    }
+}
+
+// each class has ONE reason to change
+record Invoice(String car, int price, int discount) {      // the business rule
+    int total() { return price - discount; }
+}
+
+class InvoicePrinter {                                     // the layout
+    void print(Invoice inv) {
+        System.out.println("INVOICE  " + inv.car() + "  Rs " + inv.total());
+    }
+}
+
+class InvoiceRepository {                                  // the storage
+    void save(Invoice inv) {
+        System.out.println("saved invoice-" + inv.car() + ".txt");
+    }
+}
+</script>
+</section>
+
+<!-- 9 -->
+<section id="pf-ocp">
+  <span class="num">09</span><h2>SOLID · O: Open / Closed</h2>
+  <div class="tldr"><b>In 30 seconds</b> Software should be <b>open for extension, closed for modification</b>: add a new behaviour by adding a class, not by editing code that already works and is tested.</div>
+  <p>A price calculator with an if / else chain over offer names must be edited for every new offer. Put each offer behind a <code>Discount</code> interface and a new offer becomes a new class; the calculator never changes again. You will recognise this shape in lesson 01: it is the <b>Strategy</b> pattern.</p>
+  <div class="viz dp" id="dp-ocp"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="dp-ba before">Before: every offer is a branch</div>
+<script type="text/x-java" data-file="OcpBefore.java">
+public class OcpBefore {
+    public static void main(String[] args) {
+        PriceCalculator calc = new PriceCalculator();
+        System.out.println(calc.finalPrice(700000, "none"));      // 700000
+        System.out.println(calc.finalPrice(700000, "festival"));  // 630000
+        System.out.println(calc.finalPrice(700000, "loyalty"));   // 680000
+    }
+}
+
+class PriceCalculator {
+    // every new offer means opening this method and adding a branch,
+    // then re-testing the branches that already worked
+    int finalPrice(int price, String offer) {
+        if (offer.equals("festival")) return price * 90 / 100;   // 10% off
+        else if (offer.equals("loyalty")) return price - 20000;  // flat 20,000 off
+        else return price;
+        // a "student" offer? edit here again
+    }
+}
+</script>
+  <div class="dp-ba after">After: every offer is a class</div>
+<script type="text/x-java" data-file="OcpAfter.java">
+import java.util.List;
+
+public class OcpAfter {
+    public static void main(String[] args) {
+        PriceCalculator calc = new PriceCalculator();
+        List<Discount> offers = List.of(new NoDiscount(), new FestivalDiscount(),
+                                        new LoyaltyDiscount(), new StudentDiscount());
+        for (Discount d : offers)
+            System.out.println(d.getClass().getSimpleName() + " " + calc.finalPrice(700000, d));
+        // NoDiscount 700000
+        // FestivalDiscount 630000
+        // LoyaltyDiscount 680000
+        // StudentDiscount 665000
+    }
+}
+
+interface Discount {
+    int apply(int price);
+}
+
+class NoDiscount implements Discount {
+    public int apply(int price) { return price; }
+}
+
+class FestivalDiscount implements Discount {
+    public int apply(int price) { return price * 90 / 100; }
+}
+
+class LoyaltyDiscount implements Discount {
+    public int apply(int price) { return price - 20000; }
+}
+
+class StudentDiscount implements Discount {     // NEW offer: a new class, nothing else edited
+    public int apply(int price) { return price * 95 / 100; }
+}
+
+class PriceCalculator {                          // closed for modification
+    int finalPrice(int price, Discount d) { return d.apply(price); }
+}
+</script>
+</section>
+
+<!-- 10 -->
+<section id="pf-lsp">
+  <span class="num">10</span><h2>SOLID · L: Liskov Substitution</h2>
+  <div class="tldr"><b>In 30 seconds</b> Wherever code expects a parent type, <b>any subtype must work</b> without surprises: same promises, no new exceptions, no "does nothing" overrides. Named after Barbara Liskov (1987).</div>
+  <p>"An electric car is a car" is true in English, but if <code>Car</code> promises <code>refuel()</code>, an electric car cannot keep that promise and has to throw. Code written for <code>Car</code> then crashes on an electric one. The fix is a promise every subtype can keep: <code>topUp()</code> ("afterwards the range is full").</p>
+  <div class="viz dp" id="dp-lsp"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="dp-ba before">Before: a subtype that breaks the promise</div>
+<script type="text/x-java" data-file="LspBefore.java">
+import java.util.List;
+
+public class LspBefore {
+    public static void main(String[] args) {
+        List<Car> fleet = List.of(new PetrolCar("Swift"), new ElectricCar("Nexon EV"));
+        for (Car c : fleet) {
+            c.refuel();      // the code was written for Car, so it trusts refuel()
+        }
+        // Swift: tank filled
+        // Exception in thread "main" java.lang.UnsupportedOperationException: Nexon EV has no fuel tank
+    }
+}
+
+class Car {
+    protected final String name;
+    Car(String name) { this.name = name; }
+    void refuel() { System.out.println(name + ": tank filled"); }
+}
+
+class PetrolCar extends Car {
+    PetrolCar(String name) { super(name); }
+}
+
+class ElectricCar extends Car {          // "an electric car IS A car", so extends... but
+    ElectricCar(String name) { super(name); }
+    @Override void refuel() {            // it breaks the parent's promise
+        throw new UnsupportedOperationException(name + " has no fuel tank");
+    }
+}
+</script>
+  <div class="dp-ba after">After: a promise every subtype keeps</div>
+<script type="text/x-java" data-file="LspAfter.java">
+import java.util.List;
+
+public class LspAfter {
+    public static void main(String[] args) {
+        List<Vehicle> fleet = List.of(new PetrolCar("Swift"), new ElectricCar("Nexon EV"));
+        for (Vehicle v : fleet) {
+            v.topUp();       // every subtype keeps the promise: "after topUp, range is full"
+        }
+        // Swift: tank filled
+        // Nexon EV: battery charged
+    }
+}
+
+abstract class Vehicle {
+    protected final String name;
+    Vehicle(String name) { this.name = name; }
+    abstract void topUp();               // the promise is about the RESULT, not about petrol
+}
+
+class PetrolCar extends Vehicle {
+    PetrolCar(String name) { super(name); }
+    void topUp() { System.out.println(name + ": tank filled"); }
+}
+
+class ElectricCar extends Vehicle {
+    ElectricCar(String name) { super(name); }
+    void topUp() { System.out.println(name + ": battery charged"); }
+}
+</script>
+  <details class="d"><summary>Go deeper: the square and the rectangle</summary><div class="b">The textbook example: <code>Square extends Rectangle</code> looks right, but a caller that sets width 5 and height 4 expects an area of 20, and a square that keeps its sides equal returns 16. Formally, a subtype may not strengthen preconditions, weaken postconditions, or break the parent's invariants. In the JDK, <code>List.of(…)</code> returns a <code>List</code> whose <code>add</code> throws: a deliberate, documented exception to the rule ("optional operations").</div></details>
+</section>
+
+<!-- 11 -->
+<section id="pf-isp">
+  <span class="num">11</span><h2>SOLID · I: Interface Segregation</h2>
+  <div class="tldr"><b>In 30 seconds</b> <b>No class should be forced to depend on methods it does not use.</b> Prefer several small, role-based interfaces over one fat one.</div>
+  <p>If one <code>ShowroomStaff</code> interface lists selling, repairing and test-driving, a mechanic must write a <code>sell</code> method that can only throw, and code holding a <code>ShowroomStaff</code> can call it. Split it into <code>Seller</code>, <code>Repairer</code> and <code>Driver</code>: each class takes only the roles it really has, and the wrong call no longer compiles.</p>
+  <div class="viz dp" id="dp-isp"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="dp-ba before">Before: one fat interface</div>
+<script type="text/x-java" data-file="IspBefore.java">
+public class IspBefore {
+    public static void main(String[] args) {
+        ShowroomStaff m = new Mechanic("Ravi");
+        m.repair("Swift");             // Ravi repairs Swift
+        m.sell("Nexon");               // the interface allows it, the class can't do it
+        // Exception in thread "main" java.lang.UnsupportedOperationException: Ravi does not sell cars
+    }
+}
+
+// one fat interface: everyone in the showroom must implement everything
+interface ShowroomStaff {
+    void sell(String car);
+    void repair(String car);
+    void testDrive(String car);
+}
+
+class Mechanic implements ShowroomStaff {
+    private final String name;
+    Mechanic(String name) { this.name = name; }
+    public void repair(String car)    { System.out.println(name + " repairs " + car); }
+    public void testDrive(String car) { System.out.println(name + " test-drives " + car); }
+    public void sell(String car) {     // forced to write a method it can't honour
+        throw new UnsupportedOperationException(name + " does not sell cars");
+    }
+}
+</script>
+  <div class="dp-ba after">After: one interface per role</div>
+<script type="text/x-java" data-file="IspAfter.java">
+public class IspAfter {
+    public static void main(String[] args) {
+        Repairer m = new Mechanic("Ravi");
+        m.repair("Swift");                 // Ravi repairs Swift
+        // m.sell("Nexon");                // compile error: Repairer has no sell(). The mistake can't be written.
+
+        SalesMechanic a = new SalesMechanic("Asha");
+        a.sell("Nexon");                   // Asha sells Nexon
+        a.repair("Nexon");                 // Asha repairs Nexon
+    }
+}
+
+// small interfaces, one role each
+interface Seller   { void sell(String car); }
+interface Repairer { void repair(String car); }
+interface Driver   { void testDrive(String car); }
+
+class Mechanic implements Repairer, Driver {
+    private final String name;
+    Mechanic(String name) { this.name = name; }
+    public void repair(String car)    { System.out.println(name + " repairs " + car); }
+    public void testDrive(String car) { System.out.println(name + " test-drives " + car); }
+}
+
+class SalesMechanic implements Seller, Repairer {   // a class may take several roles
+    private final String name;
+    SalesMechanic(String name) { this.name = name; }
+    public void sell(String car)   { System.out.println(name + " sells " + car); }
+    public void repair(String car) { System.out.println(name + " repairs " + car); }
+}
+</script>
+</section>
+
+<!-- 12 -->
+<section id="pf-dip">
+  <span class="num">12</span><h2>SOLID · D: Dependency Inversion</h2>
+  <div class="tldr"><b>In 30 seconds</b> High-level business rules should not depend on low-level details; <b>both should depend on an abstraction</b> (an interface). The detail is then handed in from outside, usually through the constructor.</div>
+  <p>An order service that writes <code>new SmsSender()</code> is welded to SMS: switching to email means editing the business rule, and a unit test sends real messages. Give it a <code>Notifier</code> through its constructor instead. The arrows now point from both sides <b>towards</b> the interface, which is the "inversion". Passing the detail in is called <b>dependency injection</b>; Spring's container does it for every bean.</p>
+  <div class="viz dp" id="dp-dip"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="dp-ba before">Before: the rule creates its detail</div>
+<script type="text/x-java" data-file="DipBefore.java">
+public class DipBefore {
+    public static void main(String[] args) {
+        new OrderService().place("Swift");
+        // order placed: Swift
+        // SMS to customer: your Swift is booked
+    }
+}
+
+class SmsSender {                                   // a low-level detail
+    void send(String text) { System.out.println("SMS to customer: " + text); }
+}
+
+class OrderService {                                // the high-level business rule...
+    private final SmsSender sms = new SmsSender();  // ...welded to one concrete detail
+
+    void place(String car) {
+        System.out.println("order placed: " + car);
+        sms.send("your " + car + " is booked");
+        // email instead? a fake for a unit test? you must edit OrderService
+    }
+}
+</script>
+  <div class="dp-ba after">After: the detail is injected</div>
+<script type="text/x-java" data-file="DipAfter.java">
+public class DipAfter {
+    public static void main(String[] args) {
+        new OrderService(new SmsNotifier()).place("Swift");
+        // order placed: Swift
+        // SMS: your Swift is booked
+
+        new OrderService(new EmailNotifier()).place("Nexon");
+        // order placed: Nexon
+        // Email: your Nexon is booked
+
+        FakeNotifier fake = new FakeNotifier();     // in a unit test: no SMS is really sent
+        new OrderService(fake).place("Creta");      // order placed: Creta
+        System.out.println(fake.last);              // your Creta is booked
+    }
+}
+
+interface Notifier {                                // the abstraction both sides depend on
+    void send(String text);
+}
+
+class SmsNotifier implements Notifier {
+    public void send(String text) { System.out.println("SMS: " + text); }
+}
+
+class EmailNotifier implements Notifier {
+    public void send(String text) { System.out.println("Email: " + text); }
+}
+
+class FakeNotifier implements Notifier {
+    String last;
+    public void send(String text) { last = text; }
+}
+
+class OrderService {
+    private final Notifier notifier;                // depends on the interface only
+
+    OrderService(Notifier notifier) {               // the detail is handed in (constructor injection)
+        this.notifier = notifier;
+    }
+
+    void place(String car) {
+        System.out.println("order placed: " + car);
+        notifier.send("your " + car + " is booked");
+    }
+}
+</script>
+  <details class="d"><summary>Go deeper: DIP vs DI vs IoC</summary><div class="b"><b>Dependency Inversion</b> is the principle: depend on abstractions. <b>Dependency Injection</b> is a technique that follows it: the dependency is passed in (constructor, setter or field) instead of created inside. <b>Inversion of Control</b> is the broader idea that a framework, not your code, decides when things are created and called; Spring's IoC container creates the beans and injects them. Constructor injection is preferred: the dependency can be <code>final</code>, it is never missing, and tests just call the constructor.</div></details>
+</section>
+
+<!-- 13 -->
+<section id="pf-lambda">
+  <span class="num">13</span><h2>Lambdas are tiny objects: functional interfaces, anonymous classes, method references</h2>
+  <div class="tldr"><b>In 30 seconds</b> A <b>functional interface</b> has exactly <b>one abstract method</b>; <code>@FunctionalInterface</code> asks the compiler to check that. You can implement one in four ways: a named class, an <b>anonymous class</b>, a <b>lambda</b> or a <b>method reference</b>. All four give you an object that implements the interface; only the amount of code changes.</div>
+  <p>Take one dealership rule, <code>PriceRule</code> with <code>long apply(long price)</code>. A <b>named class</b> is the version you know. An <b>anonymous class</b> is a class with no name, written and instantiated in one place. A <b>lambda</b> (<code>price -&gt; price * 90 / 100</code>) keeps only the parameter and the body: the compiler already knows the one method it must be. A <b>method reference</b> (<code>Lambdas::festival</code>) points at a method that already does the job. Step through the four versions: the diagram never changes.</p>
+  <div class="an-strip"><b>💡 Remember it</b><span>The customer needs <b>something that drives</b>. You can buy a named model off the shelf (named class), have a one-off built on the spot (anonymous class), hand over just a key and a route (lambda), or point to a car already in the showroom (method reference). It still drives the same.</span></div>
+  <div class="viz dp" id="dp-lambda"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p>The JDK ships ready-made functional interfaces, so you rarely write your own:</p>
+  <div class="tw"><table><tr><th>Interface</th><th>Method</th><th>Shape</th><th>Dealership example</th></tr>
+    <tr><td><code>Function&lt;T,R&gt;</code></td><td><code>apply</code></td><td>T in, R out</td><td>price → label "Rs 700000"</td></tr>
+    <tr><td><code>Supplier&lt;T&gt;</code></td><td><code>get</code></td><td>nothing in, T out</td><td>the next car to deliver</td></tr>
+    <tr><td><code>Consumer&lt;T&gt;</code></td><td><code>accept</code></td><td>T in, nothing out</td><td>send an SMS</td></tr>
+    <tr><td><code>Predicate&lt;T&gt;</code></td><td><code>test</code></td><td>T in, boolean out</td><td>is the price affordable?</td></tr>
+    <tr><td><code>Comparator&lt;T&gt;</code></td><td><code>compare</code></td><td>two T in, int out</td><td>sort cars by price</td></tr></table></div>
+<script type="text/x-java" data-file="Lambdas.java" data-hl="13-14,17-18">
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.Comparator;
+
+public class Lambdas {
+    public static void main(String[] args) {
+        long price = 700000;
+
+        PriceRule a = new FestivalRule();                    // 1. a named class
+        PriceRule b = new PriceRule() {                      // 2. an anonymous class: no name, written in place
+            @Override public long apply(long p) { return p * 90 / 100; }
+        };
+        PriceRule c = p -> p * 90 / 100;                     // 3. a lambda: just the parameter and the body
+        PriceRule d = Lambdas::festival;                     // 4. a method reference to an existing method
+
+        for (PriceRule r : List.of(a, b, c, d))
+            System.out.print(r.apply(price) + " ");          // 630000 630000 630000 630000
+        System.out.println();
+
+        PriceRule festivalThenLoyalty = c.then(p -> p - 20000);
+        System.out.println(festivalThenLoyalty.apply(price)); // 610000
+
+        // the JDK's ready-made functional interfaces (java.util.function, java.util)
+        Function<Long, String> label = p -> "Rs " + p;              // takes one value, returns another
+        Supplier<String> nextCar = () -> "Swift";                    // takes nothing, returns a value
+        Consumer<String> sms = text -> System.out.println("SMS: " + text);   // takes a value, returns nothing
+        Predicate<Long> affordable = p -> p <= 800000;               // takes a value, returns true/false
+
+        System.out.println(label.apply(price));                      // Rs 700000
+        sms.accept(nextCar.get() + " is ready");                     // SMS: Swift is ready
+        System.out.println(affordable.test(1200000L));               // false
+
+        List<Car> cars = new ArrayList<>(List.of(new Car("Nexon", 1200000), new Car("Swift", 700000), new Car("Creta", 1100000)));
+        cars.sort(Comparator.comparingLong(Car::price));             // Comparator built from a method reference
+        System.out.println(cars.get(0).name());                      // Swift
+
+        new Showroom().whoIsThis();
+        // lambda this: Showroom
+        // anonymous this: anonymous class
+    }
+
+    static long festival(long p) { return p * 90 / 100; }
+}
+
+@FunctionalInterface                                   // exactly ONE abstract method; the compiler checks it
+interface PriceRule {
+    long apply(long price);
+
+    default PriceRule then(PriceRule next) {           // default methods don't count
+        return p -> next.apply(apply(p));
+    }
+}
+
+class FestivalRule implements PriceRule {
+    @Override public long apply(long price) { return price * 90 / 100; }
+}
+
+record Car(String name, long price) {}
+
+class Showroom {
+    String who() { return "Showroom"; }
+
+    void whoIsThis() {
+        Supplier<String> lambda = () -> this.who();               // a lambda's this = the enclosing object
+        Supplier<String> anon = new Supplier<String>() {
+            String who() { return "anonymous class"; }
+            @Override public String get() { return this.who(); }   // an anonymous class's this = itself
+        };
+        System.out.println("lambda this: " + lambda.get());
+        System.out.println("anonymous this: " + anon.get());
+    }
+}
+</script>
+  <p><b>Why this matters for patterns:</b> when the role is a single method, the pattern's classes shrink to lambdas. A Strategy is often just a <code>PriceRule</code> lambda, a Command is a <code>Runnable</code>, an Observer is a <code>Consumer</code> listener. The pattern is still there; the boilerplate is gone.</p>
+  <details class="d"><summary>Go deeper: anonymous class vs lambda</summary><div class="b">Inside an anonymous class, <code>this</code> is the anonymous object; inside a lambda, <code>this</code> is the enclosing object (the program prints both). An anonymous class can have fields, several methods and implement an interface with many abstract methods or extend a class; a lambda can only implement a functional interface. Both can read local variables only if they are <b>effectively final</b> (never reassigned). The compiler writes a separate <code>Outer$1.class</code> file for each anonymous class; a lambda compiles to an <code>invokedynamic</code> call and its class is generated at run time. Use a lambda when the behaviour is short; use a named class when it has state, a name worth reading, or more than one method.</div></details>
+</section>
+
+<!-- 14 -->
+<section id="pf-refactor">
+  <span class="num">14</span><h2>Your first refactor: when a pattern starts to pay off</h2>
+  <div class="tldr"><b>In 30 seconds</b> Patterns are not added on day one. You write the simple version, feel the pain when the same if / else grows again, and <b>then</b> refactor. <b>Coupling</b> is how much one class knows about another: <b>tight</b> = it names or creates concrete classes inside; <b>loose</b> = it knows only an interface and is handed the object from outside.</div>
+  <p><b>Exercise.</b> This checkout already takes card, UPI and cash, and the business wants EMI next month and a wallet after that. Run it, then before you open the hint write down: what must you edit for each new payment type, and what could break while you do?</p>
+  <div class="an-strip"><b>💡 Remember it</b><span>A tightly coupled showroom has the cashier <b>hard-wired to one card machine</b>: a new payment method means rewiring the counter. A loosely coupled one has a <b>standard socket</b>: any machine that fits the socket plugs in, and the counter is never opened.</span></div>
+  <div class="dp-ba before">Before: one method, every payment type</div>
+<script type="text/x-java" data-file="RefactorBefore.java" data-hl="13,16,18">
+public class RefactorBefore {
+    public static void main(String[] args) {
+        Checkout checkout = new Checkout();
+        checkout.pay("card", 700000);     // card: Rs 700000 + 1% fee = Rs 707000
+        checkout.pay("upi", 700000);      // UPI: Rs 700000, no fee
+        checkout.pay("cash", 700000);     // cash: Rs 700000, receipt printed
+        checkout.pay("wallet", 700000);   // unknown payment type: wallet
+    }
+}
+
+class Checkout {
+    void pay(String type, long amount) {
+        if (type.equals("card")) {
+            long fee = amount / 100;
+            System.out.println("card: Rs " + amount + " + 1% fee = Rs " + (amount + fee));
+        } else if (type.equals("upi")) {
+            System.out.println("UPI: Rs " + amount + ", no fee");
+        } else if (type.equals("cash")) {
+            System.out.println("cash: Rs " + amount + ", receipt printed");
+        } else {
+            System.out.println("unknown payment type: " + type);
+        }
+        // EMI next month, a wallet after that: open this method again each time
+    }
+}
+</script>
+  <details class="d"><summary>Hint: find the smell</summary><div class="b">Look for <b>an if / else (or switch) on a type code that keeps growing</b>. Every new payment type opens <code>Checkout.pay</code>, so tested branches are edited again (it breaks <b>Open / Closed</b>, section 9). Card fees, UPI rules and cash receipts all live in one method (several reasons to change, <b>S</b>, section 8). A typo in the string <code>"wallet"</code> is only found at run time. And you cannot test the checkout with a fake payment: it is <b>tightly coupled</b> to every concrete way of paying.</div></details>
+  <details class="d"><summary>Solution: one interface, one class per type</summary><div class="b">Give the varying part a name: an interface <code>Payment</code> with <code>String pay(long amount)</code>. Move each branch into its own class (<code>CardPayment</code>, <code>UpiPayment</code>, <code>CashPayment</code>). Give <code>Checkout</code> a <code>Payment</code> field set through its constructor, and let it call <code>payment.pay(amount)</code> without knowing which one it has. <code>main</code> chooses the class (section 12: inject the detail). A new type is a new class, or just a lambda, since <code>Payment</code> has one method (section 13). Compare the two views of the lab, then run the after program.</div></details>
+  <div class="viz dp" id="dp-refactor"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="dp-ba after">After: the checkout depends on an interface</div>
+<script type="text/x-java" data-file="RefactorAfter.java" data-hl="9,14,31,33">
+public class RefactorAfter {
+    public static void main(String[] args) {
+        long price = 700000;
+        new Checkout(new CardPayment()).pay(price);    // card: Rs 700000 + 1% fee = Rs 707000
+        new Checkout(new UpiPayment()).pay(price);     // UPI: Rs 700000, no fee
+        new Checkout(new CashPayment()).pay(price);    // cash: Rs 700000, receipt printed
+
+        // a new type next month: one new class (or one lambda), Checkout is not opened
+        new Checkout(amount -> "wallet: Rs " + amount + ", 2% cashback").pay(price);
+        // wallet: Rs 700000, 2% cashback
+    }
+}
+
+interface Payment {                                    // the role every payment type plays
+    String pay(long amount);
+}
+
+class CardPayment implements Payment {
+    public String pay(long amount) { return "card: Rs " + amount + " + 1% fee = Rs " + (amount + amount / 100); }
+}
+
+class UpiPayment implements Payment {
+    public String pay(long amount) { return "UPI: Rs " + amount + ", no fee"; }
+}
+
+class CashPayment implements Payment {
+    public String pay(long amount) { return "cash: Rs " + amount + ", receipt printed"; }
+}
+
+class Checkout {
+    private final Payment payment;                     // depends on the interface only (loose coupling)
+
+    Checkout(Payment payment) { this.payment = payment; }   // handed in from outside
+
+    void pay(long amount) { System.out.println(payment.pay(amount)); }
+}
+</script>
+  <p><b>You just discovered the Strategy pattern</b>: a family of interchangeable behaviours behind one interface, chosen from outside. Lesson 01 (Strategy) starts exactly here.</p>
+  <details class="d"><summary>Go deeper: when not to refactor yet</summary><div class="b">Two branches that never change do not need a pattern; the if / else is easier to read. A common rule of thumb is "rule of three": refactor when the third variation arrives, or as soon as you need to test the client with a fake. Refactor in small, safe steps: extract the interface, move one branch at a time, run the program after each step, and only then delete the old method.</div></details>
+</section>
+
+<!-- 15 -->
+<section id="pf-qa">
+  <span class="num">15</span><h2>13 interview questions</h2>
+  <p class="small muted">Answer out loud first, then open the card.</p>
+  <details class="d"><summary><span class="q">01</span>What is a design pattern? Why use one?</summary><div class="b">A named, reusable solution to a design problem that keeps recurring, described as roles for classes and objects rather than finished code. It gives a team a shared vocabulary ("use a Strategy"), reuses designs that are known to work, and makes code easier to change in the direction the pattern plans for. The cost is extra classes and indirection, so use one only when the problem is really there.</div></details>
+  <details class="d"><summary><span class="q">02</span>What are the three categories of GoF patterns? Give two of each.</summary><div class="b"><b>Creational</b> (how objects are created): Singleton, Factory Method, Builder, Abstract Factory, Prototype. <b>Structural</b> (how objects are composed): Adapter, Decorator, Proxy, Facade, Composite, Bridge, Flyweight. <b>Behavioral</b> (how objects interact and share responsibility): Strategy, Observer, Command, State, Template Method, Chain of Responsibility, Iterator, Mediator, Memento, Visitor, Interpreter.</div></details>
+  <details class="d"><summary><span class="q">03</span>Interface vs abstract class: when do you choose which?</summary><div class="b">An interface defines a capability that unrelated classes can share; a class can implement many; it has no instance state (only constants) and no constructor, though since Java 8 it can have default and static methods. An abstract class is a partial base for closely related classes that share state and code; a class can extend only one. Choose an interface for the type you program against, and add an abstract class underneath when several implementations share real code.</div></details>
+  <details class="d"><summary><span class="q">04</span>What does "program to an interface, not an implementation" mean?</summary><div class="b">Declare fields, parameters and return types with the interface (<code>List</code>, <code>PaymentGateway</code>) and name the concrete class only where the object is created. The using code then works with any implementation, including future ones and test fakes, and the choice can change in one place.</div></details>
+  <details class="d"><summary><span class="q">05</span>Composition vs inheritance: why "favour composition"?</summary><div class="b">Inheritance is fixed at compile time, exposes the parent's internals to the child (fragile base class), and multiplies classes when features combine (bodies × engines). Composition keeps each feature in its own class behind an interface, lets the owner delegate to it, and lets you swap parts at run time. Use inheritance only for a true, substitutable is-a relationship.</div></details>
+  <details class="d"><summary><span class="q">06</span>What is SOLID? One line for each letter.</summary><div class="b"><b>S</b>ingle responsibility: one reason to change. <b>O</b>pen/closed: extend by adding code, not by editing it. <b>L</b>iskov substitution: subtypes must be usable wherever the parent is. <b>I</b>nterface segregation: no client depends on methods it does not use. <b>D</b>ependency inversion: high and low level both depend on abstractions.</div></details>
+  <details class="d"><summary><span class="q">07</span>Does Single Responsibility mean a class should have one method?</summary><div class="b">No. It means one <b>reason to change</b>: the class answers to one actor or one concern. An <code>Invoice</code> record with several methods about the invoice's own rules is fine; printing and storage are different concerns and belong elsewhere.</div></details>
+  <details class="d"><summary><span class="q">08</span>Give an example of a Liskov violation, and how you would spot one.</summary><div class="b"><code>ElectricCar extends Car</code> where <code>refuel()</code> throws <code>UnsupportedOperationException</code>, or the classic <code>Square extends Rectangle</code> that breaks <code>setWidth</code>. Signs: overrides that throw or do nothing, callers that check <code>instanceof</code> before calling, and subclasses that need stricter inputs than the parent. Fix it by changing the abstraction so every subtype can keep its promise.</div></details>
+  <details class="d"><summary><span class="q">09</span>Dependency Inversion vs Dependency Injection vs IoC?</summary><div class="b">DIP is the principle (depend on abstractions, not concretions). DI is a technique that applies it (pass the dependency in through the constructor, a setter or a field). IoC is the general idea that a framework controls object creation and the flow of calls; Spring's IoC container creates beans and performs the injection.</div></details>
+  <details class="d"><summary><span class="q">10</span>Can you overuse design patterns?</summary><div class="b">Yes. A pattern adds interfaces, classes and indirection; applied to a problem you do not have, it makes simple code harder to read (often called "patternitis"). Start simple, and introduce a pattern when the second or third variation actually appears, or when a SOLID principle is clearly being broken. Interviewers like to hear you say when <i>not</i> to use one.</div></details>
+  <details class="d"><summary><span class="q">11</span>Overloading vs overriding: which is decided when?</summary><div class="b">An <b>override</b> has the same name and parameter types as a parent or interface method; the JVM picks it at <b>run time</b> from the object's class (dynamic dispatch). An <b>overload</b> has the same name but different parameter types; the compiler picks it at <b>compile time</b> from the declared types of the arguments. So with <code>Car car = new ElectricCar()</code>, <code>car.describe()</code> runs ElectricCar's override, but <code>welcome(car)</code> calls the <code>welcome(Car)</code> overload. Static, private and final methods are never overridden.</div></details>
+  <details class="d"><summary><span class="q">12</span>What is a functional interface?</summary><div class="b">An interface with exactly <b>one abstract method</b> (default and static methods don't count, nor do public <code>Object</code> methods such as <code>equals</code>). A lambda or method reference can implement it, because the compiler knows which method the code is for. <code>@FunctionalInterface</code> is optional but makes the compiler reject a second abstract method. JDK examples: <code>Runnable</code>, <code>Comparator</code>, <code>Function</code>, <code>Supplier</code>, <code>Consumer</code>, <code>Predicate</code>.</div></details>
+  <details class="d"><summary><span class="q">13</span>Anonymous class vs lambda: what is the difference?</summary><div class="b">Both create an object that implements an interface in place. In an anonymous class <code>this</code> is the anonymous object itself; in a lambda <code>this</code> is the enclosing object. An anonymous class can hold fields, have several methods, extend a class or implement a multi-method interface; a lambda only implements a functional interface and has no state of its own. Each anonymous class is a separate <code>.class</code> file; lambdas are linked at run time through <code>invokedynamic</code>. Both may capture only effectively final local variables.</div></details>
+</section>
+
+<!-- 16 -->
+<section id="pf-review">
+  <span class="num">16</span><h2>Review</h2>
+  <h3>9 takeaways</h3><ul class="takeaways"><li>A design pattern is a named solution to a recurring design problem: an arrangement of classes you write yourself, not a library.</li><li>Three GoF families: creational (creating), structural (composing), behavioral (interacting). This course teaches them in five moves: Swap, Create, Wrap, Talk, Compose; ★ ◆ ○ mark how often interviews ask.</li><li>Interface = a promise (many per class, no state); abstract class = a half-built base (one per class, state and code).</li><li>Four arrows read every diagram: implements, extends, has-a (diamond at the owner), calls.</li><li>Program to an interface and prefer composition: the field typed as an interface is the heart of most patterns.</li><li>Overrides are chosen at run time by the object (dynamic dispatch); overloads at compile time by the declared types.</li><li>SOLID: one reason to change · extend, don't modify · subtypes keep promises · small interfaces · depend on abstractions.</li><li>A functional interface has one abstract method; a named class, an anonymous class, a lambda and a method reference all implement it.</li><li>Refactor to a pattern when the pain is real: a growing if / else on a type code becomes an interface plus one class per type (Strategy).</li></ul>
+  <h3>Check yourself</h3>
+  <p class="small muted">Answer before you look. Each answer locks and explains itself; your answers are saved in this browser.</p>
+  <div class="quiz" data-quiz="p00"><p class="small muted">This quiz needs JavaScript.</p></div>
+  <h3>Recall prompts</h3>
+  <p class="small muted">Come back after 1, 3 and 7 days and answer out loud before opening each one.</p>
+  <div id="rcp"></div>
+  <h3>Your feedback</h3>
+  <div id="rates"></div>
+  <textarea id="fbt" placeholder="What should change, and which pattern lesson should come next?"></textarea>
+  <p><button class="btn pri" id="fbc">Copy feedback</button> <span id="fbm" class="small" style="color:var(--good)"></span></p>
+</section>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>Design Patterns for Interviews · every program compiled and run on JDK 25</footer>
+</div>
+
+<script src="../assets/data/patterns-index.js"></script>
+<script src="../assets/data/quiz-data.js"></script>
+<script src="../assets/js/course.js"></script>
+<script src="../assets/js/effects.js"></script>
+<script src="../assets/labs/labs-patterns.js"></script>
+<script src="../assets/labs/labs-patterns-p00.js"></script>
+<script src="../assets/js/run-java.js"></script>
+</body>
+</html>

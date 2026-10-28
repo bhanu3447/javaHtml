@@ -1,0 +1,512 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>P01: Strategy · Design Patterns</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../assets/css/course.css">
+</head>
+<body data-page="p01" data-course="patterns" data-name="P01 · Strategy" data-short="P01">
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><i>P</i><span>Design Patterns</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top" class="ph">
+  <div class="tag">PATTERNS 01 · MOVE 1 · SWAP</div>
+  <h1>Strategy: <span class="grad">swap the rule, keep the checkout</span></h1>
+  <p class="lead">The dealership's checkout keeps growing an if / else for every new discount. Strategy puts each discount rule in its own small class behind one interface, so the checkout just asks "the current rule" to do the maths. You will feel the pain, refactor it step by step, watch it run, and then choose it (or not) like a senior engineer.</p>
+  <div class="pager"></div>
+</header>
+
+<div class="band" id="p01">
+  <div class="tag">PATTERNS 01</div>
+  <h2>Strategy: interchangeable behaviour behind one interface</h2>
+  <p>Seven sections, four levels: a beginner can stop after section 04; sections 05 to 07 add the interview depth.</p>
+</div>
+
+<!-- 1 -->
+<section id="stg-see">
+  <span class="num">01</span><h2>See it: the problem Strategy solves</h2>
+  <span class="dp-lv l1">Level 1 · See it</span>
+  <div class="dp-pat" data-p="Strategy"></div>
+  <div class="tldr"><b>In 30 seconds</b> When one job can be done in several interchangeable ways (several discount rules), put <b>each way in its own class</b> behind <b>one interface</b>. The object that needs the job done keeps <b>one</b> of them and hands the work to it. Changing the behaviour means handing it a different object, not editing its code.</div>
+  <p><b>The dealership problem.</b> At checkout the price depends on an offer: none, festival 10% off, Rs 20000 off for loyal customers, 15% for corporate buyers. Marketing invents a new offer every few weeks. Each one lands as another branch inside <code>Checkout</code>.</p>
+  <p>Four words you will see on every pattern page. The <b>client</b> is the code that uses an object (here <code>main</code>). The <b>context</b> is the object whose behaviour should vary (<code>Checkout</code>). A <b>strategy</b> is one interchangeable behaviour, an object that does the varying part. <b>Delegation</b> means the context passes that part of the work to the strategy instead of doing it itself.</p>
+  <div class="an-strip"><b>💡 Remember it</b><span>A car's <b>drive modes</b>. The driver turns a knob to Eco, Sport or Snow; the car is the same car, but throttle and gears now follow a different rule. The car does not contain an if / else for every mode you might invent: each mode is a module that plugs into the same slot.</span></div>
+  <div class="tw"><table><tr><th>Drive modes</th><th>Role</th><th>In our code</th></tr>
+    <tr><td>the driver turning the knob</td><td>Client</td><td><code>main()</code></td></tr>
+    <tr><td>the car, which drives using the current mode</td><td>Context</td><td><code>Checkout</code></td></tr>
+    <tr><td>"a drive mode" (the slot every mode fits)</td><td>Strategy</td><td><code>interface Discount</code></td></tr>
+    <tr><td>Eco, Sport, Snow</td><td>ConcreteStrategy</td><td><code>FestivalDiscount</code>, <code>LoyaltyDiscount</code>…</td></tr>
+    <tr><td>turning the knob while driving</td><td>swap at run time</td><td><code>checkout.setDiscount(…)</code></td></tr></table></div>
+  <p>First, see what happens <b>without</b> the pattern. Step through the lab: each step is a new request from marketing.</p>
+  <div class="viz dp" id="dp-stgpain"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p>This is the same smell you met in P00: a growing if / else on a type code breaks <a href="00-foundations.html#pf-ocp">Open / Closed</a>, and you already refactored a payment version of it in <a href="00-foundations.html#pf-refactor">your first refactor</a>. This page gives that shape its name.</p>
+</section>
+
+<!-- 2 -->
+<section id="stg-build">
+  <span class="num">02</span><h2>Build it: from the if / else ladder to Strategy</h2>
+  <span class="dp-lv l2">Level 2 · Build it</span>
+  <div class="tldr"><b>In 30 seconds</b> Find what varies (the rule), give it an interface, move each branch into its own class, give the context a field of the interface type, and let the client choose. Run the program after every step: the output must not change.</div>
+  <div class="dp-ba before">Before: every offer is a branch, twice</div>
+<script type="text/x-java" data-file="StrategyBefore.java" data-hl="16-18,23-25">
+public class StrategyBefore {
+    public static void main(String[] args) {
+        long price = 700000;
+        Checkout checkout = new Checkout();
+        checkout.print(price, "festival");    // Festival 10%: Rs 630000
+        checkout.print(price, "loyalty");     // Loyalty Rs 20000: Rs 680000
+        checkout.print(price, "corporate");   // Corporate 15%: Rs 595000
+        checkout.print(price, "none");        // No discount: Rs 700000
+        checkout.print(price, "festive");     // No discount: Rs 700000  (typo: silently no discount)
+    }
+}
+
+class Checkout {
+    // every new offer opens BOTH ladders below, and every tested branch is re-tested
+    long total(long price, String offer) {
+        if (offer.equals("festival")) return price * 90 / 100;
+        else if (offer.equals("loyalty")) return Math.max(0, price - 20000);
+        else if (offer.equals("corporate")) return price * 85 / 100;
+        else return price;
+    }
+
+    String label(String offer) {
+        if (offer.equals("festival")) return "Festival 10%";
+        else if (offer.equals("loyalty")) return "Loyalty Rs 20000";
+        else if (offer.equals("corporate")) return "Corporate 15%";
+        else return "No discount";
+    }
+
+    void print(long price, String offer) {
+        System.out.println(label(offer) + ": Rs " + total(price, offer));
+    }
+}
+</script>
+  <p><b>What breaks.</b> Every new offer edits two methods of a class that already works, so tested branches are re-tested each time. The two ladders must stay in step by hand. A typo such as <code>"festive"</code> silently means no discount. And you cannot test the loyalty rule alone: it only exists inside <code>Checkout</code>.</p>
+  <div class="viz dp" id="dp-stgref"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="dp-ba after">After: every offer is a class, Checkout delegates</div>
+<script type="text/x-java" data-file="StrategyAfter.java" data-hl="4,6,15-18,41,47">
+public class StrategyAfter {
+    public static void main(String[] args) {
+        long price = 700000;
+        Checkout checkout = new Checkout(new FestivalDiscount());
+        checkout.print(price);                          // Festival 10%: Rs 630000
+        checkout.setDiscount(new LoyaltyDiscount());    // swap the rule at run time
+        checkout.print(price);                          // Loyalty Rs 20000: Rs 680000
+        checkout.setDiscount(new CorporateDiscount());
+        checkout.print(price);                          // Corporate 15%: Rs 595000
+        checkout.setDiscount(new NoDiscount());
+        checkout.print(price);                          // No discount: Rs 700000
+    }
+}
+
+interface Discount {                                    // Strategy: the role every rule plays
+    long apply(long price);
+    String label();
+}
+
+class NoDiscount implements Discount {                  // ConcreteStrategy
+    public long apply(long price) { return price; }
+    public String label() { return "No discount"; }
+}
+
+class FestivalDiscount implements Discount {            // ConcreteStrategy
+    public long apply(long price) { return price * 90 / 100; }
+    public String label() { return "Festival 10%"; }
+}
+
+class LoyaltyDiscount implements Discount {             // ConcreteStrategy
+    public long apply(long price) { return Math.max(0, price - 20000); }
+    public String label() { return "Loyalty Rs 20000"; }
+}
+
+class CorporateDiscount implements Discount {           // ConcreteStrategy
+    public long apply(long price) { return price * 85 / 100; }
+    public String label() { return "Corporate 15%"; }
+}
+
+class Checkout {                                        // Context
+    private Discount discount;                          // knows only the interface
+
+    Checkout(Discount discount) { this.discount = discount; }
+
+    void setDiscount(Discount discount) { this.discount = discount; }
+
+    long total(long price) { return discount.apply(price); }   // delegation
+
+    void print(long price) {
+        System.out.println(discount.label() + ": Rs " + total(price));
+    }
+}
+</script>
+  <p>Same four lines of output, but <code>Checkout</code> has no offer names in it any more. The typo problem also moved: <code>new FestiveDiscount()</code> does not compile, so the mistake is caught before the program runs.</p>
+  <details class="d"><summary>Go deeper: why a setter and a constructor?</summary><div class="b">The constructor guarantees <code>Checkout</code> always has <i>some</i> rule (no null checks later). The setter allows a swap on the same object, which is what the GoF book shows. Many real systems skip the setter and create a new context per request instead, which keeps the context immutable and thread-safe: a strategy chosen once per checkout is enough.</div></details>
+</section>
+
+<!-- 3 -->
+<section id="stg-run">
+  <span class="num">03</span><h2>Watch it run: who calls whom</h2>
+  <span class="dp-lv l2">Level 2 · Watch it run</span>
+  <div class="tldr"><b>In 30 seconds</b> At run time there is one context object and one strategy object at a time. Every call that varies goes context → strategy through the interface, and Java's dynamic dispatch picks the method of whichever object is plugged in.</div>
+  <p>This is a <b>sequence diagram</b>: each column is an object, time runs downwards, a solid arrow is a call and a dashed arrow is a return. It replays the first lines of <code>StrategyAfter.main</code>.</p>
+  <div class="viz dp" id="dp-stgrun"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p><b>Your turn.</b> Pick a rule and a cart total. The diagram shows which ConcreteStrategy is plugged into <code>Checkout</code>, and the output is exactly what the Java code above prints for that choice. "Swap" calls <code>setDiscount</code> on the same checkout.</p>
+  <div class="dp-play" id="dpp-stgplay"><p class="small muted" style="padding:16px">This playground needs JavaScript.</p></div>
+  <p class="small muted">Try the loyalty rule on seat covers (Rs 15000): <code>Math.max(0, price - 20000)</code> stops a flat discount from making the price negative. That guard lives in one class, not in a branch you might forget to copy.</p>
+</section>
+
+<!-- 4 -->
+<section id="stg-practise">
+  <span class="num">04</span><h2>Practise: add a rule, refactor a ladder</h2>
+  <span class="dp-lv l2">Level 2 · Practise</span>
+  <div class="dp-ex" data-t="Beginner exercise">
+    <p>Students now get <b>5% off</b>. Add a <code>StudentDiscount</code> to the After program (section 02) and print a student checkout of Rs 700000. Rule: you may not edit <code>Checkout</code> or any existing discount class. Expected output line: <code>Student 5%: Rs 665000</code>.</p>
+    <details class="d"><summary>Hint</summary><div class="b">A new rule is a new class that <code>implements Discount</code>, with <code>apply</code> and <code>label</code>. Then the client hands it in with <code>setDiscount</code> (or the constructor). 5% off means <code>price * 95 / 100</code>.</div></details>
+    <details class="d"><summary>Solution</summary><div class="b"><p>Only the new class and two lines in <code>main</code> were written; the rest is unchanged (shortened here to the parts used). Ran on JDK 25:</p>
+<pre style="overflow-x:auto;margin:10px 0;padding:12px 14px;border-radius:12px;background:var(--code-bg);color:var(--code-text);font:12.5px/1.6 'JetBrains Mono',monospace"><code>public class StudentOffer {
+    public static void main(String[] args) {
+        Checkout checkout = new Checkout(new FestivalDiscount());
+        checkout.print(700000);                         // Festival 10%: Rs 630000
+        checkout.setDiscount(new StudentDiscount());    // the new rule plugs in
+        checkout.print(700000);                         // Student 5%: Rs 665000
+    }
+}
+
+interface Discount {
+    long apply(long price);
+    String label();
+}
+
+class FestivalDiscount implements Discount {
+    public long apply(long price) { return price * 90 / 100; }
+    public String label() { return "Festival 10%"; }
+}
+
+class StudentDiscount implements Discount {             // NEW: one new class, nothing else edited
+    public long apply(long price) { return price * 95 / 100; }
+    public String label() { return "Student 5%"; }
+}
+
+class Checkout {                                        // unchanged
+    private Discount discount;
+    Checkout(Discount discount) { this.discount = discount; }
+    void setDiscount(Discount discount) { this.discount = discount; }
+    long total(long price) { return discount.apply(price); }
+    void print(long price) { System.out.println(discount.label() + ": Rs " + total(price)); }
+}</code></pre></div></details>
+  </div>
+  <div class="dp-ex" data-t="Intermediate exercise">
+    <p>The delivery desk charges by delivery mode: showroom pickup (free), home delivery (Rs 50 per km) and flatbed truck (Rs 2000 + Rs 80 per km). Refactor <code>DeliveryDesk</code> to Strategy: one interface, the modes chosen by name from a <code>Map</code>, and a clear error for an unknown mode. Keep the same output.</p>
+<script type="text/x-java" data-file="DeliveryBefore.java" data-hl="12-15">
+public class DeliveryBefore {
+    public static void main(String[] args) {
+        DeliveryDesk desk = new DeliveryDesk();
+        System.out.println(desk.charge("pickup", 12));    // 0
+        System.out.println(desk.charge("home", 12));      // 600
+        System.out.println(desk.charge("flatbed", 12));   // 2960
+    }
+}
+
+class DeliveryDesk {
+    long charge(String mode, int km) {
+        if (mode.equals("pickup")) return 0;                    // customer collects at the showroom
+        else if (mode.equals("home")) return 50L * km;          // driven to the door, Rs 50 per km
+        else if (mode.equals("flatbed")) return 2000 + 80L * km; // on a truck, never driven
+        else throw new IllegalArgumentException("unknown mode: " + mode);
+    }
+}
+</script>
+    <details class="d"><summary>Hint</summary><div class="b">The varying part is "how to charge for <code>km</code>": <code>long charge(int km)</code>, one method, so a <b>functional interface</b> fits and the simple modes can be lambdas. The flatbed has two numbers (base and per-km): a small <code>record</code> that implements the interface keeps them named. The desk gets a <code>Map&lt;String, DeliveryCharge&gt;</code> through its constructor and looks the mode up instead of branching.</div></details>
+    <details class="d"><summary>Solution</summary><div class="b"><p>The desk is the context, <code>DeliveryCharge</code> the strategy, the map a registry the client fills. A new mode is one more map entry. Ran on JDK 25:</p>
+<pre style="overflow-x:auto;margin:10px 0;padding:12px 14px;border-radius:12px;background:var(--code-bg);color:var(--code-text);font:12.5px/1.6 'JetBrains Mono',monospace"><code>import java.util.Map;
+
+public class DeliveryAfter {
+    public static void main(String[] args) {
+        DeliveryDesk desk = new DeliveryDesk(Map.of(
+            "pickup", km -&gt; 0,
+            "home", km -&gt; 50L * km,
+            "flatbed", new Flatbed(2000, 80)));
+        System.out.println(desk.charge("pickup", 12));    // 0
+        System.out.println(desk.charge("home", 12));      // 600
+        System.out.println(desk.charge("flatbed", 12));   // 2960
+        try {
+            desk.charge("drone", 12);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());           // unknown mode: drone
+        }
+    }
+}
+
+@FunctionalInterface
+interface DeliveryCharge {                                // the Strategy
+    long charge(int km);
+}
+
+record Flatbed(long base, long perKm) implements DeliveryCharge {   // a strategy with data
+    public long charge(int km) { return base + perKm * km; }
+}
+
+class DeliveryDesk {                                      // the Context
+    private final Map&lt;String, DeliveryCharge&gt; modes;
+
+    DeliveryDesk(Map&lt;String, DeliveryCharge&gt; modes) { this.modes = modes; }
+
+    long charge(String mode, int km) {
+        DeliveryCharge c = modes.get(mode);
+        if (c == null) throw new IllegalArgumentException("unknown mode: " + mode);
+        return c.charge(km);
+    }
+}</code></pre></div></details>
+  </div>
+  <div class="dp-xb" data-k="p01"><p>Explain Strategy to a new teammate using the checkout: what is the context, what is a strategy, who chooses it, and what changes in the code when a new offer arrives?</p>
+    <div class="dp-xm"><b>Model answer.</b> <code>Checkout</code> is the context: it needs a discount applied but should not know the rules. <code>Discount</code> is the strategy interface (<code>apply</code>, <code>label</code>), and each offer (<code>FestivalDiscount</code>, <code>LoyaltyDiscount</code>…) is a concrete strategy. Checkout keeps one <code>Discount</code> in a field and delegates to it. The client (<code>main</code>, or Spring in a real app) chooses which one to hand in, and can swap it with <code>setDiscount</code>. A new offer is one new class; Checkout is not edited (Open / Closed), and each rule can be tested alone.</div></div>
+</section>
+
+<!-- 5 -->
+<section id="stg-choose">
+  <span class="num">05</span><h2>Choose it: roles, look-alikes and trade-offs</h2>
+  <span class="dp-lv l3">Level 3 · Choose it</span>
+  <div class="tldr"><b>In 30 seconds</b> Use Strategy when the same job has several interchangeable versions that change or grow, and the client (not the context) should pick one. Do not use it for two branches that never change: an if / else is clearer.</div>
+  <div class="viz dp" id="dp-stguml"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <h3>Use it when</h3>
+  <ul><li>One job has <b>several versions</b> (pricing, tax, sorting, payment fees) and new ones keep arriving.</li>
+    <li>You want to <b>choose or swap</b> the version at run time, from configuration or user input.</li>
+    <li>You want to <b>test each rule alone</b>, or test the context with a fake rule.</li></ul>
+  <h3>Do not use it when</h3>
+  <ul><li>There are two or three cases that <b>have not changed in a year</b>: keep the if / else or a <code>switch</code>.</li>
+    <li>The versions differ only by a <b>number</b> (10%, 15%): one class with a <code>percent</code> field (or a record) is enough.</li>
+    <li>The behaviour should change <b>by itself</b> as the object's status changes: that is State (P03), not Strategy.</li></ul>
+  <div class="tw"><table><tr><th></th><th>Strategy</th><th>State</th><th>Template Method</th><th>plain if / else</th></tr>
+    <tr><td>Who picks the behaviour</td><td>the client, from outside</td><td>the object itself, as its state changes</td><td>the subclass, at compile time</td><td>the method, by testing a value</td></tr>
+    <tr><td>When it changes</td><td>when the client swaps it</td><td>on every transition (booked → paid)</td><td>never at run time</td><td>each call</td></tr>
+    <tr><td>Built with</td><td>composition (has-a)</td><td>composition, states know each other</td><td>inheritance (is-a)</td><td>branches</td></tr>
+    <tr><td>Variants know each other?</td><td>no</td><td>often (they pick the next state)</td><td>n/a</td><td>n/a</td></tr>
+    <tr><td>Dealership example</td><td>discount rule at checkout</td><td>an order's lifecycle</td><td>inspection checklist</td><td>two fixed tax slabs</td></tr></table></div>
+  <h3>Trade-offs</h3>
+  <ul><li><b>Complexity:</b> more classes (one per rule) and one level of indirection to follow when reading.</li>
+    <li><b>Extensibility and coupling:</b> a new rule is a new class; the context depends only on the interface.</li>
+    <li><b>Testing:</b> each rule is tested with one line; the context with a lambda as a fake.</li>
+    <li><b>The client must know the options</b> to choose one; hide that behind a map or a factory when there are many.</li>
+    <li><b>Performance:</b> one interface call, which the JIT usually inlines; not a concern in practice.</li></ul>
+  <h3>In a Spring Boot backend</h3>
+  <p>A conceptual sketch: each discount is a bean, and Spring injects all of them into the checkout service as a map keyed by bean name. The request carries the offer code; the service looks the strategy up. A new offer is a new <code>@Component</code>.</p>
+<pre class="dp-spring"><code>public interface DiscountPolicy {
+    long apply(long price);
+}
+
+@Component("festival")
+class FestivalPolicy implements DiscountPolicy {
+    public long apply(long price) { return price * 90 / 100; }
+}
+
+@Component("loyalty")
+class LoyaltyPolicy implements DiscountPolicy {
+    public long apply(long price) { return Math.max(0, price - 20000); }
+}
+
+@Service
+class CheckoutService {
+    private final Map&lt;String, DiscountPolicy&gt; policies;   // Spring fills it: bean name → bean
+
+    CheckoutService(Map&lt;String, DiscountPolicy&gt; policies) { this.policies = policies; }
+
+    long total(long price, String offerCode) {
+        DiscountPolicy policy = policies.get(offerCode);
+        if (policy == null) throw new IllegalArgumentException("unknown offer: " + offerCode);
+        return policy.apply(price);
+    }
+}</code></pre>
+  <h3>Where Java and Spring already use it</h3>
+  <ul><li><code>List.sort(Comparator)</code> and <code>Collections.sort(list, comparator)</code>: the sort algorithm is the context, the <code>Comparator</code> is the strategy.</li>
+    <li>The <code>java.util.function</code> interfaces (<code>Function</code>, <code>Predicate</code>, <code>Supplier</code>…) are ready-made strategy types: <code>stream.filter(predicate)</code> takes the rule as an argument.</li>
+    <li><code>ThreadPoolExecutor</code> takes a <code>RejectedExecutionHandler</code> (<code>AbortPolicy</code>, <code>CallerRunsPolicy</code>, <code>DiscardPolicy</code>…): what to do when the queue is full.</li>
+    <li>Spring Security's <code>PasswordEncoder</code> (<code>BCryptPasswordEncoder</code>, <code>Argon2PasswordEncoder</code>, <code>Pbkdf2PasswordEncoder</code>); <code>DelegatingPasswordEncoder</code> picks one by the <code>{id}</code> prefix of the stored hash.</li>
+    <li>Spring injecting a <code>List&lt;T&gt;</code> or <code>Map&lt;String, T&gt;</code> of all beans of a type is the usual way to collect strategies (conceptually a registry, as in the sketch above).</li></ul>
+  <div class="dp-pred spot" data-ans="1"><p>In this code (it ran on JDK 25), which object plays the <b>Strategy</b> role?</p>
+<pre style="overflow-x:auto;margin:10px 0;padding:12px 14px;border-radius:12px;background:var(--code-bg);color:var(--code-text);font:12.5px/1.6 'JetBrains Mono',monospace"><code>import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class SortStrategy {
+    public static void main(String[] args) {
+        List&lt;Car&gt; cars = new ArrayList&lt;&gt;(List.of(
+            new Car("Nexon", 1250000), new Car("Tiago", 550000), new Car("Harrier", 1800000)));
+        cars.sort(Comparator.comparingLong(Car::price));             // strategy 1: cheapest first
+        System.out.println(cars);
+        cars.sort(Comparator.comparingLong(Car::price).reversed());  // strategy 2: dearest first
+        System.out.println(cars);
+    }
+}
+
+record Car(String model, long price) {
+    public String toString() { return model; }
+}
+// [Tiago, Nexon, Harrier]
+// [Harrier, Nexon, Tiago]</code></pre>
+    <ol><li>the <code>List</code> of cars</li><li>the <code>Comparator</code> passed to <code>sort</code></li><li>the <code>Car</code> record</li><li><code>main</code></li></ol>
+    <div class="dp-pe">The <code>Comparator</code> is the interchangeable rule ("which car comes first"). <code>List.sort</code> is the context: its sorting algorithm stays the same and delegates every comparison to the comparator it was given. <code>main</code> is the client that picks the rule, and swapping it changes the order without touching the sort code.</div></div>
+</section>
+
+<!-- 6 -->
+<section id="stg-master">
+  <span class="num">06</span><h2>Master it: Strategy in modern Java</h2>
+  <span class="dp-lv l4">Level 4 · Master it</span>
+  <div class="tldr"><b>In 30 seconds</b> If the strategy interface has one abstract method, it is a <b>functional interface</b> (P00, section 13), so a strategy can be a lambda or a method reference. Use a <b>class or record</b> when the rule has data, several methods or a name to show; use a <b>map</b> or an <b>enum</b> to choose by name.</div>
+<script type="text/x-java" data-file="ModernStrategy.java" data-hl="8-9,14,23,38,42,46-48">
+import java.util.Map;
+
+public class ModernStrategy {
+    public static void main(String[] args) {
+        long price = 700000;
+
+        // 1. lambdas and a method reference: each one IS a Discount object
+        Discount festival = p -> p * 90 / 100;
+        Discount loyalty = Offers::loyalty;
+        System.out.println(new Checkout(festival).total(price));   // 630000
+        System.out.println(new Checkout(loyalty).total(price));    // 680000
+
+        // 2. a record when the rule needs data (a configured percentage)
+        System.out.println(new Checkout(new PercentOff(15)).total(price));   // 595000
+
+        // 3. a registry: choose the strategy by name at run time, no if / else
+        Map<String, Discount> offers = Map.of(
+            "none", p -> p,
+            "festival", festival,
+            "loyalty", loyalty,
+            "corporate", new PercentOff(15));
+        for (String code : new String[] {"festival", "corporate", "festive"}) {
+            Discount d = offers.getOrDefault(code, p -> p);    // unknown code: no discount
+            System.out.println(code + " -> " + new Checkout(d).total(price));
+        }
+        // festival -> 630000
+        // corporate -> 595000
+        // festive -> 700000
+
+        // 4. an enum when the set of rules is fixed and needs a name and a label
+        for (Offer o : Offer.values())
+            System.out.println(o + " (" + o.label + "): Rs " + new Checkout(o.rule).total(price));
+        // NONE (No discount): Rs 700000
+        // FESTIVAL (Festival 10%): Rs 630000
+        // LOYALTY (Loyalty Rs 20000): Rs 680000
+
+        // 5. strategies combine: festival first, then loyalty on the reduced price
+        System.out.println(new Checkout(festival.andThen(loyalty)).total(price));   // 610000
+    }
+}
+
+@FunctionalInterface
+interface Discount {                                    // one abstract method: a lambda fits
+    long apply(long price);
+
+    default Discount andThen(Discount next) {           // default methods don't count
+        return p -> next.apply(apply(p));
+    }
+}
+
+record PercentOff(int percent) implements Discount {
+    public long apply(long price) { return price * (100 - percent) / 100; }
+}
+
+class Offers {
+    static long loyalty(long price) { return Math.max(0, price - 20000); }
+}
+
+enum Offer {
+    NONE("No discount", p -> p),
+    FESTIVAL("Festival 10%", p -> p * 90 / 100),
+    LOYALTY("Loyalty Rs 20000", Offers::loyalty);
+
+    final String label;
+    final Discount rule;
+
+    Offer(String label, Discount rule) { this.label = label; this.rule = rule; }
+}
+
+class Checkout {                                        // the Context does not change at all
+    private final Discount discount;
+
+    Checkout(Discount discount) { this.discount = discount; }
+
+    long total(long price) { return discount.apply(price); }
+}
+</script>
+  <div class="tw"><table><tr><th>Write the strategy as…</th><th>when</th></tr>
+    <tr><td>a lambda</td><td>a one-line rule with no data and no name to show</td></tr>
+    <tr><td>a method reference</td><td>the rule already exists as a method (<code>Offers::loyalty</code>)</td></tr>
+    <tr><td>a record or class</td><td>it carries data (<code>PercentOff(15)</code>), has several methods (<code>label()</code>), needs dependencies or its own tests</td></tr>
+    <tr><td>an enum constant</td><td>the set of rules is fixed and known at compile time, and you want names, <code>values()</code> and safe <code>switch</code></td></tr>
+    <tr><td>a <code>Map&lt;String, Discount&gt;</code></td><td>the choice comes from a string (a request, a config file, a database row)</td></tr></table></div>
+  <p>Is a lambda "still the pattern"? Yes: the pattern is the <b>roles</b> (a context delegating to an interchangeable behaviour chosen from outside), not the number of classes. Lambdas just remove the boilerplate.</p>
+  <details class="d"><summary>Advanced details: state, threads and sharing</summary><div class="b">A strategy with no fields (all four discounts) is <b>stateless</b>, so one instance can be shared by every thread and every checkout: Spring beans are singletons by default for this reason, and an enum constant or a static lambda works the same way. If a strategy keeps mutable state (a counter, a cache), it is no longer safe to share: create one per use or make it thread-safe. A context with a setter is mutable too: swapping the strategy on a checkout another thread is using is a race; prefer a new context per request or a <code>final</code> field.</div></details>
+  <details class="d"><summary>Common mistakes</summary><div class="b"><ul>
+    <li><b>Moving the if / else, not removing it:</b> a factory with the same ladder is fine <i>once</i>, at the edge; a ladder in the context again means the pattern was not applied.</li>
+    <li><b>Strategies that know the context's internals</b> (reach back into <code>Checkout</code> fields): pass what they need as parameters.</li>
+    <li><b>One class per number:</b> <code>Percent10</code>, <code>Percent15</code>… use one parameterised strategy.</li>
+    <li><b>Checking the type of the strategy</b> (<code>instanceof FestivalDiscount</code>) in the context: that brings the coupling back.</li>
+    <li><b>Using Strategy for two fixed cases</b>: more code to read for no gain.</li></ul></div></details>
+  <div class="dp-pred" data-ans="2"><p><b>A new requirement.</b> Marketing now wants offers to <b>stack</b> (festival, then loyalty on the reduced price), and the list of offers per city must come from a database table so it can change without a redeploy. Which design do you choose?</p>
+    <ol><li>Add a <code>"festival+loyalty"</code> branch for each combination to <code>Checkout</code></li><li>Switch to the State pattern so the checkout moves from one discount to the next</li><li>Keep Strategy: look up each offer code from the table in a <code>Map&lt;String, Discount&gt;</code> and combine them with <code>andThen</code> into one <code>Discount</code> for the checkout</li><li>Make one <code>Checkout</code> subclass per combination of offers</li></ol>
+    <div class="dp-pe">Combinations multiply (n offers → 2ⁿ combinations), so branches or subclasses explode. State is about an object's own lifecycle, not about a list chosen from outside. Strategies compose: the registry turns codes from the database into strategy objects, <code>andThen</code> chains them (the <code>ModernStrategy</code> program prints 610000 for festival then loyalty), and <code>Checkout</code> still sees one <code>Discount</code>. This is Strategy cooperating with a Composite-like chain.</div></div>
+  <h3>Patterns it works with</h3>
+  <ul><li><b>Factory Method</b>: creates the right strategy from a code, keeping the one remaining switch at the edge of the system.</li>
+    <li><a href="02-template-method.html">Template Method</a>: its look-alike built on inheritance; a template step can delegate to a strategy.</li>
+    <li><a href="03-state.html">State</a>: the same class diagram, but the object switches its own state objects.</li>
+    <li><b>Decorator</b> and <b>Composite</b>: wrap or combine strategies (stacked discounts). <b>Singleton</b> / <b>Flyweight</b>: share one stateless strategy instance.</li></ul>
+</section>
+
+<!-- 7 -->
+<section id="stg-review">
+  <span class="num">07</span><h2>Interview and review</h2>
+  <span class="dp-lv lr">Interview and review</span>
+  <p class="small muted">Answer out loud first, then open the card.</p>
+  <details class="d"><summary><span class="q">01</span>What is the Strategy pattern? (the 30-second answer)</summary><div class="b"><b>B ·</b> Strategy defines a family of interchangeable algorithms, puts each one in its own class behind a common interface, and lets the client choose which one a context object uses. The context holds a reference to the interface and delegates to it, so new behaviour is added with a new class instead of a new if / else. Example: <code>Checkout</code> delegating to a <code>Discount</code> such as <code>FestivalDiscount</code>; in the JDK, <code>List.sort(Comparator)</code>.</div></details>
+  <details class="d"><summary><span class="q">02</span>Walk me through it in more depth.</summary><div class="b"><b>I ·</b> Three roles: the <b>Strategy</b> interface (one operation, e.g. <code>apply(price)</code>), <b>ConcreteStrategies</b> implementing it, and the <b>Context</b> that has-a Strategy and calls it for the varying step. The <b>client</b> picks the concrete strategy (constructor, setter, factory, map or DI). Benefits: Open / Closed (new rule = new class), Single Responsibility (one rule per class), easy testing, run-time swapping. Costs: more classes, the client must know the options, and the strategy interface must fit every variant (if one rule needs extra data, pass a richer parameter object). In modern Java a single-method strategy is a functional interface, so lambdas and method references are strategies too.</div></details>
+  <details class="d"><summary><span class="q">03</span>Strategy vs State: the diagrams look the same. What is the difference?</summary><div class="b"><b>I ·</b> Intent and who chooses. In Strategy the <b>client</b> picks the behaviour from outside and the strategies don't know each other (any discount for any checkout). In State the <b>object itself</b> changes its state object as events happen (an order goes booked → paid → delivered), and states usually know which state comes next. Strategy answers "how should this be done?"; State answers "what can I do right now, given where I am?".</div></details>
+  <details class="d"><summary><span class="q">04</span>How do you choose the strategy at run time?</summary><div class="b"><b>I ·</b> Something at the edge maps an input to a strategy, so the context never branches. Options: a <b>factory</b> method with one switch; a <b>Map&lt;String, Strategy&gt;</b> registry (getOrDefault or a clear error for unknown keys); an <b>enum</b> whose constants hold the strategies; or <b>dependency injection</b>: Spring injects all <code>DiscountPolicy</code> beans as a <code>List</code> or a <code>Map</code> keyed by bean name, and the service picks by key. The choice can come from the request, configuration, a feature flag or the database.</div></details>
+  <details class="d"><summary><span class="q">05</span>With lambdas, is Strategy still a pattern?</summary><div class="b"><b>A ·</b> Yes. The pattern is the design (a context delegating to an interchangeable behaviour supplied from outside), not the class count. Lambdas make concrete strategies cheap when the interface has one method and the rule has no state or name. You still want classes or records when the strategy has data, several methods, dependencies, or deserves its own tests and a name in logs. Many people say "in functional style Strategy is just passing a function": that is the same idea, which is why <code>Comparator</code> works both ways.</div></details>
+  <details class="d"><summary><span class="q">06</span>How does Strategy follow Open / Closed and Dependency Inversion?</summary><div class="b"><b>B ·</b> Open / Closed: the context is closed for modification (no branch per rule) and open for extension (add a class that implements the interface). Dependency Inversion: the high-level <code>Checkout</code> depends on the abstraction <code>Discount</code>, not on <code>FestivalDiscount</code>; the low-level rules depend on the same abstraction, and the concrete one is injected from outside. It also helps Single Responsibility: each rule has one reason to change.</div></details>
+  <details class="d"><summary><span class="q">07</span>Strategy vs Template Method?</summary><div class="b"><b>I ·</b> Both vary part of an algorithm. Template Method uses <b>inheritance</b>: a base class fixes the steps and subclasses override some; the choice is fixed when you pick the subclass at compile time. Strategy uses <b>composition</b>: the whole varying algorithm is a separate object, swappable at run time and combinable. Prefer Strategy when variants must be mixed or switched; Template Method when the skeleton is fixed and only a few steps differ.</div></details>
+  <details class="d"><summary><span class="q">08</span>When would you NOT use Strategy?</summary><div class="b"><b>B ·</b> When there are two or three stable cases (a plain if / else or switch is clearer), when variants differ only by a value (use a parameter), or when nobody needs to swap or test the variants separately. Adding interfaces for change that never comes is over-engineering; refactor to Strategy when the third variant arrives or when you need a fake in a test.</div></details>
+  <details class="d"><summary><span class="q">09</span>Can strategies be shared between threads or be singletons?</summary><div class="b"><b>A ·</b> Stateless strategies can: one instance for the whole application (Spring singleton beans, enum constants, static lambdas) is safe and avoids allocation. A strategy with mutable fields is not safe to share; make it immutable, create one per use, or synchronise. Watch the context too: a <code>setStrategy</code> on an object shared by threads is a race, so prefer a final field and a new context per request.</div></details>
+  <div class="dp-rev">
+    <div><b>Intent</b><span>Put each interchangeable behaviour in its own class behind one interface; the client picks one.</span></div>
+    <div><b>Structure</b><span>Client → Context (has-a Strategy) → Strategy interface ← ConcreteStrategies.</span></div>
+    <div><b>Use when</b><span>Several versions of one job that grow, swap at run time or need separate tests.</span></div>
+    <div><b>Trade-off</b><span>More small classes and indirection; the client must know the options. Skip it for 2 fixed cases.</span></div>
+    <div><b>Remember</b><span>Drive modes: same car, the driver turns the knob (Eco, Sport, Snow).</span></div>
+  </div>
+  <h3>8 takeaways</h3><ul class="takeaways"><li>Strategy: one interface for a job, one class per way of doing it, and a context that delegates to the one it holds.</li><li>Client = who uses and chooses; Context = <code>Checkout</code>; Strategy = <code>Discount</code>; ConcreteStrategy = each offer.</li><li>The smell: a growing if / else on a type code (an offer name) inside a class that should not care.</li><li>Refactor in small steps: interface, one class per branch, field of the interface type, client chooses; run after each step.</li><li>A new rule is a new class: Open / Closed and Dependency Inversion in action; each rule tests alone.</li><li>Strategy vs State: the client chooses vs the object switches itself. Strategy vs Template Method: composition vs inheritance.</li><li>Modern Java: a one-method strategy is a functional interface (lambdas, method references); records for rules with data; maps, enums or Spring DI to choose by name.</li><li>Don't use it for two stable cases; an if / else is simpler.</li></ul>
+  <h3>Check yourself</h3>
+  <p class="small muted">Answer before you look. Each answer locks and explains itself; your answers are saved in this browser.</p>
+  <div class="quiz" data-quiz="p01"><p class="small muted">This quiz needs JavaScript.</p></div>
+  <h3>Recall prompts</h3>
+  <p class="small muted">Come back after 1, 3 and 7 days and answer out loud before opening each one.</p>
+  <div id="rcp"></div>
+  <h3>Your feedback</h3>
+  <div id="rates"></div>
+  <textarea id="fbt" placeholder="What should change, and was the step from P00 to Strategy smooth?"></textarea>
+  <p><button class="btn pri" id="fbc">Copy feedback</button> <span id="fbm" class="small" style="color:var(--good)"></span></p>
+</section>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>Design Patterns for Interviews · every program compiled and run on JDK 25</footer>
+</div>
+
+<script src="../assets/data/patterns-index.js"></script>
+<script src="../assets/data/quiz-data.js"></script>
+<script src="../assets/js/course.js"></script>
+<script src="../assets/js/effects.js"></script>
+<script src="../assets/labs/labs-patterns.js"></script>
+<script src="../assets/labs/labs-patterns-p01.js"></script>
+<script src="../assets/js/run-java.js"></script>
+</body>
+</html>

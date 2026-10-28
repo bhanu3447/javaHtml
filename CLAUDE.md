@@ -18,7 +18,7 @@ The user restarted the Java course from scratch ("remove everything in the java,
 - Prefer small, scoped sessions; the user can `/clear` between tasks.
 
 ## What it is
-A multi-page static site, no build step (opens from `file://`; the folder is in OneDrive, so no `node_modules`). Live at https://bhanu3447.github.io/javaHtml/ (repo `bhanu3447/javaHtml`, branch `main`, GitHub Pages from root; `.nojekyll` is required). **Folders:** `index.html` hub → `java/` and `sql/` courses; shared `assets/` (`css/ js/ labs/ data/ models/`); `kb/` notes; `scripts/`; `archive/` (old, unreferenced files).
+A multi-page static site, no build step (opens from `file://`; the folder is in OneDrive, so no `node_modules`). Live at https://bhanu3447.github.io/javaHtml/ (repo `bhanu3447/javaHtml`, branch `main`, GitHub Pages from root; `.nojekyll` is required). **Folders:** `index.html` hub → `java/`, `sql/`, `spring/` and `patterns/` courses; shared `assets/` (`css/ js/ labs/ data/ models/`); `kb/` notes; `scripts/`; `archive/` (old, unreferenced files).
 
 | File | Role |
 |---|---|
@@ -39,6 +39,7 @@ A multi-page static site, no build step (opens from `file://`; the folder is in 
 | `assets/data/sql-seed.js` | The one database every SQL lesson uses (car dealership, 6 tables, 59 rows; facts in its header comment). |
 | `assets/labs/labs-sql.js` | SQL kit (`SQ.ready/run/grid/editor/stepper`; sql.js 1.13.0 from cdnjs; `<script type="text/x-sql" data-auto>` → editor with ▶ Run) + S00 labs (`sq-` classes). |
 | `spring/index.html` | **Spring Boot lab**, third course (`data-course="spring"`; index: `node scripts/build-index.mjs spring`). Lab CSS scoped under `.spl`, script in an IIFE. Notes: `kb/spring-annotations-lab.md`. |
+| `patterns/index.html`, `patterns/NN-name.html` | **Design Patterns for Interviews**, fourth course (`data-course="patterns"`, keys `pNN`; index: `node scripts/build-index.mjs patterns` → `patterns-index.js`). Lab kit `assets/labs/labs-patterns.js` (`DPL`, `dp-` classes; labs are data only) + one data file per lesson `labs-patterns-pNN.js`. P00 live; plan and phases: `kb/design-patterns-plan.md`; kit format: `kb/patterns-00-foundations.md`. |
 | `index.html` | **The hub**: the single entry page listing every course. Self-contained, loads no course script. New course = new folder + a card here. |
 
 Every Java page loads, in this order: `course-index, quiz-data, course, effects, [labs-<lesson>…], run-java` (classic scripts sharing one global scope: never reuse a top-level name across files). **Don't create other files** (no backups or `-v2` copies). A new lesson = `kb/lesson-NN-name.md` + `java/lessons/NN-name.html` (+ a `labs-*.js` only if it has many labs).
@@ -69,4 +70,4 @@ Skeleton: `<body data-page="l01" data-name="Lesson 01 · …" data-short="L01">`
 - Write files containing backslashes with the Write tool, not Bash heredocs or `node -e` (the Bash tool mangles `\`; a heredoc holding one fails with "unexpected EOF").
 
 ## Change log (recent; older entries in `kb/site-internals.md`)
-- 2026-10-28: **Spring lab v11**: bean lifecycle lab (definition → BPP → proxy → destroy, BeanFactory vs ApplicationContext) and injection lab (styles, circular dependency, @Primary/@Qualifier). v10 same day: nine concept labs (auto-config, filter vs interceptor, security 401/403, propagation, isolation, paging, HTTP clients, Kafka, observability, OpenAPI) via the `LABS2` engine; 135 annotation cards. v9 same day: the request simulator is stepped (Start, Back, Next, Auto at 2.2 s). v8 same day: pipeline as a vertical flowchart, request map step caption, 12 missing annotation cards added (87 cards). Run 3 in `kb/spring-visual-audit-plan.md`.
+- 2026-10-28: **Design Patterns, phases A–C**: final plan (five moves, 4 levels, one page per pattern `NN-slug.html`, `kb/design-patterns-plan.md`); kit v2 (Refactor add/del/meter, Sequence view, Playground, Predict, Explain it back, glyphs, home map + catalogue; documented in `kb/patterns-00-foundations.md`); P00 +3 sections; 01 Strategy and 03 State done; 02 Template Method built but its quiz/notes/checks unfinished.
