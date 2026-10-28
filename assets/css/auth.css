@@ -70,6 +70,12 @@ body.au::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none
 .au-chip[data-s="pending"]{background:var(--wait-soft);color:var(--wait);border-color:color-mix(in srgb,var(--wait) 30%,transparent)}
 .au-chip[data-s="rejected"]{background:var(--no-soft);color:var(--no);border-color:color-mix(in srgb,var(--no) 30%,transparent)}
 .au-chip:disabled{cursor:default}
+.au-search{width:100%;font:inherit;min-height:42px;padding:9px 12px;margin:0 0 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--text)}
+.au-search:focus{outline:2px solid var(--accent);outline-offset:2px}
+.au-person[hidden]{display:none}
+.au-courses{flex:1 0 100%;align-items:center;padding-top:8px;border-top:1px dashed var(--line)}
+.au-chip[data-s="none"]{border-style:dashed}
+.au-chip:not(:disabled):hover{border-color:var(--accent);color:var(--text)}
 .au-role{font:700 11px/1 Inter,sans-serif;letter-spacing:.06em;padding:5px 8px;border-radius:999px;background:var(--soft);color:var(--muted);text-transform:uppercase}
 .au-role.owner,.au-role.admin{background:var(--accent-soft);color:var(--accent)}
 .au-face{flex:none;width:40px;height:40px;border-radius:12px;object-fit:cover;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;transform:scaleX(-1)}

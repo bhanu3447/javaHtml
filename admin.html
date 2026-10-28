@@ -23,7 +23,7 @@
   function card(t,actions){app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">🔒</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
 
   async function load(){
-    var p=await AUTH.sb.from("profiles").select("id,name,email,role,status,selfie_path,matched_invite,created_at").order("created_at",{ascending:false});
+    var p=await AUTH.sb.from("profiles").select("id,name,username,email,role,status,selfie_path,matched_invite,created_at").order("created_at",{ascending:false});
     var a=await AUTH.sb.from("course_access").select("user_id,course_id,status,requested_at");
     var i=await AUTH.sb.from("invites").select("id,email,name,attempts,used_at,created_at").order("created_at",{ascending:false});
     var err=p.error||a.error||i.error;if(err){card(esc(err.message));return;}
@@ -38,7 +38,7 @@
 
   function render(){
     var pend=D.access.filter(function(x){return x.status==="pending";});
-    var h='<h1>Admin</h1><p>Approve new accounts, approve course requests and choose admins. Owner and admins open every course.</p>';
+    var h='<h1>Admin</h1><p>Approve new accounts and course requests, give or remove courses, block or remove people, and choose admins. Owner and admins open every course.</p>';
     var fresh=D.people.filter(function(u){return u.role==="learner"&&u.status==="pending";});
     h+='<section class="au-panel"><h2>New registrations <span class="au-count">'+fresh.length+'</span></h2><p>People who registered with a selfie. Check the face and the name, then approve or reject the account.</p><div class="au-rows">';
     h+=fresh.length?fresh.map(function(u){
@@ -61,29 +61,62 @@
         return '<div class="au-row"><div class="au-who"><b>'+esc(v.name)+'</b><small>'+esc(v.email)+'</small></div>'+st+(v.used_at?'':'<button class="au-btn sm no" data-delinv="'+v.id+'">Remove</button>')+'</div>';}).join(""):'<div class="au-empty">No one approved yet.</div>')+
       '</div></div></section>';
 
-    h+='<section class="au-panel"><h2>People <span class="au-count">'+D.people.length+'</span></h2><p>Click a course to give or take away access.'+(ME.profile.role==="owner"?' Only you (the owner) can make admins.':'')+'</p><div class="au-rows">';
+    var owner=ME.profile.role==="owner";
+    h+='<section class="au-panel"><h2>People and courses <span class="au-count">'+D.people.length+'</span></h2><p>Give or remove a course with one click: <b>✓</b> = has the course (click to remove), <b>+</b> = no access (click to give). Block stops an account without deleting it; Remove user deletes it for good.'+(owner?' Only you (the owner) can make or remove admins.':'')+'</p>'+
+      '<input class="au-search" id="pplQ" type="search" placeholder="Search by name, username or email" aria-label="Search people" value="'+esc(Q)+'"><div class="au-rows" id="pplRows">';
     h+=D.people.map(function(u){
-      var staff=u.role==="owner"||u.role==="admin",chips;
-      if(staff)chips='<span class="au-chip" data-s="approved">All courses</span>';
-      else chips=Object.keys(C).map(function(c){var s=statusOf(u.id,c);
-        return '<button class="au-chip" data-s="'+s+'" data-tog="'+c+'" data-u="'+u.id+'" title="'+(s==="approved"?"Click to take away":"Click to approve")+'">'+SHORT[c]+(s==="pending"?" · asked":s==="rejected"?" · rejected":"")+'</button>';}).join("");
-      var role='',acct=u.role!=="learner"||u.status==="approved"?'':u.status==="rejected"?'<span class="au-chip" data-s="rejected">account rejected</span><button class="au-btn sm ok" data-acct="approved" data-u="'+u.id+'">Approve account</button>':'<span class="au-chip" data-s="pending">account waiting</span>';
-      if(ME.profile.role==="owner"&&u.role!=="owner")role=u.role==="admin"?'<button class="au-btn sm" data-role="learner" data-u="'+u.id+'">Remove admin</button>':'<button class="au-btn sm" data-role="admin" data-u="'+u.id+'">Make admin</button>';
-      if(u.role==="learner"&&u.status!=="approved")chips='';
-      return '<div class="au-row">'+face(u)+'<div class="au-who"><b>'+esc(u.name||u.email)+'</b><small>'+esc(u.email)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span>'+acct+'<div class="au-chips">'+chips+'</div>'+role+'</div>';}).join("");
-    h+='</div></section>';
+      var staff=u.role==="owner"||u.role==="admin",me=u.id===ME.user.id,id=' data-u="'+u.id+'"',chips,acct='',role='',del='';
+      if(staff)chips='<span class="au-chip" data-s="approved">All courses ('+u.role+')</span>';
+      else chips=Object.keys(C).map(function(c){var s=statusOf(u.id,c),on=s==="approved";
+        return '<button class="au-chip" data-s="'+s+'" data-tog="'+c+'"'+id+' aria-pressed="'+on+'" title="'+(on?"Has "+C[c]+": click to remove":"Click to give "+C[c])+'">'+(on?"✓ ":"+ ")+SHORT[c]+(s==="pending"?" · asked":s==="rejected"?" · refused":"")+'</button>';}).join("")+
+        '<button class="au-btn sm" data-all="approved"'+id+'>Give all</button><button class="au-btn sm" data-all="none"'+id+'>Remove all</button>';
+      if(u.role==="learner")acct=u.status==="pending"?'<span class="au-chip" data-s="pending">account waiting</span><button class="au-btn sm ok" data-acct="approved"'+id+'>Approve</button><button class="au-btn sm no" data-acct="rejected"'+id+'>Reject</button>'
+        :u.status==="rejected"?'<span class="au-chip" data-s="rejected">blocked</span><button class="au-btn sm ok" data-acct="approved"'+id+'>Unblock</button>'
+        :'<button class="au-btn sm" data-acct="rejected"'+id+'>Block</button>';
+      if(owner&&u.role!=="owner")role=u.role==="admin"?'<button class="au-btn sm" data-role="learner"'+id+'>Remove admin</button>':'<button class="au-btn sm" data-role="admin"'+id+'>Make admin</button>';
+      if(!me&&u.role!=="owner"&&(u.role==="learner"||owner))del='<button class="au-btn sm no" data-del="1"'+id+'>Remove user</button>';
+      var find=[u.name,u.username,u.email].join(" ").toLowerCase();
+      return '<div class="au-row au-person" data-find="'+esc(find)+'">'+face(u)+'<div class="au-who"><b>'+esc(u.name||u.email)+(me?' (you)':'')+'</b><small>'+(u.username?'@'+esc(u.username)+' · ':'')+esc(u.email)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span>'+acct+role+del+
+        '<div class="au-chips au-courses">'+chips+'</div></div>';}).join("");
+    h+='<div class="au-empty" id="pplNone" hidden>No one matches.</div></div></section>';
     app.innerHTML=h;
     document.getElementById("inv").onsubmit=invite;
+    document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();
   }
+  var Q="";
+  function filter(){var q=Q.trim().toLowerCase(),n=0;
+    document.querySelectorAll(".au-person").forEach(function(r){var hit=!q||r.dataset.find.indexOf(q)>=0;r.hidden=!hit;if(hit)n++;});
+    document.getElementById("pplNone").hidden=n>0;}
 
-  async function rpc(name,args){var r=await AUTH.sb.rpc(name,args);if(r.error)alert(r.error.message);await load();}
+  async function call(name,args){var r=await AUTH.sb.rpc(name,args);if(r.error){alert(r.error.message);return false;}return true;}
+  async function rpc(name,args){await call(name,args);await load();}
+  /* giving a course to an account that is still waiting (or blocked) approves the account first, or the course would not open */
+  async function give(u,courses){var p=person(u);
+    if(p.role==="learner"&&p.status!=="approved"){
+      if(!confirm((p.name||p.email)+"'s account is "+(p.status==="rejected"?"blocked":"not approved yet")+". Approve the account and give the course?"))return;
+      if(!await call("decide_user",{p_user:u,p_status:"approved"}))return load();}
+    for(var i=0;i<courses.length;i++)if(!await call("decide_access",{p_user:u,p_course:courses[i],p_status:"approved"}))break;
+    await load();}
   app.addEventListener("click",async function(e){var b=e.target.closest("button");if(!b||b.disabled)return;
-    if(b.dataset.acct){if(b.dataset.acct==="rejected"&&!confirm("Reject this account? They will not be able to open any course."))return;
-      b.disabled=true;await rpc("decide_user",{p_user:b.dataset.u,p_status:b.dataset.acct});}
-    else if(b.dataset.dec){b.disabled=true;await rpc("decide_access",{p_user:b.dataset.u,p_course:b.dataset.c,p_status:b.dataset.dec});}
-    else if(b.dataset.tog){var s=statusOf(b.dataset.u,b.dataset.tog);
-      if(s==="approved"&&!confirm("Take away access to "+C[b.dataset.tog]+"?"))return;
-      b.disabled=true;await rpc("decide_access",{p_user:b.dataset.u,p_course:b.dataset.tog,p_status:s==="approved"?"none":"approved"});}
+    var u=b.dataset.u,p=u&&person(u),who=p?(p.name||p.email):"";
+    if(b.dataset.acct){if(b.dataset.acct==="rejected"&&!confirm((p.status==="approved"?"Block ":"Reject ")+who+"? They will not be able to open any course until you unblock them."))return;
+      b.disabled=true;await rpc("decide_user",{p_user:u,p_status:b.dataset.acct});}
+    else if(b.dataset.dec){b.disabled=true;await rpc("decide_access",{p_user:u,p_course:b.dataset.c,p_status:b.dataset.dec});}
+    else if(b.dataset.tog){var c=b.dataset.tog;b.disabled=true;
+      if(statusOf(u,c)!=="approved"){await give(u,[c]);return;}
+      if(!confirm("Remove "+C[c]+" from "+who+"?")){b.disabled=false;return;}
+      await rpc("decide_access",{p_user:u,p_course:c,p_status:"none"});}
+    else if(b.dataset.all){var give1=b.dataset.all==="approved",list=Object.keys(C).filter(function(c){var s=statusOf(u,c);return give1?s!=="approved":s!=="none";});
+      if(!list.length)return;
+      if(!give1&&!confirm("Remove every course from "+who+"?"))return;
+      b.disabled=true;
+      if(give1){await give(u,list);return;}
+      for(var i=0;i<list.length;i++)if(!await call("decide_access",{p_user:u,p_course:list[i],p_status:"none"}))break;
+      await load();}
+    else if(b.dataset.del){if(!confirm("Remove "+who+" ("+p.email+") for good?\n\nTheir account, saved face, selfie and course access are deleted. They would have to register again."))return;
+      b.disabled=true;
+      if(await call("remove_user",{p_user:u})&&p.selfie_path)await AUTH.sb.storage.from("selfies").remove([p.selfie_path]);   // selfie: best effort, after the account is gone
+      await load();}
     else if(b.dataset.role){if(!confirm(b.dataset.role==="admin"?"Make this person an admin? Admins can approve people and courses.":"Remove admin rights?"))return;
       b.disabled=true;await rpc("set_role",{p_user:b.dataset.u,p_role:b.dataset.role});}
     else if(b.dataset.delinv){if(!confirm("Remove this approval? They will not be able to register."))return;
