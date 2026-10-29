@@ -3636,3 +3636,5 @@ a.dp-mc:hover,a.dp-mc:focus-visible{border-color:var(--mv);box-shadow:0 0 0 2px 
 @media (prefers-reduced-motion:reduce){.dp-meter b,.dp-mc{transition:none}}
 @media (max-width:1000px){.dp-map{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:520px){.dp-map{grid-template-columns:1fr}.dp-pat{flex-direction:column;gap:10px}.dp-pctl,.dp-out{margin-left:12px;margin-right:12px}.dp-pctl{padding:12px 0}.dp-play .dp-stage{margin:0 12px}.dp-pctl .btn,.dp-xb-rate .btn{min-height:44px}}
+/* fcdrun vNN: six lanes on a phone: larger labels so the 600-unit sequence stays readable when scaled down */
+@media (max-width:560px){#dp-fcdrun .dp-seqv .dp-el{font-size:14px}#dp-fcdrun .dp-seqv .dp-nd .dp-tt{font-size:15px}#dp-fcdrun .dp-seqv .dp-nd .dp-ts{font-size:12px}}
