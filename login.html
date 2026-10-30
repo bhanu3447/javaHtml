@@ -204,6 +204,9 @@
     if(r.code==="no_account"){say($("inMsg"),"No account found for “"+id+"”. Register first: it takes a minute.","err");shake();
       if(id.indexOf("@")>0)$("upMail").value=id;else $("upUser").value=id.toLowerCase();return;}
     if(r.code==="wrong_password"){say($("inMsg"),"Wrong password. Try again.","err");shake();$("inPass").select();return;}
+    if(r.access_token){/* owner: password only, no face step */
+      await AUTH.sb.auth.setSession({access_token:r.access_token,refresh_token:r.refresh_token});
+      var me0=await showMe();if(me0&&me0.approved)location.href=next;return;}
     if(!r.ok){say($("inMsg"),r.error||"Could not log in.","err");return;}
     chal=r;
     $("l2Title").textContent=r.face==="enroll"?"Save your face":"Show your face";
