@@ -5790,9 +5790,9 @@ html.no-motion .sq13-heap i,html.no-motion .sq13-nb,html.no-motion .sq13-bar i,h
 .sq13-wc.fix{border-top:3px solid var(--good)}
 .sq13-wc pre{margin:8px 10px;font-size:.74rem;white-space:pre-wrap;overflow-wrap:anywhere}
 .sq13-wp{padding:0 10px 8px;display:grid;gap:6px;justify-items:start}
-.sq13-vh span.sq13-wv{text-transform:none;letter-spacing:0;font-size:.72rem;padding:2px 8px;border-radius:99px}
-.sq13-vh span.sq13-wv.no{background:var(--bad-soft);color:var(--bad)}
-.sq13-vh span.sq13-wv.ok{background:var(--good-soft);color:var(--good)}
+.sq13-vh span.sq13-wpill{text-transform:none;letter-spacing:0;font-size:.72rem;padding:2px 8px;border-radius:99px}
+.sq13-vh span.sq13-wpill.no{background:var(--bad-soft);color:var(--bad)}
+.sq13-vh span.sq13-wpill.ok{background:var(--good-soft);color:var(--good)}
 .sq13-wst{font-size:.8rem;margin-top:8px}
 .sq13-wst:empty{display:none}
 /* v2: index design */
@@ -7037,8 +7037,6 @@ html.no-motion .sq01-rent{animation:none}
   .sq12-erwrap::after,.sq12-dwrap::after{content:"swipe sideways to see the whole diagram \2194";display:block;text-align:center;font-size:.68rem;color:var(--muted);padding-top:4px}
 }
 
-/* sql s13 v4 (2026-10-31): the "index ignored / index used" pill in #sq13Why shares the class sq13-wv with #sq13Upd's grid, so the v3 grid rule squeezed it into a narrow wrapped box; reset it to an inline pill */
-.sq13-vh span.sq13-wv{display:inline-block;grid-template-columns:none;gap:0;white-space:nowrap}
 
 /* sql s14 v4 (2026-10-31): #sq14Guard refusal shows 3 cards (5 grid children) but the 4-card template left the right half empty; use the 3-card template when the last child is the 5th */
 .sq14-flow.gf>:nth-child(5):last-child{grid-column:auto}
