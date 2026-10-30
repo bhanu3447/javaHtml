@@ -7019,3 +7019,78 @@ html.no-motion .sq16-tlc{transition:none}
 .sqv-row .sqv-sk{background:color-mix(in srgb,var(--accent) 16%,transparent);border-radius:4px;padding:0 4px;margin:0 -4px}
 .sqv-row.sqv-keep .sqv-chip:empty{visibility:hidden}
 @media (max-width:640px){.sqv-row .sqv-sk{padding:0 2px;margin:0 -2px}}
+
+/* sql s01 v4 (2026-10-31): review pass 2b. #sq01Alter RENAME TABLE draws one amber shelf "vehicles (was cars)" instead of a red cars + green vehicles pair */
+.sq01-rent{border-color:var(--amber);background:var(--amber-soft);animation:sq01-in .6s ease-out}
+.sq01-rent>b small{font:500 .66rem Inter,sans-serif;color:var(--amber);margin-left:4px}
+@media (prefers-reduced-motion:reduce){.sq01-rent{animation:none}}
+html.no-motion .sq01-rent{animation:none}
+
+/* sql s03 v4 (2026-10-31): phone width: the verdict column of the WHERE / precedence / NULL tables fits without sideways scrolling */
+@media (max-width:640px){.sq03-t{min-width:0}.sq03-h,.sq03-r{gap:4px;padding-inline:8px}.sq03-r{font-size:.72rem}.sq03-h{font-size:.6rem;letter-spacing:.02em}.sq03-v{font-size:.58rem;padding:2px 4px;letter-spacing:0}}
+
+/* sql s04 v4 (2026-10-31): #sq04Cast reader tiles were green-on-green / red-on-red in the light theme (characters invisible): white text on the solid fills */
+.sq04-rd .sq04-rc-ok,.sq04-rd .sq04-rc-stop,.sq04-rd .sq04-rc-cut{color:#fff}
+
+/* sql s12 v4 (2026-10-31): swipe hint for the wide diagrams on phones */
+@media (max-width:640px){
+  .sq12-erwrap::after,.sq12-dwrap::after{content:"swipe sideways to see the whole diagram \2194";display:block;text-align:center;font-size:.68rem;color:var(--muted);padding-top:4px}
+}
+
+/* sql s13 v4 (2026-10-31): the "index ignored / index used" pill in #sq13Why shares the class sq13-wv with #sq13Upd's grid, so the v3 grid rule squeezed it into a narrow wrapped box; reset it to an inline pill */
+.sq13-vh span.sq13-wv{display:inline-block;grid-template-columns:none;gap:0;white-space:nowrap}
+
+/* sql s14 v4 (2026-10-31): #sq14Guard refusal shows 3 cards (5 grid children) but the 4-card template left the right half empty; use the 3-card template when the last child is the 5th */
+.sq14-flow.gf>:nth-child(5):last-child{grid-column:auto}
+.sq14-flow.gf:has(>:nth-child(5):last-child):not(:has(>:nth-child(6))){grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr)}
+@media (max-width:640px){.sq14-flow.gf:has(>:nth-child(5):last-child):not(:has(>:nth-child(6))){grid-template-columns:minmax(0,1fr)}}
+/* the CALL IT lines of #sq14Code were cut off at the card edge (white-space:pre, scrollbar hidden): wrap them */
+.sq14-call pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow-x:visible}
+
+/* sql s06 v4 (2026-10-31): cross-join grid carries numbers, region and short city names; narrower table headers on phones; no empty gap when the stitch lab is finished */
+.sq06-xg{max-width:640px}
+.sq06-xg .xh{white-space:normal;line-height:1.15}
+.sq06-xg .xh .sq06-xabb{display:none}
+.sq06-xg .xh .sq06-xreg{display:block;font:600 .56rem Inter,sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-top:1px}
+.sq06-xg .xc{height:28px;display:flex;align-items:center;justify-content:center;font:700 .7rem "JetBrains Mono",monospace;font-style:normal}
+.sq06-xg .xc.on{color:#fff}
+.sq06-xg .xc.off{color:var(--muted);background:transparent;border-style:dashed;opacity:.55}
+.sq06-st:has(.ol-empty){min-height:0}
+@media (max-width:640px){
+  .sq06-xg .xh .sq06-xfull{display:none}
+  .sq06-xg .xh .sq06-xabb{display:inline}
+  .sq06-xg .xc{height:24px;font-size:.62rem}
+  .sq06-hr{font-size:.58rem;letter-spacing:0}
+  .sq06-hr span{letter-spacing:0}
+}
+
+/* sql s07 v4 (2026-10-31): derived-table lab shows the sale rows dropping into per-customer groups before the totals */
+.sq07-grp{display:grid;gap:5px}
+.sq07-grp .sq07-cap{text-transform:none;letter-spacing:0;font:600 .72rem Inter,sans-serif;color:var(--muted);margin:2px 0 4px}
+.sq07-gr{display:grid;grid-template-columns:64px minmax(0,1fr) 104px;gap:10px;align-items:center;padding:4px 8px;border:1px solid var(--line);border-radius:9px;background:var(--surface);min-height:34px}
+.sq07-gr .n{font:700 .76rem Inter,sans-serif;color:var(--text)}
+.sq07-gr .ch{display:flex;flex-wrap:wrap;gap:5px}
+.sq07-gr .ch i{font:600 .7rem "JetBrains Mono",monospace;font-style:normal;padding:2px 7px;border-radius:6px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent);animation:sq07drop .45s ease-out both}
+.sq07-gr .ch em{font:500 .72rem Inter,sans-serif;color:var(--muted)}
+.sq07-gr b{font:700 .76rem "JetBrains Mono",monospace;color:var(--text);text-align:right}
+.sq07-gr.none{border-style:dashed;opacity:.7}
+@keyframes sq07drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+@media (max-width:640px){
+  .sq07-gr{grid-template-columns:52px minmax(0,1fr) 72px;gap:6px;padding:4px 6px}
+  .sq07-gr .ch i{font-size:.6rem;padding:2px 4px}
+  .sq07-gr b{font-size:.66rem}
+}
+@media (prefers-reduced-motion:reduce){.sq07-gr .ch i{animation:none}}
+html.no-motion .sq07-gr .ch i{animation:none}
+/* dedupe lab: gap between the two input lists */
+.sq07-ddin .sq07-chips+.sq07-cap{margin-top:14px}
+
+/* sql s15 v4 (2026-10-31): N+1 statement list shows all 11 statements (it was cut off at the 8th) */
+.sq15-stmts{max-height:460px}
+
+/* sql s16 v4 (2026-10-31): #sq16Valid rule strip (each rule of the validator shown as a tick or cross for the document typed) */
+.sq16-rules{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.sq16-rl{font:600 .68rem Inter,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-right:4px}
+.sq16-rule{font:600 .76rem Inter,sans-serif;border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:var(--surface);color:var(--text)}
+.sq16-rule.ok{border-color:var(--good);color:var(--good)}
+.sq16-rule.no{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
