@@ -6861,3 +6861,161 @@ body.sq-iv .sq-ch [data-k="hint"],body.sq-iv .sq-ch [data-k="sol"],body.sq-iv .s
 @media (max-width:640px){.sqv-row{font-size:.74rem;padding:3px 8px;column-gap:8px}.sqv-hd{column-gap:8px;padding:3px 8px}.sqv-pipe{font-size:.62rem}.sqv-pipe span{padding:3px 7px}}
 @media (prefers-reduced-motion:reduce){.sqv-pipe span,.sqv-seg{transition:none}}
 html.no-motion .sqv-pipe span,html.no-motion .sqv-seg{transition:none}
+
+/* sql s01 v3 (2026-10-30): review pass 2. #sq01Auto "next id" dials under each grid (read from max(id) and sqlite_sequence); .sq01-nxlow marks the plain table about to reuse a number */
+.sq01-nx{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin-top:8px;padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:.82rem;color:var(--muted)}
+.sq01-nx span{font:600 .7rem Inter,sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.sq01-nx b{font:700 1.25rem/1 "JetBrains Mono",Consolas,monospace;color:var(--accent);transition:color .3s}
+.sq01-nx small{font-size:.74rem}
+.sq01-nx code{font-size:.72rem}
+.sq01-nx.sq01-nxlow{border-color:var(--amber);background:var(--amber-soft)}
+.sq01-nx.sq01-nxlow b{color:var(--amber)}
+@media (max-width:640px){.sq01-nx{padding:6px 10px}.sq01-nx b{font-size:1.1rem}}
+@media (prefers-reduced-motion:reduce){.sq01-nx b{transition:none}}
+html.no-motion .sq01-nx b{transition:none}
+/* sql s04 v3 (2026-10-30): #sq04Cast reader tiles (how CAST reads a string left to right: read / stop / never looked at / decimals cut) */
+.sq04-rd{display:inline-flex;gap:2px;flex-wrap:wrap;align-items:center;vertical-align:middle}
+.sq04-rc{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:22px;padding:0 4px;border-radius:5px;border:1px solid var(--line);font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px;font-weight:600;font-style:normal;line-height:1;color:var(--muted);background:var(--soft);animation:sq04-eat .3s both;animation-delay:calc(var(--i,0)*70ms)}
+.sq04-rc-ok{color:var(--good);border-color:var(--good-soft);background:var(--good-fill)}
+.sq04-rc-stop{color:var(--bad);border-color:var(--bad);background:var(--bad-fill)}
+.sq04-rc-cut{color:var(--amber);border-color:var(--amber-soft);background:var(--amber-fill);text-decoration:line-through}
+.sq04-rc-off{opacity:.45}
+.sq04-rk{display:flex;flex-wrap:wrap;gap:6px 14px;margin:6px 0 2px;font-size:12px;color:var(--muted)}
+.sq04-rk i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid var(--line);background:var(--soft)}
+.sq04-rk .sq04-rc-ok{background:var(--good);border-color:var(--good)}
+.sq04-rk .sq04-rc-stop{background:var(--bad);border-color:var(--bad)}
+.sq04-rk .sq04-rc-cut{background:var(--amber);border-color:var(--amber)}
+.sq04-rk .sq04-rc-off{opacity:.45}
+@keyframes sq04-eat{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.sq04-rc{animation:none}}
+html.no-motion .sq04-rc{animation:none}
+@media (max-width:640px){.sq04-rc{min-width:16px;height:20px;font-size:11px;padding:0 3px}}
+/* sql s05 v3 (2026-10-30): #sq05Rollup shows all 19 rows at the last frame (grand total was hidden under a 340 px scroll edge) */
+.sq05-rbody{max-height:560px}
+@media (max-width:640px){.sq05-rbody{max-height:380px}}
+/* sql s06 v3 (2026-10-30): #sq06Stitch predict state (dashed "?" partner cards before the first Next) */
+.sq06-card.sq06-q{border-style:dashed;background:transparent;opacity:.85}
+.sq06-card.sq06-q b{color:var(--muted);font-size:1.1rem;line-height:1}
+.sq06-card.sq06-q span{color:var(--muted)}
+/* sql s12 v3 (2026-10-30): sq12Fd real-row strip (.sq12-fdrows: the rows of one X group, Y cells green when they agree, red when they do not) */
+.sq12-fdrows{margin:8px 0 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:8px 10px;overflow-x:auto}
+.sq12-fdrows.no{border-color:var(--bad)}
+.sq12-fdrows.ok{border-color:var(--good)}
+.sq12-fdrows small{display:block;color:var(--muted);font:500 .74rem Inter,sans-serif;margin-bottom:6px}
+.sq12-fdrows small b{color:var(--text)}
+.sq12-fdrows table{border-collapse:collapse;font:400 .76rem "JetBrains Mono",monospace;min-width:100%}
+.sq12-fdrows th{text-align:left;color:var(--muted);font:600 .64rem Inter,sans-serif;text-transform:uppercase;letter-spacing:.04em;padding:3px 8px;border-bottom:1px solid var(--line)}
+.sq12-fdrows td{padding:4px 8px;border-bottom:1px solid var(--line);color:var(--text);white-space:nowrap}
+.sq12-fdrows td i{color:var(--muted);font-style:italic}
+.sq12-fdrows td.sq12-fx{background:var(--accent-soft);color:var(--accent)}
+.sq12-fdrows td.sq12-fy.ok{background:var(--good-soft);color:var(--good);font-weight:600}
+.sq12-fdrows td.sq12-fy.no{background:var(--bad-soft);color:var(--bad);font-weight:600}
+.sq12-fdrows tbody tr{animation:sq12-fdin .4s ease both}
+.sq12-fdrows tbody tr:nth-child(2){animation-delay:.08s}
+.sq12-fdrows tbody tr:nth-child(3){animation-delay:.16s}
+.sq12-fdrows tbody tr:nth-child(4){animation-delay:.24s}
+.sq12-fdrows tbody tr:nth-child(5){animation-delay:.32s}
+.sq12-fdrows tbody tr:nth-child(6){animation-delay:.4s}
+@keyframes sq12-fdin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.sq12-fdrows tbody tr{animation:none}}
+html.no-motion .sq12-fdrows tbody tr{animation:none}
+@media (max-width:640px){.sq12-fdrows td,.sq12-fdrows th{padding:3px 5px;font-size:.68rem}}
+/* sql s13 v3 (2026-10-30): sq13Upd now draws the write going through the view into the base table (.sq13-wv view box → arrow with the outcome → base-table box, real rows, changed cells struck through, hidden columns greyed) */
+.sq13-wlab{display:block;margin:12px 0 6px;color:var(--muted);font:600 .66rem Inter,sans-serif;text-transform:uppercase;letter-spacing:.05em}
+.sq13-wv{display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,160px) minmax(0,1fr);gap:8px;align-items:start}
+.sq13-wb{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:6px 8px;overflow:auto;max-height:300px;min-width:0}
+.sq13-wb.view{border-color:var(--accent)}
+.sq13-wb small{display:block;color:var(--muted);font:600 .66rem Inter,sans-serif;margin-bottom:4px;white-space:nowrap}
+.sq13-wb.view small{color:var(--accent)}
+.sq13-wb table{border-collapse:collapse;width:100%;font:400 .72rem "JetBrains Mono",monospace;color:var(--text)}
+.sq13-wb th{text-align:left;color:var(--muted);font:600 .62rem Inter,sans-serif;text-transform:uppercase;letter-spacing:.04em;padding:2px 6px;border-bottom:1px solid var(--line)}
+.sq13-wb td{padding:2px 6px;border-bottom:1px solid var(--line);white-space:nowrap}
+.sq13-wb td i{color:var(--muted)}
+.sq13-wb td s{color:var(--bad);opacity:.75}
+.sq13-wb tr.new td{background:var(--good-soft);color:var(--good);font-weight:600;animation:sq13-wvin .5s ease both}
+.sq13-wb tr.gone td{background:var(--amber-soft);color:var(--amber);font:500 .68rem Inter,sans-serif;white-space:normal}
+.sq13-wb th.sq13-hid,.sq13-wb td.sq13-hid{opacity:.35;text-decoration:line-through}
+.sq13-wa{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;align-self:center;gap:4px;padding:8px 4px;font:500 .7rem Inter,sans-serif;color:var(--muted)}
+.sq13-wa i{font-style:normal;font-size:1.5rem;line-height:1;color:var(--accent);animation:sq13-wvarrow .9s ease both}
+.sq13-wa.refused,.sq13-wa.refused i{color:var(--bad)}
+.sq13-wa.landed,.sq13-wa.landed i{color:var(--good)}
+.sq13-wa.vanished,.sq13-wa.vanished i{color:var(--amber)}
+.sq13-wa.ok i{color:var(--good)}
+.sq13-wa b{color:inherit}
+@keyframes sq13-wvin{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+@keyframes sq13-wvarrow{from{opacity:0;transform:translateX(-10px)}60%{opacity:1;transform:translateX(3px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.sq13-wb tr.new td,.sq13-wa i{animation:none}}
+html.no-motion .sq13-wb tr.new td,html.no-motion .sq13-wa i{animation:none}
+@media (max-width:640px){.sq13-wv{grid-template-columns:minmax(0,1fr)}.sq13-wa{flex-direction:row;padding:2px 0}.sq13-wa i{transform:rotate(90deg)}.sq13-wb{max-height:220px}}
+/* sql s14 v3 (2026-10-30): sq14Code lines wrap instead of being clipped (the T-SQL THROW lines were cut off at 1100 px in the All-three view); sq14Kinds procedure tab shows the two real rows the call changes (.sq14-eff) */
+.sq14-ln{white-space:pre-wrap;overflow-wrap:anywhere}
+.sq14-eff{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;margin-top:8px}
+.sq14-eff>div{border:1px solid var(--line);border-radius:8px;padding:6px 8px;background:var(--surface);font:400 .7rem "JetBrains Mono",monospace;color:var(--text);min-width:0;overflow-wrap:anywhere}
+.sq14-eff small{display:block;font:600 .6rem Inter,sans-serif;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:3px}
+.sq14-eff s{color:var(--bad);opacity:.8}
+.sq14-eff b{color:var(--good)}
+.sq14-eff>div:first-child{border-color:var(--good);color:var(--good)}
+/* sql s15 v3 (2026-10-30): review pass 2 additions, append after the existing s15 block. #sq15Cap drawn as SVG (clients, nodes, link, packet, answer chips); #sq15Expand "one-liner we avoid" card dims after frame 0 and its error uses .sq15-bangerr. Theme tokens only. */
+.sq15-capv svg{display:block;width:100%;max-width:640px;height:auto;margin:6px auto 0;overflow:visible}
+.sq15-capv text{font:600 11px Inter,sans-serif;fill:var(--muted)}
+.sq15-capv .t1{font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.sq15-capv .t2{font:700 20px "JetBrains Mono",monospace;fill:var(--text)}
+.sq15-capv .t3.bad{fill:var(--bad)}
+.sq15-cnode rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5;transition:stroke .3s}
+.sq15-cnode.old rect{stroke:var(--amber);stroke-width:2}
+.sq15-creq circle{fill:var(--soft);stroke:var(--line);stroke-width:1.5}
+.sq15-creq .ic{font-size:14px;fill:var(--text)}
+.sq15-creq line{stroke:var(--line);stroke-width:2;opacity:.45}
+.sq15-creq.on line{stroke:var(--accent);opacity:1}
+.sq15-creq.on circle{stroke:var(--accent);fill:var(--accent-soft)}
+.sq15-creq.no line{stroke:var(--bad)}
+.sq15-creq.no circle{stroke:var(--bad);fill:var(--bad-soft)}
+.sq15-carr{fill:var(--accent)}
+.sq15-clink{stroke:var(--accent);stroke-width:3;stroke-linecap:round}
+.sq15-clink.cut{stroke:var(--bad);stroke-dasharray:7 7}
+.sq15-ccut{font-size:20px;fill:var(--bad)}
+.sq15-cchip rect{fill:var(--good-soft);stroke:var(--good);stroke-width:1.2}
+.sq15-cchip text{fill:var(--text);font-weight:700}
+.sq15-cchip.no rect{fill:var(--bad-soft);stroke:var(--bad)}
+.sq15-cchip.stale rect{fill:var(--amber-soft);stroke:var(--amber)}
+.sq15-cpkt{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.sq15-cpkt.lost{fill:var(--bad)}
+.sq15-bang{transition:opacity .3s}
+.sq15-bang.sq15-off{opacity:.5}
+.sq15-bangerr{margin-top:8px;padding:8px 12px;border-radius:8px;font:500 .78rem "JetBrains Mono",monospace;color:var(--bad);background:var(--bad-soft);border-left:3px solid var(--bad);overflow-wrap:anywhere}
+@media (max-width:640px){.sq15-capv text{font-size:12px}.sq15-capv .t2{font-size:22px}.sq15-cchip text{font-size:12px}}
+@media (prefers-reduced-motion:reduce){.sq15-cnode rect,.sq15-bang{transition:none}}
+html.no-motion .sq15-cnode rect,html.no-motion .sq15-bang{transition:none}
+/* sql s16 v3 (2026-10-30): review pass 2 additions, append after the existing s16 block. #sq16Tx visibility timeline (.sq16-tl): two lanes (this session / another client), one column per step, future columns "?" for prediction. Theme tokens only. */
+.sq16-tl{display:grid;gap:8px;margin:4px 0 10px}
+.sq16-tlrow{display:grid;grid-template-columns:120px repeat(4,minmax(0,1fr));gap:6px;align-items:stretch}
+.sq16-tlrow>span{font:600 .72rem/1.3 Inter,sans-serif;color:var(--muted);align-self:center;padding-right:4px}
+.sq16-tlc{min-width:0;border:1px dashed var(--line);border-radius:10px;padding:6px 8px;background:transparent;transition:background .3s,border-color .3s}
+.sq16-tlc small{display:block;font:600 .64rem Inter,sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;overflow-wrap:anywhere}
+.sq16-tlc b{display:block;font:700 .76rem "JetBrains Mono",monospace;color:var(--muted);overflow-wrap:anywhere}
+.sq16-tlc i{display:block;font:500 .66rem Inter,sans-serif;color:var(--accent);margin-top:2px}
+.sq16-tlc.on{border-style:solid;background:var(--surface)}
+.sq16-tlc.on b{color:var(--text)}
+.sq16-tlc.on.good{border-color:var(--good)}
+.sq16-tlc.on.bad{border-color:var(--bad);background:var(--bad-soft)}
+.sq16-tlc.on.priv{border-color:var(--accent);background:var(--accent-soft)}
+.sq16-tlc.now{box-shadow:0 0 0 2px var(--accent-fill)}
+@media (max-width:640px){.sq16-tlrow{grid-template-columns:repeat(2,minmax(0,1fr))}.sq16-tlrow>span{grid-column:1/-1}}
+@media (prefers-reduced-motion:reduce){.sq16-tlc{transition:none}}
+html.no-motion .sq16-tlc{transition:none}
+/* sql visualize v2 (2026-10-30): SQ.visualize (labs-sql.js). v2: JOIN frame chips (match / NULL fill / right only, .sqv-pad), join-key highlight visible on the accent-coloured left columns, compound SELECTs (UNION / INTERSECT / EXCEPT) stepped part by part (.sqv-pipe labels are text), kept/added chips */
+.sqv-pad{background:var(--amber-soft);border-color:color-mix(in srgb,var(--amber) 40%,var(--line));border-left-color:var(--amber)}
+.sqv-pad .sqv-chip{color:#fff;background:var(--amber-fill)}
+.sqv-pad span:not(.sqv-l){color:var(--muted)}
+.sqv-hd .sqv-sk{text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:3px}
+.sqv-row .sqv-sk{background:color-mix(in srgb,var(--accent) 16%,transparent);border-radius:4px;padding:0 4px;margin:0 -4px}
+.sqv-row.sqv-keep .sqv-chip:empty{visibility:hidden}
+@media (max-width:640px){.sqv-row .sqv-sk{padding:0 2px;margin:0 -2px}}
+/* sql visualize v2 (2026-10-30): SQ.visualize (labs-sql.js). v2: JOIN frame chips (match / NULL fill / right only, .sqv-pad), join-key highlight visible on the accent-coloured left columns, compound SELECTs (UNION / INTERSECT / EXCEPT) stepped part by part (.sqv-pipe labels are text), kept/added chips */
+.sqv-pad{background:var(--amber-soft);border-color:color-mix(in srgb,var(--amber) 40%,var(--line));border-left-color:var(--amber)}
+.sqv-pad .sqv-chip{color:#fff;background:var(--amber-fill)}
+.sqv-pad span:not(.sqv-l){color:var(--muted)}
+.sqv-hd .sqv-sk{text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:3px}
+.sqv-row .sqv-sk{background:color-mix(in srgb,var(--accent) 16%,transparent);border-radius:4px;padding:0 4px;margin:0 -4px}
+.sqv-row.sqv-keep .sqv-chip:empty{visibility:hidden}
+@media (max-width:640px){.sqv-row .sqv-sk{padding:0 2px;margin:0 -2px}}
