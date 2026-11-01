@@ -19,7 +19,7 @@
 (function(){
   try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
   var app=document.getElementById("app"),esc=AUTH.esc,C=AUTH.COURSES,ME=null,D={people:[],access:[],invites:[]};
-  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",resume:"Resume"};
+  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",resume:"Resume"};
   function card(t,actions){app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">🔒</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
 
   async function load(){
