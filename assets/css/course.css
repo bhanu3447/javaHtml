@@ -3562,6 +3562,7 @@ body.pg-full .pg.pg3{height:100vh;height:100dvh;min-height:0;margin:0;padding-to
 .pg3 .pg-pos{margin-left:auto}
 @media (min-width:981px){.pg-bottom{height:var(--pg-bh,240px)}}
 .pg-why0,.pg-coach[hidden]{display:none!important}
+svg.pg-tree{overflow:visible}
 .pg-hist button{align-items:flex-start}
 .pg-hist .pg-hln,.pg-hist .pg-hev{flex:none}
 .pg-htx{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-width:0}

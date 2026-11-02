@@ -243,7 +243,8 @@
       n.kids.forEach((c,j)=>{if(c<0||par[c]!==i)return;const x1=X[i]+4,y1=y+hh(n),x2=X[c]+4,y2=TOP+D[c]*DY,my=(y1+y2)/2;
         ed+='<path class="'+(on.has(c)?"on":"")+'" d="M'+x1+" "+y1+" C"+x1+" "+my+","+x2+" "+my+","+x2+" "+y2+'"/>';
         const e=n.el&&n.el[j];if(e)lab+='<text class="pg-tel" x="'+((x1+x2)/2)+'" y="'+(my+4)+'">'+esc(e)+"</text>";});
-      const wi=w(n),tg=n.tags&&n.tags.length?'<text class="pg-tnt" y="-6">'+esc(n.tags.join(" · "))+"</text>":"";
+      const wi=w(n),pi=par[i],side=pi==null||pi<0?0:X[pi]<X[i]?1:-1, // the tag sits on the side away from the parent, so it never covers the edge coming in
+        tg=n.tags&&n.tags.length?'<text class="pg-tnt" y="-6"'+(side?' x="'+(side*(wi/2+2))+'" text-anchor="'+(side>0?"start":"end")+'"':"")+">"+esc(n.tags.join(" · "))+"</text>":"";
       nd+='<g class="pg-tn'+(n.c?" "+n.c:"")+(n.hot?" hot":"")+(on.has(i)||n.pin||n.tags&&n.tags.length?" at":"")+'" data-tk="'+esc(n.k)+'" style="transform:translate('+(X[i]+4)+"px,"+y+'px)">'+
         '<rect x="'+(-wi/2)+'" width="'+wi+'" height="'+hh(n)+'" rx="'+(n.t===""?9:8)+'"/><text class="pg-tnv" y="16">'+esc(n.t)+"</text>"+(n.s?'<text class="pg-tns" y="30">'+esc(n.s)+"</text>":"")+tg+(n.cmp?'<text class="pg-tcmp'+(/true$/.test(n.cmp)?" t":" f")+'" x="'+(wi/2+7)+'" y="16">'+esc(n.cmp)+"</text>":"")+"</g>";}
     return '<svg class="pg-tree" width="'+Wd+'" height="'+Ht+'" viewBox="0 0 '+Wd+" "+Ht+'"><g class="pg-te">'+ed+"</g>"+lab+nd+"</svg>";}

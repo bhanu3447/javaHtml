@@ -1114,7 +1114,7 @@
     // R3, Memory off: a small picture is scaled up (≤ 1.8×) and centred; sizes only grow during a run, so the scale settles instead of jumping (never the empty-state message: it was scaled and pushed off the panel)
     let s=1,ox=0;
     if(!memOn&&R&&els.length){const mw=R._mw=Math.max(R._mw||0,maxX),mh=R._mh=Math.max(R._mh||0,y+12),ah=panel.clientHeight-heapEl.offsetTop-24;
-      s=Math.max(FITALL?.4:.8,Math.min(1.8,(W-16)/Math.max(mw,1),ah/Math.max(mh,1)));s=Math.floor(s*20)/20;
+      s=Math.max(FITALL?.4:.9,Math.min(1.8,(W-16)/Math.max(mw,1),ah/Math.max(mh,1)));s=Math.floor(s*20)/20;
       if(S.ev==="end"||els.every(([,el])=>el.classList.contains("pg-gone")))s=Math.min(s,1);} // v5: a tall picture zooms out to fit; garbage is never enlarged
     if(UZ!==1)s=Math.round(s*UZ*100)/100;
     if(!memOn&&R&&els.length)ox=Math.max(0,Math.floor((W-(R._mw||maxX)*s)/2));
@@ -1294,7 +1294,8 @@
   const galBody=q(".pg-galb2",gal),galS=q(".pg-gals",gal);
   function galDraw(){const f=galS.value.trim().toLowerCase();let h="";
     const groups=new Map();EX.forEach((e,i)=>{const c=catOf(e.name);if(f&&!(e.name+" "+c[0]+" "+c[1]).toLowerCase().includes(f))return;if(!groups.has(c[0]))groups.set(c[0],{c,items:[]});groups.get(c[0]).items.push(i);});
-    for(const {c,items} of groups.values()){h+='<div class="pg-gsec"><h3>'+H(c[0])+(c[1]?" <small>"+H(c[1])+"</small>":"")+'</h3><div class="pg-galg">';
+    const cix=n=>{const i=CATS.findIndex(x=>x[0]===n);return i<0?99:i;}; // groups in the planned order, not in the order of the first example
+    for(const {c,items} of [...groups.values()].sort((x,y)=>cix(x.c[0])-cix(y.c[0]))){h+='<div class="pg-gsec"><h3>'+H(c[0])+(c[1]?" <small>"+H(c[1])+"</small>":"")+'</h3><div class="pg-galg">';
       for(const i of items){const e=EX[i],l=lessonOf(e.name);
         h+='<div class="pg-gcard'+(i===curEx?" on":"")+'"><button type="button" data-ex="'+i+'"><svg viewBox="0 0 68 28" aria-hidden="true">'+GLYPH[c[3]]+"</svg><b>"+H(e.name)+"</b><small>"+H(e.file)+"</small></button>"+
           (l?'<a href="'+l[2]+'" title="The lesson that teaches this">'+l[1]+" lesson ↗</a>":"")+"</div>";}
