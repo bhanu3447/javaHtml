@@ -3442,6 +3442,27 @@ body.pg-full .pg.pg3{height:100vh;height:100dvh;min-height:0;margin:0;padding-to
   body.pg-full .pg3 .pg-ctl{top:0}
 }
 @media (max-width:600px){.pg-opts{width:100%}.pg-tog{flex:1 1 auto}}
+/* playground v4: UX pass (2026-11-02). A compact header so the workspace starts near the top, a narrower default editor
+   so the picture and the three bottom panels get the room, a centred empty state, and a full-width Examples picker on phones. */
+.pg-head{padding:16px 0 4px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 16px}
+.pg-head .tag{margin:0}
+#top.pg-head h1{font-size:clamp(1.45rem,2.3vw,1.95rem);margin:0;letter-spacing:-.02em;line-height:1.15}
+.pg-head .lead{flex:1 1 100%;max-width:none;margin:2px 0 0;font-size:.88rem;line-height:1.5;color:var(--muted)}
+@media (min-width:981px){
+  .pg.pg3{grid-template-columns:minmax(260px,var(--pg-lw,36%)) 10px minmax(0,1fr);height:calc(100vh - 176px);height:calc(100dvh - 176px);min-height:560px;margin-top:6px}
+  body.pg-full .pg.pg3{height:100vh;height:100dvh}
+  .pg-bottom{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,.85fr)}
+}
+#pgHeap>.pg-empty{max-width:420px;margin:44px auto 0;text-align:center;font-size:.86rem;line-height:1.6;padding:18px 20px;border:1px dashed var(--line);border-radius:14px;background:color-mix(in srgb,var(--soft) 60%,transparent)}
+#pgHeap>.pg-empty b{display:block;color:var(--text);font-size:.95rem;margin-bottom:4px}
+#pgHeap>.pg-empty code{font:.8rem "JetBrains Mono",monospace;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:0 5px}
+#pgv .code>.bar{flex-wrap:nowrap;min-width:0}
+#pgv .code>.bar .dots{display:none}
+#pgv .code>.bar .fn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pgv .code>.bar :is(.sw,.ib){flex:none;order:0}
+#pgv .code>.bar .sp{flex:1 1 auto;order:0;margin:0;border:0}
+#pgv .code>.bar .fn{flex:0 1 auto}
+@media (max-width:760px){.pg-pick select{max-width:none}}
 @media (prefers-reduced-motion:reduce){.pg-tagmv .pg-vtag{animation:none}.pg-tr,.pg-tr::after{transition:none}}
 /* DSA views (Phase 2): index markers, lo..hi range, swaps, bars, grids, characters, bits, intervals, "Show as" menu */
 .pg-cells{position:relative}

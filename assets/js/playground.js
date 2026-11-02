@@ -1059,7 +1059,7 @@
     const touched=new Set();for(const k of chg)if(k[0]==="h"){const i=k.indexOf(":");touched.add(i<0?k.slice(1):k.slice(1,i));}
     for(const id of touched)for(const bid of [+id,M.rowOf.get(+id)]){const el=bid!=null&&DRAWN.get(bid);if(!el||!el.isConnected)continue;for(const c of qa("[data-k]",el))if(chg.has(c.dataset.k)){c.classList.add("pg-chg");flashed.push(c);}}
     layout(S,els);
-    if(!els.length&&!M.pool.length)heapEl.innerHTML='<div class="pg-empty">'+(memOn?"The heap is empty: no objects yet.":"No arrays, collections or objects yet. Plain values (int, double, String…) are in the Variables table.")+"</div>";}
+    if(!els.length&&!M.pool.length)heapEl.innerHTML='<div class="pg-empty">'+(memOn?"<b>The heap is empty.</b>Objects appear here the moment <code>new</code> runs.":"<b>Nothing to draw yet.</b>Step forward (→ or ▶): arrays, lists, maps and objects appear here the moment they are created. Plain values (int, double, String…) are in the Variables table.")+"</div>";}
   /* ---------- layout: linked chains in a row, trees top-down, everything else flows ---------- */
   function layout(S,els){
     const W=Math.max(320,heapEl.clientWidth||600),GX=34,GY=memOn?42:44; // Memory off: room for the variable tags above each box
@@ -1104,10 +1104,10 @@
     y+=rowH;
     for(const [id,el] of els){const c=cyc.get(id)||"";if(c===(el._cy||""))continue;el._cy=c;const t=q(".pg-gtag.cy",el);if(t)t.remove();
       el.classList.toggle("pg-cyin",c==="in");if(c&&c!=="in")el.insertAdjacentHTML("afterbegin",'<span class="pg-gtag cy">'+c+"</span>");}
-    // R3, Memory off: a small picture is scaled up (≤ 1.45×) and centred; sizes only grow during a run, so the scale settles instead of jumping
+    // R3, Memory off: a small picture is scaled up (≤ 1.8×) and centred; sizes only grow during a run, so the scale settles instead of jumping (never the empty-state message: it was scaled and pushed off the panel)
     let s=1,ox=0;
-    if(!memOn&&R){const mw=R._mw=Math.max(R._mw||0,maxX),mh=R._mh=Math.max(R._mh||0,y+12),ah=panel.clientHeight-heapEl.offsetTop-24;
-      s=Math.max(1,Math.min(1.45,(W-16)/Math.max(mw,1),ah/Math.max(mh,1)));s=Math.floor(s*20)/20;ox=Math.max(0,Math.floor((W-mw*s)/2));}
+    if(!memOn&&R&&els.length){const mw=R._mw=Math.max(R._mw||0,maxX),mh=R._mh=Math.max(R._mh||0,y+12),ah=panel.clientHeight-heapEl.offsetTop-24;
+      s=Math.max(1,Math.min(1.8,(W-16)/Math.max(mw,1),ah/Math.max(mh,1)));s=Math.floor(s*20)/20;ox=Math.max(0,Math.floor((W-mw*s)/2));}
     const xf=s>1||ox?"translate("+ox+"px,0) scale("+s+")":"";if(heapEl.style.transform!==xf)heapEl.style.transform=xf;heapEl._s=s;
     heapEl.style.height=Math.max(60,y+12)+"px";heapEl.style.marginBottom=s>1?Math.round((y+12)*(s-1))+"px":"";heapEl.style.minWidth=Math.max(0,maxX+12)+"px";
     // boxes appear where they belong; only boxes that move later glide
