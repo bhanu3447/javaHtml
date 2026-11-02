@@ -8168,3 +8168,83 @@ html.no-motion .sq07-gr .ch i{animation:none}
 .ds08-map{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:6px 0;font:600 .76rem "JetBrains Mono",monospace}
 .ds08-map span{color:var(--muted);width:52px}.ds08-map i{font-style:normal;padding:2px 8px;border-radius:8px;border:1px solid var(--line);background:var(--soft)}.ds08-map em{color:var(--muted);font-style:normal}
 @media (prefers-reduced-motion: reduce){.ds08-n b{transition:none}}
+
+/* dsa D09 labs v1 (labs-dsa-09.js: #ds09Stack #ds09Ring #ds09Brackets #ds09Min #ds09Mono #ds09Hist #ds09TwoSt #ds09Win #ds09Drill); piles .ds09-stk > .ds09-pile (bottom → top), cell rows .ds09-row of .ds09-c, bars .ds09-bars; state classes n9* */
+.ds09-lab{font:600 .7rem "JetBrains Mono",monospace;color:var(--muted);width:56px;flex:none}
+.ds09-stk{display:flex;align-items:flex-end;gap:6px;margin:10px 0}
+.ds09-pile{display:flex;flex-direction:column-reverse;gap:4px;min-width:150px;padding:6px;border:2px solid var(--line);border-top:none;border-radius:0 0 10px 10px;min-height:44px}
+.ds09-pile b{padding:6px 12px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font:600 .8rem "JetBrains Mono",monospace;text-align:center;white-space:nowrap;transition:background .3s,border-color .3s}
+.ds09-pile b small{color:var(--muted);font-weight:500}.ds09-pile em{color:var(--muted);font:500 .76rem "JetBrains Mono",monospace;font-style:normal;text-align:center}
+.ds09-pile b.n9top{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft)}
+.ds09-pile b.n9new{background:var(--accent-soft)}.ds09-pile b.n9hit{background:var(--amber-soft);border-color:var(--amber)}
+.ds09-two{display:flex;flex-wrap:wrap;gap:8px 24px}
+.ds09-row{display:flex;gap:5px;align-items:center;margin:10px 0;min-width:max-content}
+.ds09-c{display:flex;flex-direction:column;align-items:center;gap:3px}
+.ds09-c b{min-width:40px;height:38px;padding:0 6px;display:grid;place-items:center;border-radius:9px;border:1px solid var(--line);background:var(--surface);font:700 .8rem "JetBrains Mono",monospace;transition:background .3s,border-color .3s,transform .3s}
+.ds09-c small{min-height:1.2em;font:600 .62rem "JetBrains Mono",monospace;color:var(--muted);white-space:nowrap}
+.ds09-c.n9on b{border-color:var(--accent);background:var(--accent-soft);transform:translateY(-3px)}
+.ds09-c.n9hit b,.ds09-c.n9new b{border-color:var(--amber);background:var(--amber-soft)}
+.ds09-c.n9bad b{border-color:var(--bad);background:var(--bad-soft)}.ds09-c.n9dim b{opacity:.45}
+.ds09-c.n9wait b{box-shadow:inset 0 -3px 0 var(--amber)}.ds09-c.n9done b{border-color:var(--good);background:var(--good-soft)}
+.ds09-c.n9win b{box-shadow:inset 0 -3px 0 var(--accent)}.ds09-c.n9fr b{border-color:var(--good);background:var(--good-soft)}.ds09-c.n9fr small{color:var(--good)}
+.ds09-bars{display:flex;align-items:flex-end;gap:6px;margin:10px 0;min-height:120px}
+.ds09-bars span{display:flex;flex-direction:column;align-items:center;gap:2px;width:38px}
+.ds09-bars i{display:block;width:100%;border-radius:6px 6px 0 0;background:var(--soft);border:1px solid var(--line);transition:background .3s}
+.ds09-bars b{font:700 .78rem "JetBrains Mono",monospace}.ds09-bars small{font:500 .62rem "JetBrains Mono",monospace;color:var(--muted)}
+.ds09-bars .n9inst i{border-color:var(--accent)}.ds09-bars .n9rect i{background:var(--good-soft);border-color:var(--good)}.ds09-bars .n9cur b{color:var(--accent)}
+@media (prefers-reduced-motion: reduce){.ds09-pile b,.ds09-c b,.ds09-bars i{transition:none}}
+
+/* dsa D10 labs v1 (labs-dsa-10.js: #ds10Terms #ds10Dfs #ds10Iter #ds10Bfs #ds10Height #ds10Diam #ds10Path #ds10Lca #ds10Build #ds10Drill); SVG trees .ds10-tr (node groups g.ds10-g, edges .ds10-e, tags .ds10-tg), state classes m10*, list rows .ds10-row */
+.ds10-tr{display:block;margin:8px 0;max-width:none;overflow:visible}
+.ds10-e{stroke:var(--line);stroke-width:2;transition:stroke .3s}.ds10-e.m10path{stroke:var(--good);stroke-width:4}
+.ds10-g circle{fill:var(--surface);stroke:var(--muted);stroke-width:1.5;transition:fill .3s,stroke .3s}
+.ds10-g text{font:700 13px "JetBrains Mono",monospace;fill:var(--text);text-anchor:middle}
+.ds10-g text.ds10-tg{font:700 11px "JetBrains Mono",monospace;fill:var(--accent);text-anchor:start}
+.ds10-g.m10on circle{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
+.ds10-g.m10hit circle{fill:var(--amber-soft);stroke:var(--amber);stroke-width:2}
+.ds10-g.m10ok circle{fill:var(--good-soft);stroke:var(--good);stroke-width:2}
+.ds10-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:8px 0;font:600 .8rem "JetBrains Mono",monospace}
+.ds10-row b{min-width:30px;padding:4px 8px;text-align:center;border-radius:8px;border:1px solid var(--line);background:var(--surface);transition:background .3s,border-color .3s}
+.ds10-row em{color:var(--muted);font-style:normal;font-weight:500}
+.ds10-row b.m10on{border-color:var(--accent);background:var(--accent-soft)}.ds10-row b.m10hit{border-color:var(--amber);background:var(--amber-soft)}.ds10-row b.m10ok{border-color:var(--good);background:var(--good-soft)}
+.ds10-lab{color:var(--muted);width:118px;flex:none;font-size:.7rem}
+@media (prefers-reduced-motion: reduce){.ds10-e,.ds10-g circle,.ds10-row b{transition:none}}
+
+/* dsa D11 labs v1 (labs-dsa-11.js: #ds11Search #ds11Insert #ds11Delete #ds11Valid #ds11Kth #ds11Floor #ds11Rotate #ds11Drill); SVG trees .ds11-tr (g.ds11-g, edges .ds11-e, tags .ds11-tg), state classes p11*, list rows .ds11-row */
+.ds11-tr{display:block;margin:8px 0;max-width:none;overflow:visible}
+.ds11-e{stroke:var(--line);stroke-width:2}
+.ds11-g circle{fill:var(--surface);stroke:var(--muted);stroke-width:1.5;transition:fill .3s,stroke .3s}
+.ds11-g text{font:700 12px "JetBrains Mono",monospace;fill:var(--text);text-anchor:middle}
+.ds11-g text.ds11-tg{font:700 10px "JetBrains Mono",monospace;fill:var(--accent);text-anchor:start}
+.ds11-g.p11on circle{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
+.ds11-g.p11hit circle{fill:var(--amber-soft);stroke:var(--amber);stroke-width:2}
+.ds11-g.p11ok circle{fill:var(--good-soft);stroke:var(--good);stroke-width:3}
+.ds11-g.p11bad circle{fill:var(--bad-soft);stroke:var(--bad);stroke-width:3}
+.ds11-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:8px 0;font:600 .8rem "JetBrains Mono",monospace}
+.ds11-row b{min-width:30px;padding:4px 8px;text-align:center;border-radius:8px;border:1px solid var(--line);background:var(--surface)}
+.ds11-row em{color:var(--muted);font-style:normal;font-weight:500}
+.ds11-lab{color:var(--muted);width:118px;flex:none;font-size:.7rem}
+@media (prefers-reduced-motion: reduce){.ds11-g circle{transition:none}}
+
+/* dsa D12 labs v1 (labs-dsa-12.js: #ds12Layout #ds12Sift #ds12Heapify #ds12TopK #ds12Merge #ds12Median #ds12Drill); heap tree .ds12-tr (g.ds12-g, edges .ds12-e, tags .ds12-tg) + array .ds12-arr, state classes q12*, value rows .ds12-row */
+.ds12-tr{display:block;margin:8px 0;max-width:none;overflow:visible}
+.ds12-e{stroke:var(--line);stroke-width:2}
+.ds12-g circle{fill:var(--surface);stroke:var(--muted);stroke-width:1.5;transition:fill .3s,stroke .3s}
+.ds12-g text{font:700 12px "JetBrains Mono",monospace;fill:var(--text);text-anchor:middle}
+.ds12-g text.ds12-tg{font:700 10px "JetBrains Mono",monospace;fill:var(--accent);text-anchor:start}
+.ds12-g.q12on circle{fill:var(--accent-soft);stroke:var(--accent);stroke-width:3}
+.ds12-g.q12hit circle{fill:var(--amber-soft);stroke:var(--amber);stroke-width:2.5}
+.ds12-g.q12ok circle{fill:var(--good-soft);stroke:var(--good);stroke-width:2.5}
+.ds12-arr{display:flex;gap:4px;margin:8px 0;min-width:max-content}
+.ds12-arr span{display:flex;flex-direction:column;align-items:center;gap:2px}
+.ds12-arr b{min-width:36px;height:34px;display:grid;place-items:center;border-radius:8px;border:1px solid var(--line);background:var(--surface);font:700 .8rem "JetBrains Mono",monospace;transition:background .3s,border-color .3s}
+.ds12-arr small{font:500 .62rem "JetBrains Mono",monospace;color:var(--muted)}
+.ds12-arr .q12on b{border-color:var(--accent);background:var(--accent-soft)}.ds12-arr .q12hit b{border-color:var(--amber);background:var(--amber-soft)}
+.ds12-arr .q12ok b{border-color:var(--good);background:var(--good-soft)}.ds12-arr .q12done b{border-color:var(--good);background:var(--good-soft);opacity:.75}
+.ds12-row{display:flex;flex-wrap:wrap;gap:5px;align-items:center;margin:8px 0;font:600 .8rem "JetBrains Mono",monospace}
+.ds12-row b{min-width:30px;padding:4px 8px;text-align:center;border-radius:8px;border:1px solid var(--line);background:var(--surface);transition:background .3s,border-color .3s}
+.ds12-row em{color:var(--muted);font-style:normal;font-weight:500}
+.ds12-row b.q12on{border-color:var(--accent);background:var(--accent-soft)}.ds12-row b.q12hit{border-color:var(--amber);background:var(--amber-soft)}
+.ds12-row b.q12ok{border-color:var(--good);background:var(--good-soft)}.ds12-row b.q12done{opacity:.4}
+.ds12-lab{color:var(--muted);width:118px;flex:none;font-size:.7rem}
+@media (prefers-reduced-motion: reduce){.ds12-g circle,.ds12-arr b,.ds12-row b{transition:none}}
