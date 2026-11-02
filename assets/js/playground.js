@@ -47,7 +47,7 @@
   let objMode=LS.get("js1-pg-objs")==="1",memOn=LS.get("js1-pg-mem")==="1";
   const OM=()=>objMode&&memOn; // Strings and boxes as their own objects: a Memory-view option only
   const speed=()=>{const v=parseFloat(speedSel.value);return isNaN(v)?1:v;}; // 0 = Instant
-  let UZ=1; // v4: the user zoom (− Fit +), multiplies the picture scale
+  let UZ=1,FITALL=false; // v4: the user zoom (− Fit +), multiplies the picture scale; v5: Fit shrinks a tall picture until all of it shows
   speedSel.value=LS.get("js1-pg-speed")||"1";if(!speedSel.value)speedSel.value="1";
   /* ---------- running ---------- */
   function visualize(){
@@ -70,6 +70,7 @@
     if(histEl)histEl.innerHTML="";if(htab==="hist")setHTab("con"); // the error is in the Console
     con.innerHTML='<span class="pg-err">'+H((e.line?"Line "+e.line+": ":"")+e.msg)+"</span>";conInfo.textContent=e.kind==="compile"?"did not compile":"stopped";
     why.innerHTML='<b class="pg-bad">'+(e.kind==="compile"?"Compile error":"Can't visualize this program")+"</b> · "+H((e.line?"line "+e.line+": ":"")+e.msg.split("\n")[0])+(e.kind!=="compile"?" · try <b>Run on a real JDK</b>":"");
+    heapEl.style.height="";heapEl.innerHTML='<div class="pg-empty pg-errc"><b>'+(e.kind==="compile"?"The program does not compile":"This program cannot be visualized")+(e.line?" · line "+e.line:"")+"</b><code>"+H(e.msg.split("\n")[0])+"</code>"+(e.kind==="compile"?"Fix the highlighted line in the editor, then press <b>▶ Visualize</b> (Ctrl+Enter).":"It may use a library the visualizer does not know. <b>Run on a real JDK</b> still runs it.")+"</div>";
     if(e.line)markErr(e.line);}
   function markErr(line){const c=cm();if(!c||line<1||line>c.lineCount())return;errMark=c.addLineClass(line-1,"background","pg-errline");}
   function clearErr(){const c=cm();if(c&&errMark){c.removeLineClass(errMark,"background","pg-errline");errMark=null;}}
@@ -133,21 +134,21 @@
     if(!lo){histEl.innerHTML='<li class="pg-dim">Nothing has happened yet: step forward with → and every step that changes something is listed here.</li>';return;}
     const from=Math.max(0,lo-60);let h=from?'<li class="pg-dim">… '+N(from)+" earlier steps</li>":"";
     for(let i=from;i<lo;i++){const j=HI[i],r=R._hr&&R._hr[j]||((R._hr=R._hr||{})[j]=histRow(j));
-      h+='<li'+(i===lo-1?' class="on"':"")+'><button type="button" data-hk="'+j+'"><span class="pg-hln">'+(r.l?"L"+r.l:"")+"</span>"+(r.ev?'<b class="pg-hev '+r.ev+'">'+{call:"call",ret:"return",ex:"throw",end:"end"}[r.ev]+"</b>":"")+H(r.t)+"</button></li>";}
+      h+='<li'+(i===lo-1?' class="on"':"")+'><button type="button" data-hk="'+j+'" title="'+H((r.l?"line "+r.l+": ":"")+r.t)+'"><span class="pg-hln">'+(r.l?"L"+r.l:"")+"</span>"+(r.ev?'<b class="pg-hev '+r.ev+'">'+{call:"call",ret:"return",ex:"throw",end:"end"}[r.ev]+"</b>":"")+'<span class="pg-htx">'+H(r.t)+"</span></button></li>";}
     histEl.innerHTML=h;histEl.scrollTop=histEl.scrollHeight;}
   // an effect sentence without the Memory-view details (cached boxes, the String pool) when Memory is off
   const effTxt=w=>!w||memOn?w:w.split("; ").filter(x=>!/reuses the cached box|already in the String pool/.test(x)).join("; ");
   function whyLine(S){
     let t=effTxt(S.why);const pl=K>0&&S.ev==="line"&&t?R.steps[K-1].l:0;
-    if(pl){why.innerHTML='<span class="pg-jr">line '+pl+" just ran</span>"+H(t);return;} // the step's sentence is what the previous line did
+    if(pl){why.classList.remove("pg-why0");why.innerHTML='<span class="pg-jr">line '+pl+" just ran</span>"+H(t);return;} // the step's sentence is what the previous line did
     if(!t){const f=S.frames.filter(x=>x.fr).pop();
       switch(S.ev){case "call":t=f?"enter "+f.name+": a new frame is pushed":"";break;
         case "return":t=f?f.name+" returns"+(f.ret&&f.ret.p!=="void"?" "+valTxt(f.ret,S):"")+", and its frame is popped next":"";break;
         case "exception":t="an exception is thrown here";break;
         case "gc":t="System.gc() runs the garbage collector";break;
         case "end":t=R.uncaught?"the exception was never caught, so the program ends and the JVM prints the stack trace":"main returned: the program is finished";break;
-        default:t=K===0?"the program starts":S.line?"line "+S.line+" runs next":"";}}
-    why.innerHTML=(S.ev==="exception"?'<b class="pg-bad">Exception</b> · ':S.ev==="call"?'<b class="pg-acc">Call</b> · ':S.ev==="return"?'<b class="pg-acc">Return</b> · ':S.ev==="end"?'<b class="pg-good">End</b> · ':S.ev==="gc"?'<b class="pg-bad">GC</b> · ':"")+(t?H(t):"&nbsp;");}
+        default:t=K===0?"the program starts":"";}} // v5: nothing new to say → the bar hides (the card already shows the line)
+    why.innerHTML=(S.ev==="exception"?'<b class="pg-bad">Exception</b> · ':S.ev==="call"?'<b class="pg-acc">Call</b> · ':S.ev==="return"?'<b class="pg-acc">Return</b> · ':S.ev==="end"?'<b class="pg-good">End</b> · ':S.ev==="gc"?'<b class="pg-bad">GC</b> · ':"")+(t?H(t):"&nbsp;");why.classList.toggle("pg-why0",!t&&S.ev==="line");}
   /* ---------- the Current-line card: what the highlighted line does, what happens when it runs (the next step's record), what runs next ---------- */
   const srcLine=l=>{const c=cm();const t=c&&l>0&&l<=c.lineCount()?c.getLine(l-1):(getCode().split("\n")[l-1]||"");return t.trim();};
   const frameOf=(S,id)=>S.frames.find(f=>f.id===id);
@@ -238,7 +239,7 @@
     for(const c of S.frames.filter(x=>x.st))for(const v of c.vars)rows.push({n:c.name+"."+v.n,t:v.t,v:v.v,sc:"static",rec:c.id,f:v.n,key:c.id+":"+v.n});
     watchInfo.textContent=fr?"in "+fr.name:"";
     if(!rows.length){watchEl.innerHTML='<div class="pg-empty">'+(S.ev==="end"?"The program has finished.":"No variables yet in "+(fr?fr.name:"this method")+".")+"</div>";return;}
-    let h='<table class="pg-wt"><thead><tr><th>Variable</th><th>Value <small>(before → now when it just changed)</small></th></tr></thead><tbody>';
+    let h='<table class="pg-wt"><thead><tr><th>Variable</th><th title="A value that the last line changed reads before → now">Value</th></tr></thead><tbody>';
     for(const w of rows){
       const cur=sig(w.v),changed=chg.has(w.key),inner=w.v&&w.v.r!==undefined&&[...chg].some(k=>k.startsWith("h"+w.v.r+":"));
       const p=changed?prevOf(w.rec,w.f,cur):null;
@@ -1113,11 +1114,12 @@
     // R3, Memory off: a small picture is scaled up (≤ 1.8×) and centred; sizes only grow during a run, so the scale settles instead of jumping (never the empty-state message: it was scaled and pushed off the panel)
     let s=1,ox=0;
     if(!memOn&&R&&els.length){const mw=R._mw=Math.max(R._mw||0,maxX),mh=R._mh=Math.max(R._mh||0,y+12),ah=panel.clientHeight-heapEl.offsetTop-24;
-      s=Math.max(1,Math.min(1.8,(W-16)/Math.max(mw,1),ah/Math.max(mh,1)));s=Math.floor(s*20)/20;}
+      s=Math.max(FITALL?.4:.8,Math.min(1.8,(W-16)/Math.max(mw,1),ah/Math.max(mh,1)));s=Math.floor(s*20)/20;
+      if(S.ev==="end"||els.every(([,el])=>el.classList.contains("pg-gone")))s=Math.min(s,1);} // v5: a tall picture zooms out to fit; garbage is never enlarged
     if(UZ!==1)s=Math.round(s*UZ*100)/100;
     if(!memOn&&R&&els.length)ox=Math.max(0,Math.floor((W-(R._mw||maxX)*s)/2));
     const xf=s!==1||ox?"translate("+ox+"px,0) scale("+s+")":"";if(heapEl.style.transform!==xf)heapEl.style.transform=xf;heapEl._s=s;
-    heapEl.style.height=Math.max(60,y+12)+"px";heapEl.style.marginBottom=s!==1?Math.round((y+12)*(s-1))+"px":"";heapEl.style.marginRight=s!==1?Math.round((maxX+12)*(s-1))+"px":"";heapEl.style.minWidth=Math.max(0,maxX+12)+"px";
+    heapEl.style.height=Math.max(60,y+12)+"px";heapEl.style.marginBottom=s!==1?Math.round((y+12)*(s-1))+"px":"";heapEl.style.marginRight=s>1?Math.round((maxX+12)*(s-1))+"px":""; // never negative: that widens the heap and the next layout wraps widerheapEl.style.minWidth=Math.max(0,maxX+12)+"px";
     // boxes appear where they belong; only boxes that move later glide
     for(const [,el] of els)if(el._fresh){el.classList.add("pg-place");el._fresh=false;requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove("pg-place")));}}
   /* ---------- arrows ---------- */
@@ -1339,9 +1341,9 @@
   tl.addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(b){stop();go(+b.dataset.k);}});
   /* zoom and pan: − Fit + over the picture; Ctrl+wheel zooms; drag the empty background to pan; keys + − 0 */
   const zm=document.createElement("div");zm.className="pg-zoom";zm.setAttribute("role","group");zm.setAttribute("aria-label","Zoom the picture");
-  zm.innerHTML='<button type="button" class="ib" data-z="-" title="Zoom out (−)" aria-label="Zoom out">−</button><button type="button" class="ib pg-zfit" data-z="0" title="Fit the picture (0)">Fit</button><button type="button" class="ib" data-z="+" title="Zoom in (+)" aria-label="Zoom in">+</button>';
+  zm.innerHTML='<button type="button" class="ib" data-z="-" title="Zoom out (−)" aria-label="Zoom out">−</button><button type="button" class="ib pg-zfit" data-z="0" title="Fit: shrink the picture until all of it shows (0)" aria-pressed="false">Fit</button><button type="button" class="ib" data-z="+" title="Zoom in (+)" aria-label="Zoom in">+</button>';
   panel.prepend(zm);
-  function zoom(z){UZ=z==="0"?1:Math.max(.4,Math.min(3,UZ*(z==="+"?1.2:1/1.2)));q(".pg-zfit",zm).textContent=UZ===1?"Fit":Math.round(UZ*100)+"%";if(R&&R.steps.length){DRAWN.forEach(el=>el._w=0);render();}}
+  function zoom(z){FITALL=z==="0";UZ=z==="0"?1:Math.max(.4,Math.min(3,UZ*(z==="+"?1.2:1/1.2)));const fb=q(".pg-zfit",zm);fb.textContent=UZ===1?"Fit":Math.round(UZ*100)+"%";fb.classList.toggle("on",FITALL);fb.setAttribute("aria-pressed",String(FITALL));if(R&&R.steps.length){DRAWN.forEach(el=>el._w=0);render();}}
   zm.addEventListener("click",e=>{const b=e.target.closest("[data-z]");if(b)zoom(b.dataset.z);});
   panel.addEventListener("wheel",e=>{if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();zoom(e.deltaY<0?"+":"-");},{passive:false});
   panel.addEventListener("pointerdown",e=>{if(e.button!==0||e.pointerType==="touch"||e.target.closest(".pg-box,button,select,input,label,a,.pg-frame,.pg-cls"))return;
@@ -1377,8 +1379,10 @@
     const n=r.len,lo=SRT.kind==="tail"?n-o:0,hi=SRT.kind==="tail"?n:o;if(hi-lo<1)return;
     for(let i=lo;i<hi;i++){const c=el.querySelector('[data-k="h'+r.id+":"+i+'"]');if(c)c.classList.add("pg-srt");}
     const cells=el.querySelector(".pg-cells");if(cells)cells.insertAdjacentHTML("afterend",'<div class="pg-srtl">✓ in place: '+(lo===hi-1?"["+lo+"]":"["+lo+"…"+(hi-1)+"]")+"</div>");}
-  function v4after(){if(!R||!R.steps.length)return;timeline();if(!memOn)sortedMarks(JVML.state(R,K));if(coach&&K>=2)coachDone();}
+  function v4after(){if(!R||!R.steps.length)return;PGhost.classList.remove("pg-nosteps");if(coach)coach.hidden=false;timeline();if(!memOn)sortedMarks(JVML.state(R,K));if(coach&&K>=2)coachDone();}
   render=(r0=>function(){r0();v4after();})(render);
+  // v5: a program that does not run leaves nothing to step: no timeline marks, no hint, the step buttons dimmed
+  showFatal=(f0=>function(){f0();tl.innerHTML="";tlKey="";if(coach)coach.hidden=true;PGhost.classList.add("pg-nosteps");})(showFatal);
   /* ---------- start: shared link > saved work > default example ---------- */
   (async()=>{
     const h=location.hash.match(/code=([A-Za-z0-9_-]+)/),hin=location.hash.match(/[&#]in=([A-Za-z0-9_-]*)/);

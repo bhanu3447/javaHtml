@@ -112,7 +112,7 @@ function parse(src){
   const is=(v,k=0)=>{const t=T[p+k];return (t.t==="op"||t.t==="kw")&&t.v===v;};
   const isId=(k=0)=>T[p+k].t==="id";
   const acc=v=>{if(is(v)){p++;return true;}return false;};
-  const ex=v=>{if(!is(v))E("'"+v+"' expected"+(T[p].t!=="eof"?", found '"+T[p].v+"'":" (reached end of file)"));return T[p++];};
+  const ex=v=>{if(!is(v))E("'"+v+"' expected"+(T[p].t!=="eof"?", found '"+T[p].v+"'":" (reached end of file)"),(v===";"||v===")"||v==="]")&&p>0?T[p-1]:undefined);return T[p++];}; // like javac: a missing ; ) ] is reported on the line of the token before it
   const exId=()=>{if(!isId())E("<identifier> expected"+(T[p].t!=="eof"?", found '"+T[p].v+"'":""));return T[p++].v;};
   const srcOf=(a,b)=>src.replace(/\r\n?/g,"\n").slice(a,b);
   /* '>' merging: the lexer never produces >> or >>>, so generics close cleanly */
