@@ -7,7 +7,7 @@
 "use strict";
 (function(G){
 const VERSION="1.0";
-const MAX_STEPS=50000,MAX_DEPTH=2000,CP_EVERY=256;
+const MAX_STEPS=50000,MAX_DEPTH=2000,CP_EVERY=256,RUN_CAP=3000000,RUN_MS=3000; // record 50,000 steps, then run on unrecorded up to 3,000,000 statements / 3 s
 
 class CompileError extends Error{constructor(line,msg){super(msg);this.line=line;}}
 
@@ -104,6 +104,7 @@ const MODS=new Set(["public","private","protected","static","final","abstract","
 const BINP={"||":1,"&&":2,"|":3,"^":4,"&":5,"==":6,"!=":6,"<":7,">":7,"<=":7,">=":7,"instanceof":7,"<<":8,">>":8,">>>":8,"+":9,"-":9,"*":10,"/":10,"%":10};
 const ASSIGN=new Set(["=","+=","-=","*=","/=","%=","&=","|=","^=","<<=",">>=",">>>="]);
 
+const CMPOP=new Set(["<",">","<=",">=","==","!="]);
 function parse(src){
   const T=lex(src);let p=0;
   const pk=(k=0)=>T[p+k],nx=()=>T[p++];
@@ -225,15 +226,15 @@ function parse(src){
     if(acc(";"))return {k:"Empty",line};
     if(t.t==="id"&&is(":",1)&&!is("::",1)){p+=2;return {k:"Labeled",label:t.v,body:stmt(),line};}
     if(t.t==="kw")switch(t.v){
-      case "if":{p++;ex("(");const c=expr();ex(")");const th=stmt();let el=null;if(acc("else"))el=stmt();return {k:"If",c,th,el,line};}
-      case "while":{p++;ex("(");const c=expr();ex(")");return {k:"While",c,body:stmt(),line};}
-      case "do":{p++;const body=stmt();const cl=ex("while").line;ex("(");const c=expr();ex(")");ex(";");return {k:"Do",body,c,cline:cl,line};}
+      case "if":{p++;ex("(");const c=cx();ex(")");const th=stmt();let el=null;if(acc("else"))el=stmt();return {k:"If",c,th,el,line};}
+      case "while":{p++;ex("(");const c=cx();ex(")");return {k:"While",c,body:stmt(),line};}
+      case "do":{p++;const body=stmt();const cl=ex("while").line;ex("(");const c=cx();ex(")");ex(";");return {k:"Do",body,c,cline:cl,line};}
       case "for":{p++;ex("(");
         if(isLocalDecl()){const s=p;let fin=false;while(is("final")||is("@")){if(acc("final"))continue;skipAnno();}const ty=type();const nm=exId();
           if(acc(":")){const it=expr();ex(")");return {k:"ForEach",t:ty,n:nm,it,body:stmt(),line};}
           p=s;}
         const init=[];if(!is(";")){if(isLocalDecl())init.push(localDecl());else{init.push({k:"ExprS",e:expr(),line});while(acc(","))init.push({k:"ExprS",e:expr(),line});}}
-        ex(";");const c=is(";")?null:expr();ex(";");const upd=[];if(!is(")")){upd.push(expr());while(acc(","))upd.push(expr());}ex(")");
+        ex(";");const c=is(";")?null:cx();ex(";");const upd=[];if(!is(")")){upd.push(expr());while(acc(","))upd.push(expr());}ex(")");
         return {k:"For",init,c,upd,body:stmt(),line};}
       case "return":{p++;const e=is(";")?null:expr();ex(";");return {k:"Return",e,line};}
       case "break":{p++;const l=isId()?nx().v:null;ex(";");return {k:"Break",label:l,line};}
@@ -286,6 +287,7 @@ function parse(src){
     else{ex("(");if(!is(")"))for(;;){acc("final");if(isId()&&(is(",",1)||is(")",1)))params.push({n:nx().v,t:null});else{const t=type();params.push({n:exId(),t:t.n==="var"?null:t});}if(acc(","))continue;break;}ex(")");}
     ex("->");const body=is("{")?block():expr();
     return {k:"Lambda",params,body,line,text:srcOf(st.s,T[p-1].e).replace(/\s+/g," ")};}
+  function cx(){const a=T[p].s;const e=expr();if(!e.src)e.src=srcOf(a,T[p-1].e).replace(/s+/g," ");return e;} // a condition keeps its source text (the line card shows it)
   function expr(){
     if(lambdaAhead())return lambda();
     const l=ternary();const o=opAt(p);
@@ -293,12 +295,12 @@ function parse(src){
       if(!["Name","Field","Index"].includes(l.k))E("unexpected type\n  required: variable\n  found:    value");
       const v=is("{")?E("illegal start of expression"):expr();return {k:"Assign",op:o.v,t:l,v,line};}
     return l;}
-  function ternary(){const c=binary(1);if(is("?")){const line=nx().line;const a=lambdaAhead()?lambda():ternary();ex(":");const b=lambdaAhead()?lambda():ternary();return {k:"Cond",c,a,b,line};}return c;}
+  function ternary(){const a0=T[p].s;const c=binary(1);if(is("?")){if(!c.src)c.src=srcOf(a0,T[p].s).trim().replace(/s+/g," ");const line=nx().line;const a=lambdaAhead()?lambda():ternary();ex(":");const b=lambdaAhead()?lambda():ternary();return {k:"Cond",c,a,b,line};}return c;}
   function binary(min){
-    let l=unary();
+    const st=T[p].s;let l=unary();
     for(;;){const o=opAt(p);if(!o||!(o.v in BINP))break;const pr=BINP[o.v];if(pr<min)break;const line=T[p].line;p+=o.n;
       if(o.v==="instanceof"){acc("final");const t=type();let bind=null;if(isId()&&!(T[p].v==="instanceof"))bind=nx().v;l={k:"InstOf",e:l,t,bind,line};continue;}
-      const r=binary(pr+1);l=fold({k:"Bin",op:o.v,l,r,line});}
+      const r=binary(pr+1);l=fold({k:"Bin",op:o.v,l,r,line});if(CMPOP.has(o.v))l.src=srcOf(st,T[p-1].e).replace(/s+/g," ");}
     return l;}
   /* compile-time constant folding of String concatenation (so "hel" + "lo" is one pooled literal, like javac) */
   function constStr(n){if(n.k==="Lit"){if(n.t==="String")return n.v;if(n.t==="int"||n.t==="boolean")return String(n.v);if(n.t==="char")return String.fromCharCode(n.v);}return null;}
@@ -492,7 +494,7 @@ const PKG={Throwable:"java.lang"};EXC.forEach(e=>PKG[e[0]]=e[2]);
 const LIBCLS=new Set(["System","Math","Integer","Long","Double","Float","Character","Boolean","Short","Byte","String","StringBuilder","StringBuffer","Arrays","Collections",
   "List","Set","Map","Objects","Thread","Optional","Scanner","Random","ArrayList","LinkedList","HashMap","LinkedHashMap","TreeMap","HashSet","LinkedHashSet","TreeSet",
   "ArrayDeque","Stack","PriorityQueue","Comparator","Collectors","IntStream","Stream","Number","Object","Iterator","Iterable","Collection","Queue","Deque","Map.Entry","Entry",
-  "Function","BiFunction","Predicate","Consumer","Supplier","Runnable","Comparable","UnaryOperator","BinaryOperator","BiConsumer","IntBinaryOperator","CharSequence","Vector","Character.UnicodeBlock","StrictMath","OptionalInt","OptionalDouble","Executors","LocalDate"]);
+  "Function","BiFunction","Predicate","Consumer","Supplier","Runnable","Comparable","UnaryOperator","BinaryOperator","BiConsumer","IntBinaryOperator","CharSequence","Vector","Character.UnicodeBlock","StrictMath","OptionalInt","OptionalDouble","Executors","LocalDate","ThreadLocalRandom"]);
 const FUNC_IFACES=new Set(["Runnable","Comparator","Function","BiFunction","Predicate","BiPredicate","Consumer","BiConsumer","Supplier","UnaryOperator","BinaryOperator","Callable",
   "IntBinaryOperator","IntUnaryOperator","IntPredicate","IntFunction","ToIntFunction","ToLongFunction","ToDoubleFunction","IntConsumer","Comparable","Iterable"]);
 
@@ -504,7 +506,7 @@ class VM{
     this.src=src;this.stdin=stdin||"";this.inPos=0;this.opts=opts||{};
     this.nid=0;this.fid=0;this.frames=[];this.fr=null;this.depth=0;this.quiet=0;
     this.CL=new Map();this.pool=new Map();this.bcache=new Map();this.statAreas=[];this.sk=[];
-    this.out="";this.errR=[];this.steps=[];this.cur=new Map();this.dirty=[];this.chg=new Set();this.notes=[];
+    this.out="";this.errR=[];this.steps=[];this.cur=new Map();this.dirty=[];this.chg=new Set();this.notes=[];this.hits=Object.create(null);this.cinfo=null;this.ctr=null;this.ctrF=null;
     this.anonN=new Map();this.clsObjs=new Map();this.lamN=new Map();this.objCount=0;this.all=[];this.freed=0;
     this.maxSteps=this.opts.maxSteps||MAX_STEPS;this.ps=null;this.nsteps=0;this.lastCp=0;this.cps=[];}
   /* ---------- class registry ---------- */
@@ -714,7 +716,12 @@ class VM{
   arrWord(t){return "the";}
   label(n){switch(n.k){case "Name":return n.n;case "Field":return this.label(n.o)+"."+n.n;case "This":return "this";case "Index":return this.label(n.a)+"["+(n.i.k==="Lit"?n.i.v:n.i.k==="Name"?n.i.n:"…")+"]";case "Call":return n.n+"(…)";case "Paren":return this.label(n.e);}return "…";}
   toI(v,n){v=v instanceof HObj?this.unbox(v,n):v;if(v===null)this.unbox(null,n);if(v instanceof JChr)return v.c;if(typeof v!=="number")this.fatal(n,"incompatible types: possible lossy conversion from "+vtype(v)+" to int");return v;}
-  cond(e){let v=this.ev(e);if(v instanceof HObj&&v.kind==="box")v=v.v;else if(v===null)this.thr("NullPointerException",'Cannot invoke "java.lang.Boolean.booleanValue()" because '+this.desc(e)+" is null",e);if(typeof v!=="boolean")this.fatal(e,"incompatible types: "+vtype(v)+" cannot be converted to boolean");return v;}
+  same(b,line){const f=b&&b.k==="Block"?b.st[0]:b;if(f&&f.line===line)this.noHit=line;} // a statement on its parent's line (if (c) x++;) is not a second hit of that line
+  cond(e,lp){ // lp = {l: loop line, n: pass}; the outermost condition of a frame records its comparisons for the line card (step.cd)
+    const own=!this.ctr||this.ctrF!==this.fr;let sv,svF,v;if(own){sv=this.ctr;svF=this.ctrF;this.ctr=[];this.ctrF=this.fr;}
+    try{v=this.ev(e);if(v instanceof HObj&&v.kind==="box")v=v.v;else if(v===null)this.thr("NullPointerException",'Cannot invoke "java.lang.Boolean.booleanValue()" because '+this.desc(e)+" is null",e);if(typeof v!=="boolean")this.fatal(e,"incompatible types: "+vtype(v)+" cannot be converted to boolean");}
+    finally{if(own){const parts=this.ctr;this.ctr=sv;this.ctrF=svF;if(typeof v==="boolean"&&!this.quiet&&e.src)this.cinfo={s:e.src,v,p:parts,lp};}}
+    return v;}
   /* ---------- statements ---------- */
   body(st){for(const s of st){const c=this.exec(s);if(c)return c;}} // a method body: locals stay visible for the return step
   block(st){const F=this.fr,mk=F.v.length,ns=F.ns;try{for(const s of st){const c=this.exec(s);if(c)return c;}}finally{if(this.fr===F){this.trunc(mk);F.ns=ns;}}}
@@ -722,8 +729,19 @@ class VM{
     if(c.k==="b")return c.l==null||c.l===label?1:2;
     if(c.k==="c")return c.l==null||c.l===label?0:2;
     return 2;}
+  // exec/ev are split: the hot cases live in these small functions, everything else in execAll/evAll. V8 sizes a frame for every local
+  // of a function, so the small frames let a recursive Java program go several times deeper before JavaScript runs out of stack.
   exec(s,label){
-    const F=this.fr;
+    switch(s.k){
+      case "Block":return this.block(s.st);
+      case "ExprS":this.lastS=s;this.fr.line=s.line;this.step(s.line,"line");this.ev(s.e);return;
+      case "If":{const F=this.fr;this.lastS=s;F.line=s.line;this.step(s.line,"line");if(this.cond(s.c)){this.same(s.th,s.line);return this.exec(s.th);}if(s.el){this.same(s.el,s.line);return this.exec(s.el);}return;}
+      case "Return":{const F=this.fr;this.lastS=s;F.line=s.line;this.step(s.line,"line");let v;
+        if(s.e){v=this.ev(s.e);if(F.m&&F.m.ret)v=this.coerce(F.m.ret,v);}
+        F.ret=v===undefined?"void":v;this.touch(F);this.note({t:"ret",F,v});this.step(s.line,"return");return {k:"r",v};}}
+    return this.execAll(s,label);}
+  execAll(s,label){
+    const F=this.fr;if(s.k!=="Block")this.lastS=s; // the statement a "line" step belongs to (step.sn: the line card explains it)
     switch(s.k){
       case "Block":return this.block(s.st);
       case "Empty":return;
@@ -733,15 +751,15 @@ class VM{
           this.declare(d.n,ty,v,s.line);}
         return;
       case "ExprS":F.line=s.line;this.step(s.line,"line");this.ev(s.e);return;
-      case "If":F.line=s.line;this.step(s.line,"line");if(this.cond(s.c))return this.exec(s.th);if(s.el)return this.exec(s.el);return;
-      case "While":for(;;){F.line=s.line;this.step(s.line,"line");if(!this.cond(s.c))return;const c=this.exec(s.body,null);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}}
-      case "Do":for(;;){const c=this.exec(s.body,null);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}F.line=s.cline;this.step(s.cline,"line");if(!this.cond(s.c))return;}
+      case "If":F.line=s.line;this.step(s.line,"line");if(this.cond(s.c)){this.same(s.th,s.line);return this.exec(s.th);}if(s.el){this.same(s.el,s.line);return this.exec(s.el);}return;
+      case "While":for(let ps=1;;ps++){F.line=s.line;this.lastS=s;this.step(s.line,"line");if(!this.cond(s.c,{l:s.line,n:ps}))return;this.same(s.body,s.line);const c=this.exec(s.body,null);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}}
+      case "Do":for(let ps=1;;ps++){const c=this.exec(s.body,null);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}F.line=s.cline;this.lastS=s;this.step(s.cline,"line");if(!this.cond(s.c,{l:s.line,n:ps+1,d:1}))return;}
       case "For":{const mk=F.v.length,ns0=F.ns;F.line=s.line;this.step(s.line,"line");
         try{for(const i of s.init){if(i.k==="Local"){for(const d of i.decls){const v=d.init?(d.init.k==="ArrInit"?this.arrInit(d.init,d.t):this.ev(d.init)):UNINIT;this.declare(d.n,i.t.n==="var"?null:d.t,v,s.line);}}else this.ev(i.e);}
-          let first=true;
-          for(;;){if(!first){F.line=s.line;this.step(s.line,"line");for(const u of s.upd)this.ev(u);}first=false;
-            if(s.c&&!this.cond(s.c))return;
-            const c=this.exec(s.body,null);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}}}
+          let first=true,ps=0;
+          for(;;){ps++;if(!first){F.line=s.line;this.lastS=s;this.step(s.line,"line");for(const u of s.upd)this.ev(u);}first=false;
+            if(s.c&&!this.cond(s.c,{l:s.line,n:ps}))return;
+            this.same(s.body,s.line);const c=this.exec(s.body,null);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}}}
         finally{if(this.fr===F){this.trunc(mk);F.ns=ns0;}}}
       case "ForEach":return this.forEach(s,label);
       case "Labeled":{const c=this.exec(s.body,s.label);if(c&&c.k==="b"&&c.l===s.label)return;return c;}
@@ -767,11 +785,12 @@ class VM{
     const mk=F.v.length,ty=s.t.n==="var"?null:s.t,ns0=F.ns;
     F.ns+=it.kind==="arr"?3:1; // javac's hidden locals: array copy, length, index (or the Iterator)
     const ns1=F.ns;
-    const one=(v,i)=>{if(i>0){F.line=s.line;this.step(s.line,"line");}this.trunc(mk);F.ns=ns1;this.declare(s.n,ty,v,s.line);const c=this.exec(s.body,null);this.trunc(mk);return c;};
+    const one=(v,i)=>{if(i>0){F.line=s.line;this.lastS=s;this.step(s.line,"line");}this.trunc(mk);F.ns=ns1;this.declare(s.n,ty,v,s.line);if(!this.quiet)this.cinfo={fe:s.n,fv:this.short(v),lp:{l:s.line,n:i+1}};this.same(s.body,s.line);const c=this.exec(s.body,null);this.trunc(mk);return c;};
+    const done=n=>{if(!this.quiet){F.line=s.line;this.cinfo={fe:s.n,done:1,lp:{l:s.line,n:n+1}};}};
     try{
-      if(it.kind==="arr"){for(let i=0;i<it.a.length;i++){const c=one(it.a[i],i);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}}return;}
+      if(it.kind==="arr"){for(let i=0;i<it.a.length;i++){const c=one(it.a[i],i);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}}done(it.a.length);return;}
       const I=this.iterOf(it,s);let i=0;
-      while(this.itHas(I)){const v=this.itNext(I,s);const c=one(v,i++);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}}}
+      while(this.itHas(I)){const v=this.itNext(I,s);const c=one(v,i++);if(c){const r=this.loopCtl(c,label);if(r===1)return;if(r===2)return c;}}done(i);}
     finally{if(this.fr===F){this.trunc(mk);F.ns=ns0;}}}
   tryStmt(s){
     const F=this.fr;F.line=s.line;this.step(s.line,"line");
@@ -810,6 +829,13 @@ class VM{
     for(let i=idx;i<s.cases.length;i++){const r=this.block(s.cases[i].body);if(r)return r;}}
   /* ---------- expressions ---------- */
   ev(n){
+    switch(n.k){
+      case "Call":if(n.o===null){if(n.line)this.fr.line=n.line;return this.callUnq(n);}return this.call(n); // = call(n) without its frame
+      case "Bin":return this.bin(n);
+      case "Paren":return this.ev(n.e);
+      case "Cond":if(n.a.k!=="Lit"||n.b.k!=="Lit")return this.ev(this.cond(n.c)?n.a:n.b);break;} // two literals may need numeric promotion: evAll
+    return this.evAll(n);}
+  evAll(n){
     switch(n.k){
       case "Lit":switch(n.t){
         case "String":return this.lit(n.v);
@@ -903,7 +929,12 @@ class VM{
     const op=n.op;
     if(op==="&&")return this.cond(n.l)&&this.cond(n.r);
     if(op==="||")return this.cond(n.l)||this.cond(n.r);
-    if(op==="+"){ // left-to-right chain: numbers add until a String appears, then everything concatenates (one String result)
+    if(op==="+")return this.binPlus(n); // its own frame: a recursive call inside a + chain keeps only the small bin frame below it
+    const a=this.ev(n.l),b=this.ev(n.r);
+    const v=this.binop(op,a,b,n);
+    if(this.ctr&&n.src&&this.fr===this.ctrF&&this.ctr.length<8)this.ctr.push([n.src,this.short(a),op,this.short(b),v]);
+    return v;}
+  binPlus(n){ // left-to-right chain: numbers add until a String appears, then everything concatenates (one String result)
       const ops=[];let x=n;while(x.k==="Bin"&&x.op==="+"){ops.push(x.r);x=x.l;}ops.push(x);ops.reverse();
       let acc=this.ev(ops[0]);if(acc instanceof HObj&&acc.kind==="str")acc=new SAcc(acc.s);
       for(let i=1;i<ops.length;i++){const v=this.ev(ops[i]);
@@ -915,8 +946,6 @@ class VM{
         acc=this.binop("+",acc,v,n);}
       if(acc instanceof SAcc){const o=this.str(acc.s);return o;}
       return acc;}
-    const a=this.ev(n.l),b=this.ev(n.r);
-    return this.binop(op,a,b,n);}
   binop(op,a,b,n){
     if(op==="=="||op==="!="){
       let eq;
@@ -1277,14 +1306,22 @@ class VM{
   /* ---------- the recorder ---------- */
   step(line,ev){
     if(this.quiet)return;
-    if(++this.nsteps>this.maxSteps)throw new StopRun("limit","Stopped after "+this.maxSteps.toLocaleString("en-US")+" steps (infinite loop?)",line);
+    if(++this.nsteps>this.maxSteps){
+      // past the recording limit: keep running without recording (the console still gets every line), so a big but finite program finishes
+      if(!this.ff)this.ff=this.nsteps;const cap=this.opts.runCap||RUN_CAP;
+      if(this.nsteps>cap||(this.nsteps&4095)===0&&Date.now()-this.t0>(this.opts.runMs||RUN_MS))throw new StopRun("limit","Stopped after "+(this.nsteps>cap?cap.toLocaleString("en-US")+" steps":"running "+((this.opts.runMs||RUN_MS)/1000)+" s")+" (infinite loop?)",line);
+      if(ev==="line"&&line>0){if(this.noHit===line)this.noHit=0;else this.hits[line]=(this.hits[line]||0)+1;}
+      this.chg.clear();this.notes.length=0;this.cinfo=null;return;}
+    if(ev==="line"&&line>0){if(this.noHit===line)this.noHit=0;else this.hits[line]=(this.hits[line]||0)+1;} // how many times each line ran (gutter counts, complexity)
     // a second "line" step on the same line of the same frame with nothing changed adds nothing: skip it (it still counts toward the limit)
     const prev=this.steps[this.steps.length-1];
-    if(ev==="line"&&prev&&prev.e==="line"&&prev.l===line&&prev.f===(this.fr?this.fr.id:null)&&!this.dirty.length&&!this.notes.length&&!this.chg.size&&prev.k===this.sk&&prev.o===this.out.length)return;
+    if(ev==="line"&&prev&&prev.e==="line"&&prev.l===line&&prev.f===(this.fr?this.fr.id:null)&&!this.dirty.length&&!this.notes.length&&!this.cinfo&&!this.chg.size&&prev.k===this.sk&&prev.o===this.out.length)return;
     const d=[];
     for(const e of this.dirty){e._d=0;const r=e.isF?this.recFrame(e):e.isS?this.recStatic(e):this.recObj(e);this.cur.set(r.id,r);d.push(r);}
     this.dirty.length=0;
     const st={l:line,e:ev,f:this.fr?this.fr.id:null,d,k:this.sk,x:ev==="exception"?this.inflight:undefined,o:this.out.length,c:this.chg.size?[...this.chg]:null,w:this.notes.length?this.why():null};
+    if(this.cinfo){st.cd=this.cinfo;this.cinfo=null;}
+    if(ev==="line"&&this.lastS&&this.lastS.line===line)st.sn=this.lastS;
     this.chg.clear();this.notes.length=0;
     // checkpoints: every CP_EVERY steps, or less often when the heap is big (memory stays bounded)
     if(!this.steps.length||this.steps.length-this.lastCp>=Math.max(CP_EVERY,this.cur.size>>2)){st.cp=new Map(this.cur);this.lastCp=this.steps.length;this.cps.push(this.steps.length);}
@@ -1295,7 +1332,7 @@ class VM{
     if(v instanceof JChr)return {p:"char",s:String.fromCharCode(v.c),c:v.c};if(v instanceof JDbl)return {p:"double",s:fmtD(v.v)};if(v instanceof JFlt)return {p:"float",s:fmtF(v.v)};
     if(v==="void")return {p:"void",s:"void"};
     return {r:v.id};}
-  recFrame(F){const vars=[];for(const e of F.v){if(e.v===UNINIT)continue;vars.push({n:e.n,t:e.t,v:this.enc(e.v)});}
+  recFrame(F){const vars=[],ps=F.m&&F.m.params?F.m.params.map(p=>p.n):[];for(const e of F.v){if(e.v===UNINIT)continue;const r={n:e.n,t:e.t,v:this.enc(e.v)};if(ps.includes(e.n))r.pa=1;vars.push(r);}
     if(F.cap&&F.lam)for(const [k,v] of F.cap)vars.push({n:k,t:"captured",v:this.enc(v),cap:1});
     return {id:F.id,fr:1,name:F.name,line:F.line,call:F.callLine,vars,ret:F.ret===undefined?undefined:F.ret==="void"?{p:"void",s:"void"}:this.enc(F.ret)};}
   recStatic(S){const C=S.C;const vars=[];
@@ -1360,7 +1397,7 @@ class VM{
 /* ============================== RUN / STATE ============================== */
 function JVM_RUN(src,stdin,opts){
   const t0=Date.now();
-  const vm=new VM(src,stdin,opts);
+  const vm=new VM(src,stdin,opts);vm.t0=t0;
   const res={steps:vm.steps,out:"",errR:vm.errR,error:null,src,ms:0,objs:0,file:"Main.java"};
   try{vm.load();}
   catch(e){if(e instanceof CompileError){res.error={line:e.line,msg:e.message,kind:"compile"};return res;}res.error={line:0,msg:"internal error: "+e.message,kind:"internal",stack:e.stack};return res;}
@@ -1386,7 +1423,7 @@ function JVM_RUN(src,stdin,opts){
     else if(e instanceof Fatal||e instanceof CompileError){res.error={line:e.line,msg:e.message,kind:e instanceof Fatal?"runtime":"compile"};vm.finish(null,true);}
     else if(e instanceof RangeError){res.error={line:vm.fr?vm.fr.line:0,msg:"the program is too deep for the visualizer (JavaScript stack exhausted)",kind:"limit"};}
     else{res.error={line:vm.fr?vm.fr.line:0,msg:"internal error: "+e.message,kind:"internal",stack:e.stack};}}
-  res.out=vm.out;res.ms=Date.now()-t0;res.objs=vm.objCount;res.cps=vm.cps;res.total=vm.nsteps;
+  res.out=vm.out;res.hits=vm.hits;res.ms=Date.now()-t0;res.objs=vm.objCount;res.cps=vm.cps;res.total=vm.nsteps;res.ff=vm.ff||0; // ff = the first step that was run but not recorded
   return res;}
 VM.prototype.finish=function(exc,keepFrames){
   if(!keepFrames){this.frames.length=0;this.fr=null;this.depth=0;this.sk=this.statAreas.slice();}
@@ -1428,20 +1465,65 @@ function tIdx(vm,o,k,n){const cf=o.cf||(o.cf=vm.cmpWith(o.cmp,n));if(k===null&&!
   let lo=0,hi=o.es.length-1;while(lo<=hi){const mid=(lo+hi)>>>1;const c=cf(o.es[mid].k,k);if(c<0)lo=mid+1;else if(c>0)hi=mid-1;else return [mid,true];}return [lo,false];}
 function mFind(vm,o,k,n){if(o.tree){if(!o.es.length&&k!==null)return null;const [i,f]=tIdx(vm,o,k,n);return f?o.es[i]:null;}
   const h=vm.jhash(k);const b=o.ix.get(h);if(b)for(const e of b)if(e.k===k||vm.jeq(e.k,k))return e;return null;}
-function mPut(vm,o,k,v,n,ifAbsent){
+// lazy = the compute family (computeIfAbsent, compute, merge): like the JDK, the table grows at the start of the next such call, not right
+// after the insert, and a new key goes to the FRONT of a non-empty bucket (put appends at the end)
+function mPut(vm,o,k,v,n,ifAbsent,lazy){
   if(o.imm)vm.thr("UnsupportedOperationException",null,n);
   k=B(vm,k);v=v===PRESENT?v:B(vm,v);
   if(o.tree){if(!o.es.length&&k!==null&&!o.cmp)vm.jcmp(k,k,n);const [i,f]=tIdx(vm,o,k,n);
     if(f){const e=o.es[i];const old=e.v;if(!ifAbsent||old===null){e.v=v;vm.touch(o);}return old;}
-    o.es.splice(i,0,{k,v,seq:++o.seq});o.mod++;vm.touch(o);return null;}
+    const ne={k,v,seq:++o.seq};o.es.splice(i,0,ne);rbIns(o,ne);o.mod++;vm.touch(o);return null;}
   const h=vm.jhash(k);let b=o.ix.get(h);
   if(b)for(const e of b)if(e.k===k||vm.jeq(e.k,k)){const old=e.v;if(!ifAbsent||old===null){e.v=v;vm.touch(o);}return old;}
+  if(lazy&&o.cap&&o.es.length>o.cap*0.75&&o.cap<(1<<30))o.cap*=2;
+  // a long bucket in a table under 64 makes the JDK double the table instead of building a tree (treeifyBin): put at 8 already there, compute family at 7
+  let chain=0;if(o.cap&&o.cap<64){const m=o.cap-1,bk=spreadH(h)&m;for(const x of o.es)if((spreadH(x.h)&m)===bk)chain++;}
   const e={k,v,h,seq:++o.seq};if(!b)o.ix.set(h,b=[]);b.push(e);o.es.push(e);o.mod++;
-  if(!o.cap)o.cap=o.icap;if(o.es.length>o.cap*0.75&&o.cap<(1<<30))o.cap*=2;
+  if(!o.cap)o.cap=o.icap;
+  if(lazy){if(isHashOrder(o)){const m=o.cap-1,bk=spreadH(h)&m;let mn=Infinity;for(const x of o.es)if(x!==e&&(spreadH(x.h)&m)===bk&&x.seq<mn)mn=x.seq;if(mn<Infinity)e.seq=mn-1;}if(chain>=7&&o.cap<64)o.cap*=2;}
+  else{if(chain>=8&&o.cap<64)o.cap*=2;if(o.es.length>o.cap*0.75&&o.cap<(1<<30))o.cap*=2;}
   vm.touch(o);return null;}
+// merge, compute and computeIfAbsent first grow a table that is past 0.75 full, even when the key is already there (JDK HashMap)
+function growLazy(o){if(!o.tree&&o.cap&&o.es.length>o.cap*0.75&&o.cap<(1<<30)){o.cap*=2;}}
 function mRemove(vm,o,k,n){if(o.imm)vm.thr("UnsupportedOperationException",null,n);const e=mFind(vm,o,k,n);if(!e)return null;mDel(vm,o,e);return e;}
-function mDel(vm,o,e){const i=o.es.indexOf(e);if(i>=0)o.es.splice(i,1);if(!o.tree){const b=o.ix.get(e.h);if(b){b.splice(b.indexOf(e),1);if(!b.length)o.ix.delete(e.h);}}o.mod++;vm.touch(o);}
-function mClear(vm,o,n){if(o.imm)vm.thr("UnsupportedOperationException",null,n);o.es.length=0;o.ix.clear();o.mod++;vm.touch(o);}
+function mDel(vm,o,e){const i=o.es.indexOf(e);if(i>=0){o.es.splice(i,1);if(o.tree)rbDel(o,e);}if(!o.tree){const b=o.ix.get(e.h);if(b){b.splice(b.indexOf(e),1);if(!b.length)o.ix.delete(e.h);}}o.mod++;vm.touch(o);}
+function mClear(vm,o,n){if(o.imm)vm.thr("UnsupportedOperationException",null,n);o.es.length=0;o.ix.clear();o.rbt=null;o.mod++;vm.touch(o);}
+/* TreeMap/TreeSet keep a shadow red-black tree for the DSA Lab drawing: the JDK's own put/deleteEntry with fixAfterInsertion/
+   fixAfterDeletion, so shape and colours match a real TreeMap. Keys are ordered by their rank in the sorted es array (the user's
+   comparator never runs twice). Off above 512 entries. Node: {e, l, r, p, red}. Not modelled: buildFromSorted (new TreeMap(sortedMap)). */
+function rbRot(o,p,left){const c=left?p.r:p.l;if(!c)return;if(left){p.r=c.l;if(c.l)c.l.p=p;}else{p.l=c.r;if(c.r)c.r.p=p;}c.p=p.p;
+  if(!p.p)o.rbt=c;else if(p.p.l===p)p.p.l=c;else p.p.r=c;if(left)c.l=p;else c.r=p;p.p=c;}
+const rbRed=x=>!!x&&x.red,rbSet=(x,red)=>{if(x)x.red=red;};
+function rbIns(o,e){
+  if(o.rbOff)return;if(o.es.length>512){o.rbOff=true;o.rbt=null;return;}
+  const z={e,l:null,r:null,p:null,red:true};e._rb=z;
+  if(!o.rbt){z.red=false;o.rbt=z;return;}
+  const rank=x=>o.es.indexOf(x.e),rz=rank(z);let t=o.rbt;
+  for(;;){if(rz<rank(t)){if(t.l)t=t.l;else{t.l=z;break;}}else{if(t.r)t=t.r;else{t.r=z;break;}}}
+  z.p=t;let x=z;
+  while(x&&x!==o.rbt&&x.p.red){const p=x.p,g=p.p,lft=g&&p===g.l,y=g?(lft?g.r:g.l):null;
+    if(rbRed(y)){rbSet(p,false);rbSet(y,false);rbSet(g,true);x=g;}
+    else{if(x===(lft?p.r:p.l)){x=p;rbRot(o,x,lft);}rbSet(x.p,false);if(x.p)rbSet(x.p.p,true);if(x.p&&x.p.p)rbRot(o,x.p.p,!lft);}}
+  o.rbt.red=false;}
+function rbDel(o,e){
+  let p=e._rb;e._rb=null;if(o.rbOff||!p)return;
+  if(p.l&&p.r){let s=p.r;while(s.l)s=s.l;p.e=s.e;s.e._rb=p;p=s;}
+  const rep=p.l||p.r;
+  if(rep){rep.p=p.p;if(!p.p)o.rbt=rep;else if(p===p.p.l)p.p.l=rep;else p.p.r=rep;p.l=p.r=p.p=null;if(!p.red)rbFix(o,rep);}
+  else if(!p.p)o.rbt=null;
+  else{if(!p.red)rbFix(o,p);if(p.p){if(p===p.p.l)p.p.l=null;else if(p===p.p.r)p.p.r=null;p.p=null;}}}
+function rbFix(o,x){
+  while(x!==o.rbt&&!rbRed(x)){const P=x.p,lft=x===P.l;let s=lft?P.r:P.l;
+    if(rbRed(s)){rbSet(s,false);rbSet(P,true);rbRot(o,P,lft);s=lft?P.r:P.l;}
+    const n1=s&&(lft?s.l:s.r),n2=s&&(lft?s.r:s.l); // near and far nephews
+    if(!rbRed(n1)&&!rbRed(n2)){rbSet(s,true);x=P;}
+    else{if(!rbRed(n2)){rbSet(n1,false);rbSet(s,true);rbRot(o,s,!lft);s=lft?P.r:P.l;}
+      rbSet(s,rbRed(P));rbSet(P,false);rbSet(s&&(lft?s.r:s.l),false);rbRot(o,P,lft);x=o.rbt;}}
+  rbSet(x,false);}
+/* the record's picture of the red-black tree: per sorted position, left and right child positions and the colour */
+function rbRec(o){if(o.rbOff||!o.rbt||o.es.length>200)return null;const ix=new Map(o.es.map((e,i)=>[e,i])),at=x=>x?ix.get(x.e):-1;
+  const l=[],r=[],red=[];for(const e of o.es){const x=e._rb;if(!x)return null;l.push(at(x.l));r.push(at(x.r));red.push(x.red?1:0);}
+  return {t:at(o.rbt),l,r,red};}
 function mOrder(o){if(!isHashOrder(o)||!o.cap)return o.es;const m=o.cap-1;return o.es.slice().sort((a,b)=>((spreadH(a.h)&m)-(spreadH(b.h)&m))||(a.seq-b.seq));}
 function bucketOf(o,e){return o.cap&&!o.tree?(spreadH(e.h)&(o.cap-1)):null;}
 function entryObj(vm,m,e){if(!e.ho)e.ho=vm.alloc("entry","Entry",{e,m,int:1});return e.ho;}
@@ -1515,8 +1597,8 @@ function libRec(vm,o){
     case "list":return {id,k:o.cls==="LinkedList"?"linked":o.cls==="Stack"?"stack":"list",cls:o.cls==="ImmutableList"?"List.of":o.cls==="ArraysList"?"Arrays.asList":o.cls,a:o.a.slice(0,200).map(E),size:o.a.length,cap:o.cap};
     case "deque":return {id,k:"deque",cls:o.cls,a:o.a.slice(0,200).map(E),size:o.a.length};
     case "pq":return {id,k:"pq",cls:o.cls,a:o.a.slice(0,200).map(E),size:o.a.length};
-    case "map":return {id,k:"map",cls:o.cls==="ImmutableMap"?"Map.of":o.cls,e:mOrder(o).slice(0,200).map(e=>[E(e.k),E(e.v),bucketOf(o,e)]),size:o.es.length,cap:o.cap||null};
-    case "set":return {id,k:"set",cls:o.cls==="ImmutableSet"?"Set.of":o.cls,a:mOrder(o).slice(0,200).map(e=>E(e.k)),b:isHashOrder(o)||o.cls==="LinkedHashSet"?mOrder(o).slice(0,200).map(e=>bucketOf(o,e)):null,size:o.es.length,cap:o.cap||null};
+    case "map":return {id,k:"map",cls:o.cls==="ImmutableMap"?"Map.of":o.cls,e:mOrder(o).slice(0,200).map(e=>{const b=bucketOf(o,e);return b===null?[E(e.k),E(e.v),b]:[E(e.k),E(e.v),b,spreadH(e.h)];}),size:o.es.length,cap:o.cap||null,rb:o.tree?rbRec(o):null};
+    case "set":return {id,k:"set",cls:o.cls==="ImmutableSet"?"Set.of":o.cls,a:mOrder(o).slice(0,200).map(e=>E(e.k)),b:isHashOrder(o)||o.cls==="LinkedHashSet"?mOrder(o).slice(0,200).map(e=>bucketOf(o,e)):null,hs:isHashOrder(o)||o.cls==="LinkedHashSet"?mOrder(o).slice(0,200).map(e=>spreadH(e.h)):null,size:o.es.length,cap:o.cap||null,rb:o.tree?rbRec(o):null};
     case "view":return {id,k:"view",of:o.m.id,w:o.w,cls:o.w==="k"?"keySet()":o.w==="v"?"values()":"entrySet()"};
     case "entry":return {id,k:"entry",key:E(o.e.k),val:E(o.e.v)};
     case "sb":return {id,k:"sb",cls:o.cls,s:o.s,cap:o.cap};
@@ -1630,14 +1712,15 @@ function collectorRun(vm,c,items,n){
   vm.fatal(n,"Collectors."+c.ct+" is not supported in the visualizer");}
 /* ---------- functional helpers ---------- */
 function jsFn(vm,text,fn){return vm.alloc("lambda","lambda",{js:fn,text,cap:new Map()});}
+const cmpFn=(vm,text,fn)=>{const o=jsFn(vm,text,fn);o.cmp=true;return o;}; // a Comparator built by a combinator (thenComparing(c.reversed()) must see it as one)
 function lamNative(vm,o,name,args,n){
   const f=o;
   switch(name){
-    case "reversed":if(args.length)break;return jsFn(vm,"reversed()",(a,n2)=>{const r=vm.callFn(f,[a[1],a[0]],n2,"compare");return r;});
+    case "reversed":if(args.length)break;return cmpFn(vm,"reversed()",(a,n2)=>{const r=vm.callFn(f,[a[1],a[0]],n2,"compare");return r;});
     case "thenComparing":{const g=args[0];const isCmp=args.length===1&&g.kind==="lambda"&&(g.js?g.cmp:(g.node?g.node.params.length===2:false));
       const second=args.length===2?keyCmp(vm,args[0],args[1],n):isCmp||(g.kind==="obj")?g:keyCmp(vm,g,null,n);
-      return jsFn(vm,"thenComparing(…)",(a,n2)=>{const r=num(vm.callFn(f,a,n2,"compare"));return r!==0?r:num(vm.callFn(second,a,n2,"compare"));});}
-    case "thenComparingInt":case "thenComparingDouble":case "thenComparingLong":{const second=keyCmp(vm,args[0],null,n);return jsFn(vm,name+"(…)",(a,n2)=>{const r=num(vm.callFn(f,a,n2,"compare"));return r!==0?r:num(vm.callFn(second,a,n2,"compare"));});}
+      return cmpFn(vm,"thenComparing(…)",(a,n2)=>{const r=num(vm.callFn(f,a,n2,"compare"));return r!==0?r:num(vm.callFn(second,a,n2,"compare"));});}
+    case "thenComparingInt":case "thenComparingDouble":case "thenComparingLong":{const second=keyCmp(vm,args[0],null,n);return cmpFn(vm,name+"(…)",(a,n2)=>{const r=num(vm.callFn(f,a,n2,"compare"));return r!==0?r:num(vm.callFn(second,a,n2,"compare"));});}
     case "andThen":{const g=args[0];return jsFn(vm,"andThen(…)",(a,n2)=>{const r=vm.callFn(f,a,n2,"apply");if(f.node&&f.node.body&&a.length===1&&r===undefined){vm.callFn(g,a,n2,"accept");return;}return vm.callFn(g,[r],n2,"apply");});}
     case "compose":{const g=args[0];return jsFn(vm,"compose(…)",(a,n2)=>vm.callFn(f,[vm.callFn(g,a,n2,"apply")],n2,"apply"));}
     case "negate":if(args.length)break;return jsFn(vm,"negate()",(a,n2)=>!truthy(vm,vm.callFn(f,a,n2,"test"),n2));
@@ -1697,6 +1780,7 @@ const LIBS={
       if(sp+len>src.a.length)vm.thr("ArrayIndexOutOfBoundsException","arraycopy: last source index "+(sp+len)+" out of bounds for "+nm(src),n);
       if(dp+len>dst.a.length)vm.thr("ArrayIndexOutOfBoundsException","arraycopy: last destination index "+(dp+len)+" out of bounds for "+nm(dst),n);
       const tmp=src.a.slice(sp,sp+len);for(let i=0;i<len;i++)dst.a[dp+i]=tmp[i];vm.touch(dst);vm.chg.add("h"+dst.id);}},
+  ThreadLocalRandom:{current:(vm,a,n)=>vm._tlr||(vm._tlr=libNew(vm,"Random",[],n))}, // one unseeded Random per run (its numbers differ per run, as on the JDK)
   Thread:{sleep:(vm,a)=>{vm.note({t:"sleep",ms:a[0]});},currentThread:vm=>vm.alloc("misc","Thread",{text:"Thread[#1,main,5,main]",hid:true})},
   Integer:{
     parseInt:(vm,a,n)=>parseIntJ(vm,a[0]===null?null:S(vm,a[0],n),a[1]!==undefined?num(a[1]):10,n),
@@ -2018,9 +2102,9 @@ const MAP={
   putIfAbsent:(vm,o,a,n)=>mPut(vm,o,a[0],a[1],n,true),clear:(vm,o,a,n)=>mClear(vm,o,n),
   putAll:(vm,o,a,n)=>{for(const e of mOrder(a[0]))mPut(vm,o,e.k,e.v,n);},
   keySet:(vm,o)=>o.kv||(o.kv=vm.alloc("view","KeySet",{m:o,w:"k",int:1})),values:(vm,o)=>o.vv||(o.vv=vm.alloc("view","Values",{m:o,w:"v",int:1})),entrySet:(vm,o)=>o.ev||(o.ev=vm.alloc("view","EntrySet",{m:o,w:"e",int:1})),
-  merge:(vm,o,a,n)=>{const k=vm.box(a[0]);const e=mFind(vm,o,k,n);if(!e||e.v===null){mPut(vm,o,k,a[1],n);return vm.box(a[1]);}const r=vm.callFn(a[2],[e.v,vm.box(a[1])],n,"apply");if(r===null){mDel(vm,o,e);return null;}e.v=vm.box(r);vm.touch(o);return e.v;},
-  compute:(vm,o,a,n)=>{const k=vm.box(a[0]);const e=mFind(vm,o,k,n);const r=vm.callFn(a[1],[k,e?e.v:null],n,"apply");if(r===null){if(e)mDel(vm,o,e);return null;}if(e){e.v=vm.box(r);vm.touch(o);return e.v;}mPut(vm,o,k,r,n);return vm.box(r);},
-  computeIfAbsent:(vm,o,a,n)=>{const k=vm.box(a[0]);const e=mFind(vm,o,k,n);if(e&&e.v!==null)return e.v;const r=vm.callFn(a[1],[k],n,"apply");if(r===null)return null;mPut(vm,o,k,r,n);return vm.box(r);},
+  merge:(vm,o,a,n)=>{growLazy(o);const k=vm.box(a[0]);const e=mFind(vm,o,k,n);if(!e||e.v===null){mPut(vm,o,k,a[1],n,false,!e);return vm.box(a[1]);}const r=vm.callFn(a[2],[e.v,vm.box(a[1])],n,"apply");if(r===null){mDel(vm,o,e);return null;}e.v=vm.box(r);vm.touch(o);return e.v;},
+  compute:(vm,o,a,n)=>{growLazy(o);const k=vm.box(a[0]);const e=mFind(vm,o,k,n);const r=vm.callFn(a[1],[k,e?e.v:null],n,"apply");if(r===null){if(e)mDel(vm,o,e);return null;}if(e){e.v=vm.box(r);vm.touch(o);return e.v;}mPut(vm,o,k,r,n,false,true);return vm.box(r);},
+  computeIfAbsent:(vm,o,a,n)=>{growLazy(o);const k=vm.box(a[0]);const e=mFind(vm,o,k,n);if(e&&e.v!==null)return e.v;const r=vm.callFn(a[1],[k],n,"apply");if(r===null)return null;mPut(vm,o,k,r,n,false,!e);return vm.box(r);},
   computeIfPresent:(vm,o,a,n)=>{const k=vm.box(a[0]);const e=mFind(vm,o,k,n);if(!e||e.v===null)return null;const r=vm.callFn(a[1],[k,e.v],n,"apply");if(r===null){mDel(vm,o,e);return null;}e.v=vm.box(r);vm.touch(o);return e.v;},
   replace:(vm,o,a,n)=>{const e=mFind(vm,o,vm.box(a[0]),n);if(!e)return null;const old=e.v;e.v=vm.box(a[a.length-1]);vm.touch(o);return old;},
   replaceAll:(vm,o,a,n)=>{for(const e of mOrder(o))e.v=vm.box(vm.callFn(a[0],[e.k,e.v],n,"apply"));vm.touch(o);},
