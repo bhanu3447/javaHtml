@@ -47,6 +47,7 @@
   let objMode=LS.get("js1-pg-objs")==="1",memOn=LS.get("js1-pg-mem")==="1";
   const OM=()=>objMode&&memOn; // Strings and boxes as their own objects: a Memory-view option only
   const speed=()=>{const v=parseFloat(speedSel.value);return isNaN(v)?1:v;}; // 0 = Instant
+  let UZ=1; // v4: the user zoom (− Fit +), multiplies the picture scale
   speedSel.value=LS.get("js1-pg-speed")||"1";if(!speedSel.value)speedSel.value="1";
   /* ---------- running ---------- */
   function visualize(){
@@ -180,7 +181,9 @@
     else if(S.ev==="exception")what="An exception is thrown here. Java leaves this code and looks for a matching catch, from this method outwards.";
     else if(S.ev==="gc")what="System.gc() ran the garbage collector: objects nothing can reach are freed.";
     else what=window.PGVZ?PGVZ.what(stmt):"";
-    let h='<div class="pg-cl"><span>'+(L||"")+"</span><code>"+H(srcLine(L)||"")+"</code></div>"+whyHere(S,st)+(what?'<p class="pg-what">'+H(what)+(/[.!]$/.test(what)?"":".")+"</p>":"");
+    // v4: the card reads top-down as a summary first (the line, what it changes, what runs next), then the reason (why here, the condition), then the long explanation (two lines, "more" opens it)
+    const top='<div class="pg-cl"><span>'+(L||"")+"</span><code>"+H(srcLine(L)||"")+"</code></div>";let sum="";
+    let h=whyHere(S,st);const whatH=what?'<p class="pg-what">'+H(what)+(/[.!]$/.test(what)?"":".")+"</p>":"";
     // when it runs: a condition decided now (next step), or the one that finished as we came back to this line
     const cd=nx&&nx.cd?nx.cd:st.cd&&S.ev==="line"&&R.steps[K-1]&&R.steps[K-1].e==="return"?st.cd:null;
     if(cd){
@@ -191,7 +194,7 @@
     if(nx){const eff=[];
       const nw=effTxt(nx.w);if(nw)eff.push(H(nw));
       const out=R.out.slice(st.o,nx.o);if(out.trim())eff.push("prints <code>"+H(out.length>60?out.slice(0,60)+"…":out.replace(/\n$/,""))+"</code>");
-      if(eff.length)h+='<ul class="pg-eff">'+eff.map(x=>"<li>"+x+"</li>").join("")+"</ul>";
+      if(eff.length)sum+='<ul class="pg-eff">'+eff.map(x=>"<li>"+x+"</li>").join("")+"</ul>";
       // next
       let nt="";
       if(nx.e==="call"){const S1=JVML.state(R,K+1),f1=frameOf(S1,nx.f);nt="enters "+(f1?f1.name:"a method")+" (line "+nx.l+")";}
@@ -204,8 +207,10 @@
         else if(cd&&stmt&&stmt.k==="If")nt+=cd.v?" · the if-body":stmt.el?" · the else part":" · the body is skipped";
         else if(DEP[K+1]<DEP[K])nt+=" · back in the caller";
         else if(nx.l<L&&nx.f===st.f)nt+=" · back to the loop";}
-      h+='<div class="pg-next"><span>Next</span>'+H(nt)+"</div>";}
-    cardEl.innerHTML=h;}
+      sum+='<div class="pg-next"><span>Next</span>'+H(nt)+"</div>";}
+    cardEl.innerHTML=top+sum+(h?'<div class="pg-cdet">'+h+"</div>":"")+whatH+(what.length>110?'<button type="button" class="pg-more" aria-expanded="'+cardMore+'">'+(cardMore?"less":"more")+"</button>":"");}
+  let cardMore=LS.get("js1-pg-more")==="1";PGhost.classList.toggle("pg-cmore",cardMore);
+  cardEl.addEventListener("click",e=>{const b=e.target.closest(".pg-more");if(!b)return;cardMore=!cardMore;LS.set("js1-pg-more",cardMore?"1":"0");PGhost.classList.toggle("pg-cmore",cardMore);b.textContent=cardMore?"less":"more";b.setAttribute("aria-expanded",String(cardMore));});
   /* ---------- the Variables table: the current method's locals and parameters, this.fields, static fields ---------- */
   const OPEN=new Set();
   function summ(v,S,deep){ // one-line value text; references are summarised
@@ -233,13 +238,14 @@
     for(const c of S.frames.filter(x=>x.st))for(const v of c.vars)rows.push({n:c.name+"."+v.n,t:v.t,v:v.v,sc:"static",rec:c.id,f:v.n,key:c.id+":"+v.n});
     watchInfo.textContent=fr?"in "+fr.name:"";
     if(!rows.length){watchEl.innerHTML='<div class="pg-empty">'+(S.ev==="end"?"The program has finished.":"No variables yet in "+(fr?fr.name:"this method")+".")+"</div>";return;}
-    let h='<table class="pg-wt"><thead><tr><th>Variable</th><th>Type</th><th>Value</th><th>Before</th><th>Scope</th></tr></thead><tbody>';
+    let h='<table class="pg-wt"><thead><tr><th>Variable</th><th>Value <small>(before → now when it just changed)</small></th></tr></thead><tbody>';
     for(const w of rows){
       const cur=sig(w.v),changed=chg.has(w.key),inner=w.v&&w.v.r!==undefined&&[...chg].some(k=>k.startsWith("h"+w.v.r+":"));
       const p=changed?prevOf(w.rec,w.f,cur):null;
       const isRef=w.v&&w.v.r!==undefined&&(()=>{const r=S.recs.get(w.v.r);return r&&["arr","obj","list","linked","stack","deque","pq","set","map"].includes(r.k);})();
       const open=isRef&&OPEN.has(w.key);
-      h+='<tr class="'+(changed?"pg-chg ":"")+(inner?"pg-inn ":"")+'" data-key="'+H(w.key)+'"><td class="pg-wn">'+(isRef?'<button type="button" class="pg-wx" aria-expanded="'+open+'" aria-label="Expand '+H(w.n)+'">'+(open?"▾":"▸")+"</button>":"")+H(w.n)+(changed?' <i class="pg-wdot" title="changed by the last line"></i>':"")+'</td><td class="pg-wty">'+H(w.t||"")+'</td><td class="pg-wv" title="'+H(summ(w.v,S))+'">'+H(summ(w.v,S))+(inner&&!changed?' <small class="pg-acc">contents changed</small>':"")+'</td><td class="pg-wp">'+(p?p.nw?'<small>new</small>':H(summ(p.v,S,1)):"")+'</td><td class="pg-ws">'+w.sc+"</td></tr>";
+      // v4: two columns; the type sits under the name, the scope is in the tooltip, a change reads "before → now"
+      h+='<tr class="'+(changed?"pg-chg ":"")+(inner?"pg-inn ":"")+'" data-key="'+H(w.key)+'" title="'+H((w.t?w.t+" ":"")+w.n+" · "+w.sc)+'"><td class="pg-wn">'+(isRef?'<button type="button" class="pg-wx" aria-expanded="'+open+'" aria-label="Expand '+H(w.n)+'">'+(open?"▾":"▸")+"</button>":"")+H(w.n)+(changed?' <i class="pg-wdot" title="changed by the last line"></i>':"")+(w.t?'<small class="pg-wty">'+H(w.t)+"</small>":"")+'</td><td class="pg-wv">'+(p?p.nw?'<small class="pg-wnew">new</small> ':'<s class="pg-wold">'+H(summ(p.v,S,1))+'</s><i class="pg-warr">→</i>':"")+'<span class="pg-wcur">'+H(summ(w.v,S))+"</span>"+(inner&&!changed?' <small class="pg-acc">contents changed</small>':"")+"</td></tr>";
       if(open)h+=subRows(S.recs.get(w.v.r),S,chg);}
     watchEl.innerHTML=h+"</tbody></table>";}
   function subRows(r,S,chg){
@@ -248,7 +254,7 @@
     else if(r.k==="map")items=r.e.slice(0,20).map((e,i)=>[summ(e[0],S,1),e[1],"h"+r.id+":v"+i]);
     else items=r.a.slice(0,20).map((v,i)=>["["+i+"]",v,"h"+r.id+":"+i]);
     const more=(r.k==="obj"?0:(r.len||r.size||0)-items.length);
-    return items.map(([n,v,k])=>'<tr class="pg-sub'+(chg.has(k)?" pg-chg":"")+'"><td class="pg-wn">'+H(n)+'</td><td></td><td class="pg-wv" colspan="3">'+H(summ(v,S,1))+"</td></tr>").join("")+(more>0?'<tr class="pg-sub"><td></td><td></td><td class="pg-wv pg-dim" colspan="3">… '+more+" more</td></tr>":"");}
+    return items.map(([n,v,k])=>'<tr class="pg-sub'+(chg.has(k)?" pg-chg":"")+'"><td class="pg-wn">'+H(n)+'</td><td class="pg-wv">'+H(summ(v,S,1))+"</td></tr>").join("")+(more>0?'<tr class="pg-sub"><td></td><td class="pg-wv pg-dim">… '+more+" more</td></tr>":"");}
   watchEl.addEventListener("click",e=>{const b=e.target.closest(".pg-wx");if(!b)return;const k=b.closest("tr").dataset.key;if(OPEN.has(k))OPEN.delete(k);else OPEN.add(k);if(R&&R.steps.length)watch(JVML.state(R,K),new Set(JVML.state(R,K).changed));});
   /* ---------- editor gutters: breakpoints (click a line number) and how many times each line ran ---------- */
   const BPS=new Set();
@@ -1107,9 +1113,11 @@
     // R3, Memory off: a small picture is scaled up (≤ 1.8×) and centred; sizes only grow during a run, so the scale settles instead of jumping (never the empty-state message: it was scaled and pushed off the panel)
     let s=1,ox=0;
     if(!memOn&&R&&els.length){const mw=R._mw=Math.max(R._mw||0,maxX),mh=R._mh=Math.max(R._mh||0,y+12),ah=panel.clientHeight-heapEl.offsetTop-24;
-      s=Math.max(1,Math.min(1.8,(W-16)/Math.max(mw,1),ah/Math.max(mh,1)));s=Math.floor(s*20)/20;ox=Math.max(0,Math.floor((W-mw*s)/2));}
-    const xf=s>1||ox?"translate("+ox+"px,0) scale("+s+")":"";if(heapEl.style.transform!==xf)heapEl.style.transform=xf;heapEl._s=s;
-    heapEl.style.height=Math.max(60,y+12)+"px";heapEl.style.marginBottom=s>1?Math.round((y+12)*(s-1))+"px":"";heapEl.style.minWidth=Math.max(0,maxX+12)+"px";
+      s=Math.max(1,Math.min(1.8,(W-16)/Math.max(mw,1),ah/Math.max(mh,1)));s=Math.floor(s*20)/20;}
+    if(UZ!==1)s=Math.round(s*UZ*100)/100;
+    if(!memOn&&R&&els.length)ox=Math.max(0,Math.floor((W-(R._mw||maxX)*s)/2));
+    const xf=s!==1||ox?"translate("+ox+"px,0) scale("+s+")":"";if(heapEl.style.transform!==xf)heapEl.style.transform=xf;heapEl._s=s;
+    heapEl.style.height=Math.max(60,y+12)+"px";heapEl.style.marginBottom=s!==1?Math.round((y+12)*(s-1))+"px":"";heapEl.style.marginRight=s!==1?Math.round((maxX+12)*(s-1))+"px":"";heapEl.style.minWidth=Math.max(0,maxX+12)+"px";
     // boxes appear where they belong; only boxes that move later glide
     for(const [,el] of els)if(el._fresh){el.classList.add("pg-place");el._fresh=false;requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove("pg-place")));}}
   /* ---------- arrows ---------- */
@@ -1240,6 +1248,137 @@
     let tm=0;c.on("changes",()=>{clearTimeout(tm);tm=setTimeout(()=>LS.set("js1-pg-code",c.getValue()),400);if(R&&!stale){stale=true;PGhost.classList.add("pg-stale");stop();hitsGutter();
       for(const m of marks)c.removeLineClass(m.h,"background",m.c);marks=[];clearErr();why.innerHTML="The code changed: press <b>▶ Visualize</b> (Ctrl+Enter) to see the new run.";}});
     if(errMark===null&&R&&R.error&&R.error.line)markErr(R.error.line);hitsGutter();c.refresh();if(R&&R.steps.length)render();},80);
+  /* ---------- v4 UX (2026-11-02): example gallery, phone tabs, first-visit hint, timeline marks, zoom and pan,
+     History hover flash, sorted region on sorts. Hooks: render() is wrapped (v4after runs after every frame). ---------- */
+  const PHONE=matchMedia("(max-width:760px)");
+  /* the example gallery: the <select> stays (keyboard, tests) but is hidden; a button opens a dialog of grouped cards */
+  const CATS=[
+    ["Basics","Values, Strings, input, exceptions",/^(Playground|Hello|Swap two|Scanner|Exceptions|Integer cache)/,"vars"],
+    ["Arrays and Strings","Indexes, 2D grids, two pointers, bits",/^(Arrays and loops|2D matrix|String pool|StringBuilder|Palindrome|Bits)/,"arr"],
+    ["Objects and classes","new, references, static, inheritance, GC",/^(Car class|Static vs|Garbage|Inheritance|Interface and lambda)/,"obj"],
+    ["Recursion","The call stack and the call tree",/^(Factorial|Fibonacci|Backtracking)/,"tree"],
+    ["Linked lists","Nodes joined by references",/^(Linked list|Doubly|Cycle)/,"list"],
+    ["Stacks and queues","Last in first out, first in first out, monotonic",/^(Stack with|Queue with|Monotonic)/,"stack"],
+    ["Trees and heaps","BST, AVL, trie, heap, red-black",/^(Binary tree|AVL|Trie|Heap|TreeMap)/,"tree"],
+    ["Hashing","Buckets and collisions",/^HashMap/,"hash"],
+    ["Graphs","BFS, Dijkstra, Union-Find",/^(Graph BFS|Dijkstra|Union-Find)/,"graph"],
+    ["Sorting, searching and DP","Sorts, binary search, DP tables, range trees",/^(Bubble|Binary search|Grid DP|DP arrows|Merge intervals|Segment|Fenwick)/,"bars"]];
+  const LESSON=[[/^(Arrays and loops|2D matrix)/,"D01","../dsa/01-arrays.html"],[/^HashMap/,"D02","../dsa/02-hashing.html"],[/^Palindrome/,"D03","../dsa/03-two-pointers.html"],
+    [/^(Factorial|Fibonacci)/,"D05","../dsa/05-recursion.html"],[/^Bubble/,"D06","../dsa/06-sorting.html"],[/^Binary search/,"D07","../dsa/07-binary-search.html"],
+    [/^(Linked list|Doubly|Cycle)/,"D08","../dsa/08-linked-lists.html"],[/^(Stack with|Queue with|Monotonic)/,"D09","../dsa/09-stacks-queues.html"],
+    [/^Binary tree/,"D10","../dsa/10-trees.html"],[/^(AVL|TreeMap)/,"D11","../dsa/11-bst.html"],[/^Heap/,"D12","../dsa/12-heaps.html"],[/^Backtracking/,"D13","../dsa/13-backtracking.html"],
+    [/^Graph BFS/,"D14","../dsa/14-graphs.html"],[/^(Dijkstra|Union-Find)/,"D15","../dsa/15-graphs-2.html"],[/^Merge intervals/,"D16","../dsa/16-greedy.html"],
+    [/^DP arrows/,"D17","../dsa/17-dp-1.html"],[/^Grid DP/,"D18","../dsa/18-dp-2.html"],[/^(Trie|Bits)/,"D19","../dsa/19-tries-bits-math.html"],[/^(Segment|Fenwick)/,"D21","../dsa/21-advanced-extras.html"],
+    [/^(String pool|StringBuilder)/,"L01","lessons/01-strings.html"],[/^Car class/,"L02","lessons/02-classes-objects.html"],[/^Inheritance/,"L04","lessons/04-inheritance.html"]];
+  const GLYPH={ // tiny pictures for the cards (currentColor)
+    vars:'<rect x="6" y="9" width="16" height="10" rx="2"/><rect x="26" y="9" width="16" height="10" rx="2"/><rect x="46" y="9" width="16" height="10" rx="2"/>',
+    arr:'<rect x="4" y="8" width="13" height="13"/><rect x="17" y="8" width="13" height="13"/><rect x="30" y="8" width="13" height="13"/><rect x="43" y="8" width="13" height="13"/><path d="M23 26l0 0"/>',
+    obj:'<rect x="6" y="5" width="22" height="18" rx="3"/><path d="M28 14h12"/><rect x="40" y="5" width="22" height="18" rx="3"/>',
+    tree:'<circle cx="34" cy="6" r="4"/><circle cx="20" cy="22" r="4"/><circle cx="48" cy="22" r="4"/><path d="M31 9l-8 10M37 9l8 10"/>',
+    list:'<rect x="3" y="9" width="14" height="10" rx="2"/><rect x="27" y="9" width="14" height="10" rx="2"/><rect x="51" y="9" width="14" height="10" rx="2"/><path d="M17 14h8M41 14h8"/>',
+    stack:'<rect x="20" y="3" width="28" height="7" rx="2"/><rect x="20" y="11" width="28" height="7" rx="2"/><rect x="20" y="19" width="28" height="7" rx="2"/>',
+    hash:'<path d="M8 6v18M18 6v18"/><rect x="26" y="5" width="12" height="7" rx="2"/><rect x="44" y="5" width="12" height="7" rx="2"/><rect x="26" y="17" width="12" height="7" rx="2"/><path d="M38 8h6"/>',
+    graph:'<circle cx="10" cy="8" r="4"/><circle cx="34" cy="22" r="4"/><circle cx="58" cy="8" r="4"/><circle cx="34" cy="6" r="3"/><path d="M13 10l18 10M37 20l18-10M14 8h17M37 6h17"/>',
+    bars:'<rect x="8" y="16" width="8" height="10"/><rect x="20" y="8" width="8" height="18"/><rect x="32" y="12" width="8" height="14"/><rect x="44" y="3" width="8" height="23"/>'};
+  const catOf=n=>CATS.find(c=>c[2].test(n))||["More","",null,"vars"],lessonOf=n=>LESSON.find(l=>l[0].test(n));
+  const pick=q(".pg-pick",PGhost),galBtn=document.createElement("button");
+  galBtn.type="button";galBtn.className="btn pg-galb";galBtn.id="pgGal";galBtn.setAttribute("aria-haspopup","dialog");galBtn.title="Pick one of the "+EX.length+" example programs";
+  galBtn.innerHTML='<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><path d="M2 2h5v5H2zM9 2h5v5H9zM2 9h5v5H2zM9 9h5v5H9z" fill="currentColor"/></svg> Examples';
+  if(pick){pick.after(galBtn);pick.classList.add("pg-pickx");}
+  const gal=document.createElement("dialog");gal.className="pg-gal";gal.setAttribute("aria-label","Example programs");
+  let curEx=-1;
+  gal.innerHTML='<div class="pg-galh"><b>Examples</b><span>'+EX.length+' programs · pick one to load it and step through</span><input type="search" class="pg-gals" placeholder="Search: tree, sort, HashMap…" aria-label="Search the examples"><button type="button" class="ib pg-galx" aria-label="Close">✕</button></div><div class="pg-galb2"></div>';
+  document.body.appendChild(gal);
+  const galBody=q(".pg-galb2",gal),galS=q(".pg-gals",gal);
+  function galDraw(){const f=galS.value.trim().toLowerCase();let h="";
+    const groups=new Map();EX.forEach((e,i)=>{const c=catOf(e.name);if(f&&!(e.name+" "+c[0]+" "+c[1]).toLowerCase().includes(f))return;if(!groups.has(c[0]))groups.set(c[0],{c,items:[]});groups.get(c[0]).items.push(i);});
+    for(const {c,items} of groups.values()){h+='<div class="pg-gsec"><h3>'+H(c[0])+(c[1]?" <small>"+H(c[1])+"</small>":"")+'</h3><div class="pg-galg">';
+      for(const i of items){const e=EX[i],l=lessonOf(e.name);
+        h+='<div class="pg-gcard'+(i===curEx?" on":"")+'"><button type="button" data-ex="'+i+'"><svg viewBox="0 0 68 28" aria-hidden="true">'+GLYPH[c[3]]+"</svg><b>"+H(e.name)+"</b><small>"+H(e.file)+"</small></button>"+
+          (l?'<a href="'+l[2]+'" title="The lesson that teaches this">'+l[1]+" lesson ↗</a>":"")+"</div>";}
+      h+="</div></div>";}
+    galBody.innerHTML=h||'<p class="pg-empty">No example matches “'+H(galS.value)+'”.</p>';}
+  function galOpen(){galS.value="";galDraw();if(gal.showModal)gal.showModal();else gal.setAttribute("open","");setTimeout(()=>galS.focus(),30);}
+  function galClose(){if(gal.close)gal.close();else gal.removeAttribute("open");galBtn.focus();}
+  galBtn.onclick=galOpen;q(".pg-galx",gal).onclick=galClose;galS.oninput=galDraw;
+  gal.addEventListener("click",e=>{if(e.target===gal){galClose();return;}const b=e.target.closest("[data-ex]");if(!b)return;loadEx(+b.dataset.ex);galClose();});
+  gal.addEventListener("keydown",e=>{e.stopPropagation();if(e.key==="Escape"){e.preventDefault();galClose();}},true);
+  function loadEx(i){curEx=i;exSel.value=String(i);exSel.dispatchEvent(new Event("change"));if(PHONE.matches)setMt("pic");}
+  /* phone tabs: Code · Picture · Explain, the step bar pinned to the bottom of the screen */
+  const mt=document.createElement("div");mt.className="pg-mtabs";mt.setAttribute("role","tablist");mt.setAttribute("aria-label","Show");
+  mt.innerHTML=[["code","Code"],["pic","Picture"],["exp","Explain"]].map(([k,t])=>'<button type="button" role="tab" data-mt="'+k+'">'+t+"</button>").join("");
+  q(".pg-bar",PGhost).after(mt);
+  let mtab=LS.get("js1-pg-mtab")||"pic";
+  function setMt(t){mtab=t;LS.set("js1-pg-mtab",t);PGhost.classList.remove("pg-mt-code","pg-mt-pic","pg-mt-exp");PGhost.classList.add("pg-mt-"+t);
+    for(const b of qa("[data-mt]",mt)){const on=b.dataset.mt===t;b.classList.toggle("on",on);b.setAttribute("aria-selected",String(on));}
+    if(PHONE.matches)afterResize();}
+  mt.addEventListener("click",e=>{const b=e.target.closest("[data-mt]");if(b)setMt(b.dataset.mt);});
+  setMt(mtab);
+  q("#pgGo").addEventListener("click",()=>{if(PHONE.matches)setMt("pic");});
+  /* first visit: point at the step buttons once */
+  let coach=null;
+  if(LS.get("js1-pg-coach")!=="1"){coach=document.createElement("div");coach.className="pg-coach";coach.setAttribute("role","note");
+    coach.innerHTML='<b>Step through the program</b><span>Press <kbd>→</kbd> or <span class="pg-ck">▶|</span> to run one line, <kbd>←</kbd> to go back, <kbd>Space</kbd>/▶ to play. Pick another program from <b>Examples</b>.</span><button type="button" class="btn pri">Got it</button>';
+    q(".pg-ctl",PGhost).after(coach);qa('.pg-ctl [data-a="next"],.pg-ctl [data-a="play"]',PGhost).forEach(b=>b.classList.add("pg-pulse"));
+    q("button",coach).onclick=()=>coachDone();}
+  function coachDone(){if(!coach)return;coach.remove();coach=null;LS.set("js1-pg-coach","1");qa(".pg-pulse",PGhost).forEach(b=>b.classList.remove("pg-pulse"));}
+  /* the timeline: marks over the step slider for calls, printed output, exceptions and breakpoints; a click goes there */
+  const tl=document.createElement("div");tl.className="pg-tl";tl.setAttribute("aria-hidden","true");
+  const slw=document.createElement("span");slw.className="pg-slw";slide.before(slw);slw.append(slide,tl);
+  let tlKey="";
+  function timeline(){const N=R.steps.length,bp=bpLines(),key=R.took+"|"+N+"|"+[...bp].join(",");if(key===tlKey)return;tlKey=key;
+    if(N<2){tl.innerHTML="";return;}
+    const seen=new Set();let h="";
+    const add=(j,c,t)=>{const p=Math.round(1000*j/(N-1))/10,k=c+p;if(seen.has(k))return;seen.add(k);h+='<b class="pg-tk '+c+'" style="left:calc(8px + (100% - 16px) * '+(j/(N-1)).toFixed(4)+')" data-k="'+j+'" title="step '+(j+1)+": "+H(t)+'"></b>';};
+    for(let j=1;j<N;j++){const s=R.steps[j],p=R.steps[j-1];
+      if(s.e==="exception")add(j,"ex","an exception is thrown");
+      else if(s.o!==p.o)add(j,"out","prints "+R.out.slice(p.o,s.o).replace(/\n$/,"").slice(0,30));
+      else if(s.e==="call"&&DEP[j]<=3)add(j,"call","a method is called (line "+s.l+")");
+      if(s.e==="line"&&bp.has(s.l))add(j,"bp","breakpoint, line "+s.l);}
+    tl.innerHTML=h;}
+  tl.addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(b){stop();go(+b.dataset.k);}});
+  /* zoom and pan: − Fit + over the picture; Ctrl+wheel zooms; drag the empty background to pan; keys + − 0 */
+  const zm=document.createElement("div");zm.className="pg-zoom";zm.setAttribute("role","group");zm.setAttribute("aria-label","Zoom the picture");
+  zm.innerHTML='<button type="button" class="ib" data-z="-" title="Zoom out (−)" aria-label="Zoom out">−</button><button type="button" class="ib pg-zfit" data-z="0" title="Fit the picture (0)">Fit</button><button type="button" class="ib" data-z="+" title="Zoom in (+)" aria-label="Zoom in">+</button>';
+  panel.prepend(zm);
+  function zoom(z){UZ=z==="0"?1:Math.max(.4,Math.min(3,UZ*(z==="+"?1.2:1/1.2)));q(".pg-zfit",zm).textContent=UZ===1?"Fit":Math.round(UZ*100)+"%";if(R&&R.steps.length){DRAWN.forEach(el=>el._w=0);render();}}
+  zm.addEventListener("click",e=>{const b=e.target.closest("[data-z]");if(b)zoom(b.dataset.z);});
+  panel.addEventListener("wheel",e=>{if(!e.ctrlKey&&!e.metaKey)return;e.preventDefault();zoom(e.deltaY<0?"+":"-");},{passive:false});
+  panel.addEventListener("pointerdown",e=>{if(e.button!==0||e.pointerType==="touch"||e.target.closest(".pg-box,button,select,input,label,a,.pg-frame,.pg-cls"))return;
+    if(panel.scrollWidth<=panel.clientWidth&&panel.scrollHeight<=panel.clientHeight)return;
+    const x0=e.clientX,y0=e.clientY,l0=panel.scrollLeft,t0=panel.scrollTop;panel.classList.add("pg-pan");panel.setPointerCapture(e.pointerId);
+    const mv=ev=>{panel.scrollLeft=l0-(ev.clientX-x0);panel.scrollTop=t0-(ev.clientY-y0);};
+    const up=()=>{panel.classList.remove("pg-pan");panel.removeEventListener("pointermove",mv);panel.removeEventListener("pointerup",up);};
+    panel.addEventListener("pointermove",mv);panel.addEventListener("pointerup",up);});
+  document.addEventListener("keydown",e=>{const t=e.target;if(e.ctrlKey||e.metaKey||e.altKey||t&&t.closest&&t.closest("input,textarea,select,.CodeMirror,[contenteditable],dialog"))return;
+    const z={"+":"+","=":"+","-":"-","0":"0"}[e.key];if(z&&R){e.preventDefault();zoom(z);}});
+  /* History: hovering a row flashes what that step changed (cells, fields, boxes) and its line in the editor */
+  let hfl=[],hln=null;
+  function hClear(){for(const el of hfl)el.classList.remove("pg-hfl");hfl=[];const c=cm();if(c&&hln){c.removeLineClass(hln,"background","pg-hfline");hln=null;}}
+  if(histEl){histEl.addEventListener("mouseover",e=>{const b=e.target.closest("[data-hk]");if(!b||!R)return;hClear();const j=+b.dataset.hk,S=JVML.state(R,j);
+      for(const k of S.changed){if(k[0]!=="h")continue;const id=parseInt(k.slice(1)),el=DRAWN.get(id);if(!el||!el.isConnected)continue;const cell=el.querySelector('[data-k="'+k+'"]');(cell||el).classList.add("pg-hfl");hfl.push(cell||el);}
+      const c=cm(),l=(R.steps[j-1]||R.steps[j]).l;if(c&&l>0&&l<=c.lineCount())hln=c.addLineClass(l-1,"background","pg-hfline");});
+    histEl.addEventListener("mouseleave",hClear);}
+  /* sorts: the part that is already in its final place is shaded and labelled (bubble sort: the last i cells; selection sort: the first i) */
+  let SRT=null,srtR=null;
+  function sortPlan(code){
+    const b=code.match(/for\s*\(\s*int\s+(\w+)\s*=\s*0\s*;\s*\1\s*<\s*([\w.]+?)\s*-\s*(?:1\s*-\s*(\w+)|(\w+)\s*-\s*1)\s*;/);
+    if(b){const inner=b[1],a=(code.match(new RegExp("(\\w+)\\s*\\[\\s*"+inner+"\\s*\\+\\s*1\\s*\\]"))||[])[1];return a?{kind:"tail",arr:a,outer:b[3]||b[4],n:b[2]}:null;}
+    const s=code.match(/for\s*\(\s*int\s+(\w+)\s*=\s*(\w+)\s*\+\s*1\s*;/);
+    if(s&&/min\w*\s*=\s*\w+\s*;/.test(code)){const a=(code.match(new RegExp("(\\w+)\\s*\\[\\s*"+s[1]+"\\s*\\]"))||[])[1];return a?{kind:"head",arr:a,outer:s[2]}:null;}
+    return null;}
+  function sortedMarks(S){
+    if(srtR!==R){srtR=R;SRT=IDX.sort?sortPlan(getCode()):null;}
+    for(const el of qa(".pg-srt",heapEl))el.classList.remove("pg-srt");for(const el of qa(".pg-srtl",heapEl))el.remove();
+    if(!SRT)return;const fr=frameOf(S,S.step.f);if(!fr)return;
+    const vr=n=>fr.vars.find(v=>v.n===n),iv=n=>{const x=vr(n);return x&&x.v&&x.v.p==="int"?+x.v.s:undefined;};
+    const av=vr(SRT.arr),o=iv(SRT.outer);if(!av||!av.v||av.v.r===undefined||o===undefined)return;
+    const r=S.recs.get(av.v.r),el=DRAWN.get(av.v.r);if(!r||!el||r.k!=="arr")return;
+    const n=r.len,lo=SRT.kind==="tail"?n-o:0,hi=SRT.kind==="tail"?n:o;if(hi-lo<1)return;
+    for(let i=lo;i<hi;i++){const c=el.querySelector('[data-k="h'+r.id+":"+i+'"]');if(c)c.classList.add("pg-srt");}
+    const cells=el.querySelector(".pg-cells");if(cells)cells.insertAdjacentHTML("afterend",'<div class="pg-srtl">✓ in place: '+(lo===hi-1?"["+lo+"]":"["+lo+"…"+(hi-1)+"]")+"</div>");}
+  function v4after(){if(!R||!R.steps.length)return;timeline();if(!memOn)sortedMarks(JVML.state(R,K));if(coach&&K>=2)coachDone();}
+  render=(r0=>function(){r0();v4after();})(render);
   /* ---------- start: shared link > saved work > default example ---------- */
   (async()=>{
     const h=location.hash.match(/code=([A-Za-z0-9_-]+)/),hin=location.hash.match(/[&#]in=([A-Za-z0-9_-]*)/);
