@@ -47,6 +47,7 @@
   let objMode=LS.get("js1-pg-objs")==="1",memOn=LS.get("js1-pg-mem")==="1";
   const OM=()=>objMode&&memOn; // Strings and boxes as their own objects: a Memory-view option only
   const speed=()=>{const v=parseFloat(speedSel.value);return isNaN(v)?1:v;}; // 0 = Instant
+  const IXC=["#60a5fa","#f472b6","#34d399","#fbbf24","#a78bfa","#fb923c","#22d3ee"]; // v8: pointer chip colours, picked by the variable name
   let UZ=1,FITALL=false; // v4: the user zoom (− Fit +), multiplies the picture scale; v5: Fit shrinks a tall picture until all of it shows
   speedSel.value=LS.get("js1-pg-speed")||"1";if(!speedSel.value)speedSel.value="1";
   /* ---------- running ---------- */
@@ -246,7 +247,7 @@
       const isRef=w.v&&w.v.r!==undefined&&(()=>{const r=S.recs.get(w.v.r);return r&&["arr","obj","list","linked","stack","deque","pq","set","map"].includes(r.k);})();
       const open=isRef&&OPEN.has(w.key);
       // v4: two columns; the type sits under the name, the scope is in the tooltip, a change reads "before → now"
-      h+='<tr class="'+(changed?"pg-chg ":"")+(inner?"pg-inn ":"")+'" data-key="'+H(w.key)+'" title="'+H((w.t?w.t+" ":"")+w.n+" · "+w.sc)+'"><td class="pg-wn">'+(isRef?'<button type="button" class="pg-wx" aria-expanded="'+open+'" aria-label="Expand '+H(w.n)+'">'+(open?"▾":"▸")+"</button>":"")+H(w.n)+(changed?' <i class="pg-wdot" title="changed by the last line"></i>':"")+(w.t?'<small class="pg-wty">'+H(w.t)+"</small>":"")+'</td><td class="pg-wv">'+(p?p.nw?'<small class="pg-wnew">new</small> ':'<s class="pg-wold">'+H(summ(p.v,S,1))+'</s><i class="pg-warr">→</i>':"")+'<span class="pg-wcur">'+H(summ(w.v,S))+"</span>"+(inner&&!changed?' <small class="pg-acc">contents changed</small>':"")+"</td></tr>";
+      h+='<tr class="'+(changed?"pg-chg ":"")+(inner?"pg-inn ":"")+'" data-key="'+H(w.key)+'" title="'+H((w.t?w.t+" ":"")+w.n+" · "+w.sc)+'"><td class="pg-wn">'+(isRef?'<button type="button" class="pg-wx" aria-expanded="'+open+'" aria-label="Expand '+H(w.n)+'">'+(open?"▾":"▸")+"</button>":"")+H(w.n)+(changed?' <i class="pg-wdot" title="changed by the last line"></i>':"")+(w.t?'<small class="pg-wty">'+H(w.t)+"</small>":"")+'</td><td class="pg-wv">'+(p?p.nw?'<small class="pg-wnew">new</small> ':'<s class="pg-wold">'+H(summ(p.v,S,1))+'</s><i class="pg-warr">→</i>':"")+'<span class="pg-wcur" title="'+H(summ(w.v,S))+'">'+H(summ(w.v,S))+"</span>"+(inner&&!changed?' <small class="pg-acc">contents changed</small>':"")+"</td></tr>";
       if(open)h+=subRows(S.recs.get(w.v.r),S,chg);}
     watchEl.innerHTML=h+"</tbody></table>";}
   function subRows(r,S,chg){
@@ -419,17 +420,17 @@
     const stack=new Map(),live=new Set();let lines=hasIx?1:0;
     for(const [n,v] of marks){const c=cells[Math.min(v,cells.length-1)];if(!c||v>cells.length)continue;
       const row=stack.get(v)||0;stack.set(v,row+1);lines=Math.max(lines,Math.min(row+1,3));
-      let m=el._ixm.get(n),fresh=false;if(!m){m=document.createElement("span");m.className="pg-ixm";m.textContent=n;wrap.appendChild(m);el._ixm.set(n,m);fresh=true;}
-      const x=v<cells.length?c.offsetLeft+c.offsetWidth/2:c.offsetLeft+c.offsetWidth+12,y=c.offsetTop+c.offsetHeight+2+Math.min(row,2)*15;
+      let m=el._ixm.get(n),fresh=false;if(!m){m=document.createElement("span");m.className="pg-ixm";m.textContent=n;m.style.setProperty("--ic",IXC[[...n].reduce((h,ch)=>h*31+ch.charCodeAt(0)>>>0,7)%IXC.length]);wrap.appendChild(m);el._ixm.set(n,m);fresh=true;}
+      const x=v<cells.length?c.offsetLeft+c.offsetWidth/2:c.offsetLeft+c.offsetWidth+12,y=c.offsetTop+c.offsetHeight+4+Math.min(row,2)*19;
       if(fresh)m.style.transition="none";m.style.left=x+"px";m.style.top=y+"px";m.classList.toggle("past",v>=cells.length);
       if(fresh){void m.offsetWidth;m.style.transition="";}live.add(n);}
     for(const [n,m] of el._ixm)if(!live.has(n)){m.remove();el._ixm.delete(n);}
-    const pad=lines?(6+lines*15)+"px":"";if(wrap.style.paddingBottom!==pad){wrap.style.paddingBottom=pad;el._w=0;}
+    const pad=lines?(8+lines*19)+"px":"";if(wrap.style.paddingBottom!==pad){wrap.style.paddingBottom=pad;el._w=0;}
     const t=q(".pg-gtag.sw",el);if(t)t.remove();
     if(sw){const a=cells[sw[0]],b=cells[sw[1]];el.insertAdjacentHTML("afterbegin",'<span class="pg-gtag sw">swap ['+sw[0]+"] ⇄ ["+sw[1]+"]</span>");
       if(a&&b){a.classList.add("pg-swc");b.classList.add("pg-swc");
-        if(!still&&a.animate){const dx=b.offsetLeft-a.offsetLeft,dy=b.offsetTop-a.offsetTop,o={duration:480,easing:"cubic-bezier(.3,.7,.3,1)"};
-          a.animate([{transform:"translate("+dx+"px,"+dy+"px)"},{transform:"none"}],o);b.animate([{transform:"translate("+(-dx)+"px,"+(-dy)+"px)"},{transform:"none"}],o);}}}}
+        if(!still&&a.animate){const dx=b.offsetLeft-a.offsetLeft,dy=b.offsetTop-a.offsetTop,lift=Math.min(34,12+Math.abs(dx)/8),o={duration:620,easing:"cubic-bezier(.45,.05,.25,1)"}; // v8: an arc, one over and one under
+          a.animate([{transform:"translate("+dx+"px,"+dy+"px)",zIndex:2},{transform:"translate("+dx/2+"px,"+(dy/2-lift)+"px) scale(1.06)",zIndex:2,offset:.5},{transform:"none",zIndex:2}],o);b.animate([{transform:"translate("+(-dx)+"px,"+(-dy)+"px)"},{transform:"translate("+(-dx/2)+"px,"+(-dy/2+lift)+"px) scale(.96)",offset:.5},{transform:"none"}],o);}}}}
   function gridMarks(el,names,C,vw){
     const rs=new Map(),cs=new Map(),add=(m,n,v)=>{if(!m.has(v))m.set(v,[]);m.get(v).push(n);};
     for(const n of names){const a=IDX.ix.get(n);if(!a)continue;for(const x of a[0]){const v=intOf(C,x);if(v!==undefined)add(rs,x,v);}for(const x of a[1]){const v=intOf(C,x);if(v!==undefined)add(cs,x,v);}}
@@ -750,15 +751,15 @@
     if(!x)for(let j=T.all.length-1;j>=0;j--){const y=T.all[j];if(y.k0<=K&&T.rec.has(y.m)){x=y;break;}}
     if(!x)return null;while(x.par&&x.par.m===x.m)x=x.par;
     const root=x,list=[],sz=y=>1+y.kids.filter(c=>c.m===root.m).reduce((s,c)=>s+sz(c),0),total=sz(root);if(total<3)return null;
-    const walk=y=>{if(y.k0>K||list.length>=200)return;list.push(y);for(const c of y.kids)if(c.m===root.m)walk(c);};walk(root);
+    const walk=y=>{if(list.length>=200||y.k0>K&&total>31)return;list.push(y);for(const c of y.kids)if(c.m===root.m)walk(c);};walk(root); // v8: a small tree (≤ 31 calls) also shows the calls still to come, as ghosts; a big one grows as it runs
     const at=new Map(list.map((y,i)=>[y,i])),seen=new Map(),nodes=[];let rep=0,redo=false,dm=0;
-    for(const y of list){const lab=ctLabel(y),live=stk.includes(y.id),done=!live&&y.end<=K,r=y.kr>=0&&y.kr<=K&&y.ret&&y.ret.p!=="void";
+    let begun=0;for(const y of list){const fut=y.k0>K;if(!fut)begun++;const lab=ctLabel(y),live=stk.includes(y.id),done=!live&&!fut&&y.end<=K,r=!fut&&y.kr>=0&&y.kr<=K&&y.ret&&y.ret.p!=="void";
       // R3: a repeat needs the same text and the same objects (insert(node#4, 40) and insert(node#5, 40) both print as insert(…, 40))
       const sk=lab+"|"+(y.args||[]).map(a=>a.v&&a.v.r!==undefined?"#"+a.v.r:"").join(",");
-      const again=seen.has(sk)&&seen.get(sk).k0<y.k0;if(again){rep++;if(y.kids.some(c=>c.m===root.m))redo=true;}else seen.set(sk,y);
+      const again=!fut&&seen.has(sk)&&seen.get(sk).k0<y.k0;if(again){rep++;if(y.kids.some(c=>c.m===root.m))redo=true;}else seen.set(sk,y);
       let d=0;for(let p=y;p!==root;p=p.par)d++;dm=Math.max(dm,d);
-      nodes.push({k:"c"+y.id,t:lab,s:r?"→ "+argTxt(y.ret,S):"",c:[y.id===S.step.f?"cur":"",done?"done":"",again?"rep":""].filter(Boolean).join(" "),pin:y.id===S.step.f,tags:[],kids:y.kids.filter(c=>at.has(c)).map(c=>at.get(c)),el:[]});}
-    const info="call tree of "+ctLabel(root)+" · "+list.length+(list.length<total?" of "+total:"")+" call"+(total===1?"":"s")+" · depth "+(dm+1)+(rep?" · "+rep+" repeated (dashed amber: same arguments as an earlier call"+(redo?", all its work done again: a memo would skip it":"")+")":"")+(total>200&&list.length>=200?" · the first 200 are drawn":"");
+      nodes.push({k:"c"+y.id,t:fut?"":lab,s:r?"→ "+argTxt(y.ret,S):"",c:[y.id===S.step.f?"cur":"",done?"done":"",again?"rep":"",fut?"fut":""].filter(Boolean).join(" "),pin:y.id===S.step.f,tags:[],kids:y.kids.filter(c=>at.has(c)).map(c=>at.get(c)),el:[]});}
+    const info="call tree of "+ctLabel(root)+" · "+(begun<total?begun+" of "+total+" calls so far"+(begun<list.length?" (faint = still to come)":""):total+" call"+(total===1?"":"s"))+" · depth "+(dm+1)+(rep?" · "+rep+" repeated (dashed amber: same arguments as an earlier call"+(redo?", all its work done again: a memo would skip it":"")+")":"")+(total>200&&list.length>=200?" · the first 200 are drawn":"");
     return {T:{nodes,root:0,bin:false},info,sig:JSON.stringify([info,nodes.map(n=>[n.k,n.s,n.c,n.kids])])};}
   /* ---------- (Phase 6) the Complexity tab: theory from the code's shape (PGVZ.cplx), the recursion measured from the call tree,
      and counts from this run, kept apart. Built once per run and method; each step only moves the "so far" fills ---------- */
@@ -1048,9 +1049,9 @@
     // heap boxes
     const keep=new Set(),els=[];
     const vws=new Map();
-    const ct=memOn?null:ctModel(S); // the recursion call tree comes first
-    if(ct){if(!CTC||CTC.sig!==ct.sig)CTC={sig:ct.sig,rr:{k:"ctree",id:"ct",m:ct}};const el=getBox("ct",CTC.rr,S,"");els.push(["ct",el]);keep.add(el);flipTree(el);}
+    const ct=memOn?null:ctModel(S); // v8: the recursion call tree comes after the data (it is the bigger picture now that it shows every call)
     for(const id of show){const r=recs.get(id),vw=viewOf(id,r,S,M,C);vws.set(id,vw);const el=getBox(id,r,S,"",M.tags.get(id),vw);els.push([id,el]);keep.add(el);}
+    if(ct){if(!CTC||CTC.sig!==ct.sig)CTC={sig:ct.sig,rr:{k:"ctree",id:"ct",m:ct}};const el=getBox("ct",CTC.rr,S,"");els.push(["ct",el]);keep.add(el);flipTree(el);}
     for(const n of M.bits){const v=C.prims.get(n),pv=prevPrim(n,S),val=v.p==="char"?v.c:v.s,pval=pv&&sig(pv)!==sig(v)?(pv.p==="char"?pv.c:pv.s):undefined,ck=n+"|"+v.p+"|"+val+"|"+pval;
       let rr=BITC.get(ck);if(!rr){rr={k:"bits",id:"b:"+n,n,p:v.p,v:val,pv:pval};BITC.set(ck,rr);}
       const el=getBox(rr.id,rr,S,"");els.push([rr.id,el]);keep.add(el);}
@@ -1117,9 +1118,9 @@
       s=Math.max(FITALL?.4:.9,Math.min(1.8,(W-16)/Math.max(mw,1),ah/Math.max(mh,1)));s=Math.floor(s*20)/20;
       if(S.ev==="end"||els.every(([,el])=>el.classList.contains("pg-gone")))s=Math.min(s,1);} // v5: a tall picture zooms out to fit; garbage is never enlarged
     if(UZ!==1)s=Math.round(s*UZ*100)/100;
-    if(!memOn&&R&&els.length)ox=Math.max(0,Math.floor((W-(R._mw||maxX)*s)/2));
-    const xf=s!==1||ox?"translate("+ox+"px,0) scale("+s+")":"";if(heapEl.style.transform!==xf)heapEl.style.transform=xf;heapEl._s=s;
-    heapEl.style.height=Math.max(60,y+12)+"px";heapEl.style.marginBottom=s!==1?Math.round((y+12)*(s-1))+"px":"";heapEl.style.marginRight=s>1?Math.round((maxX+12)*(s-1))+"px":""; // never negative: that widens the heap and the next layout wraps widerheapEl.style.minWidth=Math.max(0,maxX+12)+"px";
+    let oy=0;if(!memOn&&R&&els.length){ox=Math.max(0,Math.floor((W-(R._mw||maxX)*s)/2));oy=Math.max(0,Math.min(160,Math.floor((panel.clientHeight-heapEl.offsetTop-24-(R._mh||y+12)*s)/3)));} // v8: and a third of the free height above it
+    const xf=s!==1||ox||oy?"translate("+ox+"px,"+oy+"px) scale("+s+")":"";if(heapEl.style.transform!==xf)heapEl.style.transform=xf;heapEl._s=s;
+    heapEl.style.height=Math.max(60,y+12)+"px";heapEl.style.marginBottom=s!==1||oy?Math.round((y+12)*(s-1)+oy)+"px":"";heapEl.style.marginRight=s>1?Math.round((maxX+12)*(s-1))+"px":""; // never negative: that widens the heap and the next layout wraps widerheapEl.style.minWidth=Math.max(0,maxX+12)+"px";
     // boxes appear where they belong; only boxes that move later glide
     for(const [,el] of els)if(el._fresh){el.classList.add("pg-place");el._fresh=false;requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.remove("pg-place")));}}
   /* ---------- arrows ---------- */
@@ -1264,9 +1265,10 @@
     ["Trees and heaps","BST, AVL, trie, heap, red-black",/^(Binary tree|AVL|Trie|Heap|TreeMap)/,"tree"],
     ["Hashing","Buckets and collisions",/^HashMap/,"hash"],
     ["Graphs","BFS, Dijkstra, Union-Find",/^(Graph BFS|Dijkstra|Union-Find)/,"graph"],
-    ["Sorting, searching and DP","Sorts, binary search, DP tables, range trees",/^(Bubble|Binary search|Grid DP|DP arrows|Merge intervals|Segment|Fenwick)/,"bars"]];
+    ["Sorting, searching and DP","Sorts, binary search, DP tables, range trees",/^(Bubble|Insertion sort|Merge sort|Quicksort|Binary search|Grid DP|DP arrows|Merge intervals|Segment|Fenwick)/,"bars"],
+    ["Compare two solutions","The slow and the fast version of the same problem",/^Compare:/,"bars"]];
   const LESSON=[[/^(Arrays and loops|2D matrix)/,"D01","../dsa/01-arrays.html"],[/^HashMap/,"D02","../dsa/02-hashing.html"],[/^Palindrome/,"D03","../dsa/03-two-pointers.html"],
-    [/^(Factorial|Fibonacci)/,"D05","../dsa/05-recursion.html"],[/^Bubble/,"D06","../dsa/06-sorting.html"],[/^Binary search/,"D07","../dsa/07-binary-search.html"],
+    [/^(Factorial|Fibonacci)/,"D05","../dsa/05-recursion.html"],[/^(Bubble|Insertion sort|Merge sort|Quicksort)/,"D06","../dsa/06-sorting.html"],[/^Compare: (Two Sum|duplicates)/,"D02","../dsa/02-hashing.html"],[/^Compare: search/,"D07","../dsa/07-binary-search.html"],[/^Compare: Fibonacci/,"D17","../dsa/17-dp-1.html"],[/^Binary search/,"D07","../dsa/07-binary-search.html"],
     [/^(Linked list|Doubly|Cycle)/,"D08","../dsa/08-linked-lists.html"],[/^(Stack with|Queue with|Monotonic)/,"D09","../dsa/09-stacks-queues.html"],
     [/^Binary tree/,"D10","../dsa/10-trees.html"],[/^(AVL|TreeMap)/,"D11","../dsa/11-bst.html"],[/^Heap/,"D12","../dsa/12-heaps.html"],[/^Backtracking/,"D13","../dsa/13-backtracking.html"],
     [/^Graph BFS/,"D14","../dsa/14-graphs.html"],[/^(Dijkstra|Union-Find)/,"D15","../dsa/15-graphs-2.html"],[/^Merge intervals/,"D16","../dsa/16-greedy.html"],
@@ -1364,26 +1366,200 @@
     histEl.addEventListener("mouseleave",hClear);}
   /* sorts: the part that is already in its final place is shaded and labelled (bubble sort: the last i cells; selection sort: the first i) */
   let SRT=null,srtR=null;
-  function sortPlan(code){
+  function sortPlan(code){ // v6: bubble (final tail), selection (final head), insertion (sorted so far), quicksort (pivot and sides), merge sort (two halves)
     const b=code.match(/for\s*\(\s*int\s+(\w+)\s*=\s*0\s*;\s*\1\s*<\s*([\w.]+?)\s*-\s*(?:1\s*-\s*(\w+)|(\w+)\s*-\s*1)\s*;/);
-    if(b){const inner=b[1],a=(code.match(new RegExp("(\\w+)\\s*\\[\\s*"+inner+"\\s*\\+\\s*1\\s*\\]"))||[])[1];return a?{kind:"tail",arr:a,outer:b[3]||b[4],n:b[2]}:null;}
+    if(b){const inner=b[1],a=(code.match(new RegExp("(\\w+)\\s*\\[\\s*"+inner+"\\s*\\+\\s*1\\s*\\]"))||[])[1];return a?{kind:"tail",arr:a,outer:b[3]||b[4]}:null;}
     const s=code.match(/for\s*\(\s*int\s+(\w+)\s*=\s*(\w+)\s*\+\s*1\s*;/);
     if(s&&/min\w*\s*=\s*\w+\s*;/.test(code)){const a=(code.match(new RegExp("(\\w+)\\s*\\[\\s*"+s[1]+"\\s*\\]"))||[])[1];return a?{kind:"head",arr:a,outer:s[2]}:null;}
+    const w=code.match(/while\s*\(\s*(\w+)\s*>=\s*0\s*&&\s*(\w+)\s*\[\s*\1\s*\]\s*>\s*\w+\s*\)/),o=code.match(/for\s*\(\s*int\s+(\w+)\s*=\s*1\s*;/);
+    if(w&&o)return {kind:"ins",arr:w[2],outer:o[1]};
+    const p=code.match(/int\s+pivot\s*=\s*(\w+)\s*\[\s*(\w+)\s*\]/);if(p)return {kind:"quick",arr:p[1],pidx:p[2]};
+    const m=code.match(/merge\s*\(\s*(\w+)\s*,/);if(m&&/\bmid\s*=/.test(code))return {kind:"merge",arr:m[1]};
     return null;}
+  const SRTC=["pg-srt","pg-srt2","pg-srB","pg-hA","pg-hB","pg-pv"];
   function sortedMarks(S){
     if(srtR!==R){srtR=R;SRT=IDX.sort?sortPlan(getCode()):null;}
-    for(const el of qa(".pg-srt",heapEl))el.classList.remove("pg-srt");for(const el of qa(".pg-srtl",heapEl))el.remove();
+    for(const cl of SRTC)for(const el of qa("."+cl,heapEl))el.classList.remove(cl);for(const el of qa(".pg-srtl",heapEl))el.remove();
     if(!SRT)return;const fr=frameOf(S,S.step.f);if(!fr)return;
-    const vr=n=>fr.vars.find(v=>v.n===n),iv=n=>{const x=vr(n);return x&&x.v&&x.v.p==="int"?+x.v.s:undefined;};
-    const av=vr(SRT.arr),o=iv(SRT.outer);if(!av||!av.v||av.v.r===undefined||o===undefined)return;
+    const vr=n=>fr.vars.find(v=>v.n===n),iv=n=>{const x=vr(n);return x&&x.v&&x.v.p==="int"?+x.v.s:undefined;},first=(...ns)=>{for(const n of ns){const v=iv(n);if(v!==undefined)return v;}};
+    const av=vr(SRT.arr);if(!av||!av.v||av.v.r===undefined)return;
     const r=S.recs.get(av.v.r),el=DRAWN.get(av.v.r);if(!r||!el||r.k!=="arr")return;
-    const n=r.len,lo=SRT.kind==="tail"?n-o:0,hi=SRT.kind==="tail"?n:o;if(hi-lo<1)return;
-    for(let i=lo;i<hi;i++){const c=el.querySelector('[data-k="h'+r.id+":"+i+'"]');if(c)c.classList.add("pg-srt");}
-    const cells=el.querySelector(".pg-cells");if(cells)cells.insertAdjacentHTML("afterend",'<div class="pg-srtl">✓ in place: '+(lo===hi-1?"["+lo+"]":"["+lo+"…"+(hi-1)+"]")+"</div>");}
+    const n=r.len,cell=i=>el.querySelector('[data-k="h'+r.id+":"+i+'"]'),paint=(lo,hi,cl)=>{for(let i=Math.max(0,lo);i<=Math.min(n-1,hi);i++){const c=cell(i);if(c)c.classList.add(cl);}};
+    const rng=(lo,hi)=>lo===hi?"["+lo+"]":"["+lo+"…"+hi+"]",labels=[];
+    if(SRT.kind==="tail"||SRT.kind==="head"){const o=iv(SRT.outer);if(o===undefined)return;const lo=SRT.kind==="tail"?n-o:0,hi=SRT.kind==="tail"?n-1:o-1;if(hi<lo)return;
+      paint(lo,hi,"pg-srt");labels.push('<span class="ok">✓ in place: '+rng(lo,hi)+"</span>");}
+    else if(SRT.kind==="ins"){const o=iv(SRT.outer);if(o===undefined||o<1)return;paint(0,o-1,"pg-srt2");labels.push('<span class="so">sorted so far: '+rng(0,o-1)+"</span>");}
+    else if(SRT.kind==="quick"){const lo=first("lo","low","l","left"),hi=first("hi","high","h","r","right"),i=iv("i"),j=iv("j"),pv=iv(SRT.pidx);
+      if(lo===undefined||hi===undefined||pv===undefined||!vr("pivot"))return;
+      if(i!==undefined&&i>=lo){paint(lo,i,"pg-srt2");labels.push('<span class="so">≤ pivot: '+rng(lo,i)+"</span>");}
+      const g0=i===undefined?lo:i+1;if(j!==undefined&&j-1>=g0){paint(g0,j-1,"pg-srB");labels.push('<span class="gt">&gt; pivot: '+rng(g0,j-1)+"</span>");}
+      const c=cell(pv);if(c)c.classList.add("pg-pv");labels.push('<span class="pv">pivot = '+H(SRT.arr)+"["+pv+"]</span>");}
+    else if(SRT.kind==="merge"){const lo=first("lo","low","l","left"),hi=first("hi","high","h","r","right"),mid=first("mid","m");if(lo===undefined||hi===undefined||mid===undefined||hi<=lo)return;
+      paint(lo,mid,"pg-hA");paint(mid+1,hi,"pg-hB");labels.push('<span class="ha">left half '+rng(lo,mid)+'</span><span class="hb">right half '+rng(mid+1,hi)+"</span>");}
+    const cells=el.querySelector(".pg-cells");if(cells&&labels.length)cells.insertAdjacentHTML("afterend",'<div class="pg-srtl">'+labels.join("")+"</div>");}
   function v4after(){if(!R||!R.steps.length)return;PGhost.classList.remove("pg-nosteps");if(coach)coach.hidden=false;timeline();if(!memOn)sortedMarks(JVML.state(R,K));if(coach&&K>=2)coachDone();}
   render=(r0=>function(){r0();v4after();})(render);
   // v5: a program that does not run leaves nothing to step: no timeline marks, no hint, the step buttons dimmed
   showFatal=(f0=>function(){f0();tl.innerHTML="";tlKey="";if(coach)coach.hidden=true;PGhost.classList.add("pg-nosteps");})(showFatal);
+  /* ---------- v6 (2026-11-02): live syntax check, "try another input" with a growth log, predict mode, compare two solutions,
+     save the run as a GIF. Wraps act() (predict) and extends v4after() through v6after(). ---------- */
+  /* live syntax check while typing: JVML.parse only (no run), the line gets a wavy underline and a one-line note under the editor */
+  const lintEl=document.createElement("div");lintEl.className="pg-lint";lintEl.hidden=true;lintEl.setAttribute("role","status");box.after(lintEl);
+  let lintMark=null,lintT=0;
+  function lint(){const c=cm();if(!c)return;if(lintMark){c.removeLineClass(lintMark,"text","pg-lintline");lintMark=null;}
+    try{JVML.parse(c.getValue());lintEl.hidden=true;}
+    catch(e){if(!e||!e.line){lintEl.hidden=true;return;}const ln=Math.min(e.line,c.lineCount());lintMark=c.addLineClass(ln-1,"text","pg-lintline");
+      lintEl.hidden=false;lintEl.innerHTML='<b>Line '+ln+"</b>"+H(e.message)+"<span>click to go there</span>";
+      lintEl.onclick=()=>{c.focus();c.setCursor({line:ln-1,ch:c.getLine(ln-1).length});};}}
+  /* "try another input": the program's first int[] literal gets new data; the steps of each size are kept, so the growth shows */
+  const inRow=document.createElement("div");inRow.className="pg-inrow";inRow.hidden=true;lintEl.after(inRow);
+  const ARRRE=/(int\[\]\s+(\w+)\s*=\s*(?:new\s+int\[\]\s*)?\{)([\s\d,+-]*)(\})/;
+  let inKind="random",growth=new Map(),growKey="",inR=null;
+  function arrLit(code){const m=code.match(ARRRE);if(!m)return null;const vals=m[3].split(",").map(s=>s.trim()).filter(Boolean).map(Number);
+    return vals.length&&!vals.some(isNaN)?{name:m[2],vals}:null;}
+  function genVals(kind,n){let a;
+    if(kind==="few")a=Array.from({length:n},()=>1+Math.floor(Math.random()*4));
+    else{const s=new Set(),top=Math.max(99,n*3);while(s.size<n)s.add(1+Math.floor(Math.random()*top));a=[...s];}
+    if(kind==="sorted")a.sort((x,y)=>x-y);else if(kind==="reversed")a.sort((x,y)=>y-x);return a;}
+  const withVals=(code,v)=>code.replace(ARRRE,(x,a,b,c,d)=>a+v.join(", ")+d);
+  function setInput(kind,n){const code=getCode();if(!arrLit(code))return;inKind=kind;setCode(withVals(code,genVals(kind,n)));setFile();visualize();}
+  const stepsTxt=r=>r.ff?N(r.steps.length)+"+":N(r.steps.length);
+  function growNote(){const g=[...growth].sort((a,b)=>a[0]-b[0]);if(g.length<2)return "";const n1=g[0][0],s1=g[0][1].steps.length,n2=g[g.length-1][0],s2=g[g.length-1][1].steps.length;if(n2<=n1||s1<1)return "";
+    const e=Math.log(s2/s1)/Math.log(n2/n1);
+    return ' <span class="pg-gn">'+(e<.55?"grows slowly (like log n)":e<1.4?"grows like n: double the input, double the steps":e<2.5?"grows like n²: double the input, four times the steps":"grows faster than n²")+"</span>";}
+  function inDraw(){const code=getCode(),A=arrLit(code);inRow.hidden=!A;if(!A)return;const n=A.vals.length,key=code.replace(ARRRE,"$1$4");
+    if(key!==growKey){growKey=key;growth=new Map();}
+    if(R&&R.steps.length&&!stale&&!R.error)growth.set(n,R);
+    const g=[...growth].sort((a,b)=>a[0]-b[0]);
+    inRow.innerHTML='<span class="pg-inl">Try another input for <code>'+H(A.name)+"</code></span>"+
+      [["random","Random"],["sorted","Sorted"],["reversed","Reversed"],["few","Repeats"]].map(([k,t])=>'<button type="button" class="pg-chip'+(k===inKind?" on":"")+'" data-ik="'+k+'">'+t+"</button>").join("")+
+      '<span class="pg-insz">size'+[5,10,20,40].map(s=>'<button type="button" class="pg-chip'+(s===n?" on":"")+'" data-in="'+s+'">'+s+"</button>").join("")+"</span>"+
+      (g.length>1?'<div class="pg-grow">Steps: '+g.map(([k,r])=>"n = "+k+" → <b>"+stepsTxt(r)+"</b>").join(" · ")+growNote()+"</div>":
+        '<div class="pg-grow pg-dim">Pick two sizes to see how the number of steps grows.</div>');}
+  inRow.addEventListener("click",e=>{const b=e.target.closest("[data-ik],[data-in]");if(!b)return;const A=arrLit(getCode());if(!A)return;
+    if(b.dataset.ik)setInput(b.dataset.ik,A.vals.length);else setInput(inKind,+b.dataset.in);});
+  const cmW=setInterval(()=>{const c=cm();if(!c)return;clearInterval(cmW);c.on("changes",()=>{clearTimeout(lintT);lintT=setTimeout(()=>{lint();inDraw();},650);});lint();},120);
+  /* predict mode: before a step, guess what the line will do (a condition, an array cell or a variable); the answer shows, then it steps */
+  const predB=document.createElement("button");predB.type="button";predB.className="ib pg-predb";predB.title="Predict mode: before each step, guess what the line will do (keys 1 to 4)";
+  let PRED=LS.get("js1-pg-pred")==="1",pend=null;const score=[0,0];
+  const dbg=q(".pg-dbg",PGhost);if(dbg)dbg.appendChild(predB);
+  const predEl=document.createElement("div");predEl.className="pg-pred";predEl.hidden=true;predEl.setAttribute("aria-live","polite");q(".pg-ctl",PGhost).after(predEl);
+  function predUi(){predB.textContent=PRED?"◎ Predict: on":"◎ Predict";predB.setAttribute("aria-pressed",String(PRED));predB.classList.toggle("on",PRED);if(!PRED){pend=null;predEl.hidden=true;}}
+  predB.onclick=()=>{PRED=!PRED;LS.set("js1-pg-pred",PRED?"1":"0");predUi();};predUi();
+  function mkQ(nm,now,old,pool,L){const o=[now];const add=x=>{if(x!=null&&x!==""&&!o.includes(x)&&o.length<4)o.push(x);};
+    if(old!==null)add(old);
+    if(now==="true"||now==="false")add(now==="true"?"false":"true");
+    else if(/^-?\d+$/.test(now)){const n=+now;add(String(n+1));add(String(n-1));add(String(n*2===n?n+2:n*2));}
+    for(const p of pool)add(p);
+    for(let i=o.length-1;i>0;i--){const j=(i*7+nm.length+now.length)%(i+1);[o[i],o[j]]=[o[j],o[i]];}
+    return {t:"What will <code>"+H(nm)+"</code> be after line "+L+" runs?",o,a:o.indexOf(now)};}
+  function qFor(k){if(!R||k+1>=R.steps.length)return null;const nx=R.steps[k+1],S0=JVML.state(R,k),S1=JVML.state(R,k+1),L=S0.line;
+    if(nx.cd&&!nx.cd.fe&&nx.cd.s&&typeof nx.cd.v==="boolean")return {t:"Will <code>"+H(nx.cd.s)+"</code> be true or false?",o:["true","false"],a:nx.cd.v?0:1};
+    for(const key of S1.changed){const m=/^h(\d+):(\d+)$/.exec(key);if(!m)continue;const r1=S1.recs.get(+m[1]);if(!r1||r1.k!=="arr")continue;
+      const nm=(viewCtx(S1).by.get(r1.id)||[])[0];if(!nm)continue;const i=+m[2],r0=S0.recs.get(r1.id),old=r0&&r0.a&&r0.a[i]!==undefined?valTxt(r0.a[i],S0):null;
+      return mkQ(nm+"["+i+"]",valTxt(r1.a[i],S1),old,r1.a.map(v=>valTxt(v,S1)),L);}
+    const f0=frameOf(S0,S0.step.f),f1=f0&&frameOf(S1,f0.id);
+    if(f1)for(const v of f1.vars){if(!v.v||v.v.r!==undefined||v.n==="this")continue;const o=f0.vars.find(x=>x.n===v.n),now=valTxt(v.v,S1),old=o&&o.v&&o.v.r===undefined?valTxt(o.v,S0):null;
+      if(old===now)continue;return mkQ(v.n,now,old,f1.vars.filter(x=>x.v&&x.v.r===undefined).map(x=>valTxt(x.v,S1)),L);}
+    return null;}
+  const scoreTxt=()=>score[1]?"Score <b>"+score[0]+" / "+score[1]+"</b>":"Guess, then see";
+  function ask(){const Q=qFor(K);if(!Q){predEl.hidden=true;return false;}pend=Q;predEl.hidden=false;
+    predEl.innerHTML='<div class="pg-pq"><span class="pg-ptag">Predict · line '+(JVML.state(R,K).line||"")+"</span>"+Q.t+'</div><div class="pg-po">'+Q.o.map((x,i)=>'<button type="button" data-po="'+i+'"><kbd>'+(i+1)+"</kbd>"+H(x)+"</button>").join("")+
+      '</div><div class="pg-ps">'+scoreTxt()+' <button type="button" class="pg-pskip">Skip: show me →</button></div>';return true;}
+  const a0=act;
+  function answer(i){if(!pend)return;const Q=pend;pend=null;const ok=i===Q.a;if(i>=0){score[1]++;if(ok)score[0]++;}
+    qa("[data-po]",predEl).forEach((b,j)=>{b.disabled=true;b.classList.add(j===Q.a?"ok":j===i?"no":"dim");});
+    q(".pg-ps",predEl).innerHTML=(i<0?"It is <b>"+H(Q.o[Q.a])+"</b>":ok?'<b class="pg-good">✓ Right</b>':'<b class="pg-bad">✗ It is '+H(Q.o[Q.a])+"</b>")+" · "+scoreTxt()+" · press → for the next one";
+    a0("next");}
+  act=function(a){
+    if(a==="next"&&PRED&&R&&R.steps.length&&!timer&&K+1<R.steps.length){if(pend){answer(-1);return;}if(ask())return;}
+    if(a!=="next"){pend=null;predEl.hidden=true;}a0(a);};
+  predEl.addEventListener("click",e=>{const b=e.target.closest("[data-po]");if(b){answer(+b.dataset.po);return;}if(e.target.closest(".pg-pskip"))answer(-1);});
+  document.addEventListener("keydown",e=>{if(!pend||e.ctrlKey||e.metaKey||e.altKey)return;const t=e.target;if(t&&t.closest&&t.closest("input,textarea,select,.CodeMirror,dialog"))return;
+    const n=+e.key;if(n>=1&&n<=pend.o.length){e.preventDefault();e.stopPropagation();answer(n-1);}},true);
+  /* compare two solutions: the same data at growing sizes, both programs run in the background, steps side by side and a race */
+  const CMPP=[
+    {t:"Two Sum",slow:"Compare: Two Sum, brute force",fast:"Compare: Two Sum, HashMap",cs:"O(n²)",cf:"O(n)",sizes:[5,10,20,40],data:"pairlast",why:"Brute force tries every pair; the HashMap remembers what it has seen and finds the partner in one look."},
+    {t:"Contains Duplicate",slow:"Compare: duplicates, brute force",fast:"Compare: duplicates, HashSet",cs:"O(n²)",cf:"O(n)",sizes:[5,10,20,40],data:"distinct",why:"Comparing every pair grows with n²; a HashSet answers \"seen before?\" in O(1)."},
+    {t:"Search a sorted array",slow:"Compare: search, linear",fast:"Compare: search, binary",cs:"O(n)",cf:"O(log n)",sizes:[8,16,32,64],data:"sorted",why:"A linear scan looks at every value; binary search halves the range each time, so 64 values take about 6 looks."},
+    {t:"Fibonacci",slow:"Compare: Fibonacci, naive",fast:"Compare: Fibonacci, memo",cs:"O(2ⁿ)",cf:"O(n)",sizes:[5,10,14,18],data:"n",why:"The naive recursion solves the same smaller fib again and again; the memo solves each n once."}];
+  const exIx=n=>EX.findIndex(e=>e.name===n);
+  function pairData(kind,n){const s=new Set();while(s.size<n)s.add(1+Math.floor(Math.random()*n*4));const a=[...s].sort((x,y)=>x-y);
+    if(kind==="sorted")return a;const big=a.splice(-2);for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+    return kind==="pairlast"?a.concat(big):a.concat(big).sort(()=>Math.random()-.5);}
+  const cmpD=document.createElement("dialog");cmpD.className="pg-gal pg-cmpd";cmpD.setAttribute("aria-label","Compare two solutions");document.body.appendChild(cmpD);
+  cmpD.addEventListener("keydown",e=>{e.stopPropagation();if(e.key==="Escape"){e.preventDefault();cmpD.close();}},true);
+  cmpD.addEventListener("click",e=>{if(e.target===cmpD){cmpD.close();return;}if(e.target.closest(".pg-galx")){cmpD.close();return;}const b=e.target.closest("[data-open]");if(b){cmpD.close();loadEx(+b.dataset.open);}});
+  function compare(P){const A=EX[exIx(P.slow)],B=EX[exIx(P.fast)];if(!A||!B)return;
+    cmpD.innerHTML='<div class="pg-galh"><b>'+H(P.t)+": "+P.cs+" vs "+P.cf+'</b><span>both programs, the same data, growing sizes</span><button type="button" class="ib pg-galx" aria-label="Close">✕</button></div><div class="pg-galb2 pg-cmpb"><p class="pg-dim">Running…</p></div>';
+    if(cmpD.showModal)cmpD.showModal();else cmpD.setAttribute("open","");
+    setTimeout(()=>{const rows=[];
+      for(const n of P.sizes){let a=A.code,b=B.code;
+        if(P.data==="n"){a=a.replace(/int n = \d+;/,"int n = "+n+";");b=b.replace(/int n = \d+;/,"int n = "+n+";");}
+        else{const v=pairData(P.data,n);a=withVals(a,v);b=withVals(b,v);}
+        let ra,rb;try{ra=JVML.run(a,"");rb=JVML.run(b,"");}catch(e){continue;}
+        rows.push({n,a:ra.steps.length,b:rb.steps.length,af:ra.ff,bf:rb.ff});}
+      const last=rows[rows.length-1]||{a:1,b:1},mx=Math.max(last.a,last.b,1);
+      q(".pg-cmpb",cmpD).innerHTML='<p>'+H(P.why)+'</p><div class="pg-race"><div><span>'+H(A.name.replace(/^Compare: /,""))+" · "+P.cs+'</span><i class="slow" style="--w:'+(100*last.a/mx).toFixed(1)+'%"></i><b>'+N(last.a)+(last.af?"+":"")+' steps</b></div><div><span>'+H(B.name.replace(/^Compare: /,""))+" · "+P.cf+'</span><i class="fast" style="--w:'+(100*last.b/mx).toFixed(1)+'%"></i><b>'+N(last.b)+(last.bf?"+":"")+" steps</b></div><small>at n = "+last.n+"</small></div>"+
+        '<div class="tw"><table><thead><tr><th>n</th><th>'+P.cs+" steps</th><th>"+P.cf+" steps</th><th>slower by</th></tr></thead><tbody>"+rows.map(r=>"<tr><td>"+r.n+"</td><td>"+N(r.a)+(r.af?"+":"")+"</td><td>"+N(r.b)+(r.bf?"+":"")+"</td><td>"+(r.a/Math.max(1,r.b)).toFixed(1)+"×</td></tr>").join("")+"</tbody></table></div>"+
+        '<p class="pg-dim">A step is one line the Lab ran (the same count as the step bar). Data is random each time; the worst case is built in (the pair is last, nothing repeats, the target is missing).</p>'+
+        '<div class="pg-cmpbtn"><button type="button" class="btn" data-open="'+exIx(P.slow)+'">Step through the '+P.cs+" one</button><button type=\"button\" class=\"btn pri\" data-open=\""+exIx(P.fast)+'">Step through the '+P.cf+" one</button></div>";
+      requestAnimationFrame(()=>requestAnimationFrame(()=>cmpD.classList.add("go")));},40);}
+  // the gallery gets a "Compare two solutions" strip at the top
+  const galDraw0=galDraw;galDraw=function(){galDraw0();if(galS.value.trim())return;
+    galBody.insertAdjacentHTML("afterbegin",'<div class="pg-gsec"><h3>Compare two solutions <small>the same input at growing sizes: see why the faster one wins</small></h3><div class="pg-galg">'+
+      CMPP.map((P,i)=>'<div class="pg-gcard pg-gcmp"><button type="button" data-cmp="'+i+'"><svg viewBox="0 0 68 28" aria-hidden="true"><rect x="4" y="6" width="58" height="6" rx="3"/><rect x="4" y="17" width="18" height="6" rx="3"/></svg><b>'+H(P.t)+"</b><small>"+P.cs+" vs "+P.cf+"</small></button></div>").join("")+"</div></div>");};
+  gal.addEventListener("click",e=>{const b=e.target.closest("[data-cmp]");if(!b)return;e.stopPropagation();galClose();compare(CMPP[+b.dataset.cmp]);},true);
+  /* save the run as an animated GIF: each frame is the picture panel drawn through an SVG foreignObject (inlined computed styles) */
+  const GPROPS=["display","position","left","top","right","bottom","width","height","margin-top","margin-right","margin-bottom","margin-left","padding-top","padding-right","padding-bottom","padding-left",
+    "border-top","border-right","border-bottom","border-left","border-radius","background-color","background-image","color","font-family","font-size","font-weight","font-style","line-height","letter-spacing",
+    "text-align","text-transform","white-space","vertical-align","opacity","transform","transform-origin","box-shadow","box-sizing","flex-direction","flex-wrap","flex-grow","flex-shrink","flex-basis",
+    "align-items","align-self","justify-content","gap","grid-template-columns","grid-template-rows","grid-column","grid-row","overflow","z-index","visibility","fill","stroke","stroke-width","stroke-dasharray",
+    "stroke-linecap","text-anchor","dominant-baseline","paint-order","min-width","min-height","max-width","list-style-type","border-collapse","table-layout"];
+  function styled(el){const c=el.cloneNode(false);const cs=getComputedStyle(el);let s="";for(const p of GPROPS){const v=cs.getPropertyValue(p);if(v)s+=p+":"+v+";";}
+    c.setAttribute("style",s);c.removeAttribute("class");
+    for(const ch of el.childNodes){if(ch.nodeType===3)c.appendChild(ch.cloneNode());else if(ch.nodeType===1&&!ch.matches(".pg-zoom,script,select,.pg-legend .pg-sw"))c.appendChild(styled(ch));}
+    return c;}
+  function snap(w,h,sc){return new Promise(res=>{const node=styled(panel);node.style.margin="0";node.style.width=w+"px";node.style.height=h+"px";node.style.overflow="hidden";
+      const inner=document.createElement("div");inner.setAttribute("style","width:"+w+"px;height:"+h+"px;overflow:hidden;background:"+getComputedStyle(panel).backgroundColor);
+      node.scrollTop=0;inner.appendChild(node);
+      const svgs='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.round(w*sc)+'" height="'+Math.round(h*sc)+'"><g transform="scale('+sc+')"><foreignObject width="'+w+'" height="'+h+'">'+new XMLSerializer().serializeToString(inner)+"</foreignObject></g></svg>";
+      const img=new Image(),late=setTimeout(()=>res(null),4000);img.onload=()=>{clearTimeout(late);const cv=document.createElement("canvas");cv.width=Math.round(w*sc);cv.height=Math.round(h*sc);const x=cv.getContext("2d");x.drawImage(img,0,0);
+        try{res(x.getImageData(0,0,cv.width,cv.height).data);}catch(e){res(null);}};img.onerror=()=>{clearTimeout(late);res(null);};
+      img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svgs);});}
+  function gifLzw(idx,b){const MIN=8,CLR=256,EOI=257;let size=MIN+1,next=EOI+1,clearing=false,dict=new Map(),cur=0,bits=0;const buf=[];
+    const emit=c=>{cur|=c<<bits;bits+=size;while(bits>=8){buf.push(cur&255);cur>>>=8;bits-=8;}
+      if(clearing){size=MIN+1;clearing=false;}else if(next>(1<<size)-1&&size<12)size++;};
+    b(MIN);emit(CLR);let pre=idx[0];
+    for(let i=1;i<idx.length;i++){const k=idx[i],key=pre*256+k,v=dict.get(key);if(v!==undefined){pre=v;continue;}
+      emit(pre);if(next<4096)dict.set(key,next++);else{clearing=true;emit(CLR);dict=new Map();next=EOI+1;}pre=k;}
+    emit(pre);emit(EOI);if(bits>0)buf.push(cur&255);
+    for(let i=0;i<buf.length;i+=255){const n=Math.min(255,buf.length-i);b(n);for(let j=0;j<n;j++)b(buf[i+j]);}b(0);}
+  function gifEncode(frames,w,h,delay){const out=[],b=x=>out.push(x&255),w16=x=>{b(x);b(x>>8);},str=s=>{for(const c of s)b(c.charCodeAt(0));};
+    str("GIF89a");w16(w);w16(h);b(0xF7);b(0);b(0);
+    for(let i=0;i<256;i++){const r=Math.floor(i/42),g=Math.floor(i%42/6),bb=i%6;if(i<252){b(Math.round(r*51));b(Math.round(g*42.5));b(Math.round(bb*51));}else{b(0);b(0);b(0);}}
+    str("\x21\xFF\x0BNETSCAPE2.0");b(3);b(1);w16(0);b(0);
+    const D=[0,32,8,40,48,16,56,24,12,44,4,36,60,28,52,20]; // 4×4 ordered dither, so dark UI colours band less
+    for(const px of frames){b(0x21);b(0xF9);b(4);b(0);w16(delay);b(0);b(0);b(0x2C);w16(0);w16(0);w16(w);w16(h);b(0);
+      const idx=new Uint8Array(w*h);
+      for(let y=0,i=0;y<h;y++)for(let x=0;x<w;x++,i++){const j=i*4,t=(D[(y&3)*4+(x&3)]-30)/64;
+        const q5=v=>Math.max(0,Math.min(5,Math.round(v*5/255+t))),q6=v=>Math.max(0,Math.min(6,Math.round(v*6/255+t)));
+        idx[i]=q5(px[j])*42+q6(px[j+1])*6+q5(px[j+2]);}
+      gifLzw(idx,b);}
+    b(0x3B);return new Uint8Array(out);}
+  async function saveGif(){if(!R||!R.steps.length)return;const N0=R.steps.length,k0=K,count=Math.min(60,N0),w=panel.clientWidth,h=panel.clientHeight,sc=Math.min(1,720/w);
+    stop();PGhost.classList.add("pg-cap");const frames=[];
+    for(let f=0;f<count;f++){const j=count<2?0:Math.round(f*(N0-1)/(count-1));go(j);why.innerHTML='<span class="pg-busy"></span> Making the GIF… frame '+(f+1)+" of "+count;
+      await new Promise(r=>setTimeout(r,40));const px=await snap(w,h,sc);if(!px){frames.length=0;break;}frames.push(px);}
+    PGhost.classList.remove("pg-cap");go(k0);
+    if(!frames.length){why.innerHTML='<b class="pg-bad">GIF</b> · this browser cannot draw the picture into an image.';return null;}
+    const gif=gifEncode(frames,Math.round(w*sc),Math.round(h*sc),Math.max(20,Math.round(6000/count/10))),blob=new Blob([gif],{type:"image/gif"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=curFile.replace(/\.java$/,"")+".gif";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},4000);
+    why.innerHTML='<b class="pg-good">GIF saved</b> · '+count+" frames, "+Math.round(blob.size/1024)+" KB ("+H(a.download)+")";return blob;}
+  zm.insertAdjacentHTML("afterbegin",'<button type="button" class="ib pg-gifb" title="Save the whole run as an animated GIF (60 frames)">GIF</button>');
+  q(".pg-gifb",zm).onclick=e=>{e.stopPropagation();saveGif();};
+  function v6after(){if(R!==inR){inR=R;inDraw();}}
+  const v4a0=v4after;v4after=function(){v4a0();v6after();};
   /* ---------- start: shared link > saved work > default example ---------- */
   (async()=>{
     const h=location.hash.match(/code=([A-Za-z0-9_-]+)/),hin=location.hash.match(/[&#]in=([A-Za-z0-9_-]*)/);
@@ -1394,5 +1570,9 @@
     if(inEl.value)q("#pgInBox").open=true;
     setFile();visualize();})();
   setTab(tab);
-  window.PGV={run:visualize,go:k=>go(k),act,setMem,setFull,toggleBp,setTab,get cx(){return CX;},get result(){return R;},get step(){return K;},layoutCount:()=>DRAWN.size};
+  /* v7: the Look menu beside the Memory switch: Classic (no class), Glass, Soft, Outline, Minimal (body.pg-lk-glass|soft|line|mono) */
+  const lookSel=q("#pgLook"),LOOKS=["classic","glass","soft","line","mono"];
+  function setLook(v){if(!LOOKS.includes(v))v="classic";for(const l of LOOKS)document.body.classList.toggle("pg-lk-"+l,l===v&&l!=="classic");if(lookSel)lookSel.value=v;LS.set("js1-pg-look",v);}
+  if(lookSel){lookSel.onchange=()=>setLook(lookSel.value);setLook(LS.get("js1-pg-look")||"classic");}
+  window.PGV={run:visualize,setLook,go:k=>go(k),act:a=>act(a),gif:()=>saveGif(),setMem,setFull,toggleBp,setTab,get cx(){return CX;},get result(){return R;},get step(){return K;},layoutCount:()=>DRAWN.size};
 })();
