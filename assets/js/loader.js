@@ -133,8 +133,10 @@
       if(e.defaultPrevented)return;
       if(!/(\/|\.html)$/i.test(u.pathname))return;   /* pages only, not files */
       if(document.querySelector(".zl:not(.zl-out)"))return;
-      var c=courseOf(u.pathname);mount({fresh:1,course:c,msg:"Opening "+(NAME[c]||"the page"),steps:false,hintAfter:0});});
+      var c=courseOf(u.pathname);var m=mount({fresh:1,course:c,msg:"Opening "+(NAME[c]||"the page"),steps:false,hintAfter:0});setTimeout(function(){m.leave();},8000);});
     addEventListener("hashchange",function(){section(decodeURIComponent(location.hash.slice(1)));});
+    addEventListener("beforeunload",function(){if(document.querySelector(".zl:not(.zl-out)"))return;
+      var m=mount({fresh:1,course:courseOf(location.pathname),msg:"Opening",steps:false,hintAfter:0});setTimeout(function(){m.leave();},8000);});
     addEventListener("pageshow",function(ev){if(ev.persisted){var z=document.querySelectorAll(".zl");for(var i=0;i<z.length;i++)z[i].parentNode.removeChild(z[i]);}});}
   nav();
   window.ZL={css:css,html:html,mount:mount,nav:nav,MIN_SHOW:MIN_SHOW};
