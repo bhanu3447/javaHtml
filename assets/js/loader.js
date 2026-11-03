@@ -104,7 +104,7 @@
   function css(){return "<style id=\"zlCss\">"+CSS+"</style>";}
   /* mount into this document; returns a controller */
   var MIN_SHOW=3000;   /* ms, from the loader's first appearance (user, 2026-11-03: "3 seconds you keep") */
-  function mount(o){o=o||{};var t0=window.__zlT0=window.__zlT0||Date.now();   /* shared with the lesson cover: the window survives document.write */
+  function mount(o){o=o||{};var t0=o.fresh?Date.now():(window.__zlT0=window.__zlT0||Date.now());   /* the page's first loader shares its start with the lesson cover (the window survives document.write); switches count their own */
     if(!document.getElementById("zlCss"))(document.head||document.documentElement).insertAdjacentHTML("beforeend",css());
     var host=document.createElement("div");host.innerHTML=html(o);var el=host.firstChild;(document.body||document.documentElement).appendChild(el);
     var timer=o.hintAfter===0?null:setTimeout(function(){var h=el.querySelector(".zl-hint");if(h)h.classList.add("on");},o.hintAfter||6000);
@@ -113,19 +113,28 @@
         if(msg){var m=el.querySelector(".zl-msg");m.textContent=msg;}},
       leave:function(){clearTimeout(timer);if(!el.parentNode||el.zlLeaving)return;el.zlLeaving=1;
         setTimeout(function(){el.classList.add("zl-out");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},480);},Math.max(0,MIN_SHOW-(Date.now()-t0)));}};}
-  /* Switching between courses and lessons: on a click that leaves this page for another page of the site, show the
-     loader at once (the next page's shell takes over with its own). Not for in-page #anchors, new tabs, modified clicks,
-     downloads, other sites, or links some script already handled. A page restored from the back/forward cache drops it. */
+  /* Switching (user, 2026-11-03: "between lessons, courses, and inside lessons each section"): on a click that leaves for
+     another page of the site, the loader appears at once (the next page's shell takes over with its own); on a click to a
+     section of this page, or any jump that changes the #section (the search palette…), the loader shows that section's
+     title, the page jumps behind it, and it lifts after MIN_SHOW. Not for new tabs, modified clicks, downloads, other
+     sites, bare "#" links, or page links some script already handled. A page restored from the back/forward cache drops it. */
+  function titleOf(el){var h=el.matches&&el.matches("h1,h2,h3")?el:el.querySelector&&el.querySelector("h2,h3,h1");
+    var t=(h||el).textContent||"";t=t.replace(/^\s*\d+\s*/,"").replace(/\s+/g," ").replace(/[\s#¶]+$/,"").trim();   /* drop the section number and the copy-link mark */return t.length>60?t.slice(0,57)+"…":t;}
+  function section(id){var el=id&&document.getElementById(id);if(!el||document.querySelector(".zl:not(.zl-out)"))return;
+    var c=courseOf(location.pathname),t=titleOf(el);mount({fresh:1,course:c,msg:t?"Opening: "+t:"Opening the section",steps:false,hintAfter:0}).leave();}
   function courseOf(path){var p=path.split("/");for(var i=0;i<p.length;i++)if(NAME[p[i]])return p[i];return "";}
-  function nav(){if(document.__zlNav)return;document.__zlNav=1;
+  function nav(){var r=document.documentElement;if(r.__zlNav)return;r.__zlNav=1;   /* on <html>: document.open() keeps the Document but wipes its listeners and replaces <html> */
     document.addEventListener("click",function(e){
-      if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+      if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
       var a=e.target&&e.target.closest&&e.target.closest("a[href]");if(!a||(a.target&&a.target!=="_self")||a.hasAttribute("download"))return;
       var u;try{u=new URL(a.getAttribute("href"),location.href);}catch(x){return;}
-      if(u.protocol!==location.protocol||u.host!==location.host||u.pathname===location.pathname)return;
+      if(u.protocol!==location.protocol||u.host!==location.host)return;
+      if(u.pathname===location.pathname){if(u.hash.length>1)section(decodeURIComponent(u.hash.slice(1)));return;}   /* a section of this page */
+      if(e.defaultPrevented)return;
       if(!/(\/|\.html)$/i.test(u.pathname))return;   /* pages only, not files */
       if(document.querySelector(".zl:not(.zl-out)"))return;
-      var c=courseOf(u.pathname);mount({course:c,msg:"Opening "+(NAME[c]||"the page"),steps:false,hintAfter:0});});
+      var c=courseOf(u.pathname);mount({fresh:1,course:c,msg:"Opening "+(NAME[c]||"the page"),steps:false,hintAfter:0});});
+    addEventListener("hashchange",function(){section(decodeURIComponent(location.hash.slice(1)));});
     addEventListener("pageshow",function(ev){if(ev.persisted){var z=document.querySelectorAll(".zl");for(var i=0;i<z.length;i++)z[i].parentNode.removeChild(z[i]);}});}
   nav();
   window.ZL={css:css,html:html,mount:mount,nav:nav,MIN_SHOW:MIN_SHOW};

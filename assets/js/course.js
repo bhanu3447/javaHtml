@@ -104,7 +104,7 @@ window.FX=FX;
    that page's name; the new page opens with the circle shrinking away. Plain clicks on links only (modifier keys, new tabs and
    same-page anchors are left alone); off under reduced motion. */
 (function(){
-  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches||window.ZL)return;   /* the ∞ loader (loader.js, live site) handles switches */
   const mk=()=>{const d=document.createElement("div");d.id="portal";d.setAttribute("aria-hidden","true");d.innerHTML='<i class="pt-c"></i><span class="pt-t"></span>';document.body.appendChild(d);return d;};
   const big=()=>Math.hypot(innerWidth,innerHeight)/40*1.15;
   document.addEventListener("click",e=>{if(e.defaultPrevented||e.button!==0||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey)return;
