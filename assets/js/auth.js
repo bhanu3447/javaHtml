@@ -35,9 +35,9 @@
   /* The loader written over an unlocked lesson (first thing in <body>), so the lesson is never seen without its CSS:
      loader.js's markup + styles (SMIL animation, nothing from the lesson's own CSS), removed once every
      <link rel=stylesheet> has loaded (and the fonts, for at most 1.5 s more), or after 10 s whatever happens. */
-  function cover(){
+  function cover(course){
     if(!window.ZL)return "";
-    return ZL.css()+ZL.html({id:"auCover",step:3,msg:"Opening the lesson"})+
+    return ZL.css()+ZL.html({id:"auCover",step:3,msg:"Opening the lesson",course:course})+
       '<script>(function(){var c=document.getElementById("auCover"),gone=false;if(!c)return;'+
       'function hide(){if(gone)return;gone=true;c.classList.add("zl-out");setTimeout(function(){c.remove();var s=document.getElementById("zlCss");if(s)s.remove();},480);}'+
       'function ready(){var f=document.fonts&&document.fonts.ready,cap=new Promise(function(r){setTimeout(r,1500);});(f?Promise.race([f,cap]):cap).then(function(){setTimeout(hide,120);});}'+
@@ -64,7 +64,7 @@
       say(2,"Opening the lesson");
       /* document.open() is ignored while the shell is still parsing, so wait for it to finish */
       if(document.readyState==="loading")await new Promise(function(ok){document.addEventListener("DOMContentLoaded",ok);});
-      var html=/<body[^>]*>/i.test(r.html)?r.html.replace(/<body[^>]*>/i,function(b){return b+cover();}):cover()+r.html;
+      var html=/<body[^>]*>/i.test(r.html)?r.html.replace(/<body[^>]*>/i,function(b){return b+cover(course);}):cover(course)+r.html;
       document.open();document.write(html);document.close();
       if(location.hash)setTimeout(function(){var e=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(e)e.scrollIntoView();},400);
       return;

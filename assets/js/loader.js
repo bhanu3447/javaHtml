@@ -31,7 +31,20 @@
   "@keyframes zl-bar{to{left:100%}}"+
   ".zl-box{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px;padding:24px;text-align:center;max-width:460px;animation:zl-in .6s cubic-bezier(.2,.8,.2,1) both}"+
   "@keyframes zl-in{from{opacity:0;transform:translateY(10px) scale(.98)}}"+
-  ".zl-mark{width:184px;height:104px;overflow:visible}"+
+  ".zl-mark{position:relative;width:250px;height:141px;overflow:visible}"+
+  ".zl-orb{position:absolute;left:50%;top:50%;width:300px;height:170px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(ellipse,color-mix(in srgb,var(--zl-b) 34%,transparent),transparent 68%);filter:blur(18px);animation:zl-br 3.2s ease-in-out infinite;pointer-events:none}"+
+  "@keyframes zl-br{50%{transform:translate(-50%,-50%) scale(1.14);opacity:.7}}"+
+  ".zl-hero{position:relative;display:grid;place-items:center}"+
+  ".zl-fly{position:absolute;inset:0;perspective:520px;perspective-origin:50% 45%;pointer-events:none;overflow:hidden;"+
+    "-webkit-mask-image:radial-gradient(ellipse 280px 215px at 50% 50%,transparent 56%,#000 92%);mask-image:radial-gradient(ellipse 280px 215px at 50% 50%,transparent 56%,#000 92%)}"+
+  ".zl-fly span{position:absolute;left:50%;top:45%;white-space:nowrap;font:700 22px/1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:-.01em;opacity:0;"+
+    "background:linear-gradient(90deg,var(--zl-a),var(--zl-b),var(--zl-c));-webkit-background-clip:text;background-clip:text;color:transparent;will-change:transform,opacity,filter;"+
+    "animation:zl-fly 6.4s cubic-bezier(.4,0,.75,.6) infinite;animation-delay:var(--d)}"+
+  ".zl-fly span.w{font:800 30px/1 'Inter Tight',Inter,system-ui,sans-serif;letter-spacing:-.02em}"+
+  "@keyframes zl-fly{0%{opacity:0;filter:blur(4px);transform:translate(-50%,-50%) translate3d(calc(var(--x)*.3),calc(var(--y)*.3),-900px)}"+
+    "16%{opacity:.95;filter:blur(0)}74%{opacity:.9;filter:blur(0)}"+
+    "100%{opacity:0;filter:blur(6px);transform:translate(-50%,-50%) translate3d(var(--x),var(--y),340px)}}"+
+  ".zl-dark .zl-fly span{opacity:0}"+
   ".zl-brand{font:600 11px/1 'JetBrains Mono',ui-monospace,monospace;letter-spacing:.28em;text-transform:uppercase;color:var(--zl-mu)}"+
   ".zl-msg{margin:0;font:650 19px/1.3 'Inter Tight',Inter,system-ui,sans-serif;letter-spacing:-.01em;background:linear-gradient(90deg,var(--zl-fg) 0%,var(--zl-fg) 38%,var(--zl-a) 50%,var(--zl-fg) 62%,var(--zl-fg) 100%);"+
     "background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:zl-sh 2.4s linear infinite}"+
@@ -48,8 +61,8 @@
   "@keyframes zl-pu{from{opacity:.8;transform:scale(.7)}to{opacity:0;transform:scale(1.5)}}"+
   ".zl-hint{max-width:360px;margin:0;font-size:13px;line-height:1.55;color:var(--zl-mu);opacity:0;transform:translateY(4px);transition:opacity .5s,transform .5s}"+
   ".zl-hint.on{opacity:1;transform:none}"+
-  "@media (prefers-reduced-motion:reduce){.zl *,.zl *::before,.zl *::after{animation:none!important;transition:none!important}.zl-bar{display:none}.zl-msg{color:var(--zl-fg);background:none}}"+
-  "@media (max-width:420px){.zl-mark{width:150px;height:85px}.zl-msg{font-size:17px}.zl-steps{gap:5px}.zl-steps li{font-size:11px;gap:5px}.zl-steps li+li::before{width:12px}}";
+  "@media (prefers-reduced-motion:reduce){.zl *,.zl *::before,.zl *::after{animation:none!important;transition:none!important}.zl-bar,.zl-fly{display:none}.zl-msg{color:var(--zl-fg);background:none}}"+
+  "@media (max-width:420px){.zl-mark{width:190px;height:107px}.zl-orb{width:230px;height:130px}.zl-fly span{font-size:16px}.zl-fly span.w{font-size:22px}.zl-msg{font-size:17px}.zl-steps{gap:5px}.zl-steps li{font-size:11px;gap:5px}.zl-steps li+li::before{width:12px}}";
 
   /* the ∞ with a comet: gradient track, three dashes (tail, body, head) moving together, a glowing head dot on the path */
   function mark(id){var g="zlg"+id,f="zlf"+id,s=still();
@@ -60,25 +73,44 @@
       '<filter id="'+f+'" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>'+
       '<path d="'+D+'" fill="none" stroke="url(#'+g+')" stroke-width="2.6" stroke-linecap="round" opacity="'+(s?".9":".16")+'"/>'+
       (s?"":'<g filter="url(#'+f+')">'+dash(42,42,2.6,.22)+dash(20,20,3.2,.55)+dash(7,7,3.8,1)+
-        '<circle r="2.1" fill="#fff" stroke="var(--zl-a)" stroke-width=".9" style="stroke:var(--zl-a)"><animateMotion dur="2.2s" repeatCount="indefinite" path="'+D+'"/></circle></g>')+"</svg>";}
+        '<circle r="3.4" fill="url(#'+g+')" opacity=".28"><animateMotion dur="2.2s" repeatCount="indefinite" path="'+D+'"/></circle>'+
+        '<circle r="2.3" fill="#fff" stroke="var(--zl-a)" stroke-width=".9" style="stroke:var(--zl-a)"><animateMotion dur="2.2s" repeatCount="indefinite" path="'+D+'"/></circle></g>')+"</svg>";}
+
+  /* course names and code that rise from deep behind the screen and fly past the reader (3D, staggered, never over the text) */
+  function W(big,code){return big.map(function(t){return [t,1];}).concat(code.map(function(t){return [t,0];}));}
+  var FLY={
+    java:W(["Java","JVM"],["class Car","@Override","HashMap","Stream","λ","record","volatile","Thread","Optional","List<T>","try { }","interface","GC","{ }","sealed","var"]),
+    sql:W(["SQL","Postgres"],["SELECT *","JOIN","GROUP BY","WHERE","ORDER BY","HAVING","INDEX","COMMIT","PRIMARY KEY","OVER ()","WITH cte","UNION","NULL","COUNT(*)","ROLLBACK","VIEW"]),
+    spring:W(["Spring Boot","IoC"],["@Bean","@Autowired","@RestController","@Transactional","@Service","@GetMapping","JPA","@Entity","DI","application.yml","@Configuration","@Repository","Actuator","@Value"]),
+    patterns:W(["Patterns","SOLID"],["Strategy","Observer","Factory","Decorator","Singleton","Adapter","Builder","Proxy","Command","Facade","State","Visitor","Composite","Iterator"]),
+    dsa:W(["DSA","Big-O"],["O(log n)","O(n)","BFS","DFS","heap","DP","two pointers","stack","queue","graph","binary search","memo","trie","sliding window"]),
+    n8n:W(["n8n","Automation"],["Webhook","{{ $json }}","HTTP Request","IF","Merge","Cron","AI Agent","Set","Code","Split Out","workflow","Wait","Switch","Error Trigger"]),
+    resume:W(["Resume","ATS"],["LaTeX","impact","skills","keywords","projects","metrics","PDF","match %","summary","experience"]),
+    all:W(["Java","SQL","Spring Boot","DSA","Patterns","n8n"],["SELECT *","class Car","@Bean","JOIN","λ","O(log n)","Stream","{ }","HashMap","GROUP BY","record","@Transactional","Webhook","Strategy"])};
+  var NAME={java:"Java",sql:"SQL",spring:"Spring Boot",patterns:"Patterns",dsa:"DSA",n8n:"n8n",resume:"Resume"};
+  function fly(course){var set=FLY[course]||FLY.all,k=set.length;return '<div class="zl-fly" aria-hidden="true">'+set.map(function(w,i){
+      var a=(i*137.5)%360*Math.PI/180,r=34+(i*29)%22;   /* golden-angle spread, 34–56 vmax out from the centre */
+      return '<span'+(w[1]?' class="w"':"")+' style="--x:'+(Math.cos(a)*r).toFixed(1)+'vmax;--y:'+(Math.sin(a)*r*.62).toFixed(1)+'vmax;--d:'+(-(i*6.4/k)).toFixed(2)+'s">'+w[0]+"</span>";}).join("")+"</div>";}
 
   var n=0;
   function html(o){o=o||{};var id=++n,step=o.step||0;
     return '<div class="zl'+(dark()?" zl-dark":"")+'"'+(o.id?' id="'+o.id+'"':"")+' role="status" aria-live="polite">'+
-      '<div class="zl-au" aria-hidden="true"><i></i><i></i><i></i></div><div class="zl-grid" aria-hidden="true"></div><div class="zl-bar" aria-hidden="true"><i></i></div>'+
-      '<div class="zl-box">'+mark(id)+'<span class="zl-brand">Zero to Advanced</span><p class="zl-msg">'+(o.msg||"Loading")+"</p>"+
+      '<div class="zl-au" aria-hidden="true"><i></i><i></i><i></i></div><div class="zl-grid" aria-hidden="true"></div>'+(still()?"":fly(o.course))+'<div class="zl-bar" aria-hidden="true"><i></i></div>'+
+      '<div class="zl-box"><div class="zl-hero"><span class="zl-orb" aria-hidden="true"></span>'+mark(id)+"</div>"+'<span class="zl-brand">'+(NAME[o.course]?NAME[o.course]+" · ":"")+'Zero to Advanced</span><p class="zl-msg">'+(o.msg||"Loading")+"</p>"+
       (o.steps===false?"":'<ol class="zl-steps">'+STEPS.map(function(t,i){return '<li class="'+(i<step?"done":i===step?"now":"")+'"><b>'+(i<step?"✓":"")+"</b>"+t+"</li>";}).join("")+"</ol>")+
       '<p class="zl-hint">'+(o.hint||"The free server is waking up after a quiet spell. The first visit can take up to a minute; after that it's quick.")+"</p></div></div>";}
 
   function css(){return "<style id=\"zlCss\">"+CSS+"</style>";}
   /* mount into this document; returns a controller */
-  function mount(o){o=o||{};
+  var MIN_SHOW=700;   /* ms: shorter than this reads as a flicker, not a loader */
+  function mount(o){o=o||{};var t0=Date.now();
     if(!document.getElementById("zlCss"))(document.head||document.documentElement).insertAdjacentHTML("beforeend",css());
     var host=document.createElement("div");host.innerHTML=html(o);var el=host.firstChild;(document.body||document.documentElement).appendChild(el);
     var timer=o.hintAfter===0?null:setTimeout(function(){var h=el.querySelector(".zl-hint");if(h)h.classList.add("on");},o.hintAfter||6000);
     return {el:el,
       set:function(step,msg){var lis=el.querySelectorAll(".zl-steps li");for(var i=0;i<lis.length;i++){lis[i].className=i<step?"done":i===step?"now":"";lis[i].firstChild.textContent=i<step?"✓":"";}
         if(msg){var m=el.querySelector(".zl-msg");m.textContent=msg;}},
-      leave:function(){clearTimeout(timer);if(!el.parentNode)return;el.classList.add("zl-out");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},480);}};}
+      leave:function(){clearTimeout(timer);if(!el.parentNode||el.zlLeaving)return;el.zlLeaving=1;
+        setTimeout(function(){el.classList.add("zl-out");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},480);},Math.max(0,MIN_SHOW-(Date.now()-t0)));}};}
   window.ZL={css:css,html:html,mount:mount};
 })();
