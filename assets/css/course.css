@@ -4179,7 +4179,7 @@ body[data-course="patterns"] .lcard .ln::before{content:"◇ "}
 .dp-anat div{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px}
 .dp-anat b{display:block;font:700 .66rem "JetBrains Mono",monospace;letter-spacing:.08em;color:var(--accent);text-transform:uppercase;margin-bottom:4px}
 .dp-anat span{font-size:.85rem;line-height:1.5}
-.dp-pick{display:grid;gap:10px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow);margin:18px 0}
+.dp-pick{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding:16px 18px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow);margin:18px 0}
 .dp-pk-l{font:600 .72rem "JetBrains Mono",monospace;letter-spacing:.06em;color:var(--accent);text-transform:uppercase}
 .dp-pick select{font:500 .92rem Inter,sans-serif;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);max-width:100%;min-height:44px}
 .dp-pk-out{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline}
@@ -4233,6 +4233,7 @@ body[data-course="patterns"] .lcard .ln::before{content:"◇ "}
 .dp-pred>p:first-child,.dp-xb>p:first-child,.dp-ex>p:first-child{margin-top:0}
 .dp-pred::before,.dp-xb::before,.dp-ex::before{display:block;font:700 .66rem "JetBrains Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:6px}
 .dp-pred::before{content:"Predict first"}.dp-pred.spot::before{content:"Spot it"}.dp-xb::before{content:"Explain it back"}.dp-ex::before{content:attr(data-t)}
+.dp-pred pre,.dp-xb pre,.dp-ex pre{max-width:100%;overflow-x:auto}
 .dp-pred-o{display:grid;gap:8px}
 .dp-po{text-align:left;font:500 .9rem/1.45 Inter,sans-serif;padding:10px 12px;min-height:44px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);cursor:pointer}
 .dp-po:hover:not(:disabled){border-color:var(--accent)}

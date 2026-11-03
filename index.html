@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/img/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#4f46e5">
 <title>Zero to Advanced · all courses</title>
 <!-- hub lock: hidden until the login check passes (logged-out visitors go to login.html) -->
 <style>html.au-wait body{visibility:hidden}
@@ -37,6 +38,7 @@ h1 .grad{background:linear-gradient(92deg,var(--accent),var(--accent-2));-webkit
 .btn[hidden]{display:none}
 .courses .course .go{color:var(--text);opacity:.65}
 .courses .course:hover .go{color:var(--c);opacity:1}
+.dash{padding:0 0 28px}.dash h2{font:700 1.1rem "Inter Tight",Inter,sans-serif;margin:0 0 12px}
 .courses{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;padding:0 0 56px}
 .course{position:relative;display:flex;flex-direction:column;gap:12px;padding:26px 26px 22px;border:1px solid var(--line);border-radius:20px;background:var(--surface);box-shadow:var(--shadow);color:inherit;text-decoration:none;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
 .course:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--c) 45%,var(--line))}
@@ -141,11 +143,11 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
   <div class="csw" id="courseSel">
     <button type="button" class="csw-b" aria-haspopup="menu" aria-expanded="false" aria-label="Open a course"><span>Courses</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
     <div class="csw-m" role="menu" hidden>
-      <a role="menuitem" tabindex="-1" data-c="java" href="java/index.html"><i class="k-java">J</i><span><b>Java</b><small>Zero to Advanced · Lessons 01–02 live</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="java" href="java/index.html"><i class="k-java">J</i><span><b>Java</b><small>Zero to Advanced · 36 lessons</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="sql" href="sql/index.html"><i class="k-sql">S</i><span><b>SQL</b><small>Zero to Advanced · 18 lessons</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="spring" href="spring/index.html"><i class="k-sql">S</i><span><b>Spring Boot</b><small>Interactive annotations lab</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="patterns" href="patterns/index.html"><i class="k-patterns">P</i><span><b>Design Patterns</b><small>Beginner to expert · all 23 + capstone</small></span></a>
-      <a role="menuitem" tabindex="-1" data-c="n8n" href="n8n/index.html"><i class="k-patterns">N</i><span><b>n8n Automation</b><small>Zero to selling flows · N00 live</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="n8n" href="n8n/index.html"><i class="k-patterns">N</i><span><b>n8n Automation</b><small>Zero to selling flows · 17 lessons</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="dsa" href="dsa/index.html"><i class="k-dsa">D</i><span><b>DSA</b><small>Data structures and algorithms · D00–D21 complete</small></span></a>
     </div>
   </div>
@@ -167,12 +169,17 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
   </div>
 </header>
 
+<section class="dash" id="dash" aria-labelledby="dashH" hidden>
+  <h2 id="dashH">Your progress</h2>
+  <div id="dashIn"></div>
+</section>
+
 <section class="courses" aria-label="Courses">
   <a class="course java" href="java/index.html">
     <span class="ic" aria-hidden="true">J</span>
     <b>Java: Zero to Advanced</b>
-    <p>Being rebuilt from the first question, “what is a String?”, one concept at a time: live editors you can run, a visual lab for every idea, one real-world analogy per lesson and a quiz at the end. A 10-level roadmap from foundations to Spring. + Playground: step through any program and watch the stack and heap.</p>
-    <span class="st"><span><b>10</b> levels planned</span><span><b>3</b> lessons live</span><span><b>17</b> programs</span><span><b>22</b> visuals</span><span><b>+</b> Playground</span></span>
+    <p>From the JDK and the first String to OOP, collections, streams, exceptions, the JVM and concurrency, one concept at a time: live editors you can run, a visual lab for every idea, one real-world analogy per lesson and a quiz at the end. + Playground: step through any program and watch the stack and heap.</p>
+    <span class="st"><span><b>36</b> lessons</span><span><b>314</b> programs</span><span><b>635</b> interview questions</span><span><b>+</b> Playground</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course sql" href="sql/index.html">
@@ -243,9 +250,16 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
+<script src="assets/js/study.js?v=852f8ef2"></script>
+<script>
+/* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
+   shown only once there is something to show */
+(function(){try{if(window.STUDY&&JSON.parse(localStorage.getItem("js1-sum")||"{}")&&Object.keys(JSON.parse(localStorage.getItem("js1-sum")||"{}")).length){
+  var d=document.getElementById("dash");STUDY.dash(document.getElementById("dashIn"));d.hidden=false;}}catch(e){}})();
+</script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=9dbe18f0"></script>
+<script src="assets/js/auth.js?v=56b343ae"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};
@@ -254,7 +268,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
   var fail=setTimeout(show,8000),acct=document.getElementById("auAcct"),me=null;
   try{me=await AUTH.me();}catch(e){clearTimeout(fail);show();return;}
   clearTimeout(fail);acct.hidden=false;
-  if(me&&!me.face){await AUTH.signOut();me=null;}   /* a login without the face check counts as logged out */
+  if(me&&!me.face){await AUTH.signOut(true);me=null;}   /* a login without the face check counts as logged out */
   if(!me){location.replace("login.html?next=index.html");return;}   /* logged-in people only */
   show();
   var LABEL={approved:"OPEN",pending:"WAITING",rejected:"NOT APPROVED",none:"LOCKED",account:"ACCOUNT PENDING"};

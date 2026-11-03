@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/img/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#4f46e5">
 <title>Log in · Zero to Advanced</title>
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
@@ -111,7 +112,7 @@
 <script src="assets/js/loader.js?v=2d07fb6d"></script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=9dbe18f0"></script>
+<script src="assets/js/auth.js?v=56b343ae"></script>
 <script>
 /* login v4: log in = username/email + password, then a LIVE face check every time (login function; lasts 1 hour);
    register = details + live selfie (register function, account waits for the owner). Live check: the server sends a random
@@ -183,7 +184,7 @@
   /* logged in (with the face check): approved → continue, else the account status */
   async function showMe(){
     var me=await AUTH.me();if(!me)return null;
-    if(!me.face){await AUTH.signOut();return null;}
+    if(!me.face){await AUTH.signOut(true);return null;}
     $("vAuth").hidden=true;$("vMe").hidden=false;inCam.stop();upCam.stop();
     var name=me.profile.name||me.profile.username||me.profile.email;
     if(me.approved){$("meIcon").textContent="👋";$("meTitle").textContent="Hi, "+name;$("meText").textContent="You're logged in"+(me.admin?" as "+me.profile.role+".":".");$("meGo").hidden=false;$("meRe").hidden=true;$("meGo").href=next;}

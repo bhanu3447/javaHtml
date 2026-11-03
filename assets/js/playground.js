@@ -355,7 +355,7 @@
       if(v.cur==="graph"){v.gm=graphModel(gg,S,C,C.by.get(id)||(nm?[nm]:[]));v.sig=v.gm.sig;}
       return v;}
     if(M.graphs.has(id)){const g=M.graphs.get(id),map=r.k==="map",hash=map&&/^(Linked)?Hash/.test(r.cls)&&(r.cap||0)<=256;
-      const v=pick(map?(hash?["entries","buckets","graph"]:["entries","graph"]):["graph","lists"],GRN.test(nm||"")?"graph":map?hash&&/^Hash/.test(r.cls)?"buckets":"entries":"lists");
+      const v=g.ids?pick(["graph","boxes"],"graph"):pick(map?(hash?["entries","buckets","graph"]:["entries","graph"]):["graph","lists"],GRN.test(nm||"")?"graph":map?hash&&/^Hash/.test(r.cls)?"buckets":"entries":"lists");
       if(v.cur==="graph"){v.gm=graphModel(g,S,C,C.by.get(id)||(nm?[nm]:[]));v.sig=v.gm.sig;}
       return v;}
     if(M.trees.has(id)){const t=M.trees.get(id);return Object.assign(pick(["tree","boxes"],"tree"),{tm:t,sig:t.sig});}
@@ -505,7 +505,21 @@
     for(const id of order){const tk=treeKids(S.recs.get(id),S);if(tk){kids.set(id,tk);for(const c of tk.ks)if(c.v&&c.v.r!==undefined)child.add(c.v.r);}}
     for(const [root] of kids){if(child.has(root))continue;const m=treeModel(root,S,C,kids);if(!m)continue;
       trees.set(root,m);if(AS.get(root)==="boxes")continue;for(const id of m.ids)if(id!==root)inTree.set(id,root);}
-    return {trees,inTree};}
+    /* graphs of objects (2026-11-04): nodes whose child list/array is not a tree (a Node with a neighbors list that has cycles or
+       shared nodes) become one graph per connected group, drawn in the box of the node a variable reaches first (≤ 30 nodes) */
+    const inT=new Set();for(const [r,m] of trees){inT.add(r);for(const id of m.ids)inT.add(id);}
+    const free=new Set([...kids.keys()].filter(id=>!inT.has(id)&&kids.get(id).box!=null)),nb=new Map(),objG=new Map(),seen=new Set();
+    const link=(a,b)=>{if(!nb.has(a))nb.set(a,new Set());nb.get(a).add(b);};
+    for(const id of free)for(const c of kids.get(id).ks){const t=c.v&&c.v.r;if(free.has(t)){link(id,t);link(t,id);}}
+    for(const start of order){if(!free.has(start)||seen.has(start))continue;const comp=[],st=[start];seen.add(start);
+      while(st.length){const id=st.pop();comp.push(id);for(const t of nb.get(id)||[])if(!seen.has(t)){seen.add(t);st.push(t);}}
+      if(comp.length<2||comp.length>30)continue;
+      const pos=new Map(order.map((id,i)=>[id,i]));comp.sort((a,b)=>(a===start?-1:b===start?1:(pos.get(a)??1e9)-(pos.get(b)??1e9)));
+      const at=new Map(comp.map((id,i)=>[id,i]));
+      objG.set(start,{n:comp.length,ids:comp,rows:comp.concat(comp.map(id=>kids.get(id).box)),
+        out:comp.map(id=>kids.get(id).ks.map(c=>c.v&&c.v.r).filter(t=>at.has(t)).map(t=>({to:at.get(t)}))),
+        labels:comp.map(id=>{const L=nodeLabel(S.recs.get(id),S);return L.t!=null?String(L.t).replace(/^"(.*)"$/,"$1"):"#"+id;})});}
+    return {trees,inTree,objG};}
   function treeModel(root,S,C,kids){
     const T={nodes:[],root:0,bin:true},at=new Set(),ids=new Set(),tch=touchedOf(S);let ok=true;
     const build=id=>{if(at.has(id)||T.nodes.length>=255){ok=false;return -1;} // shared or cyclic: a graph, not a tree
@@ -628,8 +642,8 @@
   function valOfName(C,x){const v=C.prims.get(x);if(v)return v;for(const [id,ns] of C.by)if(ns.includes(x))return {r:id};return null;}
   /* the graph's colours and numbers come from the program's own arrays, Sets, Maps and queues (found by name and size) */
   function graphModel(g,S,C,names){
-    const n=g.n,idx=new Map();for(let i=0;i<n;i++)idx.set(g.keys?plain(g.keys[i],S,true):String(i),i);
-    const nodeOf=v=>{if(v==null)return -1;const o=v.r!==undefined&&S.recs.get(v.r);if(o&&o.k==="arr"&&o.a.length)v=o.a[0];const i=idx.get(plain(v,S,true));return i===undefined?-1:i;};
+    const n=g.n,idx=new Map();for(let i=0;i<n;i++)idx.set(g.ids?"o"+g.ids[i]:g.keys?plain(g.keys[i],S,true):String(i),i);
+    const nodeOf=v=>{if(v==null)return -1;if(g.ids){const j=v.r!==undefined?idx.get("o"+v.r):undefined;return j===undefined?-1:j;}const o=v.r!==undefined&&S.recs.get(v.r);if(o&&o.k==="arr"&&o.a.length)v=o.a[0];const i=idx.get(plain(v,S,true));return i===undefined?-1:i;};
     const col=new Array(n).fill(""),sub=new Array(n).fill(""),ring=new Set(),cap=[];let subN="";
     for(const [id,ns] of C.by){const r=S.recs.get(id),nm=ns[0];if(!r||g.rows&&g.rows.includes(id))continue;
       if(r.k==="arr"&&!g.keys&&r.len===n&&r.a.length===n){
@@ -645,15 +659,16 @@
     for(const nm of names)for(const m of [IDX.ix.get(nm),IDX.cx.get(nm)])if(m)m[0].forEach(x=>ixn.add(x));
     for(const [id,ns] of C.by){const r=S.recs.get(id);if(r&&r.k==="arr"&&r.len===n)for(const nm of ns){const m=IDX.ix.get(nm);if(m)m[0].forEach(x=>ixn.add(x));}}
     for(const x of ixn){const v=valOfName(C,x),i=v?nodeOf(v):-1;if(i>=0)tg.put(i,x);}
+    if(g.ids)g.ids.forEach((id,i)=>{for(const nm of C.by.get(id)||[])tg.put(i,nm);}); // graph of objects: the variables that point at a node
     const E=[],has=new Set();g.out.forEach((es,a)=>es.forEach(e=>{E.push({a,b:e.to,w:e.w});has.add(a+">"+e.to+">"+e.w);}));
     const dir=!g.el&&E.some(e=>!has.has(e.b+">"+e.a+">"+e.w)),edges=dir||g.el?E:E.filter(e=>e.a<=e.b);
     for(const e of edges)e.on=tg.has(e.a)&&tg.has(e.b)&&e.a!==e.b;
     const tch=touchedOf(S),nodes=[];
-    for(let i=0;i<n;i++)nodes.push({t:g.keys?String(plain(g.keys[i],S)).replace(/^"(.*)"$/,"$1"):String(i),c:(col[i]+(ring.has(i)?" inq":"")).trim(),s:sub[i],tags:tg.get(i)||[],hot:!!g.rows&&tch.has(g.rows[i])});
+    for(let i=0;i<n;i++)nodes.push({t:g.labels?g.labels[i]:g.keys?String(plain(g.keys[i],S)).replace(/^"(.*)"$/,"$1"):String(i),c:(col[i]+(ring.has(i)?" inq":"")).trim(),s:sub[i],tags:tg.get(i)||[],hot:!!g.rows&&tch.has(g.rows[i])});
     const wt=edges.some(e=>e.w!==undefined);
     const info=(dir?"directed":"undirected")+" graph · "+n+" node"+(n===1?"":"s")+" · "+edges.length+" edge"+(edges.length===1?"":"s")+(wt?" · weights on the edges":"")+(cap.length?" · "+cap.join(" · "):"")+(subN?" · "+subN+" beside each node":"");
     const G={nodes,edges,dir};return {G,info,sig:JSON.stringify([nodes,edges.map(e=>[e.a,e.b,e.w,e.on]),dir])};}
-  function graphBox(r,vw){const head=r.k==="arr"?H(r.et)+"["+r.len+"]":H(r.cls)+" <small>size "+r.size+"</small>";
+  function graphBox(r,vw){const head=r.k==="arr"?H(r.et)+"["+r.len+"]":r.k==="obj"?H(r.cls)+" <small>graph of objects</small>":H(r.cls)+" <small>size "+r.size+"</small>";
     return '<div class="pg-bh">'+head+'</div><div class="pg-ttag">'+H(vw.gm.info)+"</div>"+PGVZ.graphHtml(vw.gm.G);}
   /* Union-Find: an int[] where every value is an index of the same array (parent[i]); node i hangs under parent[i], a root is its own parent */
   function ufOf(r){if(r.k!=="arr"||r.et!=="int"||r.len<2||r.len>64||r.a.length!==r.len)return null;const p=r.a.map(v=>+v.s);return p.every(x=>x>=0&&x<r.len)?p:null;}
@@ -734,8 +749,13 @@
       const i=s.k?s.k.indexOf(s.f):-1,pn=i>0?by.get(s.k[i-1])||null:null;
       const x={id:s.f,m:String(f.name).split("(")[0],k0:k,kr:-1,end:Infinity,ret:null,args:f.vars.filter(v=>v.pa),par:pn,kids:[],lab:null};
       by.set(s.f,x);all.push(x);open.push(x);if(pn)pn.kids.push(x);});
-    const rec=new Set(all.filter(x=>x.par&&x.par.m===x.m).map(x=>x.m));
-    return R._ct={by,all,rec};}
+    /* recursive = a method that reaches itself, directly or through other methods (2026-11-04: mutual recursion, isEven → isOdd →
+       isEven); grp maps each such method to every method of its cycle, and the call tree follows all of them */
+    const grp=new Map(),join=ms=>{const u=new Set(ms);for(const m of ms)if(grp.has(m))for(const y of grp.get(m))u.add(y);for(const m of u)grp.set(m,u);};
+    for(const x of all){if(x.par&&x.par.m===x.m){if(!grp.has(x.m))join([x.m]);continue;}
+      let d=0;for(let a=x.par;a&&d<60;a=a.par,d++)if(a.m===x.m){const ms=[a.m];for(let b=x;b!==a;b=b.par)ms.push(b.m);join(ms);break;}}
+    const rec=new Set(grp.keys());
+    return R._ct={by,all,rec,grp};}
   function argTxt(v,S){
     if(v===null||v===undefined)return "null";if(v.r===undefined)return v.p==="char"?"'"+v.s+"'":v.s;
     const r=S.recs.get(v.r);if(!r)return "…";if(r.k==="str")return '"'+(r.s.length>8?r.s.slice(0,8)+"…":r.s)+'"';if(r.k==="box")return r.s;
@@ -749,14 +769,14 @@
     const T=callTree();if(!T.rec.size)return null;const stk=S.step.k||[];let x=null;
     for(let j=stk.length-1;j>=0&&!x;j--){const y=T.by.get(stk[j]);if(y&&T.rec.has(y.m))x=y;}
     if(!x)for(let j=T.all.length-1;j>=0;j--){const y=T.all[j];if(y.k0<=K&&T.rec.has(y.m)){x=y;break;}}
-    if(!x)return null;while(x.par&&x.par.m===x.m)x=x.par;
-    const root=x,list=[],sz=y=>1+y.kids.filter(c=>c.m===root.m).reduce((s,c)=>s+sz(c),0),total=sz(root);if(total<3)return null;
-    const walk=y=>{if(list.length>=200||y.k0>K&&total>31)return;list.push(y);for(const c of y.kids)if(c.m===root.m)walk(c);};walk(root); // v8: a small tree (≤ 31 calls) also shows the calls still to come, as ghosts; a big one grows as it runs
+    if(!x)return null;const G=T.grp.get(x.m)||new Set([x.m]),inG=c=>G.has(c.m);while(x.par&&inG(x.par))x=x.par;
+    const root=x,list=[],sz=y=>1+y.kids.filter(inG).reduce((s,c)=>s+sz(c),0),total=sz(root);if(total<3)return null;
+    const walk=y=>{if(list.length>=200||y.k0>K&&total>31)return;list.push(y);for(const c of y.kids)if(inG(c))walk(c);};walk(root); // v8: a small tree (≤ 31 calls) also shows the calls still to come, as ghosts; a big one grows as it runs
     const at=new Map(list.map((y,i)=>[y,i])),seen=new Map(),nodes=[];let rep=0,redo=false,dm=0;
     let begun=0;for(const y of list){const fut=y.k0>K;if(!fut)begun++;const lab=ctLabel(y),live=stk.includes(y.id),done=!live&&!fut&&y.end<=K,r=!fut&&y.kr>=0&&y.kr<=K&&y.ret&&y.ret.p!=="void";
       // R3: a repeat needs the same text and the same objects (insert(node#4, 40) and insert(node#5, 40) both print as insert(…, 40))
       const sk=lab+"|"+(y.args||[]).map(a=>a.v&&a.v.r!==undefined?"#"+a.v.r:"").join(",");
-      const again=!fut&&seen.has(sk)&&seen.get(sk).k0<y.k0;if(again){rep++;if(y.kids.some(c=>c.m===root.m))redo=true;}else seen.set(sk,y);
+      const again=!fut&&seen.has(sk)&&seen.get(sk).k0<y.k0;if(again){rep++;if(y.kids.some(inG))redo=true;}else seen.set(sk,y);
       let d=0;for(let p=y;p!==root;p=p.par)d++;dm=Math.max(dm,d);
       nodes.push({k:"c"+y.id,t:fut?"":lab,s:r?"→ "+argTxt(y.ret,S):"",c:[y.id===S.step.f?"cur":"",done?"done":"",again?"rep":"",fut?"fut":""].filter(Boolean).join(" "),pin:y.id===S.step.f,tags:[],kids:y.kids.filter(c=>at.has(c)).map(c=>at.get(c)),el:[]});}
     const info="call tree of "+ctLabel(root)+" · "+(begun<total?begun+" of "+total+" calls so far"+(begun<list.length?" (faint = still to come)":""):total+" call"+(total===1?"":"s"))+" · depth "+(dm+1)+(rep?" · "+rep+" repeated (dashed amber: same arguments as an earlier call"+(redo?", all its work done again: a memo would skip it":"")+")":"")+(total>200&&list.length>=200?" · the first 200 are drawn":"");
@@ -929,7 +949,8 @@
     if(!memOn){const fr=S.frames.find(f=>f.id===S.step.f),add=(id,n)=>{if(!tags.has(id))tags.set(id,[]);tags.get(id).push(n);};
       if(fr)for(const v of fr.vars)if(v.v&&v.v.r!==undefined&&reach.has(v.v.r))add(v.v.r,v.n);
       for(const c of S.frames.filter(x=>x.st))for(const v of c.vars)if(v.v&&v.v.r!==undefined&&reach.has(v.v.r))add(v.v.r,c.name+"."+v.n);}
-    const {trees,inTree}=memOn?{trees:new Map(),inTree:new Map()}:treesOf(S,C,order);
+    const {trees,inTree,objG}=memOn?{trees:new Map(),inTree:new Map(),objG:new Map()}:treesOf(S,C,order);
+    for(const [id,g] of objG){graphs.set(id,g);const r=recs.get(id);if(chosen(id,r,(C.by.get(id)||[])[0]||anyName(id,S),"graph")==="graph")for(const rid of g.rows)if(rid!==id)gIn.set(rid,id);}
     for(const [a,b] of gIn)inTree.set(a,b);
     return {reach,order,direct,gone:gone.slice(0,12),freed:freed.slice(0,24),pool:pool.slice(0,40),tags,grids,rowOf,chars,bits,trees,inTree,graphs};}
   const dsaHide=(id,r,S)=>!DSAK.has(r.k)||r.k==="obj"&&r.ex&&id!==S.step.x||r.k==="arr"&&!r.len&&r.et==="String"; // main's empty args

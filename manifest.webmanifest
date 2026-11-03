@@ -1,0 +1,13 @@
+{
+  "name": "Zero to Advanced: interview preparation",
+  "short_name": "Zero to Advanced",
+  "description": "Java, DSA, SQL, Design Patterns, Spring Boot and n8n: short lessons, labs, quizzes and reviews.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0a0c12",
+  "theme_color": "#4f46e5",
+  "icons": [
+    { "src": "assets/img/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

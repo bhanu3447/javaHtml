@@ -1,7 +1,7 @@
 /* Core: motion switch, helpers, multi-page index, editors and suggestions, Lessons 01–04 widgets, sidebar,
-   learning layer, themes, mock interview, palette, motion v4, step-through runner, learn layer, checklist, feedback.
-   Part of the course scripts. Every page loads, in this order: course-index.js, quiz-data.js, course.js, effects.js,
-   labs-oop.js, labs-collections.js, labs-analogy.js, labs-sorting.js, practice-tools.js. They are classic scripts, so
+   learning layer, themes, palette, motion v4, step-through runner, learn layer, feedback; loads effects.js (only when on) and study.js.
+   Part of the course scripts. Every page loads, in this order: course-index.js, quiz-data.js, course.js, then its labs
+   and run-java.js. They are classic scripts, so
    top-level const/let/function names are shared between them (course.js defines $, $$, esc, store, hl, FX, THM…). */
 "use strict";
 /* motion switch (v27): js1-motion "0" = every animation off. The page then behaves exactly as under the OS "reduce motion"
@@ -15,9 +15,13 @@ if(MOTION_OFF){document.documentElement.classList.add("no-motion");
   Element.prototype.animate=function(k,o){const opt=typeof o==="number"||o==null?{duration:0}:Object.assign({},o,{duration:0,delay:0,endDelay:0,iterations:1});return an.call(this,k,opt);};}
 /* effects switch (2026-10-23): the decorations in effects.js (rider, tree, mascot, weather, sky, Halloween, festivals) and the
    ∞ background are paused by default. js1-fx "1" = on; the nav button ✨ (and Ctrl+K) flips it and reloads. When off, effects.js
-   does not run at all and html.fx-off drops the empty mascot column. */
+   does not run at all and html.fx-off drops the empty mascot column.
+   (2026-11-04) Pages no longer have a <script> tag for effects.js: it is loaded here only when the effects are on, so a page with
+   the effects paused (the default) skips its 86 KB (gzip). Its names (RIDER WX HALLOWEEN FEST) are only used behind FX_ON. */
 const FX_ON=(()=>{try{return localStorage.getItem("js1-fx")==="1";}catch(e){return false;}})();
 if(!FX_ON)document.documentElement.classList.add("fx-off");
+else if(document.currentScript&&!document.querySelector('script[src*="assets/js/effects.js"]')){const s=document.createElement("script");
+  s.src=new URL("effects.js",document.currentScript.src).href.replace(/\?.*$/,"");document.head.appendChild(s);}
 function setFx(on){try{localStorage.setItem("js1-fx",on?"1":"0");}catch(e){}location.reload();}
 /* ui polish v38: one icon set for the nav (stroke icons instead of emoji glyphs, so every theme and OS renders them the same).
    navIcon(btn, name) swaps a button's content for the icon; ICO.x is the raw SVG for innerHTML. */
@@ -45,6 +49,16 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.quer
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const v=c=>c===" "?"␣":c, q=c=>"'"+esc(v(c))+"'", dq=s=>'"'+esc(s)+'"';
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,x){try{localStorage.setItem(k,x)}catch(e){}}};
+/* error reporting (2026-11-04): on the live site (the lock's AUTH client is on the page) a JavaScript error of this page is sent
+   to the client_errors table (supabase/setup.sql), at most 3 different ones per page view; the owner reads them in admin.html.
+   Errors of other origins ("Script error.", browser extensions) are skipped; nothing is sent from a local file:// page. */
+(function(){const seen=new Set();
+  const send=(msg,src)=>{try{if(seen.size>=3||seen.has(msg)||!window.AUTH||!AUTH.sb||location.protocol!=="https:")return;seen.add(msg);
+    AUTH.sb.from("client_errors").insert({page:(location.pathname+location.hash).slice(0,300),msg:String(msg).slice(0,500),src:String(src||"").slice(0,300),ua:navigator.userAgent.slice(0,300)}).then(()=>{},()=>{});}catch(e){}};
+  addEventListener("error",e=>{if(e.target!==window&&e.target&&e.target.tagName)return;const f=e.filename||"";
+    if(!e.message||/^Script error/.test(e.message)||(f&&!f.startsWith(location.origin)&&!/supabase\.co\/storage/.test(f)))return;
+    send(e.message,f.split("?")[0].split("/").slice(-2).join("/")+":"+e.lineno+":"+e.colno);});
+  addEventListener("unhandledrejection",e=>{const r=e.reason;if(r&&/fetch|network|Load failed/i.test(String(r.message||r)))return;send("Unhandled: "+String(r&&r.message||r),r&&r.stack?String(r.stack).split("\n")[1]:"");});})();
 
 /* multi-page: COURSE (assets/data/course-index.js, built by scripts/build-index.mjs) lists every page, its sections and the
    interview questions. PAGE is this page's key (body data-page); ROOT is the course folder, so links work from any page. */
@@ -61,7 +75,7 @@ const thisPage=PAGES.find(p=>p.key===PAGE);
    jumps to the other course's home and remembers the choice (js1-course, read by index.html). */
 const COURSE_ID=document.body.dataset.course||"java";
 /* every course of the site, in hub order; a new course = one more row here + its folder + a card in index.html */
-const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 8 lessons",file:"java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · S00 live",file:"sql/index.html",k:"S"},{id:"spring",name:"Spring Boot",sub:"Annotations lab · request lifecycle",file:"spring/index.html",k:"B"},{id:"patterns",name:"Design Patterns",sub:"Beginner to expert · Moves 1–2 live",file:"patterns/index.html",k:"P"},{id:"n8n",name:"n8n Automation",sub:"Zero to selling flows · N00 live",file:"n8n/index.html",k:"N"},{id:"dsa",name:"DSA",sub:"Data structures and algorithms · D00–D21 complete",file:"dsa/index.html",k:"D"}];
+const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 36 lessons",file:"java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · 18 lessons",file:"sql/index.html",k:"S"},{id:"spring",name:"Spring Boot",sub:"Annotations lab · request lifecycle",file:"spring/index.html",k:"B"},{id:"patterns",name:"Design Patterns",sub:"Beginner to expert · all 23 + capstone",file:"patterns/index.html",k:"P"},{id:"n8n",name:"n8n Automation",sub:"Zero to selling flows · 17 lessons",file:"n8n/index.html",k:"N"},{id:"dsa",name:"DSA",sub:"Data structures and algorithms · D00–D21 complete",file:"dsa/index.html",k:"D"}];
 (function(){const b=$("nav .brand");if(!b)return;const cur=COURSES.find(c=>c.id===COURSE_ID)||COURSES[0];
   const w=document.createElement("div");w.className="csw";w.id="courseSel";w.dataset.value=cur.id;
   w.innerHTML='<button type="button" class="csw-b" aria-haspopup="menu" aria-expanded="false" aria-label="Switch course: '+cur.name+'"><span>'+cur.name+'</span>'+ICO.chev+'</button>'+
@@ -138,23 +152,6 @@ $$("section,.band").forEach(s=>io.observe(s));
 /* lesson 02: object-count spoilers */
 $$(".spoil").forEach(s=>{s.tabIndex=0;s.title="Click to reveal";s.onclick=s.onkeydown=e=>{if(e.type==="keydown"&&e.key!=="Enter"&&e.key!==" ")return;s.classList.add("show");s.removeAttribute("tabindex");};});
 
-/* lesson 02: StringBuilder capacity simulator */
-(function(){
-  const cells=$("#capCells"),st=$("#capStat"),msg=$("#capMsg");let txt="",cap=16;
-  if(!cells)return;
-  const draw=m=>{cells.innerHTML=Array.from({length:cap},(_,i)=>'<span class="cb'+(i<txt.length?" on":"")+'">'+(i<txt.length?esc(v(txt[i])):"")+"</span>").join("");
-    st.innerHTML="<span>length() <b>"+txt.length+"</b></span><span>capacity() <b>"+cap+"</b></span><span>free <b>"+(cap-txt.length)+"</b></span>";msg.innerHTML=m;};
-  const reset=()=>{const k=$("#capStart").value;txt=k==="s"?"abc":"";cap=k==="5"?5:16+txt.length;
-    draw(k==="d"?"Default capacity is <b>16</b>.":k==="s"?"Capacity = 16 + \"abc\".length() = <b>19</b>.":"You asked for exactly <b>5</b>.");};
-  $("#capApp").onclick=()=>{const a=$("#capIn").value;if(!a){draw("Type some text to append.");return;}
-    const need=txt.length+a.length;if(need>300){draw("Demo limit reached. Press Reset.");return;}let m;
-    if(need>cap){const old=cap,g=old*2+2;cap=Math.max(g,need);m="Needed <b>"+need+"</b>, but the capacity was <b>"+old+"</b>. It grew to <code>"+old+" * 2 + 2 = "+g+"</code>"+(cap>g?". That was still too small, so it used exactly <b>"+need+"</b>":"")+", and the old array was <b>copied</b> into the new one.";}
-    else m="It fits, so there is no copy: append() writes into the spare room. That is why append is O(1) amortised.";
-    txt+=a;draw(m);};
-  $("#capTrim").onclick=()=>{cap=txt.length;draw("trimToSize() shrinks the capacity to the length (<b>"+cap+"</b>). The next append must grow again.");};
-  $("#capReset").onclick=reset;$("#capStart").onchange=reset;reset();
-})();
-
 /* cells */
 function cells(list,ptr){
   if(!list.length) return '<div class="rq-empty">empty — length 0</div>';
@@ -190,80 +187,6 @@ function stepper(root,ALGOS,parse){
     else if(a==="play"){if(timer){stop();return;}if(k===fr.length-1)k=0;b.textContent="❚❚ Pause";timer=setInterval(()=>{if(k>=fr.length-1){stop();return;}k++;draw();},750);draw();}};
   load();
 }
-
-/* String algorithms (Lesson 03) */
-const S_ALG=[
- {n:"Reverse: two pointers",d:"hello",run(s){const a=s.split(""),F=[],done={};let i=0,j=a.length-1;
-   F.push(FR(a,{},PT(i,"i",j,"j"),"Copy the String into a <code>char[]</code>. Put <b>i</b> at the start and <b>j</b> at the end."));
-   while(i<j){F.push(FR(a,Object.assign({},done,{[i]:"read",[j]:"read"}),PT(i,"i",j,"j"),"Swap <code>a["+i+"]</code> ("+q(a[i])+") and <code>a["+j+"]</code> ("+q(a[j])+")."));
-     const t=a[i];a[i]=a[j];a[j]=t;done[i]=done[j]="done";F.push(FR(a,Object.assign({},done,{[i]:"swap",[j]:"swap"}),PT(i,"i",j,"j"),"Swapped. Now move <b>i</b> right and <b>j</b> left."));i++;j--;}
-   if(i===j)done[i]="done";F.push(FR(a,RG({},0,a.length-1,"done"),{},"<b>i ≥ j</b>, so stop. <code>new String(a)</code> → "+dq(a.join(""))+". "+Math.floor(s.length/2)+" swaps, O(n) time."));return F;}},
- {n:"Palindrome: two pointers",d:"racecar",run(s){const a=s.split(""),F=[],ok={};let i=0,j=a.length-1;
-   F.push(FR(a,{},PT(i,"i",j,"j"),"Compare from both ends. No reversed copy is needed, so the extra space is O(1)."));
-   while(i<j){if(a[i]!==a[j]){F.push(FR(a,Object.assign({},ok,{[i]:"miss",[j]:"miss"}),PT(i,"i",j,"j"),q(a[i])+" ≠ "+q(a[j])+", so it is <b>not a palindrome</b>. Return false."));return F;}
-     ok[i]=ok[j]="done";F.push(FR(a,Object.assign({},ok,{[i]:"win",[j]:"win"}),PT(i,"i",j,"j"),q(a[i])+" = "+q(a[j])+". Move both pointers inward."));i++;j--;}
-   F.push(FR(a,RG({},0,a.length-1,"done"),{},"The pointers met with no mismatch: "+dq(s)+" <b>is a palindrome</b>."));return F;}},
- {n:"Longest unique substring: sliding window",d:"abcabcbb",run(s){const a=s.split(""),F=[],last={};let L=0,best=0,bl=0;
-   for(let r=0;r<a.length;r++){const c=a[r];let m;
-     if(c in last&&last[c]>=L){const old=L;L=last[c]+1;m=q(c)+" is already in the window (index "+last[c]+"), so <b>left</b> jumps from "+old+" to "+L+".";}
-     else m="Add "+q(c)+". No repeat in the window.";
-     last[c]=r;if(r-L+1>best){best=r-L+1;bl=L;m+=" New best: <b>"+best+"</b>.";}
-     F.push(FR(a,Object.assign(RG({},L,r,"win"),{[r]:"read"}),PT(L,"left",r,"right"),m,VS({window:dq(s.slice(L,r+1)),"size":r-L+1,best:best})));}
-   F.push(FR(a,RG({},bl,bl+best-1,"done"),{},"Done in one pass, O(n). The longest substring without repeats is "+dq(s.slice(bl,bl+best))+", length <b>"+best+"</b>.",VS({best:best})));return F;}},
- {n:"First unique character: count, then scan",d:"swiss",run(s){const a=s.split(""),F=[],cnt={};
-   for(let i=0;i<a.length;i++){cnt[a[i]]=(cnt[a[i]]||0)+1;F.push(FR(a,{[i]:"read"},PT(i,"i"),"Pass 1: count "+q(a[i])+".",VS(Object.fromEntries(Object.entries(cnt).map(([c,n])=>["'"+esc(v(c))+"'",n])))));}
-   for(let i=0;i<a.length;i++){const one=cnt[a[i]]===1;F.push(FR(a,{[i]:one?"win":"miss"},PT(i,"i"),"Pass 2: "+q(a[i])+" has count "+cnt[a[i]]+(one?", so the answer is <b>"+q(a[i])+"</b>.":". Skip it.")));if(one)return F;}
-   F.push(FR(a,{},{},"Every character repeats, so return a marker such as <code>'_'</code>."));return F;}}
-];
-/* Array algorithms (Lesson 04) */
-const A_ALG=[
- {n:"Binary search (sorted)",d:"3,7,19,25,42,50,61",k:42,kl:"target",run(a,t){a=a.slice().sort((x,y)=>x-y);const F=[];let lo=0,hi=a.length-1;
-   F.push(FR(a,{},PT(lo,"lo",hi,"hi"),"The array must be sorted (it was sorted for you). Search for <b>"+t+"</b>."));
-   while(lo<=hi){const mid=lo+((hi-lo)>>1),st=RG({},lo,hi,"win");st[mid]="read";
-     if(a[mid]===t){st[mid]="swap";F.push(FR(a,st,PT(lo,"lo",mid,"mid",hi,"hi"),"<code>a["+mid+"] = "+a[mid]+"</code>. <b>Found at index "+mid+"</b>.",VS({lo,mid,hi})));return F;}
-     const go=a[mid]<t;F.push(FR(a,st,PT(lo,"lo",mid,"mid",hi,"hi"),"<code>a["+mid+"] = "+a[mid]+"</code> is "+(go?"less":"greater")+" than "+t+", so drop the "+(go?"left":"right")+" half.",VS({lo,mid,hi})));
-     if(go)lo=mid+1;else hi=mid-1;}
-   F.push(FR(a,{},PT(lo,"here"),"Not found. The range is empty. Return <code>-(lo + 1) = "+(-(lo+1))+"</code>, which encodes the insertion point "+lo+".",VS({lo,hi})));return F;}},
- {n:"Pair with sum (two pointers, sorted)",d:"1,3,4,6,9,11",k:10,kl:"target",run(a,t){a=a.slice().sort((x,y)=>x-y);const F=[];let i=0,j=a.length-1;
-   while(i<j){const s=a[i]+a[j];
-     if(s===t){F.push(FR(a,{[i]:"swap",[j]:"swap"},PT(i,"i",j,"j"),a[i]+" + "+a[j]+" = "+t+". <b>Found the pair</b> at ["+i+", "+j+"].",VS({sum:s})));return F;}
-     F.push(FR(a,{[i]:"read",[j]:"read"},PT(i,"i",j,"j"),a[i]+" + "+a[j]+" = "+s+(s<t?" is too small, so move <b>i</b> right (to a bigger value).":" is too big, so move <b>j</b> left (to a smaller value)."),VS({sum:s,target:t})));
-     if(s<t)i++;else j--;}
-   F.push(FR(a,{},{},"The pointers met. No pair adds up to "+t+"."));return F;}},
- {n:"Max sum of k in a row (sliding window)",d:"2,1,5,1,3,2",k:3,kl:"k",run(a,k){const F=[];if(k<1||k>a.length)return[FR(a,{},{},"Choose k between 1 and "+a.length+".")];let s=0;for(let i=0;i<k;i++)s+=a[i];let best=s,bi=0;
-   F.push(FR(a,RG({},0,k-1,"win"),PT(0,"L",k-1,"R"),"Sum the first window: <b>"+s+"</b>.",VS({sum:s,best})));
-   for(let i=k;i<a.length;i++){s+=a[i]-a[i-k];let m="Add "+a[i]+", drop "+a[i-k]+". The new sum is <b>"+s+"</b>.";if(s>best){best=s;bi=i-k+1;m+=" New best.";}
-     F.push(FR(a,Object.assign(RG({},i-k+1,i,"win"),{[i-k]:"fix"}),PT(i-k+1,"L",i,"R"),m,VS({sum:s,best})));}
-   F.push(FR(a,RG({},bi,bi+k-1,"done"),{},"Best window starts at index "+bi+", sum <b>"+best+"</b>. O(n) instead of O(n·k).",VS({best})));return F;}},
- {n:"Max subarray (Kadane)",d:"-2,1,-3,4,-1,2,1,-5,4",run(a){const F=[];let cur=a[0],best=a[0],cs=0,bs=0,be=0;
-   F.push(FR(a,{0:"win"},PT(0,"i"),"Start with <code>cur = best = "+a[0]+"</code>.",VS({cur,best})));
-   for(let i=1;i<a.length;i++){let m;const ext=cur+a[i];if(a[i]>ext){cur=a[i];cs=i;m="Restart here: "+a[i]+" on its own is bigger than extending the run ("+ext+").";}else{cur=ext;m="Extend the run: cur + "+a[i]+" = "+cur+".";}
-     if(cur>best){best=cur;bs=cs;be=i;m+=" New best <b>"+best+"</b>.";}
-     F.push(FR(a,Object.assign(RG({},cs,i,"win"),{[i]:"read"}),PT(cs,"start",i,"i"),m,VS({cur,best})));}
-   F.push(FR(a,RG({},bs,be,"done"),{},"The best subarray is index "+bs+".."+be+", sum <b>"+best+"</b>. O(n), O(1).",VS({best})));return F;}},
- {n:"Move zeros (read/write pointers)",d:"0,1,0,3,12",run(a){a=a.slice();const F=[];let w=0;
-   for(let r=0;r<a.length;r++){if(a[r]!==0){a[w]=a[r];F.push(FR(a,Object.assign(RG({},0,w-1,"done"),{[w]:"swap"}),PT(w,"w",r,"r"),a[r]+" is not zero, so write it at index "+w+" and move <b>w</b>."));w++;}
-     else F.push(FR(a,Object.assign(RG({},0,w-1,"done"),{[r]:"miss"}),PT(w,"w",r,"r"),"Zero: skip it. Only <b>r</b> moves."));}
-   const keep=w;while(w<a.length)a[w++]=0;F.push(FR(a,Object.assign(RG({},0,keep-1,"done"),RG({},keep,a.length-1,"fix")),{},"Fill the rest with zeros. The order of the non-zero values is kept. O(n), in place."));return F;}},
- {n:"Rotate right by k (three reversals)",d:"1,2,3,4,5,6,7",k:3,kl:"k",run(a,k){a=a.slice();const n=a.length,F=[];k=((k%n)+n)%n;const rev=(i,j)=>{while(i<j){const t=a[i];a[i++]=a[j];a[j--]=t;}};
-   F.push(FR(a,{},{},"Rotate right by <b>"+k+"</b> (k % n) with three reversals, in place."));
-   rev(0,n-1);F.push(FR(a,RG({},0,n-1,"read"),{},"1. Reverse the whole array."));
-   rev(0,k-1);F.push(FR(a,RG({},0,k-1,"swap"),PT(0,"0",k-1,"k-1"),"2. Reverse the first k elements."));
-   rev(k,n-1);F.push(FR(a,RG({},k,n-1,"swap"),PT(k,"k",n-1,"n-1"),"3. Reverse the rest."));
-   F.push(FR(a,RG({},0,n-1,"done"),{},"Done: O(n) time, O(1) extra space."));return F;}},
- {n:"Dutch flag: sort 0s, 1s and 2s",d:"2,0,2,1,1,0",run(a){a=a.slice();const F=[];let lo=0,mid=0,hi=a.length-1;
-   const show=m=>F.push(FR(a,Object.assign(RG({},0,lo-1,"done"),RG({},hi+1,a.length-1,"done")),PT(lo,"lo",mid,"mid",hi,"hi"),m));
-   show("Everything before <b>lo</b> is 0, everything after <b>hi</b> is 2, and <b>mid</b> scans the unknown part.");
-   while(mid<=hi){if(a[mid]===0){const t=a[lo];a[lo]=a[mid];a[mid]=t;lo++;mid++;show("It was 0: swap it to <b>lo</b>, then move lo and mid.");}
-     else if(a[mid]===1){mid++;show("It was 1: it is already in the middle. Move mid.");}
-     else{const t=a[hi];a[hi]=a[mid];a[mid]=t;hi--;show("It was 2: swap it to <b>hi</b> and move hi. Don't move mid: the value swapped in is unchecked.");}}
-   F.push(FR(a,RG({},0,a.length-1,"done"),{},"Sorted in one pass, O(n), O(1)."));return F;}}
-];
-const parseStr=(t)=>{const s=t.trim();return s?{v:s.slice(0,24)}:{err:"Type some text."};};
-const parseNums=(t,A)=>{const xs=t.split(/[\s,]+/).filter(Boolean).map(Number);if(!xs.length||xs.some(x=>!Number.isInteger(x)))return{err:"Type whole numbers separated by commas."};
-  if(xs.length>16)return{err:"Use at most 16 numbers."};if(A.n.startsWith("Dutch")&&xs.some(x=>x<0||x>2))return{err:"Use only 0, 1 and 2."};return{v:xs};};
-if($("#sviz"))stepper($("#sviz"),S_ALG,parseStr);
-if($("#aviz"))stepper($("#aviz"),A_ALG,parseNums);
 
 /* code blocks */
 const KW=new Set("public private static void class return if else for while new int char boolean null true false import final break".split(" "));
@@ -471,40 +394,6 @@ $$('script[type="text/x-java"]').forEach(sc=>{
 const refreshIn=el=>$$(".CodeMirror",el).forEach(x=>x.CodeMirror&&x.CodeMirror.refresh());
 document.addEventListener("toggle",e=>{if(e.target.open)refreshIn(e.target);},true);
 
-/* playground */
-const PG=[
-  {n:"Count vowels",f:"Playground.java",o:"6",c:'public class Playground {\n\n    static int countVowels(String s) {\n        int count = 0;\n        // TODO: loop over s.toLowerCase(), count chars found in "aeiou"\n\n        return count;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(countVowels("Programming in Java"));   // 6\n    }\n}'},
-  {n:"Anagram",f:"Playground.java",o:"true\nfalse",c:'public class Playground {\n\n    static boolean isAnagram(String a, String b) {\n        // TODO: different lengths → false\n        // TODO: int[26] counts: ++ for a, -- for b, then all must be 0\n        return false;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isAnagram("listen", "silent"));   // true\n        System.out.println(isAnagram("rat", "car"));         // false\n    }\n}'},
-  {n:"Capitalize words",f:"Playground.java",o:"Hello Java World",c:'public class Playground {\n\n    static String capitalizeWords(String sentence) {\n        StringBuilder sb = new StringBuilder();\n        // TODO: trim, split("\\\\s+"), upper-case first char + lower-case the rest\n\n        return sb.toString();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(capitalizeWords("  hello   java WORLD "));   // Hello Java World\n    }\n}'},
-  {n:"Letter frequency",f:"Playground.java",o:"a3b1n2",c:'public class Playground {\n\n    static String frequency(String s) {\n        int[] counts = new int[26];\n        // TODO: counts[c - \'a\']++ for each letter, then build "a3b1n2"\n\n        return "";\n    }\n\n    public static void main(String[] args) {\n        System.out.println(frequency("banana"));   // a3b1n2\n    }\n}'},
-  {n:"Compress",f:"Playground.java",o:"a3b2c1",c:'public class Playground {\n\n    static String compress(String s) {\n        StringBuilder sb = new StringBuilder();\n        // TODO: walk each run of the same char, append char + run length\n\n        return sb.toString();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(compress("aaabbc"));   // a3b2c1\n    }\n}'},
-  {n:"Pool predictions",f:"Playground.java",o:"true\nfalse\ntrue\nfalse",c:'public class Playground {\n\n    public static void main(String[] args) {\n        String s1 = "hello";\n        String s2 = "hello";\n        String s3 = new String("hello");\n        String part = "hel";\n\n        // Predict each line BEFORE you run it\n        System.out.println(s1 == s2);\n        System.out.println(s1 == s3);\n        System.out.println(s1 == s3.intern());\n        System.out.println(s1 == part + "lo");\n    }\n}'},
-  {n:"Reverse words",f:"Playground.java",o:"blue is sky the",c:"public class Playground {\n\n    static String reverseWords(String s) {\n        StringBuilder sb = new StringBuilder();\n        // TODO: trim, split(\"\\\\s+\"), append the words from last to first with one space between\n\n        return sb.toString();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(reverseWords(\"  the sky  is blue \"));   // blue is sky the\n    }\n}"},
-  {n:"Longest unique substring",f:"Playground.java",o:"3\n1\n3",c:"import java.util.HashMap;\nimport java.util.Map;\n\npublic class Playground {\n\n    static int longestUnique(String s) {\n        Map<Character, Integer> lastSeen = new HashMap<>();\n        int best = 0, left = 0;\n        // TODO: for each right: if s[right] was seen at index >= left, move left past it\n        //       remember lastSeen, update best = max(best, right - left + 1)\n\n        return best;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(longestUnique(\"abcabcbb\"));   // 3\n        System.out.println(longestUnique(\"bbbbb\"));      // 1\n        System.out.println(longestUnique(\"pwwkew\"));     // 3\n    }\n}"},
-  {n:"Valid brackets",f:"Playground.java",o:"true\nfalse",c:"import java.util.ArrayDeque;\nimport java.util.Deque;\n\npublic class Playground {\n\n    static boolean isBalanced(String s) {\n        Deque<Character> stack = new ArrayDeque<>();\n        // TODO: push ( [ { ; on ) ] } the stack must be non-empty and pop the matching opener\n\n        return stack.isEmpty();\n    }\n\n    public static void main(String[] args) {\n        System.out.println(isBalanced(\"{[()()]}\"));   // true\n        System.out.println(isBalanced(\"([)]\"));       // false\n    }\n}"},
-  {n:"Second largest",f:"Playground.java",o:"34",c:"public class Playground {\n\n    static int secondLargest(int[] a) {\n        int first = Integer.MIN_VALUE, second = Integer.MIN_VALUE;\n        // TODO: one pass; a new maximum pushes first down to second\n\n        return second;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(secondLargest(new int[]{12, 35, 1, 10, 35, 34}));   // 34\n    }\n}"},
-  {n:"Move zeros",f:"Playground.java",o:"[1, 3, 12, 0, 0]",c:"import java.util.Arrays;\n\npublic class Playground {\n\n    static void moveZeros(int[] a) {\n        int w = 0;\n        // TODO: copy every non-zero value to a[w++], then fill the rest with 0\n\n    }\n\n    public static void main(String[] args) {\n        int[] a = {0, 1, 0, 3, 12};\n        moveZeros(a);\n        System.out.println(Arrays.toString(a));   // [1, 3, 12, 0, 0]\n    }\n}"},
-  {n:"Max subarray (Kadane)",f:"Playground.java",o:"6",c:"public class Playground {\n\n    static int maxSubarray(int[] a) {\n        int cur = a[0], best = a[0];\n        // TODO: for i from 1: cur = max(a[i], cur + a[i]); best = max(best, cur)\n\n        return best;\n    }\n\n    public static void main(String[] args) {\n        System.out.println(maxSubarray(new int[]{-2, 1, -3, 4, -1, 2, 1, -5, 4}));   // 6\n    }\n}"},
-  {n:"Rotate array",f:"Playground.java",o:"[5, 6, 7, 1, 2, 3, 4]",c:"import java.util.Arrays;\n\npublic class Playground {\n\n    static void rotate(int[] a, int k) {\n        k %= a.length;\n        // TODO: reverse(a, 0, n-1), then reverse(a, 0, k-1), then reverse(a, k, n-1)\n\n    }\n\n    static void reverse(int[] a, int i, int j) {\n        while (i < j) {\n            int t = a[i];\n            a[i++] = a[j];\n            a[j--] = t;\n        }\n    }\n\n    public static void main(String[] args) {\n        int[] a = {1, 2, 3, 4, 5, 6, 7};\n        rotate(a, 3);\n        System.out.println(Arrays.toString(a));   // [5, 6, 7, 1, 2, 3, 4]\n    }\n}"},
-  {n:"Blank",f:"Main.java",o:"(your output)",c:'public class Main {\n\n    public static void main(String[] args) {\n        \n    }\n}'}
-];
-const pgHost=$("#pg");
-if(pgHost){
-  const box=shell(PG[0].f);pgHost.appendChild(box);let cur=0,useCM=false;
-  const ta=document.createElement("textarea");ta.spellcheck=false;box.appendChild(ta);copyBtn(box,()=>useCM?box._cm.getValue():ta.value);
-  const pick=i=>{cur=i;const t=PG[i],key="js1-pg-"+i,saved=store.get(key);
-    $$("#pgTasks .chip").forEach((b,k)=>b.classList.toggle("on",k===i));
-    $(".fn",box).textContent=t.f;$("#pgOut").textContent=t.o;
-    if(useCM){box._key=null;box._orig=t.c;box._cm.setValue(saved||t.c);box._key=key;box.classList.toggle("dirty",!!saved);box._cm.clearHistory();}
-    else ta.value=saved||t.c;
-    store.set("js1-pg-last",String(i));};
-  $("#pgTasks").innerHTML=PG.map((t,i)=>'<button class="chip">'+esc(t.n)+"</button>").join("");
-  $("#pgTasks").onclick=e=>{const b=e.target.closest("button");if(b)pick($$("#pgTasks .chip").indexOf(b));};
-  ta.oninput=()=>store.set("js1-pg-"+cur,ta.value);
-  pick(Math.min(+(store.get("js1-pg-last")||0)||0,PG.length-1));
-  cmReady.then(ok=>{if(!ok)return;ta.remove();mount(box,"",new Set());useCM=true;pick(cur);});
-}
-
 /* scroll progress */
 const prog=$("#prog");
 /* the bar is scaled on the GPU (no layout), once per frame at most. (v10: animations no longer pause while scrolling; with the
@@ -586,76 +475,6 @@ function jrepl(s,rx,rep){
     return parts.map(p=>typeof p==="string"?p:p.name!=null?((named&&named[p.name])||""):(m[p.g]==null?"":m[p.g])).join("");});
 }
 const jtrim=s=>{let a=0,b=s.length;while(a<b&&s.charCodeAt(a)<=32)a++;while(b>a&&s.charCodeAt(b-1)<=32)b--;return s.slice(a,b);};
-/* each: [label, args(name:type), fn(s,args) → {r: display, t: type, hl: {from,to}|null}] */
-const MX=[
-  ["length()",[],s=>({r:s.length,t:"int"})],
-  ["isEmpty()",[],s=>({r:s.length===0,t:"boolean"})],
-  ["isBlank()",[],s=>({r:jstrip(s)==="",t:"boolean"})],
-  ["charAt(int)",[["index","int","4"]],(s,[i])=>{idx(s,i);return{r:"'"+s[i]+"'",t:"char",hl:[i,i+1]};}],
-  ["indexOf(String)",[["str","String","o"]],(s,[x])=>{const i=s.indexOf(x);return{r:i,t:"int",hl:i>=0?[i,i+x.length]:null};}],
-  ["lastIndexOf(String)",[["str","String","o"]],(s,[x])=>{const i=s.lastIndexOf(x);return{r:i,t:"int",hl:i>=0?[i,i+x.length]:null};}],
-  ["contains(CharSequence)",[["s","String","World"]],(s,[x])=>{const i=s.indexOf(x);return{r:i>=0,t:"boolean",hl:i>=0?[i,i+x.length]:null};}],
-  ["startsWith(String)",[["prefix","String","Hell"]],(s,[x])=>({r:s.startsWith(x),t:"boolean",hl:s.startsWith(x)?[0,x.length]:null})],
-  ["endsWith(String)",[["suffix","String","ld"]],(s,[x])=>({r:s.endsWith(x),t:"boolean",hl:s.endsWith(x)?[s.length-x.length,s.length]:null})],
-  ["substring(int)",[["begin","int","7"]],(s,[b])=>{idx(s,b,true);return{r:jstr(s.slice(b)),t:"String",hl:[b,s.length]};}],
-  ["substring(int, int)",[["begin","int","0"],["end","int","5"]],(s,[b,e])=>{if(!Number.isInteger(b)||!Number.isInteger(e)||b<0||e>s.length||b>e)throw new JavaEx("StringIndexOutOfBoundsException","Range ["+b+", "+e+") out of bounds for length "+s.length);return{r:jstr(s.slice(b,e)),t:"String",hl:[b,e]};}],
-  ["toUpperCase()",[],s=>({r:jstr(s.toUpperCase()),t:"String"})],
-  ["toLowerCase()",[],s=>({r:jstr(s.toLowerCase()),t:"String"})],
-  ["trim()",[],s=>({r:jstr(jtrim(s)),t:"String"})],
-  ["strip()",[],s=>({r:jstr(jstrip(s)),t:"String"})],
-  ["replace(CharSequence, CharSequence)",[["target","String","l"],["replacement","String","L"]],(s,[a,b])=>({r:jstr(a===""?b+s.split("").map(c=>c+b).join(""):s.split(a).join(b)),t:"String"})],
-  ["replaceAll(String regex, String)",[["regex","String","[^A-Za-z]"],["replacement","String",""]],(s,[a,b])=>{let rx;try{rx=new RegExp(a,"g");}catch(e){throw new JavaEx("PatternSyntaxException",e.message);}return{r:jstr(jrepl(s,rx,b)),t:"String"};}],
-  ["repeat(int)",[["count","int","2"]],(s,[n])=>{if(n<0)throw new JavaEx("IllegalArgumentException","count is negative: "+n);return{r:jstr(s.repeat(n)),t:"String"};}],
-  ["concat(String)",[["str","String","!"]],(s,[x])=>({r:jstr(s+x),t:"String"})],
-  ["split(String regex)",[["regex","String",", "]],(s,[x])=>{const a=jsplit(s,x,0);return{r:jarr(a),t:"String[]",n:"length "+a.length};}],
-  ["split(String regex, int limit)",[["regex","String",","],["limit","int","-1"]],(s,[x,l])=>{const a=jsplit(s,x,l);return{r:jarr(a),t:"String[]",n:"length "+a.length};}],
-  ["equals(Object)",[["other","String","hello, world"]],(s,[x])=>({r:s===x,t:"boolean"})],
-  ["equalsIgnoreCase(String)",[["other","String","hello, world"]],(s,[x])=>({r:s.toLowerCase()===x.toLowerCase(),t:"boolean"})],
-  ["compareTo(String)",[["other","String","Hello"]],(s,[x])=>({r:jcompare(s,x),t:"int"})],
-  ["toCharArray()",[],s=>({r:jarr(s.split("")),t:"char[]"})],
-  ["hashCode()",[],s=>{let h=0;for(let i=0;i<s.length;i++)h=(Math.imul(31,h)+s.charCodeAt(i))|0;return{r:h,t:"int"};}]
-];
-const mxSel=$("#mxm");
-if(mxSel){
-mxSel.innerHTML=MX.map((m,i)=>'<option value="'+i+'">'+esc(m[0])+"</option>").join("");
-function mxArgs(){const m=MX[+mxSel.value];
-  $("#mxargs").innerHTML=m[1].map((a,i)=>'<input class="arg" data-i="'+i+'" data-t="'+a[1]+'" value="'+esc(a[2])+'" aria-label="'+a[0]+'" title="'+a[0]+" ("+a[1]+')" placeholder="'+a[0]+'" spellcheck="false" style="width:'+(a[1]==="int"?70:120)+'px">').join("");
-  mxRun();}
-function mxRun(){
-  const s=$("#mxs").value,m=MX[+mxSel.value],ins=$$("#mxargs input");
-  const vals=ins.map(x=>x.dataset.t==="int"?Number(x.value.trim()):x.value);
-  const call="s."+m[0].split("(")[0]+"("+ins.map(x=>x.dataset.t==="int"?x.value.trim():'"'+esc(x.value)+'"').join(", ")+")";
-  let res,err=null;
-  try{if(ins.some(x=>x.dataset.t==="int"&&!/^-?\d+$/.test(x.value.trim())))throw new JavaEx("compile error","int argument must be a whole number");res=m[2](s,vals);}catch(e){err=e;}
-  const hlr=res&&res.hl;
-  $("#mxstage").innerHTML='<div class="row"><span class="lb">s</span>'+cells(s.split("").map((ch,k)=>({ch,s:hlr&&k>=hlr[0]&&k<hlr[1]?"read":""})))+"</div>";
-  $("#mxout").innerHTML='<code>'+esc('String s = "'+s+'";')+"</code><br><code>"+call+"</code> → "+(err?'<span class="bad">'+esc((err.t||"Error")+": "+err.message)+"</span>":'<b class="mono">'+esc(String(res.r))+'</b> <span class="muted small">('+res.t+(res.n?", "+res.n:"")+")</span>");
-}
-mxSel.onchange=mxArgs;$("#mxs").oninput=mxRun;$("#mxargs").oninput=mxRun;
-mxSel.value=String(MX.findIndex(m=>m[0]==="indexOf(String)"));mxArgs();
-}
-
-/* ---------- Character inspector ---------- */
-const CI_PRE=["Java é😀","hello","नमस्ते","a😀b","Aa BB"];
-if($("#cichips"))$("#cichips").innerHTML=CI_PRE.map(p=>'<button class="chip" data-v="'+esc(p)+'">'+esc(p)+"</button>").join(" ");
-function ciRun(){
-  const s=$("#cis").value,units=[];
-  for(let i=0;i<s.length;i++){const c=s.charCodeAt(i),hi=c>=0xD800&&c<=0xDBFF,lo=c>=0xDC00&&c<=0xDFFF;
-    units.push({i,c,hi,lo,cp:hi&&i+1<s.length?s.codePointAt(i):null});}
-  const cps=[...s].length,bytes=new TextEncoder().encode(s).length;
-  $("#cistats").innerHTML='<div><b>'+s.length+'</b>length() · UTF-16 chars</div><div><b>'+cps+'</b>codePointCount · real characters</div><div><b>'+bytes+'</b>getBytes(UTF_8).length</div>';
-  $("#cigrid").innerHTML=units.map(u=>{
-    const shown=u.hi?esc(String.fromCodePoint(u.cp||0xFFFD)):u.lo?"↩":u.c===32?"␣":esc(s[u.i]);
-    const tag=u.hi?"high surrogate":u.lo?"low surrogate":u.c<128?"ASCII":u.c<256?"Latin-1":"BMP";
-    return '<div class="cu'+(u.hi||u.lo?" sur":"")+'"><span class="ci">'+u.i+'</span><span class="cc">'+shown+'</span><span class="cn">'+u.c+'</span><span class="cx">\\u'+u.c.toString(16).toUpperCase().padStart(4,"0")+'</span><span class="ct">'+tag+(u.cp?" · U+"+u.cp.toString(16).toUpperCase():"")+"</span></div>";
-  }).join("")||'<div class="rq-empty">empty — length 0</div>';
-}
-if($("#cis")){
-$("#cis").oninput=ciRun;
-$("#cichips").onclick=e=>{const b=e.target.closest("button");if(b){$("#cis").value=b.dataset.v;ciRun();}};
-ciRun();
-}
-
 /* tabs */
 if($("#tabs"))$("#tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;$$("#tabs button").forEach(x=>x.classList.toggle("on",x===b));$(".pane").forEach(p=>p.classList.toggle("on",p.id===b.dataset.p));refreshIn($("#"+b.dataset.p));};
 
@@ -758,8 +577,9 @@ let OLF=null;
 
   /* progress: understood → review after 1, 3 and 7 days (stage 0..2), then mastered (3) */
   const DAY=864e5,GAP=[1,2,4],STAGE=["Day 1","Day 3","Day 7"];
+  /* js1-done is shared by every course, so ids of other courses are kept (2026-11-04: they used to be pruned here, which wiped the
+     other courses' progress); each entry also keeps its title, link and lesson (n, u, k) for Review today in study.js */
   let prog=load("js1-done"),bm=load("js1-bm");
-  for(const k in prog)if(!byId[k])delete prog[k];
   const due=p=>p.s>=3?Infinity:p.r+GAP[p.s]*DAY;
   const status=p=>{if(p.s>=3)return "Mastered: all three reviews done";const d=Math.ceil((due(p)-Date.now())/DAY);return d<=0?STAGE[p.s]+" review is due":STAGE[p.s]+" review in "+d+(d===1?" day":" days");};
   const save=()=>{store.set("js1-done",JSON.stringify(prog));store.set("js1-bm",JSON.stringify(bm));paint();};
@@ -770,7 +590,8 @@ let OLF=null;
   document.addEventListener("click",e=>{
     const b=e.target.closest(".secfoot button, .rq button");if(!b)return;
     const id=b.dataset.id||b.closest("section").id,now=Date.now();
-    if(b.classList.contains("sf-done")){if(prog[id])delete prog[id];else prog[id]={t:now,r:now,s:0};}
+    if(b.classList.contains("sf-done")){if(prog[id])delete prog[id];else{const s=byId[id];prog[id]={t:now,r:now,s:0};
+      if(s&&SECP[id])Object.assign(prog[id],{n:s.n+" · "+s.t,u:SECP[id].file+"#"+id,k:s.l});}}
     else if(b.classList.contains("sf-bm")||b.dataset.act==="unbm"){if(bm[id])delete bm[id];else bm[id]=now;}
     else if(b.dataset.act==="ok"&&prog[id]){prog[id].s++;prog[id].r=now;}
     else if(b.dataset.act==="again"&&prog[id]){prog[id].s=0;prog[id].r=now;}
@@ -990,106 +811,13 @@ const THM=(function(){
   return {list:THEMES,set,anim,phase,PH,get on(){return on;},get mode(){return mode;}};
 })();
 
-/* enhancements v3: mock interview, complexity sheet filter, command palette, shortcut sheet, print */
+/* enhancements v3: command palette, shortcut sheet, print (the mock interview moved to study.js on 2026-11-04) */
 (function(){
-  const load=(k,d)=>{try{return JSON.parse(store.get(k)||"null")||d}catch(e){return d}};
   const typing=t=>t&&t.closest&&t.closest("input,textarea,select,.CodeMirror,[contenteditable]");
   const flash=el=>{el.classList.remove("flash");void el.offsetWidth;el.classList.add("flash");};
   const jump=(el,center)=>{if(!el)return;const d=el.closest("details");if(d)d.open=true;
     el.scrollIntoView({block:center?"center":"start"});if(center)flash(el);
     const s=el.closest("section,.band");if(s&&s.id)history.replaceState(null,"","#"+s.id);};
-  const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
-
-  /* mock interview: every numbered Q&A (<details class="d"> with a .q badge) from the lessons */
-  /* the questions come from COURSE.qa (all lessons); "open in the lesson" jumps to the answer here or opens its page */
-  const QS=COURSE.qa;
-  const qEl=q=>{const s=document.getElementById(q.sec);return s&&$$("details.d",s).find(d=>{const n=$("summary .q",d);return n&&q.sec+":"+n.textContent.trim()===q.k;});};
-  const openQ=q=>{const el=qEl(q);if(el)jump(el,true);else location.href=secUrl(q.sec);};
-  const root=$("#mockviz .vbody");
-  if(root&&QS.length){
-    const LSH=[...new Set(QS.map(q=>q.l))],byK={};QS.forEach(q=>byK[q.k]=q);
-    let hist=load("js1-mock",{}),cfg=Object.assign({ls:[],weak:false,n:10,t:60},load("js1-mock-cfg",{}));
-    let deck=[],res=[],i=0,shown=false,active=false,timer=null,end=0;
-    const saveH=()=>store.set("js1-mock",JSON.stringify(hist)),saveC=()=>store.set("js1-mock-cfg",JSON.stringify(cfg));
-    const isWeak=q=>hist[q.k]&&hist[q.k].r>1;
-    const pool=()=>QS.filter(q=>(!cfg.ls.length||cfg.ls.includes(q.l))&&(!cfg.weak||isWeak(q)));
-    const chip=(f,v,t)=>'<button type="button" class="chip'+(cfg[f]===v?" on":"")+'" data-'+f+'="'+v+'" aria-pressed="'+(cfg[f]===v)+'">'+t+"</button>";
-    const stop=()=>{clearInterval(timer);timer=null;};
-    function setup(){
-      active=false;stop();
-      const tried=QS.filter(q=>hist[q.k]).length,nailed=QS.filter(q=>hist[q.k]&&hist[q.k].r===1).length,weak=QS.filter(isWeak).length,n=pool().length,size=cfg.n?Math.min(n,cfg.n):n;
-      root.innerHTML='<div class="mk-set"><div class="mk-stats"><span><b>'+QS.length+"</b> questions</span><span><b>"+nailed+"</b> nailed</span><span><b>"+weak+"</b> weak</span><span><b>"+(QS.length-tried)+"</b> not tried</span></div>"+
-        '<div class="mk-row" role="group" aria-label="Lessons"><b>Lessons</b>'+LSH.map(l=>'<button type="button" class="chip'+(cfg.ls.includes(l)?" on":"")+'" data-l="'+l+'" aria-pressed="'+cfg.ls.includes(l)+'">'+l+"</button>").join("")+
-          '<button type="button" class="chip'+(cfg.weak?" on":"")+'" data-w="1" aria-pressed="'+cfg.weak+'">Weak only</button></div>'+
-        '<div class="mk-row" role="group" aria-label="Questions per round"><b>Round</b>'+[5,10,20,0].map(v=>chip("n",v,v?v+" questions":"All")).join("")+"</div>"+
-        '<div class="mk-row" role="group" aria-label="Time per question"><b>Timer</b>'+[0,45,60,90,120].map(v=>chip("t",v,v?v+" s":"Off")).join("")+"</div>"+
-        '<div class="mk-row"><button type="button" class="btn pri" data-act="start"'+(n?"":" disabled")+">Start round · "+size+(size===1?" question":" questions")+"</button>"+
-          (tried?' <button type="button" class="btn" data-act="clear">Clear history</button>':"")+"</div>"+
-        (n?'<p class="small muted">No lesson selected means all lessons. Answer aloud as if to an interviewer, then rate yourself honestly.</p>':'<p class="small muted">'+(cfg.weak?"No weak questions here yet. Turn off <i>Weak only</i> or pick other lessons.":"No questions match.")+"</p>")+"</div>";
-    }
-    function start(list){if(!list.length)return;deck=shuffle(list.slice());if(cfg.n&&!list._again)deck=deck.slice(0,cfg.n);res=[];i=0;active=true;show();root.closest(".viz").scrollIntoView({block:"nearest"});}
-    function show(){
-      shown=false;const q=deck[i];
-      root.innerHTML='<div class="mk-card"><div class="mk-top"><span>Question '+(i+1)+" / "+deck.length+" · "+q.l+' · <a href="'+secUrl(q.sec)+'">'+esc(q.st)+'</a></span><span class="mk-dots" aria-hidden="true">'+
-          deck.map((x,j)=>'<i class="'+(j===i?"cur":res[j]?"v"+res[j]:"")+'"></i>').join("")+"</span></div>"+
-        '<div class="mk-q">'+q.q+"</div>"+
-        (cfg.t?'<div class="mk-tm"><span class="mk-bar"><i></i></span><span class="mk-s">'+cfg.t+" s</span></div>":"")+
-        '<div class="mk-a" hidden></div>'+
-        '<div class="mk-act"><button type="button" class="btn pri" data-act="reveal">Reveal answer</button><button type="button" class="btn" data-act="end">End round</button></div></div>';
-      stop();if(cfg.t){end=Date.now()+cfg.t*1000;timer=setInterval(tick,200);tick();}
-    }
-    function tick(){const tm=$(".mk-tm",root);if(!tm){stop();return;}
-      const left=Math.max(0,end-Date.now()),f=left/(cfg.t*1000);
-      $(".mk-bar i",tm).style.transform="scaleX("+f+")";$(".mk-s",tm).textContent=left?Math.ceil(left/1000)+" s":"Time's up";
-      tm.classList.toggle("low",left>0&&f<.25);tm.classList.toggle("out",!left);
-      if(!left){stop();reveal();}}
-    function reveal(){if(shown||!active)return;shown=true;stop();
-      const a=$(".mk-a",root);a.innerHTML="<b>Model answer.</b> "+deck[i].a;a.hidden=false;
-      $(".mk-act",root).innerHTML='<button type="button" class="btn r1" data-r="1">✓ Nailed it</button><button type="button" class="btn r2" data-r="2">~ Shaky</button><button type="button" class="btn r3" data-r="3">✗ Missed</button><button type="button" class="btn" data-act="open">Open in the lesson</button><button type="button" class="btn" data-act="end">End round</button>';}
-    function rate(r){if(!shown)return;const q=deck[i];res[i]=r;hist[q.k]={r,t:Date.now()};saveH();if(++i<deck.length)show();else finish();}
-    function finish(){
-      active=false;stop();const done=res.filter(Boolean).length;if(!done){setup();return;}
-      const c=[1,2,3].map(r=>res.filter(x=>x===r).length),weak=deck.map((q,j)=>({q,r:res[j]})).filter(x=>x.r>1);
-      root.innerHTML='<div class="mk-sum"><div class="mk-big">'+c[0]+" / "+done+' nailed</div><div class="mk-stats"><span><b>'+c[0]+"</b> nailed</span><span><b>"+c[1]+"</b> shaky</span><span><b>"+c[2]+"</b> missed</span>"+(done<deck.length?"<span><b>"+(deck.length-done)+"</b> skipped</span>":"")+"</div>"+
-        (weak.length?'<div class="mk-list">'+weak.map(x=>'<a href="'+secUrl(x.q.sec)+'" data-k="'+esc(x.q.k)+'"><small>'+x.q.l+" · "+esc(x.q.st)+" · "+(x.r===2?"shaky":"missed")+"</small>"+x.q.q+"</a>").join("")+"</div>":"<p>Every answer nailed. Try a longer round, a shorter timer or another lesson.</p>")+
-        '<div class="mk-act">'+(weak.length?'<button type="button" class="btn pri" data-act="again">Drill these '+weak.length+" again</button>":"")+'<button type="button" class="btn" data-act="new">New round</button></div></div>';
-    }
-    root.addEventListener("click",e=>{
-      const a=e.target.closest(".mk-list a");if(a){e.preventDefault();const q=byK[a.dataset.k];if(q)openQ(q);return;}
-      const b=e.target.closest("button");if(!b)return;const D=b.dataset;
-      if(D.r){rate(+D.r);return;}
-      if(D.act==="reveal"){reveal();return;}
-      if(D.act==="end"){finish();return;}
-      if(D.act==="open"){openQ(deck[i]);return;}
-      if(D.act==="start"){start(pool());return;}
-      if(D.act==="again"){const w=deck.filter((q,j)=>res[j]>1);w._again=true;start(w);return;}
-      if(D.act==="new"){setup();return;}
-      if(D.act==="clear"){if(!confirm("Clear your mock interview history (nailed / weak ratings)?"))return;hist={};saveH();}
-      else if(D.l)cfg.ls=cfg.ls.includes(D.l)?cfg.ls.filter(x=>x!==D.l):cfg.ls.concat(D.l);
-      else if(D.w)cfg.weak=!cfg.weak;
-      else if(D.n!=null)cfg.n=+D.n;
-      else if(D.t!=null)cfg.t=+D.t;
-      else return;
-      saveC();setup();});
-    document.addEventListener("keydown",e=>{
-      if(!active||e.ctrlKey||e.metaKey||e.altKey||typing(e.target)||$("dialog[open]"))return;
-      const r=root.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;
-      if(e.key==="Escape"){finish();return;}
-      if(!shown&&e.key===" "){e.preventDefault();reveal();}
-      else if(shown&&/^[123]$/.test(e.key)){e.preventDefault();rate(+e.key);}});
-    setup();
-  }
-
-  /* complexity cheat sheet: category chips + text filter */
-  const boT=$("#boT");
-  if(boT){let cat="";const rows=$$("tr[data-c]",boT),q=$("#boQ"),cats=$(".bo-cats");
-    const f=()=>{const s=q.value.trim().toLowerCase();let n=0;
-      rows.forEach(r=>{const m=(!cat||r.dataset.c===cat)&&(!s||r.textContent.toLowerCase().includes(s));r.hidden=!m;if(m)n++;});
-      $("#boNone").hidden=!!n;boT.hidden=!n;};
-    q.addEventListener("input",f);
-    cats.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cat=b.dataset.c;
-      $$(".chip",cats).forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-pressed",String(x===b));});f();});
-    $$(".chip",cats).forEach(x=>x.setAttribute("aria-pressed",String(x.classList.contains("on"))));}
 
   /* command palette (Ctrl/⌘ + K) and keyboard shortcut sheet (?) */
   const mac=/Mac|iPhone|iPad/.test(navigator.platform||navigator.userAgent),MOD=mac?"⌘":"Ctrl";
@@ -1104,8 +832,8 @@ const THM=(function(){
   document.body.append(pal,keys);
   const pin=$("input",pal),plist=$(".pal-list",pal);
   /* [name, element, the section it lives in (to open its page when it is not on this one)] */
-  const TOOLS=[["String Pool visualizer","#poolviz","pool"],["String methods playground (43 methods)","#smPlay","st-methods"],["Method explorer","#mx","methods"],["Character inspector","#ci","unicode"],["StringBuilder capacity simulator","#capviz","d-builder"],
-    ["String algorithm stepper","#sviz","s-window"],["Array algorithm stepper","#aviz","a-patterns"],["Playground","#playground","playground"],["Mock interview","#mockviz","mock"],["Complexity cheat sheet","#bigo","bigo"],["Memory Lab","#mlApp","memlab"],["Algorithm race","#raceApp","race"],["Car Factory (class vs object)","#olFactory","o-class"],["Boxes and car keys (primitive vs reference)","#anBoxes","f-types"],["Car odometer (overflow)","#anOdo","f-operators"],["Waterfall (switch fall-through)","#anFall","f-control"],["Stack of plates (call stack)","#anPlates","f-methods"],["Photocopies and spare keys (pass-by-value)","#anCopy","f-pass"],["Identical twins (== vs equals)","#anTwins","compare"],["Stone tablets vs whiteboard","#anTablet","build"],["Caterpillar (sliding window)","#anCat","s-window"],["Numbered lockers (arrays)","#anLockers","a-what"],["Cinema seats (2D arrays)","#anCinema","a-multi"],["Guess the number (binary search)","#anGuess","a-sort"],["Town clock (static)","#anClock","o-static"],["Four pillars as a car","#olStory","o-review"],["Object lab (references and GC)","#olObj","o-class"],["Initialisation order","#olInit","o-ctor"],["Access modifier map","#olAccess","o-encap"],["static vs instance","#olStatic","o-static"],["Fragile base class","#olFragile","o-inherit"],["Dispatch simulator","#olDispatch","o-poly"],["Default-method resolver","#olDiamond","o-abstract"],["HashSet buckets (equals/hashCode)","#olHash","o-object"],["Record expander","#olRecord","o-modern"],["Exhaustive switch checker","#olSealed","o-modern"],["Learning path: sorting from scratch","#bsPath","bs-explorer"],["The three moves: compare, swap, shift","#bsMoves","bs-explorer"],["Sorting explorer (every interview sort)","#bsx","bs-explorer"],["Watch the loops count (Big-O)","#cxLoops","cx-complexity"],["Growth chart: O(1) to O(n!)","#cxGrow","cx-complexity"],["Recursion tree: time vs stack space","#cxTree","cx-complexity"],["Amortized O(1): ArrayList growth","#cxAmort","cx-complexity"],["Bubble Lab (11 sorting variants)","#bsLab","bs-what"],["Valet parking (bubble sort)","#anValet","bs-what"],["Stability lab","#bsStable","bs-generic"],["Inversions grid","#bsInv","bs-special"],["Complexity chart (bubble sort)","#bsChart","bs-cost"],["Bubble sort variant race","#bsRace","bs-cost"],["Which collection? (family tree)","#clPick","c-overview"],["Wildcard checker (PECS)","#clPecs","c-generics"],["ArrayList vs LinkedList","#clList","c-list"],["Parking lot (HashMap analogy)","#anPark","c-hashmap"],["Real HashMap: buckets, resize, treeify","#clMap","c-hashmap"],["LRU cache (LinkedHashMap)","#clLru","c-sets"],["TreeMap navigator","#clNav","c-treemap"],["Binary heap (PriorityQueue)","#clHeap","c-queue"],["ArrayDeque ring buffer","#clDeque","c-queue"],["Comparator builder","#clCmp","c-compare"],["Fail-fast iterator","#clFail","c-iter"],["Views vs copies","#clView","c-immut"],["Lost update (ConcurrentHashMap)","#clRace","c-conc"],["Review queue","#revise","revise"],["Checklist","#chk","revise"]];
+  const TOOLS=[["String Pool visualizer","#poolviz","pool"],["String methods playground (43 methods)","#smPlay","st-methods"],
+    ["Complexity cheat sheet","#bigo","bigo"],["Memory Lab","#mlApp","memlab"],["Algorithm race","#raceApp","race"],["Car Factory (class vs object)","#olFactory","o-class"],["Boxes and car keys (primitive vs reference)","#anBoxes","f-types"],["Car odometer (overflow)","#anOdo","f-operators"],["Waterfall (switch fall-through)","#anFall","f-control"],["Stack of plates (call stack)","#anPlates","f-methods"],["Photocopies and spare keys (pass-by-value)","#anCopy","f-pass"],["Identical twins (== vs equals)","#anTwins","compare"],["Stone tablets vs whiteboard","#anTablet","build"],["Caterpillar (sliding window)","#anCat","s-window"],["Numbered lockers (arrays)","#anLockers","a-what"],["Cinema seats (2D arrays)","#anCinema","a-multi"],["Guess the number (binary search)","#anGuess","a-sort"],["Town clock (static)","#anClock","o-static"],["Four pillars as a car","#olStory","o-review"],["Object lab (references and GC)","#olObj","o-class"],["Initialisation order","#olInit","o-ctor"],["Access modifier map","#olAccess","o-encap"],["static vs instance","#olStatic","o-static"],["Fragile base class","#olFragile","o-inherit"],["Dispatch simulator","#olDispatch","o-poly"],["Default-method resolver","#olDiamond","o-abstract"],["HashSet buckets (equals/hashCode)","#olHash","o-object"],["Record expander","#olRecord","o-modern"],["Exhaustive switch checker","#olSealed","o-modern"],["Learning path: sorting from scratch","#bsPath","bs-explorer"],["The three moves: compare, swap, shift","#bsMoves","bs-explorer"],["Sorting explorer (every interview sort)","#bsx","bs-explorer"],["Watch the loops count (Big-O)","#cxLoops","cx-complexity"],["Growth chart: O(1) to O(n!)","#cxGrow","cx-complexity"],["Recursion tree: time vs stack space","#cxTree","cx-complexity"],["Amortized O(1): ArrayList growth","#cxAmort","cx-complexity"],["Bubble Lab (11 sorting variants)","#bsLab","bs-what"],["Valet parking (bubble sort)","#anValet","bs-what"],["Stability lab","#bsStable","bs-generic"],["Inversions grid","#bsInv","bs-special"],["Complexity chart (bubble sort)","#bsChart","bs-cost"],["Bubble sort variant race","#bsRace","bs-cost"],["Which collection? (family tree)","#clPick","c-overview"],["Wildcard checker (PECS)","#clPecs","c-generics"],["ArrayList vs LinkedList","#clList","c-list"],["Parking lot (HashMap analogy)","#anPark","c-hashmap"],["Real HashMap: buckets, resize, treeify","#clMap","c-hashmap"],["LRU cache (LinkedHashMap)","#clLru","c-sets"],["TreeMap navigator","#clNav","c-treemap"],["Binary heap (PriorityQueue)","#clHeap","c-queue"],["ArrayDeque ring buffer","#clDeque","c-queue"],["Comparator builder","#clCmp","c-compare"],["Fail-fast iterator","#clFail","c-iter"],["Views vs copies","#clView","c-immut"],["Lost update (ConcurrentHashMap)","#clRace","c-conc"]];
   let E=[],vis=[],sel=0;
   function entries(){const L=[],A=(g,n,t,run,hint)=>L.push({g,n,t,run,hint:hint||""});
     A("Commands","›","Choose a theme…",()=>$("#theme").click());
@@ -1124,22 +852,29 @@ const THM=(function(){
     }
     THM.list.forEach(([id,n])=>A("Themes","◐","Theme · "+n,()=>THM.set(id)));
     A("Commands","›","Turn editor suggestions "+(SUG.on?"off":"on"),()=>setSug(!SUG.on));
-    A("Commands","›","Start a mock interview round",()=>{if(!$("#mockviz")){location.href=secUrl("mock");return;}jump($("#mockviz"),true);const b=$('#mockviz [data-act="start"]');if(b&&!b.disabled)b.click();});
+    if(window.STUDY){const n=STUDY.due();
+      A("Study","✓","Review today"+(n?" · "+n+" due":" · nothing due"),()=>STUDY.open("review"));
+      if(COURSE.qa.length)A("Study","?","Mock interview round",()=>STUDY.open("mock"));
+      A("Study","▤","Your progress in every course",()=>STUDY.open("progress"));
+      A("Study","⎙","Print a cheat sheet of this page (summaries, takeaways, tables)",()=>STUDY.cheat());}
     A("Commands","›","Expand every answer on the page",()=>$$("details.d").forEach(d=>d.open=true));
     A("Commands","›","Collapse every answer",()=>$$("details.d").forEach(d=>d.open=false));
     A("Commands","›","Print or save as PDF",()=>print());
     A("Commands","›","Keyboard shortcuts",()=>keys.showModal(),"?");
     A("Commands","›","Back to top",()=>scrollTo({top:0}));
     PAGES.forEach(p=>{if(p.key!==PAGE)A("Pages","▸",p.name,()=>{location.href=pageUrl(p);});});
-    TOOLS.forEach(([t,s,sec])=>{const el=$(s);if(el)A("Tools","◆",t,()=>jump(el,s!=="#playground"&&s!=="#bigo"&&s!=="#revise"));else if(SECP[sec])A("Tools","◆",t,()=>{location.href=secUrl(sec);},SECP[sec].short);});
+    TOOLS.forEach(([t,s,sec])=>{const el=$(s);if(el)A("Tools","◆",t,()=>jump(el,s!=="#bigo"));else if(SECP[sec])A("Tools","◆",t,()=>{location.href=secUrl(sec);},SECP[sec].short);});
     $$(".quiz[data-quiz]").forEach(q=>A("Quizzes","?",/^l\d+$/.test(q.dataset.quiz)?"Quiz · Lesson "+q.dataset.quiz.slice(1):/^s\d+$/.test(q.dataset.quiz)?"Quiz · SQL "+q.dataset.quiz.slice(1):/^p\d+$/.test(q.dataset.quiz)?"Quiz · Patterns "+q.dataset.quiz.slice(1):/^n\d+$/.test(q.dataset.quiz)?"Quiz · n8n "+q.dataset.quiz.slice(1):/^d\d+$/.test(q.dataset.quiz)?"Quiz · DSA "+q.dataset.quiz.slice(1):"Quiz · "+(((thisPage&&thisPage.sections.find(s=>s.id===(q.closest("section")||{}).id))||{}).t||"Check yourself"),()=>jump(q)));
-    $$("#pgTasks .chip").forEach(b=>A("Playground","▶","Playground task · "+b.textContent,()=>{b.click();jump($("#playground"));}));
     $$("#toc .ti").forEach(a=>{const el=document.getElementById(a.dataset.id);A("Sections",$("span",a).textContent,$("b",a).textContent,()=>{if(el)jump(el);else location.href=a.href;},el?"":(SECP[a.dataset.id]||{}).short);});
     return L;}
   function render(){
     const q=pin.value.trim().toLowerCase(),w=q.split(/\s+/).filter(Boolean),rk=x=>{const t=x.e.t.toLowerCase();return t.startsWith(q)?0:t.includes(q)?1:2;};
     vis=E.map((e,i)=>({e,i,h:(e.g+" "+e.n+" "+e.t).toLowerCase()})).filter(x=>w.every(v=>x.h.includes(v)));
     if(q)vis.sort((a,b)=>rk(a)-rk(b)||a.i-b.i);
+    /* every course: sections of the other courses and every interview question (rows [course, file, id, label, kind, text]) */
+    if(ALL&&q.length>=2){let n=0;
+      for(const r of ALL){if(r[0]===COURSE_ID&&!r[4])continue;const hh=(r[3]+" "+r[5]).toLowerCase();
+        if(w.every(v=>hh.includes(v))){vis.push({e:{g:r[4]?"Interview questions":"All courses",n:r[4]?"?":"⌕",t:r[3],hint:"",run:()=>{location.href=ROOT+r[1]+"#"+r[2];}},i:1e6+n,h:hh});if(++n>=40)break;}}}
     sel=Math.min(sel,Math.max(0,vis.length-1));
     let g="",h="";
     vis.forEach((x,k)=>{if(!q&&x.e.g!==g){g=x.e.g;h+='<div class="pal-g">'+esc(g)+"</div>";}
@@ -1148,7 +883,14 @@ const THM=(function(){
   function move(d){if(!vis.length)return;sel=(sel+d+vis.length)%vis.length;
     $$(".pal-it",plist).forEach((b,k)=>{b.classList.toggle("on",k===sel);b.setAttribute("aria-selected",String(k===sel));if(k===sel)b.scrollIntoView({block:"nearest"});});}
   function run(k){const x=vis[k];if(!x)return;pal.close();x.e.run();}
-  function openPal(){if(keys.open)keys.close();E=entries();pin.value="";sel=0;render();pal.showModal();pin.focus();plist.scrollTop=0;}
+  /* search across every course (2026-11-04): assets/data/search-all.js (written by build-index.mjs) loads the first time the
+     palette opens. Locked pages reach it through <meta name="zl-search" data-src="…">, which lock.mjs adds on upload so that
+     the page function signs its URL like any other private script; a local page loads the plain path. */
+  let ALL=null,allAsked=false;
+  function loadAll(){if(allAsked)return;allAsked=true;if(window.SEARCH_ALL){ALL=window.SEARCH_ALL;return;}
+    const m=$('meta[name="zl-search"]'),s=document.createElement("script");s.src=(m&&m.getAttribute("data-src"))||ROOT+"assets/data/search-all.js";
+    s.onload=()=>{ALL=window.SEARCH_ALL||null;if(pal.open&&pin.value.trim())render();};document.head.appendChild(s);}
+  function openPal(){if(keys.open)keys.close();loadAll();E=entries();pin.value="";sel=0;render();pal.showModal();pin.focus();plist.scrollTop=0;}
   pin.addEventListener("input",()=>{sel=0;render();});
   pin.addEventListener("keydown",e=>{
     if(e.key==="ArrowDown"){e.preventDefault();move(1);}else if(e.key==="ArrowUp"){e.preventDefault();move(-1);}
@@ -1856,14 +1598,6 @@ public class Aliasing {
     s.el.appendChild(a);});
 })();
 
-/* checklist */
-if($("#chk")){
-const CK=["What a String is, and how it differs from char and from null","Literal vs new, the String pool, and intern()","Why String is immutable (5 reasons)","== vs equals vs compareTo, and the null-safe style","char arithmetic and the int[26] counting trick","The main methods by category, plus the substring and split gotchas","String vs StringBuilder vs StringBuffer, and why += in a loop is slow","Conversions, including the char[] toString() trap","Format specifiers and text blocks","Regex escaping with split and replaceAll","UTF-16, surrogate pairs, Compact Strings, and the cached hashCode","D: Draw stack, heap and pool for a literal, new String and intern()","D: Lazy literal resolution and the pool history (Java 6 → 7 → 8)","D: Count the objects for any line of the D4 table","D: Walk through String.equals() and state the hashCode contract","D: Compact Strings and the coder field; final vs immutable","D: Builder capacity growth (old*2+2) and why sb1.equals(sb2) is false","D: How + compiles in Java 8 vs Java 9+, and the null traps","S: The 7 String patterns and the signal words for each","S: Reverse a String 5 ways, and why a char swap breaks emoji","S: Palindrome checks with two pointers, and expand-around-centre","S: Sliding window for the longest substring without repeats","S: Stacks for brackets, and writing parseInt yourself","S: Regex groups, back-references, lazy quantifiers and lookahead","A: Array basics: fixed size, defaults, length field, exceptions","A: Array memory: references, headers, primitive vs object arrays","A: 2D and jagged arrays as arrays of arrays","A: Aliasing vs shallow copy vs deep copy (clone, copyOf, arraycopy)","A: The Arrays class, and which algorithm Arrays.sort uses","A: Pass-by-value of references, varargs, and asList traps","A: Covariance, ArrayStoreException and generic arrays","A: Prefix sum, two pointers, sliding window, Kadane, rotate","F: JDK vs JRE vs JVM, and the path from .java to bytecode to JIT","F: The 8 primitives, defaults, wrappers and the Integer cache trap","F: Widening vs narrowing, overflow, integer division and the hidden cast in +=","F: Classic switch vs arrow switch and switch expressions","F: Overload resolution order, and recursion on the call stack","F: Why Java is always pass-by-value, even for objects"];
-let sv={};try{sv=JSON.parse(store.get("js1-chk")||"{}")}catch(e){}
-$("#chk").innerHTML=CK.map((t,i)=>'<label><input type="checkbox" data-i="'+i+'"'+(sv[i]?" checked":"")+'><span>'+esc(t)+'</span></label>').join("");
-$("#chk").onchange=()=>{const o={};$$("#chk input").forEach(b=>{if(b.checked)o[b.dataset.i]=1});store.set("js1-chk",JSON.stringify(o));};
-}
-
 /* feedback */
 if($("#rates")){
 const RT=["Visual explanation","Depth of understanding","Code & dry runs","Interview coverage","Overall usefulness"],sc=RT.map(()=>0);
@@ -1873,3 +1607,9 @@ $("#fbc").onclick=()=>{const t="Feedback on "+document.body.dataset.name+":\n"+R
   if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>{$("#fbm").textContent="Copied — paste it in the chat.";},()=>{});};
 }
 };if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",late);else late();})();
+
+/* study tools (2026-11-04): Review today, mock interview, progress, Explain it back, cheat sheet, accessibility pass
+   (assets/js/study.js, public). Loaded after the page and its labs are built. */
+(function(){const src=new URL("study.js",document.currentScript.src).href.replace(/\?.*$/,"");
+  const go=()=>{const s=document.createElement("script");s.src=src;document.body.appendChild(s);};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();})();

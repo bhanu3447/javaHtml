@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/img/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#4f46e5">
 <title>Admin · Zero to Advanced</title>
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
@@ -14,7 +15,7 @@
 <main class="au-wrap" id="app"></main>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=9dbe18f0"></script>
+<script src="assets/js/auth.js?v=56b343ae"></script>
 <script>
 /* admin v1: course requests, approved photos (invites), people, roles. Owner and admins only; the database checks every action again. */
 (function(){
@@ -29,10 +30,12 @@
     var a=await AUTH.sb.from("course_access").select("user_id,course_id,status,requested_at");
     var i=await AUTH.sb.from("invites").select("id,email,name,attempts,used_at,created_at").order("created_at",{ascending:false});
     var err=p.error||a.error||i.error;if(err){card(esc(err.message));return;}
+    /* page errors (2026-11-04): optional, the table exists only after the client_errors part of supabase/setup.sql has run */
+    var pe=await AUTH.sb.from("client_errors").select("id,created_at,page,msg,src,ua").order("created_at",{ascending:false}).limit(40);
     /* selfies are private: short-lived signed links, owner/admins only */
     var paths=p.data.filter(function(u){return u.selfie_path;}).map(function(u){return u.selfie_path;}),urls={};
     if(paths.length){var sg=await AUTH.sb.storage.from("selfies").createSignedUrls(paths,3600);(sg.data||[]).forEach(function(x,k){if(x.signedUrl)urls[paths[k]]=x.signedUrl;});}
-    D={people:p.data,access:a.data,invites:i.data,urls:urls};render();
+    D={people:p.data,access:a.data,invites:i.data,urls:urls,errors:pe.error?null:pe.data};render();
   }
   function person(id){return D.people.find(function(x){return x.id===id;})||{email:"?"};}
   function face(u,big){var src=u.selfie_path&&D.urls[u.selfie_path];return src?'<img class="au-face'+(big?' big':'')+'" src="'+esc(src)+'" alt="Selfie of '+esc(u.name||u.email)+'" loading="lazy">':'<span class="au-face'+(big?' big':'')+'" aria-hidden="true">'+esc((u.name||u.email||"?").charAt(0).toUpperCase())+'</span>';}
@@ -84,7 +87,11 @@
     if(!D.people.some(function(u){return u.role==="learner";}))
       h+='<div class="au-empty"><b>No learners yet.</b> Course buttons (+ Java, ✓ SQL…) appear on each learner row. Owner and admins always open every course, so their rows have none. Share the site link: when someone registers, they appear here.</div>';
     h+='<div class="au-empty" id="pplNone" hidden>No one matches.</div></div></section>';
-    zlDone();app.innerHTML=h+pre;
+    var errs='';
+    if(D.errors)errs='<section class="au-panel"><h2>Page errors <span class="au-count">'+D.errors.length+'</span></h2><p>JavaScript errors that learners’ browsers hit on course pages (newest first, at most 3 per page view). Fix, publish, then clear them.</p><div class="au-rows">'+
+      (D.errors.length?D.errors.map(function(x){return '<div class="au-row"><div class="au-who"><b>'+esc(x.msg)+'</b><small>'+esc(x.page)+(x.src?' · '+esc(x.src):'')+' · '+new Date(x.created_at).toLocaleString()+'</small><small>'+esc(x.ua||'')+'</small></div></div>';}).join("")+
+        '<div class="au-row"><button class="au-btn sm no" data-clrerr="1">Clear all page errors</button></div>':'<div class="au-empty">No errors reported.</div>')+'</div></section>';
+    zlDone();app.innerHTML=h+pre+errs;
     document.getElementById("inv").onsubmit=invite;
     document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();
   }
@@ -124,6 +131,8 @@
       await load();}
     else if(b.dataset.role){if(!confirm(b.dataset.role==="admin"?"Make this person an admin? Admins can approve people and courses.":"Remove admin rights?"))return;
       b.disabled=true;await rpc("set_role",{p_user:b.dataset.u,p_role:b.dataset.role});}
+    else if(b.dataset.clrerr){if(!confirm("Clear every reported page error?"))return;
+      b.disabled=true;var ce=await AUTH.sb.from("client_errors").delete().gte("id",0);if(ce.error)alert(ce.error.message);await load();}
     else if(b.dataset.delinv){if(!confirm("Remove this approval? They will not be able to register."))return;
       b.disabled=true;var r=await AUTH.sb.from("invites").delete().eq("id",b.dataset.delinv);if(r.error)alert(r.error.message);await load();}
   });
@@ -143,7 +152,7 @@
   (async function(){
     if(!AUTH.on){card("The course lock is not set up yet (assets/js/auth-config.js).");return;}
     ME=await AUTH.me();
-    if(ME&&!ME.face){await AUTH.signOut();ME=null;}
+    if(ME&&!ME.face){await AUTH.signOut(true);ME=null;}
     if(!ME){card("Log in first (with your face).",'<a class="au-btn pri" href="login.html?next=admin.html">Log in</a>');return;}
     document.getElementById("who").textContent=ME.profile.email+" · "+ME.profile.role;
     var o=document.getElementById("out");o.hidden=false;o.onclick=async function(){await AUTH.signOut();location.href="index.html";};

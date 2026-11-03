@@ -28,7 +28,24 @@
     return j;
   }
   async function request(course){var r=await sb.rpc("request_course",{p_course:course});return r.error?{error:r.error.message}:{status:r.data};}
-  async function signOut(){if(sb)try{await sb.auth.signOut();}catch(e){}}
+  /* signOut(true) = the face session ran out (keep the offline copies); signOut() = the person logged out (delete them) */
+  async function signOut(keepOffline){if(!keepOffline)forget();if(sb)try{await sb.auth.signOut();}catch(e){}}
+
+  /* Offline (2026-11-04, kb/access-lock.md → "Offline"): sw.js (registered here, https only) caches the public site, the CDN
+     files and the signed lesson scripts. Each lesson the page function returns is kept in Cache Storage "zl-private"; it is
+     shown again only when the network fails, for 7 days after the last time it was unlocked online, and never after a log-out
+     (signOut deletes the cache and the zl-offline marker). */
+  var PRIV="zl-private",KEEP=7*864e5,okey=function(p){return "https://zl.local/page/"+p;};
+  var ROOTURL=(document.currentScript&&document.currentScript.src)?new URL("../../",document.currentScript.src).href:"";
+  if(on&&ROOTURL&&location.protocol==="https:"&&"serviceWorker" in navigator)
+    addEventListener("load",function(){navigator.serviceWorker.register(ROOTURL+"sw.js",{scope:ROOTURL}).catch(function(){});});
+  async function keep(path,html){try{if(!window.caches)return;var c=await caches.open(PRIV);
+    await c.put(okey(path),new Response(html,{headers:{"Content-Type":"text/html; charset=utf-8","X-Saved":String(Date.now())}}));
+    localStorage.setItem("zl-offline","1");}catch(e){}}
+  async function kept(path){try{if(!window.caches||localStorage.getItem("zl-offline")!=="1")return null;
+    var r=await (await caches.open(PRIV)).match(okey(path));if(!r)return null;var t=+r.headers.get("X-Saved")||0;
+    return Date.now()-t>KEEP?null:{html:await r.text(),t:t};}catch(e){return null;}}
+  function forget(){try{localStorage.removeItem("zl-offline");}catch(e){}try{if(window.caches)caches.delete(PRIV);}catch(e){}}
   /* a safe "next" target: a relative path inside the site only */
   function safeNext(n){n=String(n||"");return /^[\w\/.#?=&-]+$/.test(n)&&n.indexOf("..")<0&&n.charAt(0)!=="/"?n:"index.html";}
 
@@ -57,21 +74,25 @@
     function card(h,t,actions){if(zl){zl.leave();zl=null;}box.innerHTML='<div class="au-card"><span class="au-lock" aria-hidden="true">'+(h||"🔒")+'</span><h1>'+esc(title)+'</h1><p>'+t+'</p><div class="au-acts">'+actions+home+'</div></div>';}
     if(!on){card("⚙️","The course lock is not set up yet (assets/js/auth-config.js still has placeholder values).","");return;}
     var login='<a class="au-btn pri" href="'+root+'login.html?next='+encodeURIComponent(path+location.search+location.hash)+'">Log in</a>';
-    say(0,"Checking your sign-in");
-    if(!(await session())){card("","This course is open to approved members only. Log in to continue.",login);return;}
-    say(1,"Checking your access");
-    var r=await fn("page",{path:path});
-    if(r.html){
+    async function show(src,savedAt){
       say(2,"Opening the lesson");
       /* document.open() is ignored while the shell is still parsing, so wait for it to finish */
       if(document.readyState==="loading")await new Promise(function(ok){document.addEventListener("DOMContentLoaded",ok);});
-      var html=/<body[^>]*>/i.test(r.html)?r.html.replace(/<body[^>]*>/i,function(b){return b+cover(course);}):cover(course)+r.html;
+      var note=savedAt?'<div role="status" style="position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2147483000;padding:8px 14px;border-radius:99px;background:#1f2937;color:#fff;font:600 13px/1.3 system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3)">Offline copy from '+esc(new Date(savedAt).toLocaleDateString())+' · ▶ Run needs the internet</div>':"";
+      var html=/<body[^>]*>/i.test(src)?src.replace(/<body[^>]*>/i,function(b){return b+cover(course)+note;}):cover(course)+note+src;
       document.open();document.write(html);document.close();
       if(location.hash)setTimeout(function(){var e=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(e)e.scrollIntoView();},400);
-      return;
     }
+    var offline=function(){return navigator.onLine===false;};
+    say(0,"Checking your sign-in");
+    if(!(await session())){var k0=offline()&&await kept(path);if(k0){await show(k0.html,k0.t);return;}
+      card("","This course is open to approved members only. Log in to continue.",login);return;}
+    say(1,"Checking your access");
+    var r=await fn("page",{path:path});
+    if(r.html){keep(path,r.html);await show(r.html);return;}
+    if(r.httpStatus==null&&/Network error/.test(r.error||"")){var k1=await kept(path);if(k1){await show(k1.html,k1.t);return;}}
     if(r.status==="login"){card("","Your session has ended. Log in again.",login);return;}
-    if(r.status==="face"){await signOut();card("🙂","A face login lasts 1 hour. Log in again with your face to open this course.",login);return;}
+    if(r.status==="face"){await signOut(true);card("🙂","A face login lasts 1 hour. Log in again with your face to open this course.",login);return;}
     if(r.status==="account_pending"){card("⏳","Your account is waiting for the owner's approval. Once it is approved you can ask for this course.","");return;}
     if(r.status==="account_rejected"){card("✋","Your registration was not approved. Ask the course owner if you think this is a mistake.","");return;}
     var ask='<button class="au-btn pri" type="button" id="auAsk">Request access</button>';
