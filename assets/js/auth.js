@@ -32,20 +32,46 @@
   /* a safe "next" target: a relative path inside the site only */
   function safeNext(n){n=String(n||"");return /^[\w\/.#?=&-]+$/.test(n)&&n.indexOf("..")<0&&n.charAt(0)!=="/"?n:"index.html";}
 
+  /* The ∞ cover written into an unlocked lesson (first thing in <body>): inline styles and SMIL only, because the lesson's
+     own CSS is exactly what hasn't loaded yet. It fades out once every <link rel="stylesheet"> has loaded (and the
+     fonts, for at most 1.5 s more), or after 10 s whatever happens, so the reader never sees the page without its CSS. */
+  function cover(){
+    var t="";try{t=String(localStorage.getItem("js1-theme")||"");}catch(e){}
+    var dark=/dark/.test(t)||(!/light/.test(t)&&matchMedia("(prefers-color-scheme: dark)").matches);
+    var bg=dark?"#0a0c12":"#f7f8fb",fg=dark?"#e6e9f0":"#0f172a",line=dark?"#232836":"#e3e7ef",acc=dark?"#8b8cf8":"#4f46e5";
+    var still=matchMedia("(prefers-reduced-motion: reduce)").matches,d="M32 18C25 7 8 7 8 18s17 11 24 0 17-11 24 0-17 11-24 0";
+    return '<div id="auCover" role="status" aria-live="polite" style="position:fixed;inset:0;z-index:2147483647;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:'+bg+';color:'+fg+';font:600 15px/1.4 Inter,system-ui,-apple-system,Segoe UI,sans-serif;transition:opacity .3s">'+
+      '<svg viewBox="0 0 64 36" width="120" height="68" style="overflow:visible" aria-hidden="true"><path d="'+d+'" pathLength="120" fill="none" stroke="'+line+'" stroke-width="4.5" stroke-linecap="round"/>'+
+      '<path d="'+d+'" pathLength="120" fill="none" stroke="'+acc+'" stroke-width="4.5" stroke-linecap="round"'+(still?"":' stroke-dasharray="28 92"')+'>'+(still?"":'<animate attributeName="stroke-dashoffset" from="0" to="-120" dur="1.6s" repeatCount="indefinite"/>')+"</path></svg>"+
+      "<span>Opening the lesson…</span></div>"+
+      '<script>(function(){var c=document.getElementById("auCover"),gone=false;if(!c)return;'+
+      'function hide(){if(gone)return;gone=true;c.style.opacity="0";setTimeout(function(){c.remove();},320);}'+
+      'function ready(){var f=document.fonts&&document.fonts.ready,cap=new Promise(function(r){setTimeout(r,1500);});(f?Promise.race([f,cap]):cap).then(function(){setTimeout(hide,60);});}'+
+      'var ls=[].slice.call(document.querySelectorAll("link[rel=stylesheet]")),n=ls.length;function one(){if(--n<=0)ready();}'+
+      'if(!n)ready();else ls.forEach(function(l){if(l.sheet)one();else{l.addEventListener("load",one);l.addEventListener("error",one);}});'+
+      'setTimeout(hide,10000);})();<\/script>';
+  }
+
   /* locked-page shell: show the page if allowed, otherwise a card that explains why */
   async function gate(path,root){
     var box=document.getElementById("auGate"),course=path.split("/")[0],title=COURSES[course]||"This course";
     var home='<a class="au-btn" href="'+root+'index.html">All courses</a>';
-    function card(h,t,actions){box.innerHTML='<div class="au-card"><span class="au-lock" aria-hidden="true">'+(h||"🔒")+'</span><h1>'+esc(title)+'</h1><p>'+t+'</p><div class="au-acts">'+actions+home+'</div></div>';}
+    /* while waiting: the shell's ∞ loader with a message; after 6 s, say why it can be slow (free tiers sleep) */
+    var hint=setTimeout(function(){var h=document.getElementById("auLoadHint");if(h)h.hidden=false;},6000);
+    function say(t){var m=document.getElementById("auLoadMsg");if(m)m.textContent=t;}
+    function card(h,t,actions){clearTimeout(hint);box.innerHTML='<div class="au-card"><span class="au-lock" aria-hidden="true">'+(h||"🔒")+'</span><h1>'+esc(title)+'</h1><p>'+t+'</p><div class="au-acts">'+actions+home+'</div></div>';}
     if(!on){card("⚙️","The course lock is not set up yet (assets/js/auth-config.js still has placeholder values).","");return;}
     var login='<a class="au-btn pri" href="'+root+'login.html?next='+encodeURIComponent(path+location.search+location.hash)+'">Log in</a>';
+    say("Checking your login…");
     if(!(await session())){card("","This course is open to approved members only. Log in to continue.",login);return;}
-    card("⏳","Checking your access…","");
+    say("Checking your access…");
     var r=await fn("page",{path:path});
     if(r.html){
+      clearTimeout(hint);say("Opening the lesson…");
       /* document.open() is ignored while the shell is still parsing, so wait for it to finish */
       if(document.readyState==="loading")await new Promise(function(ok){document.addEventListener("DOMContentLoaded",ok);});
-      document.open();document.write(r.html);document.close();
+      var html=/<body[^>]*>/i.test(r.html)?r.html.replace(/<body[^>]*>/i,function(b){return b+cover();}):cover()+r.html;
+      document.open();document.write(html);document.close();
       if(location.hash)setTimeout(function(){var e=document.getElementById(decodeURIComponent(location.hash.slice(1)));if(e)e.scrollIntoView();},400);
       return;
     }
