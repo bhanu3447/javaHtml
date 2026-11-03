@@ -6,12 +6,7 @@
 <title>Zero to Advanced · all courses</title>
 <!-- hub lock: hidden until the login check passes (logged-out visitors go to login.html) -->
 <style>html.au-wait body{visibility:hidden}
-#hubWait{display:none}
-html.au-wait #hubWait{visibility:visible;position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--bg,#f7f8fb);color:var(--text,#0f172a);font:600 15px/1.4 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-#hubWait path{fill:none;stroke-width:4.5;stroke-linecap:round}
-#hubWait .t{stroke:var(--line,#e3e7ef)}#hubWait .d{stroke:var(--accent,#4f46e5);stroke-dasharray:28 92;animation:hubInf 1.6s linear infinite}
-@keyframes hubInf{to{stroke-dashoffset:-120}}
-@media (prefers-reduced-motion:reduce){#hubWait .d{animation:none;stroke-dasharray:none}}</style><script>document.documentElement.className+=" au-wait";</script>
+html.au-wait .zl{visibility:visible}</style><script>document.documentElement.className+=" au-wait";</script>
 <meta name="description" content="The one entry page: every course in this folder (Java, SQL, and the ones added later), each with its own lessons, labs, quizzes and mock interview.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -140,7 +135,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
-<div id="hubWait" role="status" aria-live="polite"><svg viewBox="0 0 64 36" width="120" height="68" style="overflow:visible" aria-hidden="true"><path class="t" pathLength="120" d="M32 18C25 7 8 7 8 18s17 11 24 0 17-11 24 0-17 11-24 0"/><path class="d" pathLength="120" d="M32 18C25 7 8 7 8 18s17 11 24 0 17-11 24 0-17 11-24 0"/></svg><span>Checking your login…</span></div>
+<script src="assets/js/loader.js"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
 <nav><div class="wrap">
   <a class="brand" href="index.html" aria-label="Zero to Advanced, all courses"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i></a>
   <div class="csw" id="courseSel">
@@ -253,7 +248,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 <script src="assets/js/auth.js"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/access-lock.md) */
-(async function(){var show=function(){document.documentElement.classList.remove("au-wait");};
+(async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};
   if(!window.AUTH||!AUTH.on){show();return;}   /* lock off (file:// use): open as before */
   /* never leave the hub blank: if the check fails or hangs, show it (the cards hold no lesson content) */
   var fail=setTimeout(show,8000),acct=document.getElementById("auAcct"),me=null;

@@ -10,7 +10,8 @@
 </head>
 <body class="au">
 <div class="au-top"><a class="au-brand" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a><span class="au-sp"></span><a class="au-btn sm" href="index.html">All courses</a><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
-<main class="au-wrap" id="app"><div class="au-gate"><div class="au-load" role="status" aria-live="polite"><svg class="au-inf" viewBox="0 0 64 36" aria-hidden="true"><path class="au-inf-t" pathLength="120" d="M32 18C25 7 8 7 8 18s17 11 24 0 17-11 24 0-17 11-24 0"/><path class="au-inf-d" pathLength="120" d="M32 18C25 7 8 7 8 18s17 11 24 0 17-11 24 0-17 11-24 0"/></svg><p>Loading the admin panel…</p></div></div></main>
+<script src="assets/js/loader.js"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Loading the admin panel",steps:false});</script>
+<main class="au-wrap" id="app"></main>
 <script src="assets/js/auth-config.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/js/auth.js"></script>
@@ -20,7 +21,8 @@
   try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
   var app=document.getElementById("app"),esc=AUTH.esc,C=AUTH.COURSES,ME=null,D={people:[],access:[],invites:[]};
   var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",resume:"Resume"};
-  function card(t,actions){app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">🔒</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
+  function zlDone(){if(window.ZLc){ZLc.leave();window.ZLc=null;}}   /* the loader leaves at the first render or card */
+  function card(t,actions){zlDone();app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">🔒</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
 
   async function load(){
     var p=await AUTH.sb.from("profiles").select("id,name,username,email,role,status,selfie_path,matched_invite,created_at").order("created_at",{ascending:false});
@@ -82,7 +84,7 @@
     if(!D.people.some(function(u){return u.role==="learner";}))
       h+='<div class="au-empty"><b>No learners yet.</b> Course buttons (+ Java, ✓ SQL…) appear on each learner row. Owner and admins always open every course, so their rows have none. Share the site link: when someone registers, they appear here.</div>';
     h+='<div class="au-empty" id="pplNone" hidden>No one matches.</div></div></section>';
-    app.innerHTML=h+pre;
+    zlDone();app.innerHTML=h+pre;
     document.getElementById("inv").onsubmit=invite;
     document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();
   }
