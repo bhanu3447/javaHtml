@@ -102,8 +102,8 @@
 
   function css(){return "<style id=\"zlCss\">"+CSS+"</style>";}
   /* mount into this document; returns a controller */
-  var MIN_SHOW=700;   /* ms: shorter than this reads as a flicker, not a loader */
-  function mount(o){o=o||{};var t0=Date.now();
+  var MIN_SHOW=3000;   /* ms, from the loader's first appearance (user, 2026-11-03: "3 seconds you keep") */
+  function mount(o){o=o||{};var t0=window.__zlT0=window.__zlT0||Date.now();   /* shared with the lesson cover: the window survives document.write */
     if(!document.getElementById("zlCss"))(document.head||document.documentElement).insertAdjacentHTML("beforeend",css());
     var host=document.createElement("div");host.innerHTML=html(o);var el=host.firstChild;(document.body||document.documentElement).appendChild(el);
     var timer=o.hintAfter===0?null:setTimeout(function(){var h=el.querySelector(".zl-hint");if(h)h.classList.add("on");},o.hintAfter||6000);
@@ -112,5 +112,5 @@
         if(msg){var m=el.querySelector(".zl-msg");m.textContent=msg;}},
       leave:function(){clearTimeout(timer);if(!el.parentNode||el.zlLeaving)return;el.zlLeaving=1;
         setTimeout(function(){el.classList.add("zl-out");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},480);},Math.max(0,MIN_SHOW-(Date.now()-t0)));}};}
-  window.ZL={css:css,html:html,mount:mount};
+  window.ZL={css:css,html:html,mount:mount,MIN_SHOW:MIN_SHOW};
 })();

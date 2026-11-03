@@ -39,7 +39,8 @@
     if(!window.ZL)return "";
     return ZL.css()+ZL.html({id:"auCover",step:3,msg:"Opening the lesson",course:course})+
       '<script>(function(){var c=document.getElementById("auCover"),gone=false;if(!c)return;'+
-      'function hide(){if(gone)return;gone=true;c.classList.add("zl-out");setTimeout(function(){c.remove();var s=document.getElementById("zlCss");if(s)s.remove();},480);}'+
+      'var t0=window.__zlT0||Date.now(),min='+(window.ZL.MIN_SHOW||0)+';'+
+      'function hide(){if(gone)return;var left=min-(Date.now()-t0);if(left>0){setTimeout(hide,left);return;}gone=true;c.classList.add("zl-out");setTimeout(function(){c.remove();var s=document.getElementById("zlCss");if(s)s.remove();},480);}'+
       'function ready(){var f=document.fonts&&document.fonts.ready,cap=new Promise(function(r){setTimeout(r,1500);});(f?Promise.race([f,cap]):cap).then(function(){setTimeout(hide,120);});}'+
       'var ls=[].slice.call(document.querySelectorAll("link[rel=stylesheet]")),n=ls.length;function one(){if(--n<=0)ready();}'+
       'if(!n)ready();else ls.forEach(function(l){if(l.sheet)one();else{l.addEventListener("load",one);l.addEventListener("error",one);}});'+
