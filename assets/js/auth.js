@@ -44,7 +44,7 @@
       'function ready(){var f=document.fonts&&document.fonts.ready,cap=new Promise(function(r){setTimeout(r,1500);});(f?Promise.race([f,cap]):cap).then(function(){setTimeout(hide,120);});}'+
       'var ls=[].slice.call(document.querySelectorAll("link[rel=stylesheet]")),n=ls.length;function one(){if(--n<=0)ready();}'+
       'if(!n)ready();else ls.forEach(function(l){if(l.sheet)one();else{l.addEventListener("load",one);l.addEventListener("error",one);}});'+
-      'setTimeout(hide,10000);})();<\/script>';
+      'setTimeout(hide,10000);if(window.ZL&&ZL.nav)ZL.nav();})();<\/script>';
   }
 
   /* locked-page shell: show the page if allowed, otherwise a card that explains why */

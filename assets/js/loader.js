@@ -4,7 +4,8 @@
    same markup also works inside a freshly written document), a shimmering status line and a three-step tracker
    (Sign-in → Access → Lesson). Reduced motion: everything still, the ∞ drawn in full. Docs: kb/access-lock.md. */
 (function(){
-  var D="M32 18C25 7 8 7 8 18s17 11 24 0 17-11 24 0-17 11-24 0";
+  /* a symmetric lemniscate: two mirrored loops (outer tangents vertical at x = 8 and x = 56) crossing at (32, 18) */
+  var D="M32 18C25 7 8 7 8 18C8 29 25 29 32 18C39 7 56 7 56 18C56 29 39 29 32 18";
   var STEPS=["Sign-in","Access","Lesson"];
   function dark(){var t="";try{t=String(localStorage.getItem("js1-theme")||"");}catch(e){}
     var a=document.documentElement.getAttribute("data-theme")||"";
@@ -112,5 +113,20 @@
         if(msg){var m=el.querySelector(".zl-msg");m.textContent=msg;}},
       leave:function(){clearTimeout(timer);if(!el.parentNode||el.zlLeaving)return;el.zlLeaving=1;
         setTimeout(function(){el.classList.add("zl-out");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},480);},Math.max(0,MIN_SHOW-(Date.now()-t0)));}};}
-  window.ZL={css:css,html:html,mount:mount,MIN_SHOW:MIN_SHOW};
+  /* Switching between courses and lessons: on a click that leaves this page for another page of the site, show the
+     loader at once (the next page's shell takes over with its own). Not for in-page #anchors, new tabs, modified clicks,
+     downloads, other sites, or links some script already handled. A page restored from the back/forward cache drops it. */
+  function courseOf(path){var p=path.split("/");for(var i=0;i<p.length;i++)if(NAME[p[i]])return p[i];return "";}
+  function nav(){if(document.__zlNav)return;document.__zlNav=1;
+    document.addEventListener("click",function(e){
+      if(e.defaultPrevented||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+      var a=e.target&&e.target.closest&&e.target.closest("a[href]");if(!a||(a.target&&a.target!=="_self")||a.hasAttribute("download"))return;
+      var u;try{u=new URL(a.getAttribute("href"),location.href);}catch(x){return;}
+      if(u.protocol!==location.protocol||u.host!==location.host||u.pathname===location.pathname)return;
+      if(!/(\/|\.html)$/i.test(u.pathname))return;   /* pages only, not files */
+      if(document.querySelector(".zl:not(.zl-out)"))return;
+      var c=courseOf(u.pathname);mount({course:c,msg:"Opening "+(NAME[c]||"the page"),steps:false,hintAfter:0});});
+    addEventListener("pageshow",function(ev){if(ev.persisted){var z=document.querySelectorAll(".zl");for(var i=0;i<z.length;i++)z[i].parentNode.removeChild(z[i]);}});}
+  nav();
+  window.ZL={css:css,html:html,mount:mount,nav:nav,MIN_SHOW:MIN_SHOW};
 })();
