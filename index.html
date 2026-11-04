@@ -62,6 +62,9 @@ nav .gh[hidden]{display:none}
 .course.patterns{--c:#f59e0b;--c2:#db2777}
 .course.n8n{--c:#ea4b71;--c2:#8b5cf6}
 .course.dsa{--c:#10b981;--c2:#3b82f6}
+.course.redis{--c:#dc2626;--c2:#9f1239}
+.course.kafka{--c:#0891b2;--c2:#155e75}
+.course.nginx{--c:#16a34a;--c2:#166534}
 footer{padding:0 0 40px;color:var(--muted);font-size:13px}
 footer a{color:inherit}
 @media (prefers-reduced-motion:reduce){.btn,.course,.course .go{transition:none}}
@@ -87,6 +90,9 @@ nav .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient
 .csw-m a i.k-sql{background:linear-gradient(135deg,#0f766e,#1d4ed8)}
 .csw-m a i.k-patterns{background:linear-gradient(135deg,#b45309,#be185d)}
 .csw-m a i.k-dsa{background:linear-gradient(135deg,#047857,#2563eb)}
+.csw-m a i.k-redis{background:linear-gradient(135deg,#dc2626,#9f1239)}
+.csw-m a i.k-kafka{background:linear-gradient(135deg,#0891b2,#155e75)}
+.csw-m a i.k-nginx{background:linear-gradient(135deg,#16a34a,#166534)}
 .csw-m a span{display:flex;flex-direction:column;line-height:1.25}
 .csw-m a b{font:600 .86rem Inter,sans-serif}
 .csw-m a small{font:500 .72rem Inter,sans-serif;color:var(--muted)}
@@ -137,7 +143,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
-<script src="assets/js/loader.js?v=2d07fb6d"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
+<script src="assets/js/loader.js?v=49800d7c"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
 <nav><div class="wrap">
   <a class="brand" href="index.html" aria-label="Zero to Advanced, all courses"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i></a>
   <div class="csw" id="courseSel">
@@ -149,6 +155,9 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
       <a role="menuitem" tabindex="-1" data-c="patterns" href="patterns/index.html"><i class="k-patterns">P</i><span><b>Design Patterns</b><small>Beginner to expert · all 23 + capstone</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="n8n" href="n8n/index.html"><i class="k-patterns">N</i><span><b>n8n Automation</b><small>Zero to selling flows · 17 lessons</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="dsa" href="dsa/index.html"><i class="k-dsa">D</i><span><b>DSA</b><small>Data structures and algorithms · D00–D21 complete</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="redis" href="redis/index.html"><i class="k-redis">R</i><span><b>Redis</b><small>Zero to production · R00–R16 complete</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="kafka" href="kafka/index.html"><i class="k-kafka">K</i><span><b>Kafka</b><small>Zero to production · K00–K13 planned</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="nginx" href="nginx/index.html"><i class="k-nginx">G</i><span><b>NGINX</b><small>Zero to production · G00–G06 live</small></span></a>
     </div>
   </div>
   <a class="gh" id="auAdmin" href="admin.html" hidden>Admin</a>
@@ -166,6 +175,9 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <a class="btn" href="patterns/index.html">Design Patterns</a>
     <a class="btn" href="n8n/index.html">n8n</a>
     <a class="btn" href="dsa/index.html">DSA</a>
+    <a class="btn" href="redis/index.html">Redis</a>
+    <a class="btn" href="kafka/index.html">Kafka</a>
+    <a class="btn" href="nginx/index.html">NGINX</a>
   </div>
 </header>
 
@@ -217,6 +229,27 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <span class="st"><span><b>22</b> lessons</span><span><b>22</b> live</span><span><b>174</b> visual labs</span><span><b>75</b>-problem interview set</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
+  <a class="course redis" href="redis/index.html">
+    <span class="ic" aria-hidden="true">R</span>
+    <b>Redis: Zero to Production</b>
+    <p>Redis in learning order for backend interviews and real services: live consoles that answer like redis-cli, with a board that shows every key and its timer, and animated labs for one thread, expiry, caching, locks, rate limiters, persistence and cluster.</p>
+    <span class="st"><span><b>17</b> lessons planned</span><span><b>14</b> live</span><span><b>231</b> labs</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
+  <a class="course kafka" href="kafka/index.html">
+    <span class="ic" aria-hidden="true">K</span>
+    <b>Kafka: Zero to Production</b>
+    <p>Kafka in learning order for backend interviews and event-driven services: the log, partitions and keys, producers, consumer groups, offsets, exactly-once, replication, retention, Connect and CDC, Spring Kafka and Streams, with a live console and a partition board that shows every record, consumer and lag.</p>
+    <span class="st"><span><b>14</b> lessons planned</span><span><b>0</b> live</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
+  <a class="course nginx" href="nginx/index.html">
+    <span class="ic" aria-hidden="true">G</span>
+    <b>NGINX: Zero to Production</b>
+    <p>NGINX in learning order for backend interviews and real deployments: the event loop, config and location matching, reverse proxy in front of Spring Boot, load balancing, TLS, caching, rate limiting, logs and tuning, with a live console that lights up the server, location and upstream every request takes.</p>
+    <span class="st"><span><b>14</b> lessons planned</span><span><b>7</b> live</span><span><b>86</b> labs</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
   <a class="course n8n" href="resume/index.html">
     <span class="ic" aria-hidden="true">R</span>
     <b>Resume Builder: ATS Match + LaTeX</b>
@@ -237,7 +270,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 <script>
 /* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
 (function(){try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
-  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"){var a=document.getElementById("cont");a.href=c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":"Java";a.hidden=false;}}catch(e){}
+  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"){var a=document.getElementById("cont");a.href=c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":"Java";a.hidden=false;}}catch(e){}
   /* course menu: the same control as the nav of every course page (button + menu, Esc / arrows / click outside) */
   var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m"),items=function(){return Array.prototype.slice.call(m.querySelectorAll("a"));};
   function open(o){m.hidden=!o;bt.setAttribute("aria-expanded",String(o));if(o)items()[0].focus();}
@@ -250,7 +283,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=852f8ef2"></script>
+<script src="assets/js/study.js?v=a3950c11"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
    shown only once there is something to show */
@@ -259,7 +292,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 </script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=56b343ae"></script>
+<script src="assets/js/auth.js?v=0673970b"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};

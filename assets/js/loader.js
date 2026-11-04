@@ -84,11 +84,14 @@
     sql:W(["SQL","Postgres"],["SELECT *","JOIN","GROUP BY","WHERE","ORDER BY","HAVING","INDEX","COMMIT","PRIMARY KEY","OVER ()","WITH cte","UNION","NULL","COUNT(*)","ROLLBACK","VIEW"]),
     spring:W(["Spring Boot","IoC"],["@Bean","@Autowired","@RestController","@Transactional","@Service","@GetMapping","JPA","@Entity","DI","application.yml","@Configuration","@Repository","Actuator","@Value"]),
     patterns:W(["Patterns","SOLID"],["Strategy","Observer","Factory","Decorator","Singleton","Adapter","Builder","Proxy","Command","Facade","State","Visitor","Composite","Iterator"]),
+    redis:W(["Redis","cache"],["GET","SET","TTL","INCR","EXPIRE","SCAN","RESP","ZADD","HSET","LPUSH","cache-aside","6379"]),
+    nginx:W(["NGINX","the gate"],["server","location","proxy_pass","upstream","worker","epoll","try_files","reload","443","TLS","limit_req","cache","nginx -t"]),
+    kafka:W(["Kafka","events"],["topic","partition","offset","producer","consumer","acks=all","ISR","lag","rebalance","compaction","9092","KRaft","commit"]),
     dsa:W(["DSA","Big-O"],["O(log n)","O(n)","BFS","DFS","heap","DP","two pointers","stack","queue","graph","binary search","memo","trie","sliding window"]),
     n8n:W(["n8n","Automation"],["Webhook","{{ $json }}","HTTP Request","IF","Merge","Cron","AI Agent","Set","Code","Split Out","workflow","Wait","Switch","Error Trigger"]),
     resume:W(["Resume","ATS"],["LaTeX","impact","skills","keywords","projects","metrics","PDF","match %","summary","experience"]),
     all:W(["Java","SQL","Spring Boot","DSA","Patterns","n8n"],["SELECT *","class Car","@Bean","JOIN","λ","O(log n)","Stream","{ }","HashMap","GROUP BY","record","@Transactional","Webhook","Strategy"])};
-  var NAME={java:"Java",sql:"SQL",spring:"Spring Boot",patterns:"Patterns",dsa:"DSA",n8n:"n8n",resume:"Resume"};
+  var NAME={nginx:"NGINX",kafka:"Kafka",redis:"Redis",java:"Java",sql:"SQL",spring:"Spring Boot",patterns:"Patterns",dsa:"DSA",n8n:"n8n",resume:"Resume"};
   function fly(course){var set=FLY[course]||FLY.all,k=set.length;return '<div class="zl-fly" aria-hidden="true">'+set.map(function(w,i){
       var a=(i*137.5)%360*Math.PI/180,r=34+(i*29)%22;   /* golden-angle spread, 34–56 vmax out from the centre */
       return '<span'+(w[1]?' class="w"':"")+' style="--x:'+(Math.cos(a)*r).toFixed(1)+'vmax;--y:'+(Math.sin(a)*r*.62).toFixed(1)+'vmax;--d:'+(-(i*6.4/k)).toFixed(2)+'s">'+w[0]+"</span>";}).join("")+"</div>";}
