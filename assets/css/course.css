@@ -13789,6 +13789,131 @@ html.no-motion .sd3-rnd,html.no-motion .sd3-dbar i,html.no-motion .sd3-cb2 i,htm
   .sd3-url,.sd3-rk,.sd3-fx{margin-left:12px;margin-right:12px}.sd3-rts{width:calc(100% - 24px);margin-left:12px}
   .sd3-fl{flex-direction:row;flex-wrap:wrap;padding-left:0}.sd3-fl .sd3-id i{display:none}
   .sd3-lane2{font-size:.66rem}}
+/* sysdesign H04 v1: scaling the app tier labs (assets/labs/sysdesign/labs-sd-04.js, 2026-11-05): controls .sd4-gc/.sd4-tg, KPI tiles .sd4-kp
+   (tile modifiers .sd4-good/.sd4-bad), panels .sd4-box/.sd4-two, scale up/out .sd4-mach, sessions .sd4-st/.sd4-srv/.sd4-out/.sd4-mt, layers .sd4-fl,
+   algorithms .sd4-ar/.sd4-q, ring .sd4-ring, timelines .sd4-tl (health, failover, autoscaling), gateway .sd4-gw. Animations off under
+   reduced motion / html.no-motion */
+.sd4-gc{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:12px 18px 4px}
+.sd4-gc>.btn{min-height:34px;padding:5px 12px;font-size:.8rem}
+.sd4-tg{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-width:0}.sd4-tg>span{font:600 .74rem Inter,sans-serif;color:var(--muted);margin-right:2px}
+.sd4-tg .chip{white-space:normal;text-align:left;line-height:1.3}
+.sd4-tg .chip.on{color:#fff;background:#7c3aed;border-color:#7c3aed}
+.sd4-tg .chip:disabled{opacity:.4;cursor:not-allowed}
+.sd4-cap,.sd4-cap0{margin:10px 18px 12px;line-height:1.5}
+.sd4-cap0{padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
+.sd4-two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;padding:10px 18px 4px}
+.sd4-box{min-width:0;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.sd4-box>small{display:block;font:700 .62rem Inter,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.sd4-kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin:10px 0 0}
+.sd4-alg+.sd4-algk .sd4-kp,.sd4-hck .sd4-kp,.sd4-hak .sd4-kp,.sd4-auk .sd4-kp{margin:10px 18px 0}
+.sd4-kp>span{min-width:0;border:1px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--surface)}
+.sd4-kp small{display:block;font:700 .58rem Inter,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.sd4-kp b{display:block;font:700 .95rem/1.3 "JetBrains Mono",monospace;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sd4-kp>span.sd4-good{border-color:color-mix(in srgb,var(--good) 45%,var(--line));background:var(--good-soft)}
+.sd4-kp>span.sd4-bad{border-color:color-mix(in srgb,var(--bad) 45%,var(--line));background:var(--bad-soft)}
+/* scale up / out */
+.sd4-machines{display:flex;flex-wrap:wrap;gap:5px;align-items:flex-end;min-height:96px}
+.sd4-mach{display:inline-flex;align-items:center;justify-content:center;width:34px;height:26px;border-radius:7px;font:700 .66rem "JetBrains Mono",monospace;font-style:normal;color:#fff;background:#0ea5e9}
+.sd4-mach.sd4-big{background:#7c3aed;font-size:.9rem}
+.sd4-mach.sd4-lbm{background:#f59e0b;width:30px}
+.sd4-mach.sd4-spare{background:transparent;color:#0ea5e9;border:2px dashed #0ea5e9}
+.sd4-mach.sd4-none{width:70px;height:50px;background:var(--bad-soft);color:var(--bad);font-size:1.2rem}
+/* sessions */
+.sd4-stw{padding:10px 18px 0}
+.sd4-st{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sd4-phone,.sd4-lbx,.sd4-redis{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface);font:600 .82rem Inter,sans-serif;display:flex;flex-direction:column;gap:4px}
+.sd4-phone .sd4-tok,.sd4-lbx em{font:500 .68rem "JetBrains Mono",monospace;color:var(--muted);font-style:normal}
+.sd4-arrow{color:var(--muted);font-weight:700}
+.sd4-srvs{display:flex;gap:6px;flex-wrap:wrap}
+.sd4-srv{min-width:72px;border:1px solid var(--line);border-radius:12px;padding:8px;background:var(--surface);display:flex;flex-direction:column;gap:4px;align-items:flex-start;transition:border-color .3s,box-shadow .3s}
+.sd4-srv.on{border-color:#7c3aed;box-shadow:0 0 0 3px color-mix(in srgb,#7c3aed 18%,transparent)}
+.sd4-srv.sd4-dead{opacity:.55;border-style:dashed;border-color:var(--bad)}
+.sd4-srv em{font:500 .66rem Inter,sans-serif;color:var(--bad);font-style:normal}
+.sd4-sess{font:700 .62rem "JetBrains Mono",monospace;color:#fff;background:#10b981;border-radius:6px;padding:2px 6px}
+.sd4-redis{border-color:#ef4444}
+.sd4-out{margin:10px 0 0;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--soft);line-height:1.5;font-size:.9rem}
+.sd4-out.sd4-ok{border-color:color-mix(in srgb,var(--good) 45%,var(--line));background:var(--good-soft)}
+.sd4-out.sd4-bad{border-color:color-mix(in srgb,var(--bad) 45%,var(--line));background:var(--bad-soft)}
+.sd4-out.sd4-warn{border-color:color-mix(in srgb,var(--amber) 55%,var(--line))}
+#sd4State .sd-step,#sd4Case .sd-step{padding:10px 18px 4px}
+.sd4-gw+.sd4-out{margin:10px 18px 14px}
+.sd4-stm{padding:4px 18px 14px}
+.sd4-mt td,.sd4-mt th{text-align:center}.sd4-mt td:first-child{text-align:left}
+.sd4-mt th.on,.sd4-mt td.on{background:color-mix(in srgb,#7c3aed 10%,transparent)}
+.sd4-mt td.sd4-ok{color:var(--good);font-weight:700}.sd4-mt td.sd4-bad{color:var(--bad);font-weight:700}.sd4-mt td.sd4-warn{color:var(--amber);font-weight:700}
+/* layers */
+.sd4-lay{padding:10px 18px 14px}
+.sd4-fl{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:6px}
+.sd4-fr{border:1px solid var(--line);border-radius:10px;padding:6px 10px;background:var(--surface);min-width:0}
+.sd4-fr small{display:block;font:700 .58rem Inter,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.sd4-fr span{font:500 .78rem "JetBrains Mono",monospace;overflow-wrap:anywhere}
+.sd4-fr.sd4-mute{background:var(--soft)}
+.sd4-enc{color:var(--muted)}
+.sd4-dec{margin-top:10px;padding:10px 12px;border-radius:12px;border:1px solid #7c3aed;line-height:1.5;font-size:.9rem;overflow-wrap:anywhere}
+/* algorithms */
+.sd4-alg{padding:10px 18px 0;display:grid;gap:6px}
+.sd4-ar{display:grid;grid-template-columns:52px minmax(80px,1fr) repeat(3,auto);gap:4px 10px;align-items:center;font-size:.8rem}
+.sd4-ar em{font:500 .72rem "JetBrains Mono",monospace;font-style:normal;color:var(--muted);white-space:nowrap}
+.sd4-ar em.sd4-badt{color:var(--bad);font-weight:700}
+.sd4-q{display:block;height:12px;border-radius:6px;background:var(--soft);overflow:hidden}
+.sd4-q i{display:block;height:100%;border-radius:6px}
+@media (max-width:620px){.sd4-ar{grid-template-columns:44px minmax(60px,1fr) auto}.sd4-ar em:nth-of-type(n+2){grid-column:2 / -1}}
+/* ring */
+.sd4-ring{width:100%;max-width:240px;display:block;margin:0 auto}
+.sd4-rc{fill:none;stroke:var(--line);stroke-width:3}
+.sd4-modv{padding:16px;border:1px dashed var(--line);border-radius:12px}
+.sd4-loads{display:grid;gap:5px;margin-top:10px}
+.sd4-loads>div{display:grid;grid-template-columns:30px 1fr 52px;gap:8px;align-items:center;font-size:.78rem}
+.sd4-loads em{font:500 .72rem "JetBrains Mono",monospace;font-style:normal;color:var(--muted);text-align:right}
+/* timelines */
+.sd4-hc,.sd4-ha,.sd4-au{padding:10px 18px 0}
+.sd4-tl{width:100%;height:auto;display:block}
+.sd4-tx{font:500 10px "JetBrains Mono",monospace;fill:var(--muted)}
+rect.sd4-ok,.sd4-leg i.sd4-ok{fill:#10b981;background:#10b981}
+rect.sd4-bd,.sd4-leg i.sd4-bd{fill:#ef4444;background:#ef4444}
+rect.sd4-out0,.sd4-leg i.sd4-out0{fill:#94a3b8;background:#94a3b8}
+rect.sd4-wait,.sd4-leg i.sd4-wait{fill:#f59e0b;background:#f59e0b}
+.sd4-ck{stroke:var(--text);stroke-width:1.2;opacity:.55}
+.sd4-ax{stroke:var(--line);stroke-width:1.5}
+.sd4-area{fill:color-mix(in srgb,#ef4444 18%,transparent)}
+.sd4-line{fill:none;stroke:#ef4444;stroke-width:2.2}
+.sd4-capl{fill:none;stroke:#10b981;stroke-width:2.2;stroke-dasharray:5 3}
+.sd4-kill{stroke:var(--text);stroke-dasharray:3 3;opacity:.6}
+.sd4-ov{fill:color-mix(in srgb,#ef4444 14%,transparent)}
+.sd4-leg{display:flex;flex-wrap:wrap;gap:4px 14px;padding:6px 0 0;color:var(--muted)}
+.sd4-leg span{display:inline-flex;gap:6px;align-items:center}
+.sd4-leg i{display:inline-block;width:14px;height:10px;border-radius:3px}
+.sd4-leg i.sd4-ckl{width:2px;height:12px;background:var(--text);opacity:.55}
+.sd4-leg i.sd4-lnl{height:3px;background:#ef4444}.sd4-leg i.sd4-cpl{height:0;border-top:3px dashed #10b981}.sd4-leg i.sd4-ovl{background:color-mix(in srgb,#ef4444 25%,transparent)}
+/* gateway */
+.sd4-gw{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;padding:12px 18px 0}
+.sd4-st4{flex:1 1 110px;min-width:0;border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface);display:flex;flex-direction:column;gap:4px;transition:border-color .3s,background .3s}
+.sd4-st4 b{font:600 .8rem Inter,sans-serif}.sd4-st4 em{font:700 .78rem "JetBrains Mono",monospace;font-style:normal;min-height:1.2em}
+.sd4-st4.sd4-pass{border-color:color-mix(in srgb,var(--good) 55%,var(--line));background:var(--good-soft)}
+.sd4-st4.sd4-pass em{color:var(--good)}
+.sd4-st4.sd4-stop{border-color:var(--bad);background:var(--bad-soft)}.sd4-st4.sd4-stop em{color:var(--bad)}
+.sd4-ga{align-self:center;color:var(--muted);font-weight:700}
+@media (max-width:620px){.sd4-ga{display:none}.sd4-st4{flex-basis:45%}}
+.sd4-cb{margin:0 18px 14px}
+@media (prefers-reduced-motion:no-preference){html:not(.no-motion) .sd4-q i{transition:width .2s linear}}
+/* nginx playground v1 (2026-11-05): courses/nginx/playground.html, classes ngp- (labs-nginx-play.js); the console itself is the kit's .ngx-cli */
+.ngp-head{padding-bottom:8px}
+.ngp-sec{margin:0 0 22px}
+.ngp-top{border:1px solid var(--line);border-bottom:0;border-radius:16px 16px 0 0;background:var(--surface);padding:14px 14px 10px;box-shadow:var(--shadow)}
+.ngp-top+*{margin-top:0}
+#ngPlayCli{margin-top:0;border-top-left-radius:0;border-top-right-radius:0}
+.ngp-scs{display:flex;flex-wrap:wrap;gap:6px}
+.ngp-sc{min-height:32px}
+.ngp-d{margin:10px 0 8px;color:var(--muted);font-size:.9rem;line-height:1.5}
+.ngp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+.ngp-bar .btn{padding:6px 12px;font-size:.8rem}
+.ngp-st{font-size:.8rem;color:var(--muted)}
+.ngp-st b{color:var(--accent)}
+.ngp-sp{flex:1}
+.ngp-help p{margin:.5em 0;line-height:1.6}
+.ngp-help code{white-space:normal}
+@media (max-width:560px){.ngp-top{padding:12px 10px 8px}.ngp-sp{display:none}.ngp-bar .btn{flex:1 1 auto}}
+
 /* redis playground v1 (assets/labs/redis/labs-redis-pg.js, 2026-11-05): scenario chips, "try these" recipe buttons, cheat-sheet grid */
 .rpg-scn{display:flex;flex-wrap:wrap;gap:8px;padding:14px 16px 4px}
 .rpg-d{margin:6px 16px 8px;color:var(--muted);font-size:.9rem}
@@ -13804,6 +13929,22 @@ html.no-motion .sd3-rnd,html.no-motion .sd3-dbar i,html.no-motion .sd3-cb2 i,htm
 .rpg-tools{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
 @media (prefers-reduced-motion:reduce){.rpg-run,.rpg-put{transition:none}.rpg-run:hover,.rpg-put:hover{transform:none}}
 @media (max-width:560px){.rpg-scn,.rpg-try,.rpg-sheet{padding-left:12px;padding-right:12px}.rpg-d{margin-left:12px;margin-right:12px}}
+/* kafka playground v1 (2026-11-05): courses/kafka/playground.html, classes kp- (labs-kafka-play.js); the console itself is the kit's .kx-cli */
+.kp-head{padding-bottom:8px}
+.kp-sec{margin:0 0 22px}
+.kp-top{border:1px solid var(--line);border-bottom:0;border-radius:16px 16px 0 0;background:var(--surface);padding:14px 14px 10px;box-shadow:var(--shadow)}
+#kpCli{margin-top:0;border-top-left-radius:0;border-top-right-radius:0}
+.kp-scs{display:flex;flex-wrap:wrap;gap:6px}
+.kp-sc{min-height:32px}
+.kp-d{margin:10px 0 8px;color:var(--muted);font-size:.9rem;line-height:1.5}
+.kp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+.kp-bar .btn{padding:6px 12px;font-size:.8rem}
+.kp-st{font-size:.8rem;color:var(--muted)}
+.kp-st b{color:var(--accent)}
+.kp-sp{flex:1}
+.kp-help p{margin:.5em 0;line-height:1.6}
+.kp-help code{white-space:normal}
+@media (max-width:560px){.kp-top{padding:12px 10px 8px}.kp-sp{display:none}.kp-bar .btn{flex:1 1 auto}}
 
 /* sysdesign playground v1 (assets/labs/sysdesign/labs-sd-pg.js, 2026-11-05): starting-design chips, traffic-mix sliders, A/B table */
 .hpg-tools{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
