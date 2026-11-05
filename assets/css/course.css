@@ -14072,6 +14072,36 @@ rect.sd4-wait,.sd4-leg i.sd4-wait{fill:#f59e0b;background:#f59e0b}
 .sd7-st b{display:block;font-size:.86rem}.sd7-st em{font-size:.74rem;font-style:normal;color:var(--muted)}
 .sd7-st.sd7-src{border-width:2px}.sd7-st.on{opacity:1;border-color:#7c3aed;box-shadow:0 0 0 3px color-mix(in srgb,#7c3aed 16%,transparent)}
 .sd7-flow{grid-column:1 / -1;font:500 .74rem "JetBrains Mono",monospace;color:var(--muted);padding:6px 2px;overflow-wrap:anywhere}
+/* sysdesign H08 v1: replication labs (assets/labs/sysdesign/labs-sd-08.js, 2026-11-05): controls .sd8-gc/.sd8-tg, KPI tiles .sd8-kp
+   (.sd8-good/.sd8-bad), event timelines .sd8-evl, verdicts .sd8-out, quorum nodes .sd8-nodes/.sd8-node. */
+.sd8-gc{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;padding:12px 18px 4px}
+.sd8-tg{display:flex;flex-wrap:wrap;gap:5px;align-items:center;min-width:0}.sd8-tg>span{font:600 .74rem Inter,sans-serif;color:var(--muted);margin-right:2px}
+.sd8-tg .chip{white-space:normal;text-align:left;line-height:1.3}
+.sd8-tg .chip.on{color:#fff;background:#7c3aed;border-color:#7c3aed}
+.sd8-fx{padding-top:4px}
+.sd8-cap{margin:10px 18px 12px;line-height:1.5}
+.sd8-md,.sd8-lg,.sd8-fl,.sd8-mm,.sd8-qm,.sd8-cs{padding:10px 18px 4px}
+.sd8-cs .sd8-cap{margin:8px 0 10px}
+.sd8-kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:0 0 10px}
+.sd8-kp>span{min-width:0;border:1px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--surface)}
+.sd8-kp small{display:block;font:700 .58rem Inter,sans-serif;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);overflow:hidden;text-overflow:ellipsis}
+.sd8-kp b{display:block;font:700 .9rem/1.3 "JetBrains Mono",monospace;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sd8-kp>span.sd8-good{border-color:color-mix(in srgb,var(--good) 45%,var(--line));background:var(--good-soft)}
+.sd8-kp>span.sd8-bad{border-color:color-mix(in srgb,var(--bad) 45%,var(--line));background:var(--bad-soft)}
+.sd8-evl{list-style:none;margin:0 0 10px;padding:0;display:grid;gap:4px}
+.sd8-evl li{display:grid;grid-template-columns:auto 110px 1fr;gap:8px;align-items:baseline;padding:6px 10px;border-radius:9px;background:var(--soft);font-size:.82rem;border-left:3px solid var(--line)}
+.sd8-evl code{font-size:.72rem;color:var(--muted);white-space:nowrap;min-width:70px}
+.sd8-evl li.sd8-w{border-left-color:#f59e0b}.sd8-evl li.sd8-d{border-left-color:#ef4444}.sd8-evl li.sd8-q{border-left-color:#0ea5e9}
+.sd8-evl li.sd8-ok{border-left-color:var(--good)}.sd8-evl li.sd8-bad{border-left-color:var(--bad);background:var(--bad-soft)}
+@media (max-width:620px){.sd8-evl li{grid-template-columns:auto 1fr}.sd8-evl li span{grid-column:1 / -1}}
+.sd8-out{margin:0 0 12px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);line-height:1.5;font-size:.9rem}
+.sd8-out.sd8-ok{border-color:color-mix(in srgb,var(--good) 45%,var(--line));background:var(--good-soft)}
+.sd8-out.sd8-bad{border-color:color-mix(in srgb,var(--bad) 45%,var(--line));background:var(--bad-soft)}
+.sd8-nodes{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px;margin-bottom:10px}
+.sd8-node{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface);display:flex;flex-direction:column;gap:3px}
+.sd8-node b{font-size:.8rem}.sd8-node span{font:600 .78rem "JetBrains Mono",monospace}
+.sd8-node.rd{border-color:#0ea5e9;box-shadow:0 0 0 3px color-mix(in srgb,#0ea5e9 16%,transparent)}
+.sd8-node.dead{opacity:.5;border-style:dashed;border-color:var(--bad)}.sd8-node.dead span{color:var(--bad)}
 /* nginx playground v1 (2026-11-05): courses/nginx/playground.html, classes ngp- (labs-nginx-play.js); the console itself is the kit's .ngx-cli */
 .ngp-head{padding-bottom:8px}
 .ngp-sec{margin:0 0 22px}
@@ -14173,6 +14203,27 @@ rect.sd4-wait,.sd4-leg i.sd4-wait{fill:#f59e0b;background:#f59e0b}
 .kx12-pg i{height:8px;border-radius:999px;background:linear-gradient(90deg,#6366f1 var(--k),color-mix(in srgb,var(--line) 70%,transparent) var(--k))}
 @media (prefers-reduced-motion:reduce){.kx12-flow{animation:none}}
 html.no-motion .kx12-flow{animation:none}
+/* kafka K13 v1 (assets/labs/kafka/labs-kafka-13.js, 2026-11-05): question bank cards (.kx13-q, marked .kx13-ok / .kx13-no), tool
+   chooser (.kx13-req, ranking reuses .kx12-bar), method steps + "say" box, design diagrams (svg .kx13-d: nodes .kx13-n by kind svc /
+   topic / db / ext, highlighted .kx13-on, failing .kx13-bad, edges .kx13-e / .kx13-eon), mock interview */
+.kx13-lv{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
+.kx13-qs{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.kx13-q{border:1px solid var(--line);border-left:4px solid var(--line);border-radius:10px;background:var(--surface);padding:8px 12px}
+.kx13-q summary{cursor:pointer;font-weight:600;font-size:.9rem;display:flex;gap:8px;align-items:baseline}.kx13-q p{margin:8px 0 0;font-size:.88rem;line-height:1.6}
+.kx13-q.kx13-ok{border-left-color:#16a34a}.kx13-q.kx13-no{border-left-color:#dc2626}
+.kx13-req{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:6px 14px;margin-bottom:10px;font-size:.86rem}.kx13-req label{display:flex;gap:8px;align-items:flex-start}
+.kx13-steps{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 10px}.kx13-steps .kx3-st{padding:5px 8px}
+.kx13-say{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-size:.9rem;line-height:1.6}.kx13-say p{margin:4px 0}.kx13-ex{color:var(--muted)}
+.kx13-d{width:100%;height:auto;display:block;margin:8px 0}
+.kx13-n rect{fill:var(--surface);stroke:var(--line);stroke-width:1.5;transition:stroke .3s,fill .3s}.kx13-n text{fill:var(--text);font:600 10.5px Inter,sans-serif;text-anchor:middle}
+.kx13-topic rect{stroke:#6366f1;stroke-dasharray:0}.kx13-db rect{stroke:#f59e0b}.kx13-ext rect{stroke-dasharray:4 3}
+.kx13-n.kx13-on rect{stroke:#16a34a;stroke-width:3;fill:color-mix(in srgb,#16a34a 12%,var(--surface))}
+.kx13-n.kx13-bad rect{stroke:#dc2626;stroke-width:3;fill:color-mix(in srgb,#dc2626 12%,var(--surface))}
+.kx13-e{fill:none;stroke:var(--muted);stroke-width:1.4;opacity:.55;transition:stroke .3s,opacity .3s}.kx13-e.kx13-eon{stroke:#16a34a;stroke-width:2.4;opacity:1}.kx13-ah{fill:var(--muted)}
+.kx13-tl{font-size:.84rem;font-weight:600;display:flex;gap:6px;align-items:center}
+.kx13-mq{font:700 1.05rem "Inter Tight",sans-serif;margin:10px 0}
+.kx13-pts{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--soft);font-size:.88rem}.kx13-pts label{display:flex;gap:8px;align-items:flex-start}
+.kx13-late{color:var(--bad)}
 @media (max-width:560px){.kx12-bar{grid-template-columns:1fr auto}.kx12-bar i{grid-column:1/-1;grid-row:2}.kx12-mm{grid-template-columns:1fr}.kx12-mmar{transform:rotate(90deg)}.kx12-tl li{grid-template-columns:1fr}}
 
 /* sysdesign playground v1 (assets/labs/sysdesign/labs-sd-pg.js, 2026-11-05): starting-design chips, traffic-mix sliders, A/B table */
@@ -14456,3 +14507,20 @@ html.no-motion .dj-spin{animation:none}
 .bh2-q{margin:8px 16px}.bh2-sum{margin:0 16px 14px}
 @media (max-width:560px){.bh2-sit,.bh2-res,.bh2-prop,.bh2-pk{padding-left:12px;padding-right:12px}.bh2-q{margin-left:12px;margin-right:12px}}
 @media (prefers-reduced-motion:reduce){.bh2-pb i,.bh2-tg i{transition:none}}
+
+/* behavioural B03 v1 (assets/labs/behavioural/labs-beh-03.js, 2026-11-05): impact estimator .bh3-calc */
+.bh3-calc{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,240px),1fr));gap:12px;padding:14px 16px 0}
+.bh3-fs{border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:grid;gap:8px;margin:0;min-width:0}
+.bh3-fs legend{font-weight:700;font-size:.85rem;padding:0 4px}
+.bh3-fs input{width:100%;box-sizing:border-box;font:inherit;font-size:.9rem;color:var(--text);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.bh3-out{margin:12px 16px 16px;padding:0;list-style:none;display:grid;gap:6px;font-size:.9rem}
+.bh3-out li{padding:8px 10px;border-radius:10px;background:var(--soft)}
+@media (max-width:560px){.bh3-calc{padding-left:12px;padding-right:12px}.bh3-out{margin-left:12px;margin-right:12px}}
+
+/* behavioural B04 v1 (assets/labs/behavioural/labs-beh-04.js, 2026-11-05): branching scenario .bh4-sc */
+.bh4-sc{padding:14px 16px 16px;display:grid;gap:10px}
+.bh4-t{margin:0;padding:12px 14px;border-radius:12px;background:var(--soft);border:1px solid var(--line);font-size:.95rem;line-height:1.5}
+.bh4-o{display:grid;gap:6px}.bh4-o .btn{justify-content:flex-start;text-align:left;white-space:normal;height:auto;line-height:1.4;padding:8px 12px}
+.bh4-w{margin:0;font-size:.9rem;min-height:1.3em}.bh4-w.bh4-good{color:var(--good)}.bh4-w.bh4-bad{color:var(--bad)}
+.bh4-re{justify-self:start}
+@media (max-width:560px){.bh4-sc{padding-left:12px;padding-right:12px}}
