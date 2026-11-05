@@ -4,7 +4,7 @@
   var C=window.AUTH_CFG||{};
   var on=!!(C.url&&C.anonKey&&C.url.indexOf("YOUR-")<0&&C.anonKey.indexOf("YOUR-")<0&&window.supabase);
   var sb=on?window.supabase.createClient(C.url,C.anonKey):null;
-  var COURSES={java:"Java: Zero to Advanced",sql:"SQL: Zero to Advanced",spring:"Spring Boot: Annotations Lab",patterns:"Design Patterns, Beginner to Expert",n8n:"n8n Automation: Zero to Selling Flows",dsa:"DSA: Zero to Interview",redis:"Redis: Zero to Production",kafka:"Kafka: Zero to Production",nginx:"NGINX: Zero to Production",sysdesign:"System Design: Zero to Interview",resume:"Resume Builder: ATS match + LaTeX"};
+  var COURSES={java:"Java: Zero to Advanced",sql:"SQL: Zero to Advanced",spring:"Spring Boot: Annotations Lab",patterns:"Design Patterns, Beginner to Expert",n8n:"n8n Automation: Zero to Selling Flows",dsa:"DSA: Zero to Interview",redis:"Redis: Zero to Production",kafka:"Kafka: Zero to Production",nginx:"NGINX: Zero to Production",sysdesign:"System Design: Zero to Interview",behavioural:"Behavioural Interview: Stories that Get Offers",docker:"Docker and Kubernetes: Zero to Production",resume:"Resume Builder: ATS match + LaTeX"};
   function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
 
   async function session(){if(!sb)return null;try{return (await sb.auth.getSession()).data.session;}catch(e){return null;}}
