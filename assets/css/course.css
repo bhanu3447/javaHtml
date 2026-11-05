@@ -2423,7 +2423,7 @@ html.no-motion .jr-spin{animation:none}
 /* ui polish v38 (2026-10-24): accessible tokens per theme (text colours ≥ 4.5:1 on bg/surface/soft), *-fill tokens (the darker
    solids that carry white text on chips, buttons and badges in every theme), --hi (the inset top highlight of raised controls),
    stroke icons in the nav, the course menu (.csw, replaces the native select), restrained buttons and chips.
-   Prompt, audit and results: kb/style-audit-plan.md. */
+   Prompt, audit and results: kb/site/style-audit-plan.md. */
 :root{--accent-fill:#4f46e5;--accent-2-fill:#9333ea;--good-fill:#047857;--bad-fill:#c81e1e;--amber-fill:#b45309;--hi:rgba(255,255,255,.6)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--hi:rgba(255,255,255,.06)}}
 :root[data-theme="dark"],:root[data-theme="midnight"],:root[data-theme="forest"],:root[data-theme="nord"],:root[data-theme="dracula"]{--hi:rgba(255,255,255,.06)}
@@ -2484,7 +2484,7 @@ footer .credits,footer .credits a{color:var(--muted);opacity:1}
 #totop{color:var(--muted)}
 
 /* ux pass v39 (2026-10-24): reading measure, body type, a three-size button system, touch targets, focus rings, editor
-   type, mobile rhythm, skip link. Prompt and findings: kb/ux-pass-plan.md. */
+   type, mobile rhythm, skip link. Prompt and findings: kb/site/ux-pass-plan.md. */
 @media (min-width:900px){body{font-size:17px}}
 /* measure: prose is capped, visuals/code/tables/cards stay full width */
 .wrap>section>p,.wrap>section>ul,.wrap>section>ol,section>p,section>ul,section>ol,.note,details.d,.band p,.b>p,.b>ul,.b>ol{max-width:72ch}
@@ -2537,7 +2537,7 @@ nav .links{-webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 c
 }
 
 /* responsive v40 (2026-10-24): every page designed for 320 px phones through 3440 px ultrawide (18 audited viewports).
-   Parts: base, chrome, content, tools, labs-a, labs-b. Notes: kb/site-internals.md change log. */
+   Parts: base, chrome, content, tools, labs-a, labs-b. Notes: kb/site/site-internals.md change log. */
 /* base: rules every area fragment builds on */
 /* control rows wrap instead of squeezing (and clipping) their buttons */
 .ctrl{flex-wrap:wrap}
@@ -4107,7 +4107,7 @@ body.pg-lk-line{--accent:#38bdf8;--accent-soft:#0b2233;--accent-fill:#0284c7;--a
 .l0f-heap .l0-obj small{display:block;font:600 .64rem "JetBrains Mono",monospace;color:var(--muted)}
 @media (prefers-reduced-motion:reduce){.l0f-on,.l0f-dim{transition:none}}
 
-/* design patterns kit v1 (assets/labs/labs-patterns.js, 2026-10-28): .viz.dp lab shell (head + pill + view tabs), .dp-view (STEP bar, caption,
+/* design patterns kit v1 (assets/labs/patterns/labs-patterns.js, 2026-10-28): .viz.dp lab shell (head + pill + view tabs), .dp-view (STEP bar, caption,
    SVG stage with UML-lite class boxes .dp-cls and plain boxes, edge kinds .dp-impl/.dp-ext/.dp-has/.dp-calls, legend, note, code panel, controls),
    the families map .dp-fam, the pattern anatomy .dp-anat and the pattern picker .dp-pick; course colour k-patterns */
 .csw-m a i.k-patterns{background:linear-gradient(135deg,#b45309,#be185d)}
@@ -8822,7 +8822,7 @@ html.no-motion .sq07-gr .ch i{animation:none}
 .oxy-con{min-height:5.5em;padding:10px 12px;border-radius:10px;background:#05080f;color:#d1d5db;font:500 .76rem/1.6 "JetBrains Mono",monospace;white-space:pre-wrap}
 @media (prefers-reduced-motion:reduce){.oxy-n,.oxy-arr{transition:none;transform:none}}
 
-/* n8n kit v1 (assets/labs/labs-n8n.js: mini n8n canvas + N00 labs) */
+/* n8n kit v1 (assets/labs/n8n/labs-n8n.js: mini n8n canvas + N00 labs) */
 .nx-kit{padding:0 0 4px}
 .nx-cv{position:relative;margin:0 16px;border-radius:14px;border:1px solid var(--line);overflow:hidden;background-color:var(--soft);background-image:radial-gradient(color-mix(in srgb,var(--muted) 35%,transparent) 1px,transparent 1.3px);background-size:18px 18px}
 .nx-wires{position:absolute;inset:0;width:100%;height:100%}
@@ -9414,7 +9414,7 @@ html.no-motion .sq07-gr .ch i{animation:none}
 .nx14-g li.ok button::before{content:"✓";background:var(--good);border-color:var(--good);color:#fff;font-size:.56rem;line-height:9px;text-align:center}
 .nx14-g a{display:inline-block;margin:8px 12px 10px;font-size:.8rem}
 
-/* dsa D00 labs v1 (assets/labs/labs-dsa.js: #dsStep #dsMath #dsRace #dsFib #dsRules #dsLoops #dsHalve #dsCases #dsSpace #dsDouble #dsBench #dsLimit #dsDrill #dsBank) */
+/* dsa D00 labs v1 (assets/labs/dsa/labs-dsa.js: #dsStep #dsMath #dsRace #dsFib #dsRules #dsLoops #dsHalve #dsCases #dsSpace #dsDouble #dsBench #dsLimit #dsDrill #dsBank) */
 .dss-row,.dsc-row,.dsh-row{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
 .dss-car{display:flex;flex-direction:column;align-items:center;gap:2px;width:42px;padding:6px 0;border:1px solid var(--line);border-radius:10px;background:var(--soft);transition:background .25s,border-color .25s,transform .25s}
 .dss-car i{font-style:normal;font-size:1.1rem;filter:grayscale(1);opacity:.55;transition:filter .25s,opacity .25s}
@@ -10008,7 +10008,7 @@ html.no-motion .sq07-gr .ch i{animation:none}
 .ds21-hist small{font:500 .62rem "JetBrains Mono",monospace;color:var(--muted)}
 @media (prefers-reduced-motion: reduce){.ds21-lv span,.ds21-fwr i,.ds21-str i,.ds21-n circle,.ds21-hist i{transition:none}}
 
-/* DSA Lab R3 (kb/playground.md → "DSA redesign R3"): "just ran" bar, Why here, History tab, array-backed stack, [ data | next ] nodes,
+/* DSA Lab R3 (kb/java/playground.md → "DSA redesign R3"): "just ran" bar, Why here, History tab, array-backed stack, [ data | next ] nodes,
    compared cells, tree comparison label, hash → bucket ribbon, scaled/centred picture; colours from the dsa-ds tokens */
 .pg-jr{font:700 .6rem Inter,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--ds-mod);background:var(--ds-mod-soft);border-radius:99px;padding:1px 8px;margin-right:8px;vertical-align:1px;white-space:nowrap}
 .pg-whyh{margin:7px 0 0;font-size:.8rem;line-height:1.7;color:var(--text)}
@@ -10085,7 +10085,7 @@ section[id$="-vary"]>.tw td:last-child{white-space:nowrap;color:var(--text)}
   section[id$="-vary"]>.tw td:nth-child(3)::before{content:"What changes"}
   section[id$="-vary"]>.tw td:nth-child(4)::before{content:"Cost"}
 }
-/* dsa-ds v1:the DSA design system (kb/site-internals.md → "DSA design system"). One meaning per colour, everywhere (DSA Lab and the
+/* dsa-ds v1:the DSA design system (kb/site/site-internals.md → "DSA design system"). One meaning per colour, everywhere (DSA Lab and the
    D00–D21 labs): act = the element being worked on, cmp = being compared, mod = just changed, del = being removed, ok = finished/sorted,
    dim = out of play, new = just created. Tokens derive from the theme, so every theme gets them. Markup comes from DSX (pg-viz.js). */
 :root{
@@ -10476,7 +10476,7 @@ pre.ojt-term{margin:12px 0;padding:12px 14px;border-radius:12px;background:#0508
 @media (max-width:700px){.ojk-grid{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.ojk-bar,.ojk-ln,.ojk-node{transition:none}}
 
-/* concurrency labs v1 (labs-threads.js: L29 #otLife .otl- #otSched .ots-; L30–L35 blocks follow, see kb/java-concurrency-plan.md) */
+/* concurrency labs v1 (labs-threads.js: L29 #otLife .otl- #otSched .ots-; L30–L35 blocks follow, see kb/java/java-concurrency-plan.md) */
 #otLife [data-k].on,#otLife [data-k].on:hover,#otSched [data-m].on,#otSched [data-m].on:hover{background:var(--accent-fill,var(--accent));color:#fff;border-color:transparent;font-weight:600}
 .otl-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;padding:14px;border-radius:14px;background:#0b1020;color:#e5e7eb}
 .otl-board{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-content:start}
@@ -10797,7 +10797,7 @@ pre.ojt-term{margin:12px 0;padding:12px 14px;border-radius:12px;background:#0508
 @media (max-width:700px){.otv-grid{grid-template-columns:1fr 1fr}.otv-tr{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.otw-n{transition:none}}
 
-/* java basics labs v1 (Lesson 00 sections 05–10: #l0Expr #l0Branch #l0Loop #l0Stack #l0Scan, assets/labs/labs-basics.js; prefix l0x-) */
+/* java basics labs v1 (Lesson 00 sections 05–10: #l0Expr #l0Branch #l0Loop #l0Stack #l0Scan, assets/labs/java/labs-basics.js; prefix l0x-) */
 .l0x-param{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-bottom:12px;min-height:8px}
 .l0x-in{display:inline-flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
 .l0x-in input[type=range]{accent-color:var(--accent);width:min(220px,52vw)}
@@ -10892,7 +10892,7 @@ mark.l0x-hl{background:color-mix(in srgb,var(--amber) 45%,transparent);color:inh
 @media (max-width:640px){.olcs-mem{grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:26px}#olCast .ol-var{padding:7px 8px}#olCast .ol-var span{white-space:nowrap;font-size:.74rem}}
 @media (prefers-reduced-motion:reduce){.olcs-m{transition:none}}
 
-/* redis kit v1 (assets/labs/labs-redis.js, 2026-11-04): redis-cli console .rx-cli (dark terminal + keyspace board of .rx-key cards with type
+/* redis kit v1 (assets/labs/redis/labs-redis.js, 2026-11-04): redis-cli console .rx-cli (dark terminal + keyspace board of .rx-key cards with type
    colour and TTL bar), chip bar .rx-bar, stepper .rx-step, practice .rx-tasks; R00 labs .rx0-*; course colour k-redis */
 .csw-m a i.k-redis{background:linear-gradient(135deg,#dc2626,#9f1239)}
 body[data-course="redis"] .lcard .ln::before{content:"⚡ "}
@@ -10973,7 +10973,7 @@ body[data-course="redis"] .lcard .ln::before{content:"⚡ "}
 .rx0-pq{font-weight:600;min-height:3em}.rx0-pb{display:flex;gap:8px}.rx0-pr{min-height:2.6em;font-size:.9rem}.rx0-yes{color:var(--good)}.rx0-no{color:var(--bad)}.rx0-ps{font:600 .78rem "JetBrains Mono",monospace;color:var(--muted)}
 @media (max-width:640px){.rx0-row{grid-template-columns:1fr 6.5em}.rx0-tr{grid-column:1 / -1;grid-row:2}.rx0-stage{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.rx-key,.rx0-tr i,.rx-ttl i{transition:none}.rx-key.rx-rd,.rx-key.rx-wr,.rx0-e.rx0-on,.rx0-n.rx0-hl rect{animation:none}}
-/* redis R01 v1 (assets/labs/labs-redis-01.js, 2026-11-04): byte strip, SET flow, odometer, byte ruler, GETDEL race stage, encoding
+/* redis R01 v1 (assets/labs/redis/labs-redis-01.js, 2026-11-04): byte strip, SET flow, odometer, byte ruler, GETDEL race stage, encoding
    picture, round-trip lanes, key-name checks, SCAN grid, DEL vs UNLINK lanes, OTP phone, view bars. Classes .rx01-* */
 .rx01-by,.rx01-sb,.rx01-co,.rx01-rr,.rx01-lp,.rx01-en,.rx01-rt,.rx01-nm,.rx01-sv,.rx01-fr,.rx01-vw{padding:14px 18px}
 .rx01-lb{display:flex;gap:8px;align-items:center;font-weight:600;font-size:.88rem;flex-wrap:wrap}
@@ -11081,7 +11081,7 @@ body[data-course="redis"] .lcard .ln::before{content:"⚡ "}
 @media (max-width:640px){.rx01-stage,.rx01-kc{grid-template-columns:1fr}.rx01-lane{grid-template-columns:1fr}.rx01-dg{font-size:1.2rem}.rx01-rg>span{min-width:100%}.rx01-bar b{font-size:.55rem}}
 @media (prefers-reduced-motion:reduce){.rx01-g,.rx01-dg.rx01-roll,.rx01-cell.rx01-new b,.rx01-track i.rx01-go{animation:none}.rx01-flow span,.rx01-bar i,.rx01-data,.rx01-tile,.rx01-qs li{transition:none}}
 
-/* redis R02 v1 (assets/labs/labs-redis-02.js, 2026-11-04): deadline timeline, NX/XX/GT/LT cards, keep/clear stamps, lazy +
+/* redis R02 v1 (assets/labs/redis/labs-redis-02.js, 2026-11-04): deadline timeline, NX/XX/GT/LT cards, keep/clear stamps, lazy +
    active expiry grid, memory shelf, eight-policy board, LRU sampling grid, LFU meters, policy picker, session day. Classes .rx02-* */
 .rx02-pd,.rx02-cd,.rx02-kp,.rx02-sw,.rx02-fl,.rx02-ev,.rx02-lr,.rx02-lf,.rx02-pk,.rx02-ss{padding:14px 18px}
 .rx02-chips,.rx02-rg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
@@ -11162,7 +11162,7 @@ body[data-course="redis"] .lcard .ln::before{content:"⚡ "}
 @media (prefers-reduced-motion:reduce){.rx02-blk.rx02-new{animation:none}.rx02-dl,.rx02-c,.rx02-bars span i,.rx02-meter i,.rx02-lg i,.rx02-sess i,.rx02-blk{transition:none}}
 html.no-motion .rx02-blk.rx02-new{animation:none}
 html.no-motion :is(.rx02-dl,.rx02-c,.rx02-bars span i,.rx02-meter i,.rx02-lg i,.rx02-sess i,.rx02-blk){transition:none}
-/* redis R03 v1 (assets/labs/labs-redis-03.js, 2026-11-04): list cells with both indexes, LPOS walker, middle-edit walk, cost bars,
+/* redis R03 v1 (assets/labs/redis/labs-redis-03.js, 2026-11-04): list cells with both indexes, LPOS walker, middle-edit walk, cost bars,
    listpack / quicklist nodes, queue vs stack, polling vs blocking lanes, three shared consoles, crash stepper, capped feed,
    service-bay morning. Classes .rx03-*. Also the kit's blocked-console state (.rx-wait .rx-stop .rx-woke .rx-ms .rx-blocked) */
 .rx-l.rx-wait{color:#fbbf24;font-style:normal}.rx-l.rx-wait.rx-woke{color:#8b93a7}
@@ -11247,7 +11247,7 @@ html.no-motion :is(.rx02-dl,.rx02-c,.rx02-bars span i,.rx02-meter i,.rx02-lg i,.
   .rx03-bays{grid-template-columns:repeat(2,minmax(0,1fr))}.rx03-rg>span{min-width:100%}.rx03-end{font-size:.6rem}}
 @media (prefers-reduced-motion:reduce){.rx03-cell b,.rx03-cr u,.rx03-lp i,.rx03-node i{transition:none}}
 html.no-motion :is(.rx03-cell b,.rx03-cr u,.rx03-lp i,.rx03-node i){transition:none}
-/* redis R04 v1 (assets/labs/labs-redis-04.js, 2026-11-04): record cards with lit fields / values and field TTL bars, two-service
+/* redis R04 v1 (assets/labs/redis/labs-redis-04.js, 2026-11-04): record cards with lit fields / values and field TTL bars, two-service
    race, HSCAN field grid, encoding meters, model comparison cards, cart case. Classes .rx04-* */
 .rx04-pd{padding:14px 18px}
 .rx04-chips,.rx04-rg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
@@ -11295,7 +11295,7 @@ html.no-motion :is(.rx03-cell b,.rx03-cr u,.rx03-lp i,.rx03-node i){transition:n
 @media (prefers-reduced-motion:reduce){.rx04-ft i,.rx04-svc span,.rx04-grid i,.rx04-mt u{transition:none}}
 html.no-motion :is(.rx04-ft i,.rx04-svc span,.rx04-grid i,.rx04-mt u){transition:none}
 
-/* redis R05 v1 (assets/labs/labs-redis-05.js, 2026-11-04): set boxes of tokens (lit / hit), list-scan vs hash-bucket lookup,
+/* redis R05 v1 (assets/labs/redis/labs-redis-05.js, 2026-11-04): set boxes of tokens (lit / hit), list-scan vs hash-bucket lookup,
    filter Venn diagram, SINTER walk rows, lucky-draw tray, SSCAN member grid, encoding meters + strip, memory bars, finder case. Classes .rx05-* */
 .rx05-pd{padding:14px 18px}
 .rx05-chips,.rx05-rg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
@@ -11373,7 +11373,7 @@ html.no-motion :is(.rx04-ft i,.rx04-svc span,.rx04-grid i,.rx04-mt u){transition
 @media (prefers-reduced-motion:reduce){.rx05-tok,.rx05-cells i,.rx05-bk>div,.rx05-vc,.rx05-car circle,.rx05-row,.rx05-grid i,.rx05-mt u{transition:none}}
 html.no-motion :is(.rx05-tok,.rx05-cells i,.rx05-bk>div,.rx05-vc,.rx05-car circle,.rx05-row,.rx05-grid i,.rx05-mt u){transition:none}
 
-/* redis R06 v1 (assets/labs/labs-redis-06.js, 2026-11-04): sliding leaderboard rows, zset bar boards, ZADD option table, score
+/* redis R06 v1 (assets/labs/redis/labs-redis-06.js, 2026-11-04): sliding leaderboard rows, zset bar boards, ZADD option table, score
    number line, BYLEX autocomplete, skip-list grid, delayed-job timeline, branch boards, rate-limit window, case. Classes .rx06-* */
 .rx06-pd{padding:14px 18px}
 .rx06-chips,.rx06-rg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
@@ -11455,7 +11455,7 @@ html.no-motion :is(.rx05-tok,.rx05-cells i,.rx05-bk>div,.rx05-vc,.rx05-car circl
   .rx06-skr{grid-template-columns:2em 2.8em repeat(12,minmax(1.6em,1fr))}.rx06-skr i{font-size:.62rem}}
 @media (prefers-reduced-motion:reduce){.rx06-lb,.rx06-row,.rx06-row u,.rx06-zr u,.rx06-win,.rx06-dot circle,.rx06-skr i,.rx06-trk i,.rx06-now,.rx06-strip span{transition:none}}
 html.no-motion :is(.rx06-lb,.rx06-row,.rx06-row u,.rx06-zr u,.rx06-win,.rx06-dot circle,.rx06-skr i,.rx06-trk i,.rx06-now,.rx06-strip span){transition:none}
-/* kafka kit v1 (assets/labs/labs-kafka.js, 2026-11-04): Kafka console .kx-cli (one or two dark terminals + partition board of .kx-lane rows with
+/* kafka kit v1 (assets/labs/kafka/labs-kafka.js, 2026-11-04): Kafka console .kx-cli (one or two dark terminals + partition board of .kx-lane rows with
    .kx-rec blocks and group pointers), chip bar .kx-bar, stepper .kx-step, practice .kx-tasks; K00 labs .kx0-*; course colour k-kafka */
 .csw-m a i.k-kafka{background:linear-gradient(135deg,#1e293b,#64748b)}
 body[data-course="kafka"] .lcard .ln::before{content:"▤ "}
@@ -11535,7 +11535,7 @@ body[data-course="kafka"] .lcard .ln::before{content:"▤ "}
 @media (prefers-reduced-motion:reduce){.kx0-r,.kx0-bar i{transition:none}}
 .kx-snip{white-space:pre-wrap;background:var(--code-bg);border-radius:12px;max-height:none;margin:12px 0}
 .kx-l.kx-o,.kx-l.kx-e{white-space:pre}
-/* redis R07 v1 (assets/labs/labs-redis-07.js, 2026-11-04): bit cells per byte, week grid of daily bitmaps, BITFIELD field strip,
+/* redis R07 v1 (assets/labs/redis/labs-redis-07.js, 2026-11-04): bit cells per byte, week grid of daily bitmaps, BITFIELD field strip,
    hash bits + register canvas, HLL accuracy table and memory bars, geohash split maps, showroom map, Bloom bits, chooser, case.
    Classes .rx07-* */
 .rx07-pd{padding:14px 18px}
@@ -11636,7 +11636,7 @@ body[data-course="kafka"] .lcard .ln::before{content:"▤ "}
 @media (prefers-reduced-motion:reduce){.rx07-bit,.rx07-cell,.rx07-bf i,.rx07-fl{transition:none;animation:none}}
 html.no-motion :is(.rx07-bit,.rx07-cell,.rx07-bf i,.rx07-fl){transition:none;animation:none}
 
-/* nginx kit v1 (assets/labs/labs-nginx.js, 2026-11-04): shell console .ngx-cli (dark terminal + side panel with the Board: master,
+/* nginx kit v1 (assets/labs/nginx/labs-nginx.js, 2026-11-04): shell console .ngx-cli (dark terminal + side panel with the Board: master,
    workers .ngx-w, the last request's path .ngx-tr; and the file editor .ngx-ed), chip bar .ngx-bar, stepper .ngx-step, practice
    .ngx-tasks; G00 labs .ng0-*; course colour k-nginx */
 .csw-m a i.k-nginx{background:linear-gradient(135deg,#16a34a,#166534)}
@@ -11718,7 +11718,7 @@ body[data-course="nginx"] .lcard .ln::before{content:"⇄ "}
 @media (max-width:760px){.ng0-stage{grid-template-columns:1fr}.ng0-arrow{height:16px;width:3px;justify-self:center}.ng0-cmp,.ng0-lp{grid-template-columns:1fr}.ng0-conns{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){.ng0-box,.ng0-cn,.ng0-bar i{transition:none}.ng0-arrow.ng0-go::after{animation:none}}
 html.no-motion :is(.ng0-box,.ng0-cn,.ng0-bar i){transition:none}html.no-motion .ng0-arrow.ng0-go::after{animation:none}
-/* kafka K01 v1 (assets/labs/labs-kafka-01.js, 2026-11-04): append-only log cells, segment folders with sparse-index marks, I/O bars, read-path boxes,
+/* kafka K01 v1 (assets/labs/kafka/labs-kafka-01.js, 2026-11-04): append-only log cells, segment folders with sparse-index marks, I/O bars, read-path boxes,
    partitions vs consumers, disk-size cards. Classes .kx1-* */
 .kx1-row{gap:8px;align-items:flex-start}
 .kx1-cell{display:flex;flex-direction:column;align-items:center;gap:3px;transition:transform .25s}.kx1-cell>small{font:.62rem "JetBrains Mono",monospace;color:var(--muted);text-align:center}
@@ -11750,7 +11750,7 @@ html.no-motion :is(.ng0-box,.ng0-cn,.ng0-bar i){transition:none}html.no-motion .
 @media (max-width:640px){.kx1-row2{grid-template-columns:1fr 7em}.kx1-tr{grid-column:1 / -1;grid-row:2}.kx1-pgrid{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){.kx1-cell,.kx1-seg,.kx1-st,.kx1-tr i{transition:none}}
 
-/* kafka K02 v1 (assets/labs/labs-kafka-02.js, 2026-11-04): partition lanes, hash steps, skew bars, key-move chips. Classes .kx2-* */
+/* kafka K02 v1 (assets/labs/kafka/labs-kafka-02.js, 2026-11-04): partition lanes, hash steps, skew bars, key-move chips. Classes .kx2-* */
 .kx2-lanes{display:flex;flex-direction:column;gap:6px;margin:12px 0}
 .kx2-lane,.kx2-row{display:flex;align-items:center;gap:10px;padding:6px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
 .kx2-lane>b,.kx2-row>b{font:700 .72rem "JetBrains Mono",monospace;min-width:2.2em;color:var(--muted)}.kx2-row>b{min-width:11em}
@@ -11767,7 +11767,7 @@ html.no-motion :is(.ng0-box,.ng0-cn,.ng0-bar i){transition:none}html.no-motion .
 .kx2-yes{color:#16a34a}.kx2-no{color:#dc2626}
 @media (max-width:640px){.kx2-row{flex-direction:column;align-items:flex-start}.kx2-row>b{min-width:0}.kx2-bar{grid-template-columns:2.2em 1fr}.kx2-bar em{grid-column:1 / -1;text-align:left}}
 @media (prefers-reduced-motion:reduce){.kx2-bar i{transition:none}}
-/* kafka K03 v1 (assets/labs/labs-kafka-03.js, 2026-11-04): send() path steps, sliders, batch timeline, broker boxes for acks, retry
+/* kafka K03 v1 (assets/labs/kafka/labs-kafka-03.js, 2026-11-04): send() path steps, sliders, batch timeline, broker boxes for acks, retry
    timeline, in-flight batches. Classes .kx3-* (layout from .kx0-cl / .kx0-tabs / .kx0-stats / .kx0-msg, rows and bars from .kx2-*) */
 .kx3-path{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:4px 0 10px}
 .kx3-st{display:flex;flex-direction:column;gap:2px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);opacity:.55;transition:opacity .3s,border-color .3s,box-shadow .3s}
@@ -11799,7 +11799,7 @@ html.no-motion :is(.ng0-box,.ng0-cn,.ng0-bar i){transition:none}html.no-motion .
 .kx3-bt small{font-size:.62rem;opacity:.8}.kx3-bt.kx3-btx{background:#dc2626;text-decoration:line-through}
 @media (max-width:640px){.kx3-brk{grid-template-columns:repeat(2,minmax(0,1fr))}.kx3-ar{display:none}.kx3-cbar{grid-template-columns:6.5em 1fr}}
 @media (prefers-reduced-motion:reduce){.kx3-st,.kx3-prod,.kx3-b{transition:none}}
-/* kafka K04 v1 (assets/labs/labs-kafka-04.js, 2026-11-04): partition → member grids, group cards, member chips, heartbeat / poll
+/* kafka K04 v1 (assets/labs/kafka/labs-kafka-04.js, 2026-11-04): partition → member grids, group cards, member chips, heartbeat / poll
    timeline, rebalance member boxes, rolling-restart rows. Classes .kx4-* (member colour in --mc; steps reuse .kx3-path / .kx3-st) */
 .kx4-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;margin:6px 0 10px}
 .kx4-pc{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 4px;border-radius:9px;border:1px solid color-mix(in srgb,var(--mc) 60%,transparent);background:color-mix(in srgb,var(--mc) 14%,var(--surface));font:600 .74rem "JetBrains Mono",monospace;transition:background .3s,border-color .3s}
@@ -11826,7 +11826,7 @@ html.no-motion :is(.ng0-box,.ng0-cn,.ng0-bar i){transition:none}html.no-motion .
 .kx4-ri b{font:700 .76rem "JetBrains Mono",monospace}.kx4-ri i{font-style:normal}
 @media (max-width:640px){.kx4-rb{grid-template-columns:repeat(2,minmax(0,1fr))}.kx4-pm2{margin-left:0}}
 @media (prefers-reduced-motion:reduce){.kx4-pc{transition:none}}
-/* kafka K05 v1 (assets/labs/labs-kafka-05.js, 2026-11-04): offset lanes with position / committed markers, situation × policy rows,
+/* kafka K05 v1 (assets/labs/kafka/labs-kafka-05.js, 2026-11-04): offset lanes with position / committed markers, situation × policy rows,
    auto-commit timeline, async-commit event list, crash-point path, order outcome chips. Classes .kx5-* (steps reuse .kx3-path / .kx3-st) */
 .kx5-lane{display:grid;grid-template-columns:repeat(var(--n),minmax(40px,1fr));gap:4px;margin:8px 0 10px;overflow-x:auto;padding-bottom:2px}
 .kx5-c{display:flex;flex-direction:column;align-items:center;gap:1px;padding:5px 2px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font:600 .7rem "JetBrains Mono",monospace;transition:background .3s,border-color .3s}
@@ -11867,7 +11867,7 @@ html.no-motion :is(.ng0-box,.ng0-cn,.ng0-bar i){transition:none}html.no-motion .
 @media (max-width:640px){.kx5-sy{grid-template-columns:1fr}.kx5-row>span{min-width:0;width:100%}}
 @media (prefers-reduced-motion:reduce){.kx5-c,.kx5-tr .kx5-tw,.kx5-tr .kx5-tx{transition:none}}
 html.no-motion :is(.kx5-c,.kx5-tr .kx5-tw,.kx5-tr .kx5-tx){transition:none}
-/* kafka K06 v1 (assets/labs/labs-kafka-06.js + kit board, 2026-11-04): transaction records on the console board (.kx-rec.kx-ctl markers,
+/* kafka K06 v1 (assets/labs/kafka/labs-kafka-06.js + kit board, 2026-11-04): transaction records on the console board (.kx-rec.kx-ctl markers,
    .kx-open dashed, .kx-ab struck, .kx-ptr .kx-lso), lab log cells .kx6-c, protocol log, isolation columns, instance cards, cost bars. */
 .kx-rec.kx-ctl{background:#0f766e;min-width:2.2em}.kx-rec.kx-ctl.kx-ctla{background:#b91c1c}
 .kx-rec.kx-open{background:transparent;color:var(--text);border:2px dashed hsl(var(--hu) 62% 50%)}
@@ -11904,7 +11904,7 @@ html.no-motion :is(.kx5-c,.kx5-tr .kx5-tw,.kx5-tr .kx5-tx){transition:none}
 @media (max-width:640px){.kx6-row{grid-template-columns:1fr}.kx6-bar{grid-template-columns:1fr 5.5em}.kx6-bar i{grid-column:1 / -1;grid-row:2}}
 @media (prefers-reduced-motion:reduce){.kx6-c,.kx6-inst,.kx6-bar i{transition:none}}
 html.no-motion :is(.kx6-c,.kx6-inst,.kx6-bar i){transition:none}
-/* kafka K07 v1 (assets/labs/labs-kafka-07.js + kit board, 2026-11-04): broker / controller strip on the console board (.kx-bks
+/* kafka K07 v1 (assets/labs/kafka/labs-kafka-07.js + kit board, 2026-11-04): broker / controller strip on the console board (.kx-bks
    .kx-bk, stopped .kx-bkd, active controller .kx-bkl, .kx-bkq no quorum), replica chips per lane (.kx-reps .kx-rp: leader .kx-rpL,
    in sync .kx-rpI, out of sync .kx-rpO, stopped .kx-rpD), offline lanes .kx-off; lab broker boxes .kx7-bk, replica logs .kx7-log
    with cells .kx7-r (above the HW .kx7-above, lost .kx7-lost, cut .kx7-cut), selectors, controller buttons, leader bars, zone table. */
@@ -11955,7 +11955,7 @@ html.no-motion :is(.kx6-c,.kx6-inst,.kx6-bar i){transition:none}
 @media (max-width:640px){.kx7-hrow,.kx7-sel{grid-template-columns:1fr}.kx7-hrow{gap:2px}}
 @media (prefers-reduced-motion:reduce){.kx7-bk,.kx7-r,.kx7-hrow,.kx7-ctl,.kx7-bar,.kx7-bt i{transition:none}}
 html.no-motion :is(.kx7-bk,.kx7-r,.kx7-hrow,.kx7-ctl,.kx7-bar,.kx7-bt i){transition:none}
-/* nginx G01 v1 (assets/labs/labs-nginx-01.js, 2026-11-04): config line map, parser stepper, context boxes, units, variable table,
+/* nginx G01 v1 (assets/labs/nginx/labs-nginx-01.js, 2026-11-04): config line map, parser stepper, context boxes, units, variable table,
    inheritance levels, error quiz. Classes .ng1-* (layout from .ng0-cl / .ng0-tabs / .ng0-btns / .ng0-msg) */
 .ng1-map{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px}
 .ng1-src{list-style:none;margin:0;padding:8px 0;background:#0b1020;border-radius:12px;max-height:380px;overflow:auto}
@@ -12003,7 +12003,7 @@ html.no-motion :is(.kx7-bk,.kx7-r,.kx7-hrow,.kx7-ctl,.kx7-bar,.kx7-bt i){transit
 @media (max-width:760px){.ng1-map,.ng1-pv{grid-template-columns:1fr}.ng1-lv .ng1-lv{margin-left:6px}}
 @media (prefers-reduced-motion:reduce){.ng1-tk,.ng1-cx,.ng1-lv,.ng1-vt tr.ng1-chg td{transition:none}}
 html.no-motion :is(.ng1-tk,.ng1-cx,.ng1-lv,.ng1-vt tr.ng1-chg td){transition:none}
-/* redis R08 v1 (assets/labs/labs-redis-08.js, 2026-11-04): three-ways board (source → Redis box → service cards), listener cards
+/* redis R08 v1 (assets/labs/redis/labs-redis-08.js, 2026-11-04): three-ways board (source → Redis box → service cards), listener cards
    with feeds, output-buffer bar with soft / hard marks, stream tape cells (ms-seq ids), reader cards with pointers, group × entry
    table, PEL panels, claim clock, listpack node boxes, tool picker, case lag bars, paired consoles; kit: pushed pub/sub lines
    (.rx-l.rx-msg). Classes .rx08-* */
@@ -12091,7 +12091,7 @@ html.no-motion :is(.ng1-tk,.ng1-cx,.ng1-lv,.ng1-vt tr.ng1-chg td){transition:non
 @media (max-width:760px){.rx08-3w,.rx08-lis,.rx08-rd2,.rx08-pv,.rx08-pk,.rx08-pair{grid-template-columns:1fr}.rx08-cv{grid-template-columns:1fr}.rx08-rg>span{min-width:100%}}
 @media (prefers-reduced-motion:reduce){.rx08-li.rx08-hit{animation:none}.rx08-buf i,.rx08-lag i,.rx08-li{transition:none}}
 html.no-motion .rx08-li.rx08-hit{animation:none}html.no-motion :is(.rx08-buf i,.rx08-lag i,.rx08-li){transition:none}
-/* nginx G02 v1 (assets/labs/labs-nginx-02.js, 2026-11-04): URL-to-file pipeline, root/alias builder, scenario frames with the
+/* nginx G02 v1 (assets/labs/nginx/labs-nginx-02.js, 2026-11-04): URL-to-file pipeline, root/alias builder, scenario frames with the
    engine trace, try_files candidates, MIME chain, leak table, sendfile lanes and packets. Classes .ng2-* (layout from .ng0-cl /
    .ng0-btns / .ng0-msg, code from .ng1-code) */
 .ng2-pipe{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;padding:0}
@@ -12149,7 +12149,7 @@ html.no-motion .rx08-li.rx08-hit{animation:none}html.no-motion :is(.rx08-buf i,.
 @media (max-width:760px){.ng2-two{grid-template-columns:1fr}.ng2-arw{flex-basis:12px}.ng2-bx{flex-basis:70px;min-width:70px;font-size:.72rem}.ng2-pk{min-width:48px}}
 @media (prefers-reduced-motion:reduce){.ng2-pk{animation:none}.ng2-pipe li,.ng2-bx,.ng2-arw,.ng2-arw::after{transition:none}}
 html.no-motion .ng2-pk{animation:none}html.no-motion :is(.ng2-pipe li,.ng2-bx,.ng2-arw,.ng2-arw::after){transition:none}
-/* redis R09 v1 (assets/labs/labs-redis-09.js, 2026-11-04): round-trip bars, key tiles, queue + set panels, two-column step views.
+/* redis R09 v1 (assets/labs/redis/labs-redis-09.js, 2026-11-04): round-trip bars, key tiles, queue + set panels, two-column step views.
    Generic .rx08-* helpers (chips, out, msg, sh, pair, q) are reused. Classes .rx09-* */
 .rx09-bars{margin:12px 0;display:grid;gap:10px}
 .rx09-bar{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1.6fr) 5.5em;gap:10px;align-items:center;font-size:.85rem}
@@ -12173,7 +12173,7 @@ html.no-motion .ng2-pk{animation:none}html.no-motion :is(.ng2-pipe li,.ng2-bx,.n
 .rx09-parts code{font-size:.78rem;overflow-wrap:anywhere}
 @media(max-width:640px){.rx09-two{grid-template-columns:minmax(0,1fr)}.rx09-bar{grid-template-columns:minmax(0,1fr) 5em}.rx09-bar>div{grid-column:1/-1;order:3}}
 
-/* nginx G03 v1 (assets/labs/labs-nginx-03.js, 2026-11-04): request funnel, server cards (candidate / chosen / out), server_name ladder,
+/* nginx G03 v1 (assets/labs/nginx/labs-nginx-03.js, 2026-11-04): request funnel, server cards (candidate / chosen / out), server_name ladder,
    location search steps (indented by nesting depth), the algorithm flow, the location tree, $uri stages. Classes .ng3-* (layout from
    .ng0-cl / .ng0-btns / .ng0-msg, code from .ng1-code, response / config / table boxes from .ng2-*) */
 .ng3-fun{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 4px;padding:0}
@@ -12211,7 +12211,7 @@ html.no-motion .ng2-pk{animation:none}html.no-motion :is(.ng2-pipe li,.ng2-bx,.n
 @media (prefers-reduced-motion:reduce){.ng3-fun li,.ng3-card,.ng3-lad li,.ng3-flow li,.ng3-node{transition:none}}
 html.no-motion :is(.ng3-fun li,.ng3-card,.ng3-lad li,.ng3-flow li,.ng3-node){transition:none}
 
-/* nginx G04 v1 (assets/labs/labs-nginx-04.js, 2026-11-04): rewrite-loop counter and the split_clients client grid. Classes .ng4-* (everything else
+/* nginx G04 v1 (assets/labs/nginx/labs-nginx-04.js, 2026-11-04): rewrite-loop counter and the split_clients client grid. Classes .ng4-* (everything else
    reuses .ng3-st / .ng3-fun / .ng2-* / .ng0-*) */
 .ng4-cnt{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 12px;margin:0 0 10px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
 .ng4-n{font:800 2rem/1 "Inter Tight","Inter",sans-serif;color:var(--accent)}.ng4-cnt span{font-size:.84rem;color:var(--muted)}
@@ -12224,7 +12224,7 @@ html.no-motion :is(.ng3-fun li,.ng3-card,.ng3-lad li,.ng3-flow li,.ng3-node){tra
 @media (prefers-reduced-motion:reduce){.ng4-bar u,.ng4-ip{transition:none}}
 html.no-motion :is(.ng4-bar u,.ng4-ip){transition:none}
 
-/* nginx G05 v1 (assets/labs/labs-nginx-05.js, 2026-11-04): phone / NGINX / app lanes with two connections, the request NGINX sent
+/* nginx G05 v1 (assets/labs/nginx/labs-nginx-05.js, 2026-11-04): phone / NGINX / app lanes with two connections, the request NGINX sent
    (highlighted headers), what Spring sees, X-Forwarded-For hop chain, 502 / 504 wait bar, buffering Gantt rows, error-log lines.
    Classes .ng5-* (everything else reuses .ng0-* / .ng1-code / .ng2-*) */
 .ng5-lanes{display:flex;align-items:center;gap:6px;margin:4px 0 10px}
@@ -12261,7 +12261,7 @@ html.no-motion :is(.ng4-bar u,.ng4-ip){transition:none}
 @media (prefers-reduced-motion:reduce){.ng5-node,.ng5-ar{transition:none}}
 html.no-motion :is(.ng5-node,.ng5-ar){transition:none}
 
-/* nginx G06 v1 (assets/labs/labs-nginx-06.js, 2026-11-04): salesperson columns with request dots, smooth-WRR weight table, share bars,
+/* nginx G06 v1 (assets/labs/nginx/labs-nginx-06.js, 2026-11-04): salesperson columns with request dots, smooth-WRR weight table, share bars,
    pick strips, hashed-key grids and the ketama ring, server-parameter rows, the one-minute pool timeline, attempt lists. Classes .ng6-*
    (everything else reuses .ng5-big / .ng5-el / .ng2-* / .ng0-* / .ng1-code) */
 .ng6-d{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c);vertical-align:middle;margin:1px;flex:none}
@@ -12294,7 +12294,7 @@ html.no-motion :is(.ng5-node,.ng5-ar){transition:none}
 .viz.ngx[id^="ng6"] .ng2-two>*{min-width:0}
 @media (max-width:560px){.ng6-grid{grid-template-columns:repeat(10,minmax(0,1fr))}.ng6-tr>div{gap:0}.ng6-tr{grid-template-columns:3em minmax(0,1fr)}}
 
-/* nginx G07 v1 (assets/labs/labs-nginx-07.js, 2026-11-04): certificate chain cards, handshake flights (client / server columns, 🔒 messages),
+/* nginx G07 v1 (assets/labs/nginx/labs-nginx-07.js, 2026-11-04): certificate chain cards, handshake flights (client / server columns, 🔒 messages),
    browser visit hops, SNI server cards, ACME step list, protocol table, time-to-first-byte bars, HTTP/1.1-2-3 waterfall, termination
    path. Classes .ng7-* (everything else reuses .ng5-big / .ng2-* / .ng0-* / .ng1-code / .ng1-err) */
 .ng7-chain{display:flex;flex-direction:column;align-items:stretch;gap:2px}
@@ -12352,7 +12352,7 @@ html.no-motion :is(.ng5-node,.ng5-ar){transition:none}
 .viz.ngx[id^="ng7"] .ng2-two>*{min-width:0}
 @media (max-width:560px){.ng7-shake{grid-template-columns:4em minmax(0,1fr) 4em}.ng7-bar{grid-template-columns:7.5em minmax(0,1fr) 4em}.ng7-path{flex-wrap:wrap}.ng7-link{flex-basis:30%}}
 
-/* redis R10 v1 (assets/labs/labs-redis-10.js, 2026-11-04): app / Redis / DB lanes, 100 request dots, DB-load gauge with a limit
+/* redis R10 v1 (assets/labs/redis/labs-redis-10.js, 2026-11-04): app / Redis / DB lanes, 100 request dots, DB-load gauge with a limit
    line, pattern state boxes + event log, expiry bar chart, race timeline table, stampede dots, penetration counters, shard load
    bars, main-thread bar. Generic .rx08-* / .rx09-* helpers are reused. Classes .rx10-* */
 .rx10-lanes{display:flex;align-items:center;gap:6px;margin:4px 0 6px}
@@ -12415,7 +12415,7 @@ html.no-motion :is(.ng5-node,.ng5-ar){transition:none}
 @media (prefers-reduced-motion:reduce){.rx10-lane,.rx10-gauge i,.rx10-sh i,.rx10-sh em,.rx10-thr i{transition:none}}
 html.no-motion :is(.rx10-lane,.rx10-gauge i,.rx10-sh i,.rx10-sh em,.rx10-thr i){transition:none}
 #rx10LockCli .rx-chip{white-space:normal;text-align:left;overflow-wrap:anywhere;max-width:100%}
-/* redis R11 v1 (assets/labs/labs-redis-11.js, 2026-11-04): server timelines (retry marks + held bars), who-is-inside chips,
+/* redis R11 v1 (assets/labs/redis/labs-redis-11.js, 2026-11-04): server timelines (retry marks + held bars), who-is-inside chips,
    lease / watchdog bars, Redlock node buttons, rate-limit tick strip with window lines, token-bucket cup, KPI tiles.
    Generic .rx08-* / .rx09-* / .rx10-race helpers are reused. Classes .rx11-* */
 .rx11-tl{display:grid;gap:8px;margin:12px 0 2px}
@@ -12463,7 +12463,7 @@ b.rx11-r,.rx11-kpi>div.rx11-r b{color:var(--bad)}
 @media (prefers-reduced-motion:reduce){.rx11-srv,.rx11-cup i{transition:none}}
 html.no-motion :is(.rx11-srv,.rx11-cup i){transition:none}
 
-/* redis R12 v1 (assets/labs/labs-redis-12.js, 2026-11-04): the console's disk panel and crash / disk-full buttons, power-cut
+/* redis R12 v1 (assets/labs/redis/labs-redis-12.js, 2026-11-04): the console's disk panel and crash / disk-full buttons, power-cut
    timelines, save-point marks, copy-on-write page grid, fsync lanes, AOF size bars and files, restart flow, backup matrix.
    Kit console additions (.rx-slog .rx-boot .rx-crash .rx-full) live here too. Generic .rx08-* panels and .rx11-row/.rx11-kpi reused. Classes .rx12-* */
 .rx-l.rx-slog{color:#7dd3fc;font-style:normal;font-size:.92em;overflow-wrap:anywhere}.rx-l.rx-boot{color:#fcd34d;font-style:normal}
@@ -12531,7 +12531,7 @@ b.rx12-bad,em.rx12-bad{color:var(--bad)}b.rx12-good,em.rx12-good{color:var(--goo
 @media (prefers-reduced-motion:reduce){.rx12-pg i,.rx12-mem em,.rx12-dots i,.rx12-bars em,.rx12-fb{transition:none}}
 html.no-motion :is(.rx12-pg i,.rx12-mem em,.rx12-dots i,.rx12-bars em,.rx12-fb){transition:none}
 
-/* redis R13 v1 (assets/labs/labs-redis-13.js, 2026-11-04): paired consoles, the topology panel (node cards, sentinels, partition
+/* redis R13 v1 (assets/labs/redis/labs-redis-13.js, 2026-11-04): paired consoles, the topology panel (node cards, sentinels, partition
    and clock controls, log tail), the cluster panel (slot bar, shards, key chips), -c bar, the replication tape, resync bars,
    replica-lag timeline, key → slot steps, hash-tag verdicts, the slot-move boxes. Kit console line .rx-redir lives here too.
    Generic .rx08-* / .rx11-* / .rx12-* panels reused. Classes .rx13-* */
@@ -12613,7 +12613,7 @@ html.no-motion :is(.rx12-pg i,.rx12-mem em,.rx12-dots i,.rx12-bars em,.rx12-fb){
 @media (prefers-reduced-motion:reduce){.rx13-n,.rx13-bar i,.rx13-bwb i,.rx13-tl i{transition:none}}
 html.no-motion :is(.rx13-n,.rx13-bar i,.rx13-bwb i,.rx13-tl i){transition:none}
 
-/* redis R14 v1 (assets/labs/labs-redis-14.js, 2026-11-04): thread rows with latency bars + connection boxes, pool slots and the
+/* redis R14 v1 (assets/labs/redis/labs-redis-14.js, 2026-11-04): thread rows with latency bars + connection boxes, pool slots and the
    waiting queue, busy-thread bar chart with the 200-thread line, Java / command panes, session instances + Redis box, case table,
    the page's YAML blocks. Generic .rx08-* / .rx09-* / .rx10-* helpers reused. Classes .rx14-* */
 .rx14-cl{display:grid;grid-template-columns:minmax(0,1.6fr) auto minmax(0,1fr);gap:10px;align-items:center;margin:10px 0}
@@ -12659,7 +12659,7 @@ html.no-motion :is(.rx13-n,.rx13-bar i,.rx13-bwb i,.rx13-tl i){transition:none}
 @media (prefers-reduced-motion:reduce){.rx14-in,.rx14-rd{transition:none}}
 html.no-motion :is(.rx14-in,.rx14-rd){transition:none}
 
-/* nginx G08 v1 (assets/labs/labs-nginx-08.js, 2026-11-04): cache-layer boxes, cache-status pills (one colour per $upstream_cache_status),
+/* nginx G08 v1 (assets/labs/nginx/labs-nginx-08.js, 2026-11-04): cache-layer boxes, cache-status pills (one colour per $upstream_cache_status),
    request timelines, header verdicts, leak bodies, stampede bars, microcache columns, browser visits, gzip level bars.
    Classes .ng8-* (everything else reuses .ng5-big / .ng6-lab / .ng2-* / .ng0-* / .ng1-code) */
 .ng8-st{display:inline-block;font:700 .66rem "JetBrains Mono",monospace;letter-spacing:.03em;padding:2px 7px;border-radius:999px;background:var(--soft);color:var(--muted);white-space:nowrap}
@@ -12707,7 +12707,7 @@ html.no-motion :is(.rx14-in,.rx14-rd){transition:none}
 @media (max-width:640px){.ng8-two{grid-template-columns:1fr}.ng8-lay{flex-direction:column}.ng8-arr{transform:rotate(90deg)}.ng8-br{grid-template-columns:2.2em minmax(0,1fr) 4em}.ng8-br .ng8-st{display:none}.ng8-vr{grid-template-columns:1fr}.ng8-vr small{text-align:left}}
 @media (prefers-reduced-motion:reduce){.ng8-box,.ng8-gr u{transition:none}}
 html.no-motion :is(.ng8-box,.ng8-gr u){transition:none}
-/* nginx G09 v1 (assets/labs/labs-nginx-09.js, 2026-11-04): leaky-bucket tank + request blocks (.ng9-rq ok / wait / no), config rows,
+/* nginx G09 v1 (assets/labs/nginx/labs-nginx-09.js, 2026-11-04): leaky-bucket tank + request blocks (.ng9-rq ok / wait / no), config rows,
    limit_conn lanes, X-Forwarded-For walker, header score table, slowloris slot bar, case numbers. Steps reuse .kx3-path / .kx3-st. */
 .ng9-bk{display:grid;grid-template-columns:90px minmax(0,1fr);gap:14px;align-items:end;margin:10px 0}
 .ng9-tank{position:relative;height:150px;border:2px solid var(--line);border-top:none;border-radius:0 0 14px 14px;background:var(--soft);overflow:visible}
@@ -12743,7 +12743,7 @@ html.no-motion :is(.ng8-box,.ng8-gr u){transition:none}
 @media (prefers-reduced-motion:reduce){.ng9-tank i,.ng9-rq,.ng9-slots i{transition:none}}
 html.no-motion :is(.ng9-tank i,.ng9-rq,.ng9-slots i){transition:none}
 
-/* nginx G10 v1 (assets/labs/labs-nginx-10.js, 2026-11-05): clickable access-log fields, JSON parse verdict, timing bars per upstream
+/* nginx G10 v1 (assets/labs/nginx/labs-nginx-10.js, 2026-11-05): clickable access-log fields, JSON parse verdict, timing bars per upstream
    attempt, request stream with written / buffered / skipped tags and a flush timer, error_log ladder + event lines, stub_status
    connection cards, log files with the descriptor arrow, the symptom grid. Reuses .ng9-nums / .ng9-ct / .ng9-sel. Classes .ng10-* */
 .ng10-line{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 0;margin:10px 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft);font:500 .76rem/1.9 "JetBrains Mono",monospace;overflow-wrap:anywhere}
@@ -12796,7 +12796,7 @@ html.no-motion :is(.ng9-tank i,.ng9-rq,.ng9-slots i){transition:none}
 @media (prefers-reduced-motion:reduce){.ng10-bar i,.ng10-fb i,.ng10-evs li,.ng10-cn{transition:none}}
 html.no-motion :is(.ng10-bar i,.ng10-fb i,.ng10-evs li,.ng10-cn){transition:none}
 
-/* redis R15 v1 (assets/labs/labs-redis-15.js, 2026-11-04): bytes-per-design bars, used vs RSS bars, the one-thread timeline with
+/* redis R15 v1 (assets/labs/redis/labs-redis-15.js, 2026-11-04): bytes-per-design bars, used vs RSS bars, the one-thread timeline with
    its queue, the ACL matrix, the INFO dashboard tiles, network outcome colours. Generic .rx08-* / .rx10-* / .rx14-* reused. Classes .rx15-* */
 .rx15-bars{display:grid;gap:8px;margin:8px 0}
 .rx15-bar{display:grid;grid-template-columns:minmax(0,14em) minmax(0,1fr) auto;gap:10px;align-items:center;font-size:.84rem}
@@ -12827,7 +12827,7 @@ html.no-motion :is(.ng10-bar i,.ng10-fb i,.ng10-evs li,.ng10-cn){transition:none
 @media (prefers-reduced-motion:reduce){.rx15-fr i{transition:none}}
 html.no-motion .rx15-fr i{transition:none}
 
-/* redis R16 v1 (assets/labs/labs-redis-16.js, 2026-11-04): question-bank cards, design-card tabs, mock-interview clock, rubric
+/* redis R16 v1 (assets/labs/redis/labs-redis-16.js, 2026-11-04): question-bank cards, design-card tabs, mock-interview clock, rubric
    and grading chips. Generic .rx08-* / .rx14-* reused. Classes .rx16-* */
 .rx16-cards{display:grid;gap:6px;margin-top:8px}
 .rx16-q{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:0 12px}
@@ -12846,6 +12846,157 @@ html.no-motion .rx15-fr i{transition:none}
 :is(#rx16LockCli,#rx16UrlCli,#rx16LimitCli,#rx15AdminCli,#rx15AppCli,#rx15BigCli) .rx-chip{white-space:normal;overflow-wrap:anywhere;text-align:left;max-width:100%}
 @media (max-width:640px){.rx16-rub{grid-template-columns:1fr}}
 
+/* redis R17 v1 (assets/labs/redis/labs-redis-17.js, 2026-11-05): JSON document trees (typed values, lit / added / changed / deleted
+   nodes), three-ways cards with byte bars, path playground, two-service race, array cells (new / moved / hit), merge before / patch /
+   after, memory bars, pick cards. Board colour for the json type. Classes .rx17-*; animations honour reduced motion (pop / shake) */
+.rx-key[data-t="json"]{--tc:#0d9488}
+.rx17-pd{padding:14px 18px}
+.rx17-chips,.rx17-rg{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:8px 0}
+.rx17-out{background:#0b1020;color:#a5e8c2;font:12.5px/1.5 "JetBrains Mono",monospace;border-radius:10px;padding:10px 12px;margin:10px 0 8px;white-space:pre-wrap;word-break:break-word;min-height:1.5em}
+.rx17-out:empty{display:none}
+.rx17-two{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:14px;align-items:start;margin-top:8px}.rx17-two .rx17-out{margin-top:0}
+.rx17-msg{margin:8px 0 0;font-size:.9rem;min-height:2.4em}
+.rx17-none{color:var(--muted);font-size:.85rem;margin:6px 0}
+.rx17-tree{border:1px solid var(--line);border-left:4px solid #0d9488;border-radius:12px;background:var(--surface);padding:8px 10px;font:12.5px/1.45 "JetBrains Mono",monospace;overflow-x:auto}
+.rx17-kids{margin-left:14px;padding-left:8px;border-left:1px dashed var(--line)}
+.rx17-nb{display:inline-flex;flex-wrap:wrap;gap:0 6px;align-items:baseline;font:inherit;color:inherit;background:none;border:0;padding:1px 5px;margin:1px 0;border-radius:6px;text-align:left;max-width:100%;overflow-wrap:anywhere}
+button.rx17-nb{cursor:pointer}button.rx17-nb:hover{background:color-mix(in srgb,#0d9488 12%,transparent)}
+button.rx17-nb:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.rx17-k{color:#0d9488;font-weight:600}.rx17-col{color:var(--muted)}.rx17-br{color:var(--muted);font-size:.68rem}
+.rx17-v{overflow-wrap:anywhere}.rx17-string{color:#b45309}.rx17-integer,.rx17-number{color:#2563eb}.rx17-boolean{color:#7c3aed}.rx17-null{color:var(--muted)}
+.rx17-lit>.rx17-nb{background:#fbbf24;color:#1f1300}.rx17-lit>.rx17-nb .rx17-k,.rx17-lit>.rx17-nb span{color:#1f1300}
+.rx17-add>.rx17-nb{background:var(--good-soft);box-shadow:inset 3px 0 0 #16a34a}
+.rx17-chg>.rx17-nb{background:color-mix(in srgb,#f59e0b 22%,transparent);box-shadow:inset 3px 0 0 #f59e0b}
+.rx17-del>.rx17-nb{background:var(--bad-soft);text-decoration:line-through;box-shadow:inset 3px 0 0 var(--bad)}
+.rx17-info p{margin:0 0 6px;font-size:.86rem}.rx17-bad{color:var(--bad);font-weight:600}.rx17-ok{color:var(--good);font-weight:600}
+.rx17-pp{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:baseline;font-size:.8rem;margin-bottom:6px}.rx17-pp span{color:var(--muted);font:700 .66rem "Inter Tight",sans-serif;text-transform:uppercase;letter-spacing:.05em}.rx17-pp code{overflow-wrap:anywhere}
+.rx17-pf{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}.rx17-pf label{flex:1 1 260px;display:flex;gap:8px;align-items:center}
+.rx17-pf span{font:700 .7rem "JetBrains Mono",monospace;color:var(--muted)}
+.rx17-pf input{flex:1;min-width:0;font:13px "JetBrains Mono",monospace;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}
+.rx17-why{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:6px 0}
+.rx17-wc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);transition:border-color .3s,box-shadow .3s;min-width:0}
+.rx17-wc b{display:block;font:700 .9rem "Inter Tight",sans-serif}.rx17-wc small{color:var(--muted);font-size:.72rem}
+.rx17-wc.rx17-on{border-color:#0d9488;box-shadow:0 0 0 2px color-mix(in srgb,#0d9488 25%,transparent)}
+.rx17-wt{font:12px/1.45 "JetBrains Mono",monospace;min-height:4.4em;margin:8px 0;overflow-wrap:anywhere}
+.rx17-bar{height:10px;border-radius:5px;background:var(--soft);border:1px solid var(--line);overflow:hidden}.rx17-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#0d9488,#dc2626);transition:width .5s}
+.rx17-bn{display:block;font:600 .7rem "JetBrains Mono",monospace;font-style:normal;color:var(--muted);margin-top:4px;min-height:1.2em}
+.rx17-race{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr) minmax(0,1fr);gap:10px;align-items:stretch;margin:10px 0}
+.rx17-svc,.rx17-db{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface);min-width:0;transition:border-color .3s,box-shadow .3s}
+.rx17-svc b,.rx17-db>b{display:block;font:700 .82rem "Inter Tight",sans-serif;margin-bottom:6px}.rx17-svc code{display:block;font-size:.74rem;overflow-wrap:anywhere;min-height:3em}
+.rx17-svc.rx17-on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+.rx17-db{border-left:4px solid #dc2626}
+.rx17-f{display:flex;justify-content:space-between;gap:8px;padding:5px 8px;border-radius:8px;font:600 .8rem "JetBrains Mono",monospace;transition:background .3s}.rx17-f span{color:var(--muted)}.rx17-f em{font-style:normal}
+.rx17-f.rx17-wr{background:color-mix(in srgb,#0d9488 18%,transparent)}.rx17-f.rx17-lost{background:var(--bad-soft);color:var(--bad)}
+.rx17-cells{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;min-height:58px}
+.rx17-cell{display:grid;grid-template-rows:auto auto auto;justify-items:center;gap:2px;min-width:5.5em;padding:6px 8px;border:1px solid var(--line);border-radius:10px;background:var(--surface);transition:background .3s,border-color .3s}
+.rx17-cell span{font:600 .78rem "JetBrains Mono",monospace;color:#b45309;overflow-wrap:anywhere;text-align:center}.rx17-cell small{font:600 .62rem "JetBrains Mono",monospace;color:var(--muted)}
+.rx17-cell.rx17-new{border-color:#16a34a;background:var(--good-soft)}.rx17-cell.rx17-moved{border-style:dashed;border-color:#f59e0b}.rx17-cell.rx17-hit{background:#fbbf24}.rx17-cell.rx17-hit span,.rx17-cell.rx17-hit small{color:#1f1300}
+.rx17-three{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.8fr) minmax(0,1fr);gap:10px;margin-top:8px}
+.rx17-three h4{margin:0 0 6px;font:700 .72rem "Inter Tight",sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.rx17-patch{margin:0;background:#0b1020;color:#f6c177;font:12px/1.45 "JetBrains Mono",monospace;border-radius:10px;padding:10px;white-space:pre-wrap;overflow-wrap:anywhere}
+.rx17-rng{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;font-size:.86rem;margin:6px 0 10px}.rx17-rng input{flex:1 1 200px;accent-color:#0d9488}.rx17-rng b{font-family:"JetBrains Mono",monospace;min-width:2ch}
+.rx17-mh,.rx17-mr{display:grid;grid-template-columns:5em minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:center}
+.rx17-mh{font:700 .66rem "Inter Tight",sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+.rx17-mr{padding:6px 0;border-top:1px dashed var(--line)}.rx17-mr>b{font:700 .84rem "Inter Tight",sans-serif}
+.rx17-mb i{display:block;height:12px;border-radius:6px;background:#0d9488;transition:width .4s;min-width:2px}.rx17-mb.rx17-w i{background:#dc2626}
+.rx17-mb em{display:block;font:600 .68rem "JetBrains Mono",monospace;font-style:normal;color:var(--muted);margin-top:2px;overflow-wrap:anywhere}
+.rx17-pk{margin:6px 0;padding-left:1.3em;display:grid;gap:10px}.rx17-pk p{margin:0 0 4px;font-size:.9rem}.rx17-fb{font-size:.84rem;min-height:1.2em}
+.rx17-score{font-weight:700;margin:6px 0 0}
+@media (max-width:640px){.rx17-two,.rx17-why,.rx17-race,.rx17-three{grid-template-columns:1fr}.rx17-mh,.rx17-mr{grid-template-columns:4em minmax(0,1fr)}.rx17-mh span:last-child,.rx17-mr .rx17-w{grid-column:2}}
+
+/* redis R18 v1 (assets/labs/redis/labs-redis-18.js, 2026-11-05): car-card grid (lit / dim / scanning), posting lists with key chips,
+   index counters, price bars, tokenizer steps (stop / stem chips), fuzzy distances, result builder controls, aggregation pipeline
+   text + table, write-path boxes and the scan bar. Reuses .rx17-* helpers. Board colours for the R19 / R20 types too.
+   Animations honour reduced motion (pop / shake in JS, transitions off below) */
+.rx-key[data-t="bf"],.rx-key[data-t="cf"]{--tc:#9333ea}.rx-key[data-t="cms"],.rx-key[data-t="topk"]{--tc:#c026d3}.rx-key[data-t="tdigest"]{--tc:#db2777}
+.rx-key[data-t="ts"]{--tc:#0284c7}.rx-key[data-t="vset"]{--tc:#4f46e5}
+.rx18-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:10px 0}
+.rx18-car{border:1px solid var(--line);border-radius:12px;padding:8px 10px;background:var(--surface);display:grid;gap:2px;min-width:0;transition:border-color .3s,box-shadow .3s,opacity .3s}
+.rx18-car small{font:600 .66rem "JetBrains Mono",monospace;color:var(--muted)}.rx18-car b{font:700 .84rem "Inter Tight",sans-serif;overflow-wrap:anywhere}.rx18-car em{font:600 .74rem "JetBrains Mono",monospace;font-style:normal}
+.rx18-tags{display:flex;flex-wrap:wrap;gap:4px}.rx18-tags i{font:600 .62rem "JetBrains Mono",monospace;font-style:normal;padding:1px 6px;border-radius:999px;background:var(--soft);border:1px solid var(--line)}
+.rx18-f.rx18-petrol{background:color-mix(in srgb,#f59e0b 20%,transparent)}.rx18-f.rx18-diesel{background:color-mix(in srgb,#64748b 25%,transparent)}.rx18-f.rx18-electric{background:color-mix(in srgb,#16a34a 22%,transparent)}
+.rx18-car.rx18-lit{border-color:#16a34a;box-shadow:0 0 0 2px color-mix(in srgb,#16a34a 30%,transparent)}.rx18-car.rx18-dim{opacity:.38}
+.rx18-car.rx18-scan{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 35%,transparent)}
+.rx18-cnt,.rx18-ctr{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.82rem;margin:4px 0}.rx18-cnt b,.rx18-ctr b{font-family:"JetBrains Mono",monospace}.rx18-md{color:var(--muted);font-weight:600}
+.rx18-pls{display:grid;gap:6px;margin:6px 0}
+.rx18-pl{display:flex;flex-wrap:wrap;gap:4px;align-items:center;padding:4px 0;border-top:1px dashed var(--line)}.rx18-pl>b{font:700 .74rem "JetBrains Mono",monospace;min-width:7.5em}
+.rx18-pl i{font:600 .68rem "JetBrains Mono",monospace;font-style:normal;padding:2px 7px;border-radius:6px;background:var(--soft);border:1px solid var(--line);transition:background .3s}
+.rx18-pl i.rx18-hit{background:#16a34a;color:#fff;border-color:#16a34a}.rx18-pl i.rx18-new{background:#fbbf24;color:#1f1300;border-color:#f59e0b}.rx18-pl i.rx18-none{color:var(--muted);background:none;border-style:dashed}
+.rx18-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:8px}.rx18-two h4{margin:6px 0;font:700 .72rem "Inter Tight",sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.rx18-bars{display:grid;gap:3px}.rx18-bar{display:grid;grid-template-columns:2.4em minmax(0,1fr) 5.2em;gap:6px;align-items:center;font:600 .68rem "JetBrains Mono",monospace;padding:1px 4px;border-radius:6px}
+.rx18-bar i{display:block;height:9px;border-radius:5px;background:#0284c7;transition:width .4s;min-width:2px}.rx18-bar em{font-style:normal;color:var(--muted);text-align:right}.rx18-bar.rx18-new{background:color-mix(in srgb,#fbbf24 30%,transparent)}
+.rx18-steps{margin:8px 0;padding-left:1.2em;display:grid;gap:8px}.rx18-steps b{font-size:.84rem}
+.rx18-tk,.rx18-fzo{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}.rx18-tk i,.rx18-fzo i{font:600 .72rem "JetBrains Mono",monospace;font-style:normal;padding:2px 8px;border-radius:6px;background:var(--soft);border:1px solid var(--line)}
+.rx18-tk i.rx18-stop{text-decoration:line-through;color:var(--muted);border-style:dashed}.rx18-tk i.rx18-stem{background:color-mix(in srgb,#7c3aed 18%,transparent);border-color:#7c3aed}
+.rx18-fz{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;font-size:.84rem;margin-top:10px}.rx18-fz input{font:13px "JetBrains Mono",monospace;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text);width:9em}
+.rx18-fzo i small{color:var(--muted)}.rx18-fzo i.rx18-d0{background:#16a34a;color:#fff}.rx18-fzo i.rx18-d1{background:color-mix(in srgb,#16a34a 28%,transparent)}.rx18-fzo i.rx18-d2{background:color-mix(in srgb,#f59e0b 25%,transparent)}
+.rx18-res{margin:6px 0;font-size:.88rem;min-height:1.4em}.rx18-xp{max-height:300px;overflow:auto}
+.rx18-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:.82rem;margin:4px 0 6px}
+.rx18-ctl select{font:12.5px "JetBrains Mono",monospace;padding:4px 6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--text)}
+.rx18-pg{display:inline-flex;gap:6px;align-items:center}.rx18-off{font:600 .74rem "JetBrains Mono",monospace;min-width:6.5em;text-align:center}
+.rx18-pipe{margin:6px 0;background:#0b1020;color:#94a3b8;font:12px/1.5 "JetBrains Mono",monospace;border-radius:10px;padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere}.rx18-pipe .rx18-cur{color:#fbbf24;font-weight:600}
+.rx18-tbl table{font-size:.8rem}.rx18-tbl td,.rx18-tbl th{font-family:"JetBrains Mono",monospace}
+.rx18-path{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.rx18-bx{padding:8px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font:600 .74rem "JetBrains Mono",monospace;opacity:.45;transition:opacity .3s,border-color .3s,box-shadow .3s}
+.rx18-bx.rx18-on{opacity:1;border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+.rx18-scanbar{position:relative;height:22px;border-radius:8px;background:var(--soft);border:1px solid var(--line);overflow:hidden;margin:8px 0}.rx18-scanbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#0284c7,#16a34a);transition:width .6s}
+.rx18-scanbar span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 .7rem "JetBrains Mono",monospace;color:var(--text)}
+@media (max-width:640px){.rx18-two{grid-template-columns:1fr}.rx18-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.rx18-pl>b{min-width:0;width:100%}}
+@media (prefers-reduced-motion:reduce){.rx18-car,.rx18-bar i,.rx18-bx,.rx18-scanbar i,.rx18-pl i{transition:none}}
+html.no-motion .rx18-car,html.no-motion .rx18-bar i,html.no-motion .rx18-bx,html.no-motion .rx18-scanbar i,html.no-motion .rx18-pl i{transition:none}
+
+/* redis R19 v1 (assets/labs/redis/labs-redis-19.js, 2026-11-05): memory bars, the Bloom bit wall (on / lit / miss / false positive),
+   cuckoo buckets with fingerprint slots, count-min grid + estimates, top-k podium and exact bars, latency histogram with
+   avg / p50 / p95 / p99 markers, SVG series charts (raw dots, aggregate dots). Reuses .rx17-* / .rx18-ctl. Classes .rx19-* */
+.rx19-mr{display:grid;grid-template-columns:11em minmax(0,1fr) 5.5em;gap:4px 10px;align-items:center;padding:6px 0;border-top:1px dashed var(--line)}
+.rx19-mr>b{font:700 .8rem "Inter Tight",sans-serif}.rx19-mr em{font:600 .74rem "JetBrains Mono",monospace;font-style:normal;text-align:right}.rx19-mr small{grid-column:2/4;color:var(--muted);font-size:.72rem}
+.rx19-mb i{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,#9333ea,#db2777);transition:width .4s}
+.rx19-info{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;margin:6px 0}.rx19-info b{font-family:"JetBrains Mono",monospace}
+.rx19-bits{display:grid;grid-template-columns:repeat(32,minmax(0,1fr));gap:2px;margin:8px 0;max-width:720px}
+.rx19-bits i{aspect-ratio:1;border-radius:3px;background:var(--soft);border:1px solid var(--line);transition:background .25s}
+.rx19-bits i.on{background:#9333ea;border-color:#9333ea}.rx19-bits i.hl{outline:2px solid #fbbf24;outline-offset:1px}.rx19-bits i.miss{outline:2px solid #16a34a;outline-offset:1px}.rx19-bits i.fp{outline:2px solid var(--bad);outline-offset:1px}
+.rx19-sub{margin:4px 0;font-size:.8rem;color:var(--muted)}
+.rx19-bk{display:grid;gap:10px;margin:8px 0}.rx19-cf>small{display:block;font:700 .68rem "Inter Tight",sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:4px}
+.rx19-cf{display:flex;flex-wrap:wrap;gap:6px}.rx19-cf>small{width:100%}
+.rx19-b{display:flex;gap:3px;align-items:center;padding:4px 6px;border:1px solid var(--line);border-radius:8px;background:var(--surface);transition:border-color .3s,box-shadow .3s}
+.rx19-b em{font:600 .62rem "JetBrains Mono",monospace;font-style:normal;color:var(--muted);margin-right:2px}
+.rx19-b i{width:2.2em;height:1.7em;display:flex;align-items:center;justify-content:center;border-radius:5px;border:1px dashed var(--line);font:600 .66rem "JetBrains Mono",monospace;font-style:normal}
+.rx19-b i.on{border-style:solid;background:color-mix(in srgb,#9333ea 22%,transparent);border-color:#9333ea}.rx19-b.rx19-cand{border-color:#fbbf24;box-shadow:0 0 0 2px color-mix(in srgb,#fbbf24 35%,transparent)}
+.rx19-grid{display:grid;gap:4px;margin:8px 0}.rx19-row{display:grid;grid-template-columns:3.4em repeat(10,minmax(0,1fr));gap:3px;align-items:center}.rx19-row small{font:600 .64rem "JetBrains Mono",monospace;color:var(--muted)}
+.rx19-row i{height:2em;display:flex;align-items:center;justify-content:center;border-radius:6px;background:var(--soft);border:1px solid var(--line);font:600 .72rem "JetBrains Mono",monospace;font-style:normal;transition:background .3s}
+.rx19-row i.on{background:color-mix(in srgb,#c026d3 18%,transparent)}.rx19-row i.hl{outline:2px solid #fbbf24;outline-offset:1px}
+.rx19-q{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:.78rem}.rx19-q span{font-family:"JetBrains Mono",monospace}.rx19-q span.cur{font-weight:700;color:var(--accent)}.rx19-q em{color:var(--bad);font-style:normal}
+.rx19-h{margin:6px 0;font:700 .72rem "Inter Tight",sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.rx19-top{margin:0;padding-left:1.4em;display:grid;gap:4px}.rx19-top li{font-size:.9rem}.rx19-top span{font-family:"JetBrains Mono",monospace;color:var(--muted)}
+.rx19-er{display:grid;grid-template-columns:5em minmax(0,1fr) 3em;gap:6px;align-items:center;font:600 .72rem "JetBrains Mono",monospace;margin:2px 0}.rx19-er i{display:block;height:9px;border-radius:5px;background:#c026d3;transition:width .3s}.rx19-er em{font-style:normal;text-align:right}
+.rx19-hist{display:flex;align-items:flex-end;gap:2px;height:120px;margin:10px 0 4px;padding:0 2px;border-bottom:1px solid var(--line)}.rx19-hist i{flex:1;background:#db2777;border-radius:3px 3px 0 0;transition:height .3s}
+.rx19-mk{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.84rem;margin:6px 0}.rx19-mk span{padding:2px 8px;border-radius:8px;border:1px solid var(--line);font-family:"JetBrains Mono",monospace}
+.rx19-avg{background:var(--soft)}.rx19-p50{background:color-mix(in srgb,#16a34a 18%,transparent)}.rx19-p95{background:color-mix(in srgb,#f59e0b 22%,transparent)}.rx19-p99{background:var(--bad-soft);color:var(--bad)}
+.rx19-svg{width:100%;height:auto;max-height:220px;display:block;margin:8px 0}.rx19-svg .ax{stroke:var(--line)}.rx19-svg .lb{fill:var(--muted);font:600 10px "JetBrains Mono",monospace}
+.rx19-svg polyline{fill:none;stroke-width:1.5}.rx19-svg polyline.raw{stroke:color-mix(in srgb,#0284c7 55%,transparent)}.rx19-svg polyline.agg{stroke:#db2777;stroke-width:2.5}
+.rx19-svg circle.raw{fill:#0284c7}.rx19-svg circle.agg{fill:#db2777;stroke:var(--surface);stroke-width:1.5}
+@media (max-width:640px){.rx19-mr{grid-template-columns:minmax(0,1fr) 5em}.rx19-mr .rx19-mb{grid-column:1/3}.rx19-mr small{grid-column:1/3}.rx19-bits{grid-template-columns:repeat(16,minmax(0,1fr))}.rx19-row{grid-template-columns:2.6em repeat(10,minmax(0,1fr))}}
+@media (prefers-reduced-motion:reduce){.rx19-mb i,.rx19-bits i,.rx19-b,.rx19-row i,.rx19-er i,.rx19-hist i{transition:none}}
+html.no-motion .rx19-mb i,html.no-motion .rx19-bits i,html.no-motion .rx19-b,html.no-motion .rx19-row i,html.no-motion .rx19-er i,html.no-motion .rx19-hist i{transition:none}
+
+/* redis R20 v1 (assets/labs/redis/labs-redis-20.js, 2026-11-05): meaning map SVG (cars, query, neighbour lines), two-vector SVG,
+   result rows with score bars, the HNSW layer graph (edges, path, current, candidates), semantic-cache verdicts. Reuses .rx17-* /
+   .rx18-path / .rx19-mr. Classes .rx20-* */
+.rx20-svg{width:100%;height:auto;max-height:340px;display:block}.rx20-svg .lb{fill:var(--muted);font:600 10px "JetBrains Mono",monospace}.rx20-svg .ax{stroke:var(--line)}
+.rx20-svg circle{fill:color-mix(in srgb,#4f46e5 35%,var(--surface));stroke:#4f46e5;stroke-width:1}.rx20-svg text{fill:var(--text);font:600 9.5px "JetBrains Mono",monospace}
+.rx20-svg .hit circle{fill:#16a34a;stroke:#16a34a}.rx20-svg .q circle{fill:#f59e0b;stroke:#b45309;stroke-width:2}.rx20-svg .ln{stroke:#16a34a;stroke-dasharray:4 3;stroke-width:1.5}
+.rx20-svg .va{stroke:#4f46e5;stroke-width:3}.rx20-svg .vb{stroke:#db2777;stroke-width:3}.rx20-svg .gap{stroke:var(--muted);stroke-dasharray:3 3}
+.rx20-svg .ed{stroke:var(--line);stroke-width:1.2}.rx20-svg .pa{stroke:#f59e0b;stroke-width:3}.rx20-svg .cur circle{fill:#f59e0b;stroke:#b45309}.rx20-svg .cand circle{stroke:#16a34a;stroke-width:3}.rx20-svg .star{fill:#dc2626;font-size:20px}
+.rx20-near{margin:6px 0;padding-left:1.4em;display:grid;gap:4px}.rx20-near span{font-family:"JetBrains Mono",monospace;color:var(--muted);font-size:.8rem}
+.rx20-res{display:grid;gap:4px;margin:8px 0}
+.rx20-row{display:grid;grid-template-columns:9em minmax(0,1fr) 6.5em;gap:2px 10px;align-items:center;padding:4px 0;border-top:1px dashed var(--line)}.rx20-row b{font:700 .82rem "Inter Tight",sans-serif}
+.rx20-row i{display:block;height:10px;border-radius:5px;background:linear-gradient(90deg,#4f46e5,#16a34a);transition:width .4s}.rx20-row em{font:600 .72rem "JetBrains Mono",monospace;font-style:normal;text-align:right}.rx20-row small{grid-column:1/4;color:var(--muted);font-size:.72rem}
+.rx20-cache{display:grid;gap:6px;margin:8px 0}.rx20-cq{font-size:.86rem}.rx20-cq span{font-family:"JetBrains Mono",monospace;color:var(--muted)}
+.rx20-verdict{padding:8px 12px;border-radius:10px;font-size:.88rem;font-weight:600}.rx20-verdict.hit{background:var(--good-soft);color:var(--good)}.rx20-verdict.miss{background:color-mix(in srgb,#f59e0b 18%,transparent);color:#b45309}
+@media (max-width:640px){.rx20-row{grid-template-columns:minmax(0,1fr) 6em}.rx20-row i{grid-column:1/3}}
+@media (prefers-reduced-motion:reduce){.rx20-row i{transition:none}}
+html.no-motion .rx20-row i{transition:none}
+
 /* nginx G11 kit v1 (labs-nginx.js, 2026-11-05): the console board's "Last load test" panel after wrk (bottleneck, worker CPU bars, slots) */
 .ngx-pf{border:1px solid var(--line);border-left:3px solid var(--nk,#64748b);border-radius:10px;padding:10px 12px;background:var(--surface)}
 .ngx-pfn{margin:0 0 8px;font-size:.8rem;line-height:1.4}.ngx-pfn b{display:block;font:700 .66rem "Inter Tight",sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--nk,#64748b);margin-bottom:2px}
@@ -12855,7 +13006,7 @@ html.no-motion .rx15-fr i{transition:none}
 .ngx-pfc b{text-align:right;font-variant-numeric:tabular-nums}
 .ngx-pfm{display:grid;gap:4px;margin:0;font-size:.72rem}.ngx-pfm div{display:flex;justify-content:space-between;gap:10px;border-top:1px dashed var(--line);padding-top:4px}
 .ngx-pfm dt{color:var(--muted);overflow-wrap:anywhere}.ngx-pfm dd{margin:0;text-align:right;font-variant-numeric:tabular-nums}
-/* nginx G11 v1 (assets/labs/labs-nginx-11.js, 2026-11-05): Little's-law dot ring + per-c bars, cores with worker CPU bars, a worker's
+/* nginx G11 v1 (assets/labs/nginx/labs-nginx-11.js, 2026-11-05): Little's-law dot ring + per-c bars, cores with worker CPU bars, a worker's
    64-cell slot grid, fd tables with limit meters, SYN / accept queues and workers, the ephemeral-port pool with the break-even marker,
    copy path boxes and packet strips, proxy buffer cells + temp file, the worker-loop timeline, case rows and the bottleneck line.
    Reuses .ng9-nums / .ng9-ct. Classes .ng11-*; animations stop under prefers-reduced-motion and html.no-motion */
@@ -12917,3 +13068,65 @@ html.no-motion .rx15-fr i{transition:none}
 @media (max-width:560px){.ng11-sel{grid-template-columns:minmax(0,1fr)}.ng11-lw{grid-template-columns:minmax(0,1fr);justify-items:center}.ng11-cores{grid-template-columns:repeat(2,minmax(0,1fr))}.ng11-fdw{grid-template-columns:minmax(0,1fr)}.ng11-crow{grid-template-columns:3.6em minmax(0,1fr)}.ng11-crow em{grid-column:2}.ng11-tl{grid-template-columns:minmax(0,1fr)}}
 @media (prefers-reduced-motion:reduce){.ng11-spin,.ng11-s{animation:none}.ng11-cx,.ng11-meter i,.ng11-tw,.ng11-bb{transition:none}}
 html.no-motion .ng11-spin,html.no-motion .ng11-s{animation:none}html.no-motion .ng11-cx,html.no-motion .ng11-meter i,html.no-motion .ng11-tw,html.no-motion .ng11-bb{transition:none}
+
+/* nginx G13 v1 (assets/labs/nginx/labs-nginx-13.js, 2026-11-05): request labs (config | trace), status pills, topic / mock cards,
+   canary dot grid, reload worker pills, region boxes, proxy score bars. Reuses .ng0-* .ng1-code .ng2-cfg .ng9-nums .ng9-ct. Classes .ng13-* */
+.ng13-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-top:8px}.ng13-two .ng1-code{margin:0;max-height:420px}
+.ng13-tr{margin:8px 0 0;padding-left:1.4em;font-size:.84rem;line-height:1.55}.ng13-tr b{font:700 .74rem "JetBrains Mono",monospace;color:var(--accent);margin-right:4px}.ng13-tr small{color:var(--muted)}
+.ng13-st{display:inline-block;min-width:2.8em;text-align:center;padding:1px 7px;border-radius:999px;font:700 .78rem "JetBrains Mono",monospace;background:#64748b33}
+.ng13-s2{background:#10b98133;color:#059669}.ng13-s3{background:#3b82f633;color:#2563eb}.ng13-s4{background:#f59e0b33;color:#b45309}.ng13-s5{background:#ef444433;color:#dc2626}
+.ng13-card{border:1px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px;margin:10px 0}.ng13-card>b{display:block;font-size:1rem;margin:2px 0 6px}.ng13-card small{color:var(--muted)}.ng13-card p{margin:0 0 6px}
+.ng13-dots{display:grid;grid-template-columns:repeat(40,1fr);gap:3px;margin:10px 0;max-width:640px}.ng13-dots i{aspect-ratio:1;border-radius:50%;background:#3b82f6aa}.ng13-dots i.ng13-g{background:#10b981}
+.ng13-wk{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.ng13-w{padding:6px 10px;border-radius:10px;font:600 .8rem "JetBrains Mono",monospace;border:1px solid var(--line)}
+.ng13-w.ng13-w{background:#3b82f622}.ng13-n{background:#10b98126!important;border-color:#10b981}.ng13-d{background:#f59e0b22!important;border-style:dashed;opacity:.75}.ng13-s{background:#64748b22!important;color:var(--muted)}
+.ng13-rg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}.ng13-r{border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:grid;gap:2px}.ng13-r small{color:var(--muted)}.ng13-r em{font:700 .9rem "JetBrains Mono",monospace}
+.ng13-r.on{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}.ng13-r.ng13-off{opacity:.45;border-style:dashed}
+.ng13-bars{display:grid;gap:6px;margin:10px 0}.ng13-bar{display:grid;grid-template-columns:6em minmax(0,1fr) 2em;gap:8px;align-items:center;font-size:.85rem}.ng13-bar i{display:block;height:12px;border-radius:6px;background:#64748b66;transition:width .3s}.ng13-bar.on i{background:var(--accent)}.ng13-bar.on span{font-weight:700}
+.ng13-rub{list-style:none;padding:0;margin:8px 0;display:grid;gap:4px}.ng13-tm{font:700 1.1rem "JetBrains Mono",monospace}.ng13-in{margin-top:10px}
+@media (max-width:760px){.ng13-two{grid-template-columns:minmax(0,1fr)}.ng13-dots{grid-template-columns:repeat(20,1fr)}.ng13-rg{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.ng13-bar i{transition:none}}
+html.no-motion .ng13-bar i{transition:none}
+
+/* nginx G12 v1 (assets/labs/nginx/labs-nginx-12.js, 2026-11-05): flow pictures (nodes + edges with a moving packet), template
+   in/out panes with marked variables, health timeline, Ingress results, canary bars, gateway roles, ClientHello fields, case steps */
+.ng12-flow{display:flex;align-items:stretch;gap:0;margin:8px 0 12px;overflow-x:auto;padding:4px 2px 8px}
+.ng12-n{flex:1 1 0;min-width:84px;border:1px solid var(--line);border-radius:14px;padding:10px 10px 8px;display:grid;gap:2px;align-content:start;opacity:.55;transition:opacity .25s,box-shadow .25s,border-color .25s,transform .25s;background:color-mix(in srgb,var(--nc) 6%,transparent)}
+.ng12-n b{font:700 .88rem "Inter Tight",Inter,sans-serif}.ng12-n small{color:var(--muted);font-size:.74rem;overflow-wrap:anywhere}
+.ng12-n.on{opacity:1;border-color:color-mix(in srgb,var(--nc) 60%,var(--line))}
+.ng12-n.hot{box-shadow:0 0 0 2px color-mix(in srgb,var(--nc) 45%,transparent);transform:translateY(-2px)}
+.ng12-n.bad{opacity:1;border-color:#dc2626;background:#dc262614}.ng12-n.bad b{color:#dc2626}
+.ng12-e{flex:0 0 26px;position:relative;align-self:center;height:2px;background:var(--line)}
+.ng12-e.on{background:var(--accent)}.ng12-e.cut{background:repeating-linear-gradient(90deg,#dc2626 0 4px,transparent 4px 7px)}
+.ng12-e i{position:absolute;top:-3px;left:0;width:8px;height:8px;border-radius:50%;background:var(--accent);opacity:0}
+.ng12-e.on i{opacity:1;animation:ng12-go 1.2s linear infinite}.ng12-e.back i{animation-direction:alternate}
+@keyframes ng12-go{from{left:0}to{left:calc(100% - 8px)}}
+.ng12-cap p{margin:6px 0}.ng12-cap pre{margin:6px 0}
+.ng12-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin:10px 0}.ng12-two h4{margin:0 0 4px;font-size:.82rem;color:var(--muted)}
+.ng12-two pre{max-height:340px;overflow:auto}
+.ng12-v{border-radius:4px;padding:0 2px}.ng12-env{background:#2563eb2e}.ng12-ngx{background:#05966933}
+.ng12-lchg{background:#2563eb18;display:inline-block;width:100%}.ng12-lbad{background:#dc262622;display:inline-block;width:100%}
+.ng12-tl{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin:10px 0}
+.ng12-tc{border:1px solid var(--line);border-radius:10px;padding:6px;display:grid;gap:2px;font-size:.74rem;min-height:52px;opacity:.4;transition:opacity .3s,background .3s}
+.ng12-tc b{font:600 .74rem "JetBrains Mono",monospace}.ng12-tc span{overflow-wrap:anywhere}.ng12-tc.on{opacity:1}
+.ng12-tc.on.ng12-hok{background:#05966922;border-color:#059669}.ng12-tc.on.ng12-hbad{background:#dc262620;border-color:#dc2626}.ng12-tc.on.ng12-hst{background:#d9770618;border-color:#d97706}
+.ng12-res{list-style:none;padding:0;margin:8px 0;display:grid;gap:4px}
+.ng12-res li{display:grid;grid-template-columns:7em 3em minmax(0,1fr);gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:5px 10px;font-size:.84rem}
+.ng12-res li small{color:var(--muted);overflow-wrap:anywhere}.ng12-res li b{font-family:"JetBrains Mono",monospace}
+.ng12-s2 b{color:#059669}.ng12-s3 b{color:#2563eb}.ng12-s4 b,.ng12-s5 b{color:#dc2626}
+.ng12-roles{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:6px 0 10px}.ng12-roles div{flex:1 1 140px;border:1px solid var(--line);border-radius:12px;padding:8px 10px;display:grid;gap:2px}
+.ng12-roles small{color:var(--muted);font-size:.76rem}.ng12-roles .hot{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+.ng12-bars{display:grid;gap:6px;margin:10px 0}.ng12-bars div{display:grid;grid-template-columns:9em minmax(0,1fr) 3em;gap:8px;align-items:center;font-size:.85rem}
+.ng12-bars i{display:block;height:14px;border-radius:7px;background:#2563eb;width:var(--w);min-width:2px;transition:width .4s}.ng12-bars i.ng12-b2{background:#d97706}
+.ng12-hello{display:flex;flex-wrap:wrap;gap:4px;margin:10px 0;font:600 .76rem "JetBrains Mono",monospace}
+.ng12-hello span{border:1px solid var(--line);border-radius:8px;padding:4px 8px;background:#64748b14}
+.ng12-hello .ng12-sn{border-color:#d97706;background:#d9770624}.ng12-hello .ng12-enc{border-style:dashed;opacity:.7}
+.ng12-err{border-left:3px solid #dc2626}
+.ng12-steps{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:4px 0 8px}
+.ng12-steps li{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.78rem;opacity:.55}.ng12-steps li.done{opacity:.85}
+.ng12-steps li.on{opacity:1;border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent);font-weight:700}
+.ng12-nums{margin:10px 0}.ng12-nums b{overflow-wrap:anywhere}
+@media (max-width:760px){.ng12-two{grid-template-columns:minmax(0,1fr)}.ng12-tl{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .ng12-flow{flex-wrap:wrap;gap:6px}.ng12-flow .ng12-e{display:none}.ng12-n{flex:1 1 40%}.ng12-res li{grid-template-columns:6em 2.5em minmax(0,1fr)}.ng12-bars div{grid-template-columns:7em minmax(0,1fr) 2.5em}}
+@media (prefers-reduced-motion:reduce){.ng12-e.on i{animation:none;left:calc(50% - 4px)}.ng12-n,.ng12-tc,.ng12-bars i{transition:none}}
+html.no-motion .ng12-e.on i{animation:none;left:calc(50% - 4px)}
+html.no-motion .ng12-n,html.no-motion .ng12-tc,html.no-motion .ng12-bars i{transition:none}

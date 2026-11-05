@@ -2,7 +2,7 @@
    over an unlocked lesson until its CSS has loaded). Public, dependency-free, loaded before anything slow. Prefix zl-.
    Aurora background, a gradient progress bar on top, the site's ∞ with a glowing comet (head + fading tail, SMIL so the
    same markup also works inside a freshly written document), a shimmering status line and a three-step tracker
-   (Sign-in → Access → Lesson). Reduced motion: everything still, the ∞ drawn in full. Docs: kb/access-lock.md. */
+   (Sign-in → Access → Lesson). Reduced motion: everything still, the ∞ drawn in full. Docs: kb/lock/access-lock.md. */
 (function(){
   /* a symmetric lemniscate: two mirrored loops (outer tangents vertical at x = 8 and x = 56) crossing at (32, 18) */
   var D="M32 18C25 7 8 7 8 18C8 29 25 29 32 18C39 7 56 7 56 18C56 29 39 29 32 18";

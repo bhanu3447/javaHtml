@@ -109,15 +109,15 @@
     </div>
   </main>
 </div>
-<script src="assets/js/loader.js?v=49800d7c"></script>
+<script src="assets/js/loader.js?v=764671f5"></script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=0673970b"></script>
+<script src="assets/js/auth.js?v=1685e9e1"></script>
 <script>
 /* login v4: log in = username/email + password, then a LIVE face check every time (login function; lasts 1 hour);
    register = details + live selfie (register function, account waits for the owner). Live check: the server sends a random
    head-turn order; the camera takes 3 pictures (straight, then each turn) and the server checks pose, anti-spoofing and identity.
-   Docs: kb/access-lock.md */
+   Docs: kb/lock/access-lock.md */
 (function(){
   try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
   var $=function(id){return document.getElementById(id);};
