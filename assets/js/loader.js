@@ -2,7 +2,7 @@
    over an unlocked lesson until its CSS has loaded). Public, dependency-free, loaded before anything slow. Prefix zl-.
    Aurora background, a gradient progress bar on top, the site's ∞ with a glowing comet (head + fading tail, SMIL so the
    same markup also works inside a freshly written document), a shimmering status line and a three-step tracker
-   (Sign-in → Access → Lesson). Reduced motion: everything still, the ∞ drawn in full. Docs: kb/access-lock.md. */
+   (Sign-in → Access → Lesson). Reduced motion: everything still, the ∞ drawn in full. Docs: kb/lock/access-lock.md. */
 (function(){
   /* a symmetric lemniscate: two mirrored loops (outer tangents vertical at x = 8 and x = 56) crossing at (32, 18) */
   var D="M32 18C25 7 8 7 8 18C8 29 25 29 32 18C39 7 56 7 56 18C56 29 39 29 32 18";
@@ -86,12 +86,13 @@
     patterns:W(["Patterns","SOLID"],["Strategy","Observer","Factory","Decorator","Singleton","Adapter","Builder","Proxy","Command","Facade","State","Visitor","Composite","Iterator"]),
     redis:W(["Redis","cache"],["GET","SET","TTL","INCR","EXPIRE","SCAN","RESP","ZADD","HSET","LPUSH","cache-aside","6379"]),
     nginx:W(["NGINX","the gate"],["server","location","proxy_pass","upstream","worker","epoll","try_files","reload","443","TLS","limit_req","cache","nginx -t"]),
+    sysdesign:W(["System Design","scale"],["QPS","p99","shard","replica","cache hit","CDN","load balancer","CAP","quorum","fan-out","idempotent","backoff","SLO","consistent hash"]),
     kafka:W(["Kafka","events"],["topic","partition","offset","producer","consumer","acks=all","ISR","lag","rebalance","compaction","9092","KRaft","commit"]),
     dsa:W(["DSA","Big-O"],["O(log n)","O(n)","BFS","DFS","heap","DP","two pointers","stack","queue","graph","binary search","memo","trie","sliding window"]),
     n8n:W(["n8n","Automation"],["Webhook","{{ $json }}","HTTP Request","IF","Merge","Cron","AI Agent","Set","Code","Split Out","workflow","Wait","Switch","Error Trigger"]),
     resume:W(["Resume","ATS"],["LaTeX","impact","skills","keywords","projects","metrics","PDF","match %","summary","experience"]),
     all:W(["Java","SQL","Spring Boot","DSA","Patterns","n8n"],["SELECT *","class Car","@Bean","JOIN","λ","O(log n)","Stream","{ }","HashMap","GROUP BY","record","@Transactional","Webhook","Strategy"])};
-  var NAME={nginx:"NGINX",kafka:"Kafka",redis:"Redis",java:"Java",sql:"SQL",spring:"Spring Boot",patterns:"Patterns",dsa:"DSA",n8n:"n8n",resume:"Resume"};
+  var NAME={sysdesign:"System Design",nginx:"NGINX",kafka:"Kafka",redis:"Redis",java:"Java",sql:"SQL",spring:"Spring Boot",patterns:"Patterns",dsa:"DSA",n8n:"n8n",resume:"Resume"};
   function fly(course){var set=FLY[course]||FLY.all,k=set.length;return '<div class="zl-fly" aria-hidden="true">'+set.map(function(w,i){
       var a=(i*137.5)%360*Math.PI/180,r=34+(i*29)%22;   /* golden-angle spread, 34–56 vmax out from the centre */
       return '<span'+(w[1]?' class="w"':"")+' style="--x:'+(Math.cos(a)*r).toFixed(1)+'vmax;--y:'+(Math.sin(a)*r*.62).toFixed(1)+'vmax;--d:'+(-(i*6.4/k)).toFixed(2)+'s">'+w[0]+"</span>";}).join("")+"</div>";}

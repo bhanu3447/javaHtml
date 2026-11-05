@@ -1,4 +1,4 @@
-/* Study tools (2026-11-04, kb/site-internals.md → "Study tools"). Public engine file, self-contained (own helpers and CSS),
+/* Study tools (2026-11-04, kb/site/site-internals.md → "Study tools"). Public engine file, self-contained (own helpers and CSS),
    so the hub can load it too. course.js loads it on every course page after the page has been built.
    - Review today: spaced repetition (Leitner boxes, 1 · 3 · 7 · 21 · 60 days) over every course: quiz questions answered wrong,
      recall prompts of the lessons you started (Day 1 / 3 / 7), "Explain it back" answers you were unsure of, and the sections you
@@ -21,7 +21,7 @@ const put=(k,v)=>st.set(k,JSON.stringify(v));
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const q1=(s,r)=>(r||document).querySelector(s),qa=(s,r)=>Array.prototype.slice.call((r||document).querySelectorAll(s));
 const DAY=864e5,INT=[1,3,7,21,60],GAP=[1,2,4],AGAIN=10*60*1000,CAP=30;
-const PRE={l:"java",s:"sql",p:"patterns",n:"n8n",d:"dsa",r:"redis",k:"kafka",g:"nginx"},CNAME={java:"Java",sql:"SQL",patterns:"Design Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",spring:"Spring Boot"};
+const PRE={l:"java",s:"sql",p:"patterns",n:"n8n",d:"dsa",r:"redis",k:"kafka",g:"nginx",h:"sysdesign"},CNAME={java:"Java",sql:"SQL",patterns:"Design Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",spring:"Spring Boot"};
 const RCD={d1:["Day 1 · define",0],d3:["Day 3 · explain why",2],d7:["Day 7 · apply",6]};
 const courseOf=k=>PRE[String(k)[0]]||"";
 const tag=k=>(CNAME[courseOf(k)]||"")+" · "+String(k).toUpperCase();
