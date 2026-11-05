@@ -68,15 +68,23 @@ function grade(card,ok){const now=Date.now();
 /* ---------- summaries for the hub ---------- */
 function summarise(){
   if(!CID||!COURSE.pages||!COURSE.pages.length)return;
-  const sum=J("js1-sum",{}),d=done(),lessons=COURSE.pages.filter(p=>/^[lspnd]\d/.test(p.key));
+  /* lesson keys are a course letter + two digits (l01, r12, h05, n01b); 2026-11-05: was /^[lspnd]\d/, which left Redis (r), Kafka (k),
+     NGINX (g) and System Design (h) at zero on the hub */
+  const sum=J("js1-sum",{}),d=done(),lessons=COURSE.pages.filter(p=>/^[a-z]\d\d/.test(p.key));
   let total=0,und=0;lessons.forEach(p=>(p.sections||[]).forEach(s=>{total++;if(d[s.id])und++;}));
   let qn=0,qa_=0,qc=0;const weak=[];
   lessons.forEach(p=>{const list=QZ[p.key];if(!list)return;const ans=J("js1-qz-"+p.key,{});let a=0,c=0;
     list.forEach((x,i)=>{if(ans[i]!=null){a++;if(ans[i]===x.a)c++;}});qn+=list.length;qa_+=a;qc+=c;
     if(a>=3&&c/a<.6)weak.push({k:p.short||p.key,n:p.name,f:p.file,pct:Math.round(100*c/a)});});
   const me=COURSE.pages.find(p=>p.key===PAGE),prev=sum[CID]||{};
-  sum[CID]={name:CNAME[CID]||CID,home:CID+"/index.html",total,und,qn,qa:qa_,qc,weak:weak.sort((a,b)=>a.pct-b.pct).slice(0,3),
-    last:me&&me.key!=="home"?{f:me.file,n:me.name,t:Date.now()}:prev.last||null,t:Date.now()};
+  /* next lesson = the first lesson after the one being read with a section not yet marked understood (else the one right after) */
+  const at=lessons.findIndex(p=>p.key===PAGE),rest=at<0?[]:lessons.slice(at+1),
+    nx=rest.find(p=>(p.sections||[]).some(s=>!d[s.id]))||rest[0];
+  /* graded tasks solved in this course's labs (each kit keeps its own store of solved ids) */
+  const TK={redis:"js1-redis-tasks",kafka:"js1-kafka-tasks",nginx:"js1-nginx-tasks",sysdesign:"js1-sd-tasks"}[CID],tasks=TK?Object.keys(J(TK,{})).length:0;
+  sum[CID]={name:CNAME[CID]||CID,home:CID+"/index.html",total,und,qn,qa:qa_,qc,weak:weak.sort((a,b)=>a.pct-b.pct).slice(0,3),tasks,
+    last:me&&me.key!=="home"?{f:me.file,n:me.name,t:Date.now()}:prev.last||null,
+    next:at<0?prev.next||null:nx?{f:nx.file,n:nx.name}:null,t:Date.now()};
   put("js1-sum",sum);
   const days=J("js1-days",[]),t=day(Date.now());if(days[days.length-1]!==t){days.push(t);put("js1-days",days.slice(-400));}}
 function streak(){const days=J("js1-days",[]);if(!days.length)return 0;const set=new Set(days);let n=0,t=Date.now();
@@ -119,6 +127,8 @@ const css=`
 .sd-dash{display:grid;gap:12px}.sd-cs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,220px),1fr));gap:10px}
 .sd-c{border:1px solid var(--line,#e3e7ef);border-radius:14px;padding:12px 14px;background:var(--surface,#fff)}.sd-c h4{margin:0 0 6px;font:700 .95rem Inter,system-ui,sans-serif}
 .sd-c p{margin:4px 0 0;font-size:.8rem;color:var(--muted,#5b6474)}.sd-c a{color:var(--accent,#4f46e5);font-weight:600;text-decoration:none}
+.sd-heat{display:grid;gap:6px}.sd-hg{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,11px);grid-auto-columns:11px;gap:3px;max-width:100%;overflow:hidden}
+.sd-hg i{border-radius:3px}.sd-h0{background:var(--line,#e3e7ef)}.sd-h1{background:var(--accent,#4f46e5)}.sd-hx{background:transparent}
 .sd-badge{position:absolute;top:2px;right:2px;min-width:16px;height:16px;padding:0 4px;border-radius:99px;background:var(--bad-fill,#c81e1e);color:#fff;font:700 10px/16px Inter,sans-serif;text-align:center;pointer-events:none}
 #studyBtn{position:relative}
 .xb{margin:10px 0 0;padding:12px 14px;border:1px solid var(--line,#e3e7ef);border-radius:12px;background:var(--surface,#fff)}
@@ -246,6 +256,11 @@ function mockKeys(e){if(tab!=="mock"||!mk.active||e.ctrlKey||e.metaKey||e.altKey
   if(e.key==="Escape"){e.preventDefault();mockFinish();}else if(!mk.shown&&e.key===" "){e.preventDefault();mockReveal();}else if(mk.shown&&/^[123]$/.test(e.key)){e.preventDefault();mockRate(+e.key);}}
 
 /* Progress (also the hub dashboard) */
+/* the last 12 weeks of study days (js1-days) as a calendar grid, Monday rows on top, today bottom-right (2026-11-05) */
+function heat(){const set=new Set(J("js1-days",[])),now=new Date(),dow=(now.getDay()+6)%7,cells=[];let n=0;
+  for(let w=11;w>=0;w--)for(let r=0;r<7;r++){const back=w*7+(dow-r);if(back<0){cells.push('<i class="sd-hx" aria-hidden="true"></i>');continue;}
+    const t=day(now.getTime()-back*DAY),on=set.has(t);if(on)n++;cells.push('<i class="'+(on?"sd-h1":"sd-h0")+'" title="'+t+(on?": studied":"")+'"></i>');}
+  return '<div class="sd-heat"><b style="font-size:.85rem">Study days · last 12 weeks · '+n+'</b><div class="sd-hg" role="img" aria-label="'+n+' study days in the last 12 weeks">'+cells.join("")+"</div></div>";}
 function dashHtml(withLinks){
   const sum=J("js1-sum",{}),ids=Object.keys(sum).sort((a,b)=>(sum[b].t||0)-(sum[a].t||0)),n=due(),s=streak();
   if(!ids.length)return '<div class="sd-empty">Your progress shows here after you open a lesson: sections understood, quiz scores, the day streak and the reviews that are due.</div>';
@@ -257,7 +272,10 @@ function dashHtml(withLinks){
     '<div class="sd-cs">'+ids.map(i=>{const x=sum[i],sp=x.total?Math.round(100*x.und/x.total):0,qp=x.qa?Math.round(100*x.qc/x.qa):0,qd=x.qn?Math.round(100*x.qa/x.qn):0;
       return '<div class="sd-c"><h4>'+esc(x.name)+"</h4>"+(x.total&&x.und?'<p>Sections understood · <b>'+x.und+" / "+x.total+'</b></p><div class="sd-bar" aria-hidden="true"><i style="transform:scaleX('+sp/100+')"></i></div>':"")+
         '<p>Quiz questions answered · <b>'+(x.qa||0)+" / "+(x.qn||0)+"</b> ("+qd+'%)</p><div class="sd-bar" aria-hidden="true"><i style="transform:scaleX('+qd/100+')"></i></div>'+
-        (x.qa?"<p>Quiz accuracy · <b>"+qp+"%</b></p>":"")+(withLinks?'<p><a href="'+esc(href(x.last?x.last.f:x.home))+'">'+(x.last?"Continue: "+esc(x.last.n):"Open the course")+" →</a></p>":"")+"</div>";}).join("")+"</div>"+
+        (x.qa?"<p>Quiz accuracy · <b>"+qp+"%</b></p>":"")+(x.tasks?"<p>Graded tasks solved · <b>"+x.tasks+"</b></p>":"")+
+        (withLinks?'<p><a href="'+esc(href(x.last?x.last.f:x.home))+'">'+(x.last?"Continue: "+esc(x.last.n):"Open the course")+" →</a></p>"+
+          (x.next&&(!x.last||x.next.f!==x.last.f)?'<p><a href="'+esc(href(x.next.f))+'">Next: '+esc(x.next.n)+" →</a></p>":""):"")+"</div>";}).join("")+"</div>"+
+    heat()+
     (weak.length?'<div><b style="font-size:.85rem">Weakest quizzes</b><div class="sd-list">'+weak.map(w=>'<a href="'+esc(href(w.f))+'"><small>'+esc(CNAME[w.c]||w.c)+" · "+w.pct+"% correct</small>"+esc(w.n)+"</a>").join("")+"</div></div>":"")+"</div>";}
 function progress(){body().innerHTML=dashHtml(true);body().onclick=null;}
 function dash(el){if(!el)return;addCss();el.innerHTML=dashHtml(true);el.hidden=false;}
