@@ -1,5 +1,5 @@
 /* Decorative effects: fire rider, ancient tree, mascot, weather, sky, Halloween, festivals, scroll rider.
-   Details: kb/site/appendix-effects.md.
+   Details: kb/appendix-effects.md.
    Part of the course scripts. Every page loads, in this order: course-index.js, quiz-data.js, course.js, effects.js,
    labs-oop.js, labs-collections.js, labs-analogy.js, labs-sorting.js, practice-tools.js. They are classic scripts, so
    top-level const/let/function names are shared between them (course.js defines $, $$, esc, store, hl, FX, THM…). */

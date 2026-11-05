@@ -44,7 +44,7 @@
   /* lesson editors (shells exist at load; CodeMirror mounts later) */
   document.querySelectorAll(".code").forEach(box=>{if(box.closest("#pg,#pgv,#heroWin,.hw"))return;const fn=box.querySelector(".fn");
     attach(box,()=>box._cm?box._cm.getValue():(box._src||(box.querySelector("pre")||{}).textContent||""),{file:fn?fn.textContent:"Main.java"});});
-  /* the Java Visual Playground (courses/java/playground.html): its toolbar button calls box._run() */
+  /* the Java Visual Playground (java/playground.html): its toolbar button calls box._run() */
   const pv=document.querySelector("#pgv .code");
   if(pv){const fn=pv.querySelector(".fn"),inp=document.querySelector("#pgIn");
     attach(pv,()=>pv._cm?pv._cm.getValue():(pv._src||""),{fileOf:()=>fn?fn.textContent:"Main.java",stdin:()=>inp?inp.value:"",noKey:true});}

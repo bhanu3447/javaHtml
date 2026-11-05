@@ -1,4 +1,4 @@
-/* Study tools (2026-11-04, kb/site/site-internals.md → "Study tools"). Public engine file, self-contained (own helpers and CSS),
+/* Study tools (2026-11-04, kb/site-internals.md → "Study tools"). Public engine file, self-contained (own helpers and CSS),
    so the hub can load it too. course.js loads it on every course page after the page has been built.
    - Review today: spaced repetition (Leitner boxes, 1 · 3 · 7 · 21 · 60 days) over every course: quiz questions answered wrong,
      recall prompts of the lessons you started (Day 1 / 3 / 7), "Explain it back" answers you were unsure of, and the sections you

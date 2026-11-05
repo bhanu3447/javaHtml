@@ -1,5 +1,5 @@
 /* auth v1: the course lock (login, roles, per-course approval). Needs auth-config.js and supabase-js loaded first.
-   Used by the hub, login.html, admin.html and the locked-page shells that scripts/lock.mjs writes. Docs: kb/lock/access-lock.md */
+   Used by the hub, login.html, admin.html and the locked-page shells that scripts/lock.mjs writes. Docs: kb/access-lock.md */
 (function(){
   var C=window.AUTH_CFG||{};
   var on=!!(C.url&&C.anonKey&&C.url.indexOf("YOUR-")<0&&C.anonKey.indexOf("YOUR-")<0&&window.supabase);
@@ -31,7 +31,7 @@
   /* signOut(true) = the face session ran out (keep the offline copies); signOut() = the person logged out (delete them) */
   async function signOut(keepOffline){if(!keepOffline)forget();if(sb)try{await sb.auth.signOut();}catch(e){}}
 
-  /* Offline (2026-11-04, kb/lock/access-lock.md → "Offline"): sw.js (registered here, https only) caches the public site, the CDN
+  /* Offline (2026-11-04, kb/access-lock.md → "Offline"): sw.js (registered here, https only) caches the public site, the CDN
      files and the signed lesson scripts. Each lesson the page function returns is kept in Cache Storage "zl-private"; it is
      shown again only when the network fails, for 7 days after the last time it was unlocked online, and never after a log-out
      (signOut deletes the cache and the zl-offline marker). */
@@ -66,7 +66,7 @@
 
   /* locked-page shell: show the page if allowed, otherwise a card that explains why */
   async function gate(path,root){
-    var box=document.getElementById("auGate"),course=path.replace(/^courses\//,"").split("/")[0],title=COURSES[course]||"This course";
+    var box=document.getElementById("auGate"),course=path.split("/")[0],title=COURSES[course]||"This course";
     var home='<a class="au-btn" href="'+root+'index.html">All courses</a>';
     /* while waiting: the shell's loader (loader.js, mounted before anything slow) shows the step; it explains slow wake-ups itself */
     var zl=window.ZLc||null;

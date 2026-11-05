@@ -1,4 +1,4 @@
-/* playground.js: the Java Visual Playground UI (courses/java/playground.html). Loaded after course.js and jvm-lite.js, before run-java.js.
+/* playground.js: the Java Visual Playground UI (java/playground.html). Loaded after course.js and jvm-lite.js, before run-java.js.
    Visualize runs the editor's program in JVML (jvm-lite.js) and steps through the recorded snapshots: stack frames, heap boxes
    keyed by object id (only boxes whose record changed are rebuilt), String pool strip, SVG reference arrows, console, "Why?" line.
    Everything lives in one IIFE (classic scripts share one global scope). CSS: the "playground v1" block in course.css (pg- classes).
@@ -10,7 +10,7 @@
    Phase 4: trees of objects (binary, AVL, n-ary, trie) as one SVG in the root's box, PriorityQueue heaps, HashMap/HashSet buckets,
    TreeMap/TreeSet red-black trees; nodes glide to their new place (pg-viz treeHtml draws, flipTree animates).
    localStorage (always in try/catch): js1-pg-code, js1-pg-stdin, js1-pg-speed, js1-pg-objs, js1-pg-mem, js1-pg-full, js1-pg-split.
-   Details: kb/java/playground.md. */
+   Details: kb/playground.md. */
 "use strict";
 (function(){
   const PGhost=document.getElementById("pgv");if(!PGhost||!window.JVML)return;

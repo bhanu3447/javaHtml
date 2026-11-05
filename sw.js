@@ -1,4 +1,4 @@
-/* Offline support (2026-11-04, kb/lock/access-lock.md → "Offline"). Registered by assets/js/auth.js on the live https site only.
+/* Offline support (2026-11-04, kb/access-lock.md → "Offline"). Registered by assets/js/auth.js on the live https site only.
    - The public site in "zl-site": pages and unstamped files network first; files stamped ?v= (lock.mjs) cache first.
    - CDN files (supabase-js, CodeMirror, fonts): stale-while-revalidate in "zl-cdn".
    - Locked lesson scripts come from 1-hour signed Supabase Storage URLs: network first, kept in "zl-private" under their path

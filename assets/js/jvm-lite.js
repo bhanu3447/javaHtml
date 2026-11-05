@@ -1,9 +1,9 @@
-/* jvm-lite.js: a small Java interpreter for the Visual Playground (courses/java/playground.html). No DOM code in this file.
+/* jvm-lite.js: a small Java interpreter for the Visual Playground (java/playground.html). No DOM code in this file.
    Lexer -> parser (AST) -> tree-walking interpreter -> step recorder. Everything lives inside one IIFE; the only global is
    window.JVML = { run(source, stdin, opts) -> result, state(result, k) -> snapshot, version }.
    Values: int/short/byte = JS number, long = BigInt, double = JDbl, float = JFlt, char = JChr, boolean = JS boolean,
    null = null, references = heap objects (HObj). Strings, boxed numbers, arrays and collections are heap objects, so == and
-   the String pool / Integer cache behave like the JVM. Full notes: kb/java/playground.md. */
+   the String pool / Integer cache behave like the JVM. Full notes: kb/playground.md. */
 "use strict";
 (function(G){
 const VERSION="1.0";

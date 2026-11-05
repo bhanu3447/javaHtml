@@ -1,6 +1,6 @@
-/* pg-viz.js: the DSA Lab's explanation layer for the Java Visual Playground (courses/java/playground.html). Loaded after jvm-lite.js, before
+/* pg-viz.js: the DSA Lab's explanation layer for the Java Visual Playground (java/playground.html). Loaded after jvm-lite.js, before
    playground.js. Pure functions, no DOM: index the program's statements by line (JVML.parse) and say in plain English what a statement
-   does. Values never come from here: the line card adds them from the recorded trace. Global: window.PGVZ. Details: kb/java/playground.md. */
+   does. Values never come from here: the line card adds them from the recorded trace. Global: window.PGVZ. Details: kb/playground.md. */
 "use strict";
 /* DSX: the DSA design system's building blocks (CSS block "dsa-ds v1"), shared by the DSA Lab and the D00–D21 labs (dsa pages load
    this file too; the PGVZ part below needs jvm-lite and stays off there). HTML builders return strings; flip() swaps a stage's HTML and
