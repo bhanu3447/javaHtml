@@ -160,7 +160,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
       <a role="menuitem" tabindex="-1" data-c="redis" href="courses/redis/index.html"><i class="k-redis">R</i><span><b>Redis</b><small>Zero to production · R00–R20 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="kafka" href="courses/kafka/index.html"><i class="k-kafka">K</i><span><b>Kafka</b><small>Zero to production · K00–K09 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="nginx" href="courses/nginx/index.html"><i class="k-nginx">G</i><span><b>NGINX</b><small>Zero to production · G00–G13 live</small></span></a>
-      <a role="menuitem" tabindex="-1" data-c="sysdesign" href="courses/sysdesign/index.html"><i class="k-sysdesign">H</i><span><b>System Design</b><small>HLD for interviews · H00–H09 live</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="sysdesign" href="courses/sysdesign/index.html"><i class="k-sysdesign">H</i><span><b>System Design</b><small>HLD for interviews · H00–H20 + H24 live</small></span></a>
     </div>
   </div>
   <a class="gh" id="auAdmin" href="admin.html" hidden>Admin</a>
@@ -258,7 +258,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <span class="ic" aria-hidden="true">H</span>
     <b>System Design: Zero to Interview</b>
     <p>High-level design in learning order for the MAANG system-design round: estimation, networking and APIs, load balancers, caching, CDNs, databases, replication, sharding, consistency and CAP, queues, microservices, reliability and security, then ten classic case studies and a timed mock, on a live architecture board where you add replicas, kill nodes and spike traffic.</p>
-    <span class="st"><span><b>26</b> lessons planned</span><span><b>10</b> live</span></span>
+    <span class="st"><span><b>26</b> lessons planned</span><span><b>22</b> live</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course n8n" href="courses/resume/index.html">
@@ -295,13 +295,14 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
 <script src="assets/js/study.js?v=94675e5b"></script>
+<script src="assets/js/course-logos.js?v=aa2c1315"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
    shown only once there is something to show */
 (function(){try{if(window.STUDY&&JSON.parse(localStorage.getItem("js1-sum")||"{}")&&Object.keys(JSON.parse(localStorage.getItem("js1-sum")||"{}")).length){
   var d=document.getElementById("dash");STUDY.dash(document.getElementById("dashIn"));d.hidden=false;}}catch(e){}})();
 </script>
-<script src="assets/js/auth-config.js?v=94003b06"></script>
+<script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/js/auth.js?v=4d82b4fc"></script>
 <script>

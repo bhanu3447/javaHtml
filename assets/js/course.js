@@ -75,7 +75,7 @@ const thisPage=PAGES.find(p=>p.key===PAGE);
    jumps to the other course's home and remembers the choice (js1-course, read by index.html). */
 const COURSE_ID=document.body.dataset.course||"java";
 /* every course of the site, in hub order; a new course = one more row here + its folder + a card in index.html */
-const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 36 lessons",file:"courses/java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · 18 lessons",file:"courses/sql/index.html",k:"S"},{id:"spring",name:"Spring Boot",sub:"Annotations lab · request lifecycle",file:"courses/spring/index.html",k:"B"},{id:"patterns",name:"Design Patterns",sub:"Beginner to expert · all 23 + capstone",file:"courses/patterns/index.html",k:"P"},{id:"n8n",name:"n8n Automation",sub:"Zero to selling flows · 17 lessons",file:"courses/n8n/index.html",k:"N"},{id:"dsa",name:"DSA",sub:"Data structures and algorithms · D00–D21 complete",file:"courses/dsa/index.html",k:"D"},{id:"redis",name:"Redis",sub:"Zero to production · R00–R01 live",file:"courses/redis/index.html",k:"R"},{id:"kafka",name:"Kafka",sub:"Zero to production · K00–K13 planned",file:"courses/kafka/index.html",k:"K"},{id:"nginx",name:"NGINX",sub:"Zero to production · G00 live",file:"courses/nginx/index.html",k:"G"},{id:"sysdesign",name:"System Design",sub:"HLD for interviews · H00–H09 live",file:"courses/sysdesign/index.html",k:"H"}];
+const COURSES=[{id:"java",name:"Java",sub:"Zero to Advanced · 36 lessons",file:"courses/java/index.html",k:"J"},{id:"sql",name:"SQL",sub:"Zero to Advanced · 18 lessons",file:"courses/sql/index.html",k:"S"},{id:"spring",name:"Spring Boot",sub:"Annotations lab · request lifecycle",file:"courses/spring/index.html",k:"B"},{id:"patterns",name:"Design Patterns",sub:"Beginner to expert · all 23 + capstone",file:"courses/patterns/index.html",k:"P"},{id:"n8n",name:"n8n Automation",sub:"Zero to selling flows · 17 lessons",file:"courses/n8n/index.html",k:"N"},{id:"dsa",name:"DSA",sub:"Data structures and algorithms · D00–D21 complete",file:"courses/dsa/index.html",k:"D"},{id:"redis",name:"Redis",sub:"Zero to production · R00–R01 live",file:"courses/redis/index.html",k:"R"},{id:"kafka",name:"Kafka",sub:"Zero to production · K00–K13 planned",file:"courses/kafka/index.html",k:"K"},{id:"nginx",name:"NGINX",sub:"Zero to production · G00 live",file:"courses/nginx/index.html",k:"G"},{id:"sysdesign",name:"System Design",sub:"HLD for interviews · H00–H20 + H24 live",file:"courses/sysdesign/index.html",k:"H"}];
 (function(){const b=$("nav .brand");if(!b)return;const cur=COURSES.find(c=>c.id===COURSE_ID)||COURSES[0];
   const w=document.createElement("div");w.className="csw";w.id="courseSel";w.dataset.value=cur.id;
   w.innerHTML='<button type="button" class="csw-b" aria-haspopup="menu" aria-expanded="false" aria-label="Switch course: '+cur.name+'"><span>'+cur.name+'</span>'+ICO.chev+'</button>'+
@@ -1611,5 +1611,16 @@ $("#fbc").onclick=()=>{const t="Feedback on "+document.body.dataset.name+":\n"+R
 /* study tools (2026-11-04): Review today, mock interview, progress, Explain it back, cheat sheet, accessibility pass
    (assets/js/study.js, public). Loaded after the page and its labs are built. */
 (function(){const src=new URL("study.js",document.currentScript.src).href.replace(/\?.*$/,"");
+  const go=()=>{const s=document.createElement("script");s.src=src;document.body.appendChild(s);};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();})();
+
+/* course banners (2026-11-06): a real photo with its credit at the top of every course page (assets/js/course-images.js +
+   assets/img/banners/, both public; generated from Wikimedia Commons by the image script, see kb/site/site-internals.md). */
+(function(){const src=new URL("course-images.js",document.currentScript.src).href.replace(/\?.*$/,"");
+  const go=()=>{const s=document.createElement("script");s.src=src;document.body.appendChild(s);};
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();})();
+
+/* course logos (2026-11-06): the real technology logo instead of the letter badge (assets/js/course-logos.js, assets/img/logos/) */
+(function(){const src=new URL("course-logos.js",document.currentScript.src).href.replace(/\?.*$/,"");
   const go=()=>{const s=document.createElement("script");s.src=src;document.body.appendChild(s);};
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",go);else go();})();
