@@ -62,9 +62,10 @@
       DEP=R.steps.map(s=>s.k.reduce((n,id)=>n+(typeof id==="string"&&id.startsWith("S:")?0:1),0));
       IDX=window.PGVZ?PGVZ.index(code):IDX;IDX.top1=/\btop\s*=\s*-\s*1\b/.test(code);IDX.sort=/\b(void|int\[\]|static)\s+\w*[sS]ort\w*\s*\(|class\s+\w*Sort/.test(code);OPEN.clear();BITC.clear();AS.clear();hitsGutter();
       try{CX=window.PGVZ&&PGVZ.cplx?PGVZ.cplx(code):null;}catch(e){CX=null;}cxRun++;cxKey="";if(CX)for(const m of CX.ms)m.show=!!m.rec||m.ts!=="O(1)";
-      if(!R.steps.length){showFatal();return;}
+      const ran=()=>{try{document.dispatchEvent(new CustomEvent("pg:ran",{detail:R}));}catch(e){}}; // missions (labs-java-play.js) listen
+      if(!R.steps.length){showFatal();ran();return;}
       slide.max=String(R.steps.length-1);go(0);
-      if(R.error&&R.error.line)markErr(R.error.line);},30);}
+      if(R.error&&R.error.line)markErr(R.error.line);ran();},30);}
   function showFatal(){const e=R.error||{msg:"nothing to show",line:0};
     framesEl.innerHTML="";heapEl.innerHTML="";heapEl.style.height="0px";poolEl.hidden=true;svg.innerHTML="";slide.max="0";slide.value="0";pos.textContent="step 0 / 0";
     DRAWN.clear();cardEl.innerHTML="";cardLn.textContent="";watchEl.innerHTML='<div class="pg-empty">Nothing ran.</div>';watchInfo.textContent="";
@@ -1595,5 +1596,7 @@
   const lookSel=q("#pgLook"),LOOKS=["classic","glass","soft","line","mono"];
   function setLook(v){if(!LOOKS.includes(v))v="classic";for(const l of LOOKS)document.body.classList.toggle("pg-lk-"+l,l===v&&l!=="classic");if(lookSel)lookSel.value=v;LS.set("js1-pg-look",v);}
   if(lookSel){lookSel.onchange=()=>setLook(lookSel.value);setLook(LS.get("js1-pg-look")||"classic");}
-  window.PGV={run:visualize,setLook,go:k=>go(k),act:a=>act(a),gif:()=>saveGif(),setMem,setFull,toggleBp,setTab,get cx(){return CX;},get result(){return R;},get step(){return K;},layoutCount:()=>DRAWN.size};
+  /* load(code, stdin, run): a mission's starter becomes the editor's program (Reset returns to it), like picking an example */
+  const loadCode=(code,stdin,go1)=>{baseCode=code;box._orig=code;setCode(code);inEl.value=stdin||"";q("#pgInBox").open=!!stdin;exSel.value="";setFile();if(go1!==false)visualize();};
+  window.PGV={run:visualize,load:loadCode,setLook,go:k=>go(k),act:a=>act(a),gif:()=>saveGif(),setMem,setFull,toggleBp,setTab,get cx(){return CX;},get result(){return R;},get step(){return K;},layoutCount:()=>DRAWN.size};
 })();

@@ -67,6 +67,8 @@ nav .gh[hidden]{display:none}
 .course.nginx{--c:#16a34a;--c2:#166534}
 .course.sysdesign{--c:#7c3aed;--c2:#4c1d95}
 .course.docker{--c:#0ea5e9;--c2:#1d4ed8}
+.course.api{--c:#f97316;--c2:#be123c}
+.course.behavioural{--c:#db2777;--c2:#9d174d}
 footer{padding:0 0 40px;color:var(--muted);font-size:13px}
 footer a{color:inherit}
 @media (prefers-reduced-motion:reduce){.btn,.course,.course .go{transition:none}}
@@ -97,6 +99,8 @@ nav .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient
 .csw-m a i.k-nginx{background:linear-gradient(135deg,#16a34a,#166534)}
 .csw-m a i.k-sysdesign{background:linear-gradient(135deg,#7c3aed,#4c1d95)}
 .csw-m a i.k-docker{background:linear-gradient(135deg,#0ea5e9,#1d4ed8)}
+.csw-m a i.k-api{background:linear-gradient(135deg,#f97316,#be123c)}
+.csw-m a i.k-behavioural{background:linear-gradient(135deg,#db2777,#9d174d)}
 .csw-m a span{display:flex;flex-direction:column;line-height:1.25}
 .csw-m a b{font:600 .86rem Inter,sans-serif}
 .csw-m a small{font:500 .72rem Inter,sans-serif;color:var(--muted)}
@@ -147,7 +151,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
-<script src="assets/js/loader.js?v=2c0cab88"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
+<script src="assets/js/loader.js?v=316d0f1e"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
 <nav><div class="wrap">
   <a class="brand" href="index.html" aria-label="Zero to Advanced, all courses"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i></a>
   <div class="csw" id="courseSel">
@@ -155,7 +159,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <div class="csw-m" role="menu" hidden>
       <a role="menuitem" tabindex="-1" data-c="java" href="courses/java/index.html"><i class="k-java">J</i><span><b>Java</b><small>Zero to Advanced · 36 lessons</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="sql" href="courses/sql/index.html"><i class="k-sql">S</i><span><b>SQL</b><small>Zero to Advanced · 18 lessons</small></span></a>
-      <a role="menuitem" tabindex="-1" data-c="spring" href="courses/spring/index.html"><i class="k-sql">S</i><span><b>Spring Boot</b><small>Interactive annotations lab</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="spring" href="courses/spring/index.html"><i class="k-sql">S</i><span><b>Spring Boot</b><small>Core · Boot · JPA · Security · Cloud</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="patterns" href="courses/patterns/index.html"><i class="k-patterns">P</i><span><b>Design Patterns</b><small>Beginner to expert · all 23 + capstone</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="n8n" href="courses/n8n/index.html"><i class="k-patterns">N</i><span><b>n8n Automation</b><small>Zero to selling flows · 17 lessons</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="dsa" href="courses/dsa/index.html"><i class="k-dsa">D</i><span><b>DSA</b><small>Data structures and algorithms · D00–D21 complete</small></span></a>
@@ -163,7 +167,9 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
       <a role="menuitem" tabindex="-1" data-c="kafka" href="courses/kafka/index.html"><i class="k-kafka">K</i><span><b>Kafka</b><small>Zero to production · K00–K09 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="nginx" href="courses/nginx/index.html"><i class="k-nginx">G</i><span><b>NGINX</b><small>Zero to production · G00–G13 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="sysdesign" href="courses/sysdesign/index.html"><i class="k-sysdesign">H</i><span><b>System Design</b><small>HLD for interviews · H00–H25 live</small></span></a>
-      <a role="menuitem" tabindex="-1" data-c="docker" href="courses/docker/index.html"><i class="k-docker">C</i><span><b>Docker and Kubernetes</b><small>Zero to production · C00–C04 live</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="docker" href="courses/docker/index.html"><i class="k-docker">C</i><span><b>Docker and Kubernetes</b><small>Zero to production · C00–C12 complete</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="api" href="courses/api/index.html"><i class="k-api">A</i><span><b>REST API Design</b><small>Zero to production · A00–A12 complete</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="behavioural" href="courses/behavioural/index.html"><i class="k-behavioural">I</i><span><b>Behavioural Interview</b><small>Stories that get offers · B00–B10 complete</small></span></a>
     </div>
   </div>
   <a class="gh" id="auAdmin" href="admin.html" hidden>Admin</a>
@@ -186,8 +192,15 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <a class="btn" href="courses/nginx/index.html">NGINX</a>
     <a class="btn" href="courses/sysdesign/index.html">System Design</a>
     <a class="btn" href="courses/docker/index.html">Docker</a>
+    <a class="btn" href="courses/api/index.html">REST API</a>
+    <a class="btn" href="courses/behavioural/index.html">Behavioural</a>
   </div>
 </header>
+
+<section id="plan" aria-labelledby="planH">
+  <h2 id="planH">Your study plan</h2>
+  <div id="planIn"></div>
+</section>
 
 <section class="dash" id="dash" aria-labelledby="dashH" hidden>
   <h2 id="dashH">Your progress</h2>
@@ -211,9 +224,9 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
   </a>
   <a class="course spring" href="courses/spring/index.html">
     <span class="ic" aria-hidden="true">S</span>
-    <b>Spring Boot: Annotations Lab</b>
-    <p>Trace a live API request through Controller, Service, Repository and Database. Click each layer, inspect the matching code, run GET and POST simulations, and learn the annotations that wire it together.</p>
-    <span class="st"><span><b>5</b> request stages</span><span><b>11</b> annotations</span><span><b>2</b> API simulations</span><span><b>7</b> code files</span></span>
+    <b>Spring: Core, Boot, JPA, Security, Cloud</b>
+    <p>Open the machines inside a Spring Boot app in learning order: the IoC container and dependency injection, auto-configuration and the request pipeline, Hibernate's persistence context and the N + 1 trap, the security filter chain, and Spring Cloud. Every lab runs on a simulator that reproduces Spring's real behaviour and error messages.</p>
+    <span class="st"><span><b>34</b> lessons</span><span><b>5</b> parts</span><span><b>F00</b> live</span><span><b>+1</b> annotations lab</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course patterns" href="courses/patterns/index.html">
@@ -269,7 +282,21 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <span class="ic" aria-hidden="true">C</span>
     <b>Docker and Kubernetes: Zero to Production</b>
     <p>From your first container to a rolling update on Kubernetes, in learning order: images and the Dockerfile, running containers, storage and networks, Compose, then pods, deployments, services, probes, config and autoscaling. Containerise the Spring Boot marketplace on a live docker + kubectl terminal and debug the classic failures.</p>
-    <span class="st"><span><b>13</b> lessons planned</span><span><b>5</b> live</span></span>
+    <span class="st"><span><b>13</b> lessons</span><span><b>13</b> live</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
+  <a class="course api" href="courses/api/index.html">
+    <span class="ic" aria-hidden="true">A</span>
+    <b>REST API Design: Zero to Production</b>
+    <p>Design APIs that other teams love to call, in learning order: HTTP from the wire up, REST's constraints, resource and URL design, methods and status codes, errors, pagination, idempotency and concurrency, caching, versioning, security, OpenAPI and Postman, then the whole marketplace API in Spring Boot. Every lesson has a live API client against a simulated shop server.</p>
+    <span class="st"><span><b>13</b> lessons</span><span><b>13</b> live</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
+  <a class="course behavioural" href="courses/behavioural/index.html">
+    <span class="ic" aria-hidden="true">I</span>
+    <b>Behavioural Interview: Stories that Get Offers</b>
+    <p>The round that decides whether a team wants to work with you, in learning order: how the round is scored, building a story bank from your real experience, STAR in depth, then ownership and impact, conflict, failure and feedback, teamwork and leadership, ambiguity and priorities, openers, the HR and offer conversation, and a timed mock round. Your story bank is saved in this browser and follows you through every lesson.</p>
+    <span class="st"><span><b>11</b> lessons</span><span><b>11</b> live</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course n8n" href="courses/resume/index.html">
@@ -292,7 +319,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 <script>
 /* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
 (function(){try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
-  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":"Java";a.hidden=false;}}catch(e){}
+  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
   /* course menu: the same control as the nav of every course page (button + menu, Esc / arrows / click outside) */
   var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m"),items=function(){return Array.prototype.slice.call(m.querySelectorAll("a"));};
   function open(o){m.hidden=!o;bt.setAttribute("aria-expanded",String(o));if(o)items()[0].focus();}
@@ -305,7 +332,9 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=94675e5b"></script>
+<script src="assets/js/study.js?v=f69abb1f"></script>
+<script src="assets/js/plan-outline.js?v=5980572c"></script>
+<script src="assets/js/plan.js?v=11fc3af9"></script>
 <script src="assets/js/course-logos.js?v=1b7bdc28"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
@@ -315,7 +344,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 </script>
 <script src="assets/js/auth-config.js?v=94003b06"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=4d82b4fc"></script>
+<script src="assets/js/auth.js?v=eaf942ac"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/lock/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};

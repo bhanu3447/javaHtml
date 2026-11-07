@@ -23,6 +23,8 @@
     const run=document.createElement("button");run.type="button";run.className="ib run jr-run";run.textContent="▶ Run";run.title="Compile and run on a real JDK (Wandbox) · Ctrl+Enter";
     bar.insertBefore(run,bar.querySelector(".cp"));
     const out=document.createElement("div");out.className="jr-out";out.hidden=true;box.appendChild(out);
+    /* after every run the box fires "jr-done" (bubbles; detail {out, err, ce, status, ok, file} or {fail, msg}): the DSA Problem Bank checks the output */
+    const done=d=>{try{box.dispatchEvent(new CustomEvent("jr-done",{bubbles:true,detail:d}));}catch(e){}};
     let stdinBox=null;const ensureIn=()=>{if(stdinBox)return stdinBox;stdinBox=document.createElement("label");stdinBox.className="jr-in";stdinBox.innerHTML='<span>stdin (what the program reads)</span><textarea rows="2" spellcheck="false" placeholder="one value per line, or space-separated"></textarea>';box.insertBefore(stdinBox,out);return stdinBox;};
     async function go(){if(run.disabled)return;const src=getSrc();if(readsIn(src)&&!opts.stdin)ensureIn();if(typeof opts.fileOf==="function")opts.file=opts.fileOf();
       run.disabled=true;run.textContent="⏳ Running…";out.hidden=false;const t0=performance.now();
@@ -35,8 +37,9 @@
           if(se)html+='<div class="jr-lbl">stderr</div><pre class="jr-err">'+esc(se.replace(/prog\.java/g,(opts.file||"Main.java")))+"</pre>";}
         let verdict="";if(opts.expected&&!ce){const exp=opts.expected().trim(),got=so.trim();if(exp&&exp!=="(your output)")verdict=got===exp?' · <b class="jr-ok">✓ matches the expected output</b>':' · <b class="jr-bad">✗ differs from the expected output</b>';}
         html+='<div class="jr-status">'+(ok?"✓":"✗")+" exit "+esc(j.status)+(j.signal?" ("+esc(j.signal)+")":"")+" · JDK "+esc(j.compiler.replace("openjdk-jdk-","").split("+")[0])+" · "+secs+" s"+verdict+'<button type="button" class="ib jr-close">✕</button></div>';
-        out.innerHTML=html;}
-      catch(e){out.innerHTML='<div class="jr-lbl">could not run</div><pre class="jr-err">'+esc(e.message||String(e))+'</pre><div class="jr-status">Check your internet connection, or run it locally: save the file and type <code>java '+esc(opts.file||"Main.java")+'</code> (JDK 11+).<button type="button" class="ib jr-close">✕</button></div>';}
+        out.innerHTML=html;done({out:so,err:se,ce,status:j.status,ok,file:opts.file});}
+      catch(e){out.innerHTML='<div class="jr-lbl">could not run</div><pre class="jr-err">'+esc(e.message||String(e))+'</pre><div class="jr-status">Check your internet connection, or run it locally: save the file and type <code>java '+esc(opts.file||"Main.java")+'</code> (JDK 11+).<button type="button" class="ib jr-close">✕</button></div>';
+        done({fail:true,msg:e.message||String(e),file:opts.file});}
       run.disabled=false;run.textContent="▶ Run";}
     run.onclick=go;box._run=go;
     out.addEventListener("click",e=>{if(e.target.closest(".jr-close"))out.hidden=true;});
