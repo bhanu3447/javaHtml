@@ -23631,3 +23631,15 @@ html.no-motion .db7-bt i,html.no-motion .db7-seg,html.no-motion .db7-pgx,html.no
 @media (max-width:640px){.db8-bar{grid-template-columns:1fr}.db8-bv{flex-direction:row;justify-content:space-between;align-items:baseline;text-align:left}}
 @media (prefers-reduced-motion:reduce){.db8-steps li,.db8-run,.db8-bt i,.db8-op{transition:none}}
 html.no-motion .db8-steps li,html.no-motion .db8-run,html.no-motion .db8-bt i,html.no-motion .db8-op{transition:none}
+
+/* readability v1 (2026-11-07, user: "no scroller and odd looking"): a page scrollbar you can see, sentence-case sidebar titles, hero letters that don't touch */
+html{scrollbar-width:auto;scrollbar-color:color-mix(in srgb,var(--muted) 65%,transparent) color-mix(in srgb,var(--muted) 12%,transparent)}
+#toc{scrollbar-color:color-mix(in srgb,var(--muted) 55%,transparent) transparent}
+#toc .tgh{text-transform:none;letter-spacing:0;font:600 .8rem/1.35 Inter,system-ui,sans-serif;padding-top:2px;gap:10px}
+#toc .tgh small{flex:none}
+body header#top h1{letter-spacing:-.025em}
+/* phone width: the course name shrinks with an ellipsis so the nav icons stay on screen; long pager titles wrap */
+nav #courseSel{min-width:0;flex:0 1 auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+nav #courseSel>*{min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){nav #courseSel{max-width:max(44px,calc(100vw - 320px))}}
+.pager .btn{white-space:normal;min-width:0;max-width:100%}
