@@ -23639,7 +23639,9 @@ html{scrollbar-width:auto;scrollbar-color:color-mix(in srgb,var(--muted) 65%,tra
 #toc .tgh small{flex:none}
 body header#top h1{letter-spacing:-.025em}
 /* phone width: the course name shrinks with an ellipsis so the nav icons stay on screen; long pager titles wrap */
-nav #courseSel{min-width:0;flex:0 1 auto;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
-nav #courseSel>*{min-width:0;overflow:hidden;text-overflow:ellipsis}
-@media (max-width:520px){nav #courseSel{max-width:max(44px,calc(100vw - 320px))}}
+/* only the name inside the button is clipped: clipping #courseSel itself hid its drop-down menu (.csw-m), fixed 2026-11-08 */
+nav #courseSel{min-width:0;flex:0 1 auto}
+nav #courseSel .csw-b{min-width:0;max-width:100%}
+nav #courseSel .csw-b>span{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+@media (max-width:520px){nav #courseSel{max-width:max(44px,calc(100vw - 320px))}nav #courseSel .csw-m{max-width:calc(100vw - 24px)}nav #courseSel .csw-m a small{white-space:normal}}
 .pager .btn{white-space:normal;min-width:0;max-width:100%}
