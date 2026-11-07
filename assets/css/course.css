@@ -23643,5 +23643,7 @@ body header#top h1{letter-spacing:-.025em}
 nav #courseSel{min-width:0;flex:0 1 auto}
 nav #courseSel .csw-b{min-width:0;max-width:100%}
 nav #courseSel .csw-b>span{min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+/* 18 rows are taller than most screens and the nav is fixed: the menu scrolls inside itself (2026-11-08, user: "scroller not there for the courses list") */
+nav #courseSel .csw-m{max-height:calc(100vh - 70px);max-height:calc(100dvh - 70px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--muted) 60%,transparent) transparent}
 @media (max-width:520px){nav #courseSel{max-width:max(44px,calc(100vw - 320px))}nav #courseSel .csw-m{max-width:calc(100vw - 24px)}nav #courseSel .csw-m a small{white-space:normal}}
 .pager .btn{white-space:normal;min-width:0;max-width:100%}

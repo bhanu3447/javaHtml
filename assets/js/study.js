@@ -141,7 +141,23 @@ const css=`
 @media print{body.cheat nav,body.cheat .band,body.cheat .secfoot,body.cheat footer,body.cheat #toc,body.cheat .quiz,body.cheat .xb,
   body.cheat .wrap>section>:not(h2):not(.num):not(.tldr):not(.takeaways):not(.tw):not(.exg):not(table){display:none!important}
   body.cheat .wrap>section{break-inside:avoid-page;margin:0 0 10px!important;padding:0!important}body.cheat .wrap>section>h2{font-size:14pt;margin:8px 0 4px}
-  body.cheat header .lead,body.cheat header .cta,body.cheat header .hero-code{display:none!important}}`;
+  body.cheat header .lead,body.cheat header .cta,body.cheat header .hero-code{display:none!important}}
+.cs-open{margin:14px 0 4px}.cs-dlg{width:min(1060px,calc(100vw - 24px));max-width:calc(100vw - 24px)}.cs-body{min-width:0}.cs-t{flex:1 1 220px;min-width:0;font:700 .95rem Inter,system-ui,sans-serif;padding:0 4px}
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.cs-card{min-width:0;border:1px solid var(--line,#e3e7ef);border-radius:14px;padding:12px 14px;background:var(--bg,#f7f8fb)}.cs-card.wide{grid-column:1/-1}
+.cs-card h3{margin:0 0 8px;font:700 .7rem "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--accent,#4f46e5)}
+.cs-card p{margin:0;font-size:.92rem;line-height:1.55}.cs-card ul{margin:0;padding-left:18px}.cs-card li{margin:5px 0;font-size:.88rem;line-height:1.5}
+.cs-card code{font-family:"JetBrains Mono",monospace;font-size:.86em}
+.cs-card pre{margin:6px 0 0;overflow-x:auto;padding:10px 12px;border-radius:10px;background:var(--code-bg,#0f1320);color:var(--code-text,#e6e9f0);font:.78rem/1.55 "JetBrains Mono",monospace}
+.cs-card pre code{font-size:1em}.cs-card pre .cs-a{color:#7ee2a8}
+.cs-tw{overflow-x:auto}.cs-card table{width:100%;border-collapse:collapse;font-size:.82rem;margin:0}
+.cs-card th,.cs-card td{padding:6px 7px;border-bottom:1px solid var(--line,#e3e7ef);text-align:left;vertical-align:top}.cs-card th{font-weight:700;color:var(--muted,#5b6474)}
+.cs-links{display:flex;flex-wrap:wrap;gap:6px}.cs-links a{font:600 .8rem Inter,system-ui,sans-serif;padding:5px 10px;border-radius:99px;border:1px solid var(--line,#e3e7ef);color:var(--accent,#4f46e5);text-decoration:none}
+.cs-hide .cs-a:not(.on){filter:blur(5px);cursor:pointer;user-select:none}.cs-a:focus-visible{outline:2px solid var(--accent,#4f46e5);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:no-preference){.cs-a{transition:filter .15s}}
+@media print{body.csprint>*:not(.cs-dlg){display:none!important}body.csprint .cs-dlg{position:static;display:block;width:auto;max-height:none;margin:0;border:0;box-shadow:none;animation:none}
+  body.csprint .cs-dlg .sd-h button{display:none}body.csprint .cs-body{overflow:visible;padding:8px 0 0}body.csprint .cs-a{filter:none!important}
+  body.csprint .cs-card{break-inside:avoid}body.csprint .cs-grid{grid-template-columns:1fr 1fr;gap:8px}body.csprint .cs-card.wide{grid-column:1/-1}}`;
 function addCss(){if(q1("#sdCss"))return;const s=document.createElement("style");s.id="sdCss";s.textContent=css;document.head.appendChild(s);}
 
 /* ---------- the panel ---------- */
@@ -328,11 +344,39 @@ function a11y(){
 /* ---------- cheat sheet ---------- */
 function cheat(){document.body.classList.add("cheat");addCss();const off=()=>{document.body.classList.remove("cheat");removeEventListener("afterprint",off);};addEventListener("afterprint",off);print();}
 
-window.STUDY={open,due,dash,cheat,badge};
+/* ---------- lesson cheat sheet (2026-11-08): a lesson's <template id="cheatsheet"> opens as a pop-up panel.
+   Cards .cs-card (h3 + content, .wide spans the row); .cs-a = an answer, blurred in self-test mode until clicked;
+   Print prints only the sheet. Self-test on/off in js1-cs-hide ("0" = off). ---------- */
+let csDlg=null;
+function sheetMode(on){if(!csDlg)return;csDlg.classList.toggle("cs-hide",on);st.set("js1-cs-hide",on?"1":"0");
+  const m=q1(".cs-mode",csDlg);m.setAttribute("aria-pressed",String(on));m.textContent=on?"Self-test: on":"Self-test: off";
+  qa(".cs-a",csDlg).forEach(a=>{a.classList.remove("on");if(on){a.tabIndex=0;a.setAttribute("role","button");a.title="Click to reveal";}else{a.removeAttribute("tabindex");a.removeAttribute("role");a.removeAttribute("title");}});}
+function sheetPrint(){const off=()=>{document.body.classList.remove("csprint");removeEventListener("afterprint",off);csDlg.close();csDlg.showModal();};
+  document.body.classList.add("csprint");addEventListener("afterprint",off);csDlg.close();csDlg.show();print();}
+function sheet(){
+  const tpl=q1("template#cheatsheet");if(!tpl)return;addCss();
+  if(!csDlg){csDlg=document.createElement("dialog");csDlg.className="sd-dlg cs-dlg";csDlg.setAttribute("aria-labelledby","csT");
+    csDlg.innerHTML='<div class="sd-h"><b id="csT" class="cs-t">📄 Cheat sheet · '+esc(document.body.dataset.name||document.title)+'</b>'+
+      '<button type="button" class="sd-b cs-mode"></button><button type="button" class="sd-b cs-all">Reveal all</button>'+
+      '<button type="button" class="sd-b cs-pr">Print</button><button type="button" class="sd-x" aria-label="Close cheat sheet">✕</button></div><div class="sd-body cs-body"></div>';
+    q1(".cs-body",csDlg).appendChild(tpl.content.cloneNode(true));document.body.appendChild(csDlg);
+    q1(".cs-mode",csDlg).onclick=()=>sheetMode(!csDlg.classList.contains("cs-hide"));
+    q1(".cs-all",csDlg).onclick=()=>qa(".cs-a",csDlg).forEach(a=>a.classList.add("on"));
+    q1(".cs-pr",csDlg).onclick=sheetPrint;q1(".sd-x",csDlg).onclick=()=>csDlg.close();
+    const flip=e=>{const a=e.target.closest(".cs-a");if(a&&csDlg.classList.contains("cs-hide")){a.classList.toggle("on");e.preventDefault();}};
+    csDlg.addEventListener("click",e=>{if(e.target===csDlg)return csDlg.close();if(e.target.closest('a[href^="#"]'))return csDlg.close();flip(e);});
+    csDlg.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ")flip(e);});}
+  sheetMode(st.get("js1-cs-hide")!=="0");if(!csDlg.open)csDlg.showModal();q1(".cs-body",csDlg).scrollTop=0;}
+function sheetBtn(){const h=q1("header#top"),ld=h&&q1(".lead",h);if(!q1("template#cheatsheet")||!h||q1(".cs-open"))return;
+  const b=document.createElement("button");b.type="button";b.className="sd-b cs-open";b.textContent="📄 Cheat sheet";b.onclick=sheet;
+  ld?ld.after(b):h.appendChild(b);}
+
+window.STUDY={open,due,dash,cheat,badge,sheet};
 if(CID&&COURSE.pages&&COURSE.pages.length){
-  enrol();backfill();summarise();addCss();explain();navBtn();a11y();
+  enrol();backfill();summarise();addCss();explain();navBtn();sheetBtn();a11y();
   document.addEventListener("quizanswer",()=>{enrol();summarise();badge();});
   document.addEventListener("click",e=>{if(e.target.closest(".secfoot .sf-done"))setTimeout(()=>{backfill();summarise();badge();},0);});
   const h=decodeURIComponent(location.hash);if(h==="#study-review"||h==="#study-mock"||h==="#study-progress"){history.replaceState(null,"",location.pathname+location.search);open(h.slice(7));}
+  else if(h==="#cheatsheet"){history.replaceState(null,"",location.pathname+location.search);sheet();}
   setInterval(badge,30*60*1000);}
 })();

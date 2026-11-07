@@ -856,6 +856,7 @@ const THM=(function(){
       A("Study","✓","Review today"+(n?" · "+n+" due":" · nothing due"),()=>STUDY.open("review"));
       if(COURSE.qa.length)A("Study","?","Mock interview round",()=>STUDY.open("mock"));
       A("Study","▤","Your progress in every course",()=>STUDY.open("progress"));
+      if(STUDY.sheet&&document.getElementById("cheatsheet"))A("Study","📄","Cheat sheet of this lesson (self-test, print)",()=>STUDY.sheet());
       A("Study","⎙","Print a cheat sheet of this page (summaries, takeaways, tables)",()=>STUDY.cheat());}
     A("Commands","›","Expand every answer on the page",()=>$$("details.d").forEach(d=>d.open=true));
     A("Commands","›","Collapse every answer",()=>$$("details.d").forEach(d=>d.open=false));
