@@ -142,8 +142,23 @@ const css=`
   body.cheat .wrap>section>:not(h2):not(.num):not(.tldr):not(.takeaways):not(.tw):not(.exg):not(table){display:none!important}
   body.cheat .wrap>section{break-inside:avoid-page;margin:0 0 10px!important;padding:0!important}body.cheat .wrap>section>h2{font-size:14pt;margin:8px 0 4px}
   body.cheat header .lead,body.cheat header .cta,body.cheat header .hero-code{display:none!important}}
-.cs-open{margin:14px 0 4px}.cs-dlg{width:min(1060px,calc(100vw - 24px));max-width:calc(100vw - 24px)}.cs-body{min-width:0}.cs-t{flex:1 1 220px;min-width:0;font:700 .95rem Inter,system-ui,sans-serif;padding:0 4px}
-.cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+nav button.cs-open{width:auto;padding:0 10px 0 7px;gap:6px;display:flex;align-items:center;position:relative;color:color-mix(in srgb,#f59e0b 62%,var(--text,#111));font:600 .78rem Inter,system-ui,sans-serif;
+  border:1px solid color-mix(in srgb,#f59e0b 45%,transparent);background:color-mix(in srgb,#fbbf24 14%,transparent);box-shadow:0 0 12px -2px rgba(245,158,11,.45)}
+nav button.cs-open:hover{color:color-mix(in srgb,#f59e0b 45%,var(--text,#111));background:color-mix(in srgb,#fbbf24 26%,transparent);border-color:#f59e0b;box-shadow:0 0 18px 0 rgba(245,158,11,.6)}
+.cs-bulb{display:grid;place-items:center}.cs-bulb svg{width:18px;height:18px;overflow:visible}.cs-rays{opacity:.35}
+.cs-glass{fill:rgba(251,191,36,.25)}.cs-open:hover .cs-glass,.cs-lit .cs-glass{fill:#fbbf24}.cs-open:hover .cs-rays,.cs-lit .cs-rays{opacity:1}
+@media (max-width:760px){nav button.cs-open{padding:0;width:34px;justify-content:center}.cs-lbl{display:none}}
+.cs-pill{margin:14px 0 4px}
+@media (prefers-reduced-motion:no-preference){.cs-rays,.cs-glass{transition:opacity .2s,fill .2s}
+  .cs-open:hover .cs-bulb{animation:csWig .5s ease}.cs-lit .cs-bulb{animation:csFlash .7s ease}
+  .cs-new::after{content:"";position:absolute;inset:-3px;border-radius:12px;border:2px solid #f59e0b;animation:csRing 2.2s ease-out infinite;pointer-events:none}
+  .cs-new .cs-rays{animation:csRay 2.2s ease-in-out infinite}}
+@keyframes csRing{0%{opacity:.8;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.35)}}
+@keyframes csRay{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes csWig{0%,100%{transform:rotate(0)}30%{transform:rotate(-14deg)}65%{transform:rotate(10deg)}}
+@keyframes csFlash{0%{filter:none}35%{filter:drop-shadow(0 0 8px #fbbf24) brightness(1.5);transform:scale(1.25)}100%{filter:none;transform:scale(1)}}
+.cs-dlg{width:min(1060px,calc(100vw - 24px));max-width:calc(100vw - 24px)}.cs-body{min-width:0}.cs-t{flex:1 1 220px;min-width:0;font:700 .95rem Inter,system-ui,sans-serif;padding:0 4px}
+.cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));grid-auto-flow:row dense;gap:12px}
 .cs-card{min-width:0;border:1px solid var(--line,#e3e7ef);border-radius:14px;padding:12px 14px;background:var(--bg,#f7f8fb)}.cs-card.wide{grid-column:1/-1}
 .cs-card h3{margin:0 0 8px;font:700 .7rem "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--accent,#4f46e5)}
 .cs-card p{margin:0;font-size:.92rem;line-height:1.55}.cs-card ul{margin:0;padding-left:18px}.cs-card li{margin:5px 0;font-size:.88rem;line-height:1.5}
@@ -367,9 +382,16 @@ function sheet(){
     csDlg.addEventListener("click",e=>{if(e.target===csDlg)return csDlg.close();if(e.target.closest('a[href^="#"]'))return csDlg.close();flip(e);});
     csDlg.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ")flip(e);});}
   sheetMode(st.get("js1-cs-hide")!=="0");if(!csDlg.open)csDlg.showModal();q1(".cs-body",csDlg).scrollTop=0;}
-function sheetBtn(){const h=q1("header#top"),ld=h&&q1(".lead",h);if(!q1("template#cheatsheet")||!h||q1(".cs-open"))return;
-  const b=document.createElement("button");b.type="button";b.className="sd-b cs-open";b.textContent="📄 Cheat sheet";b.onclick=sheet;
-  ld?ld.after(b):h.appendChild(b);}
+/* 💡 bulb in the top nav (2026-11-08, user: "cheat sheet on the top with some bulb button show effect"): amber glow,
+   pulses until the sheet is first opened (js1-cs-seen), lights up on click, then opens. No nav → old pill under the lead. */
+function sheetBtn(){if(!q1("template#cheatsheet")||q1(".cs-open"))return;
+  const anchor=q1("#studyBtn")||q1("#cmdBtn"),b=document.createElement("button");b.type="button";b.className="cs-open";
+  b.title="Cheat sheet of this lesson";b.setAttribute("aria-label","Open the cheat sheet of this lesson");
+  b.innerHTML='<span class="cs-bulb" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g class="cs-rays"><path d="M12 1v1.5M4.2 4.2l1 1M19.8 4.2l-1 1M1.5 11H3M21 11h1.5"/></g><path class="cs-glass" d="M9 17.5h6M9.5 21h5M8.2 14.6A6 6 0 1 1 15.8 14.6c-.6.6-.8 1.3-.8 2.1v.8H9v-.8c0-.8-.2-1.5-.8-2.1z"/></svg></span><span class="cs-lbl">Cheat sheet</span>';
+  if(st.get("js1-cs-seen")!=="1")b.classList.add("cs-new");
+  b.onclick=()=>{b.classList.remove("cs-new");st.set("js1-cs-seen","1");b.classList.add("cs-lit");setTimeout(()=>b.classList.remove("cs-lit"),700);sheet();};
+  if(anchor)return anchor.before(b);
+  const h=q1("header#top"),ld=h&&q1(".lead",h);if(!h)return;b.classList.add("sd-b","cs-pill");ld?ld.after(b):h.appendChild(b);}
 
 window.STUDY={open,due,dash,cheat,badge,sheet};
 if(CID&&COURSE.pages&&COURSE.pages.length){
