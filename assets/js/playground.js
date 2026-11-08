@@ -1223,7 +1223,9 @@
   speedSel.onchange=()=>{LS.set("js1-pg-speed",speedSel.value);if(timer){stop();play();}};
   inEl.oninput=()=>LS.set("js1-pg-stdin",inEl.value);
   /* Memory switch: off (default) = only the data structures; on = stack, classes, String pool and every heap object */
-  function setMem(on){memOn=on;HI=null;histKey="";if(R)R._hr=null;memBox.checked=on;PGhost.classList.toggle("pg-nomem",!on);LS.set("js1-pg-mem",on?"1":"0");DRAWN.forEach(el=>{el._rec=null;el._w=0;});heapEl.innerHTML="";DRAWN.clear();if(R&&R.steps.length)render();}
+  function setMem(on){memOn=on;HI=null;histKey="";if(R)R._hr=null;memBox.checked=on;PGhost.classList.toggle("pg-nomem",!on);LS.set("js1-pg-mem",on?"1":"0");DRAWN.forEach(el=>{el._rec=null;el._w=0;});heapEl.innerHTML="";DRAWN.clear();if(R&&R.steps.length)render();pref("mem",on);}
+  /* pg:pref (2026-11-08): the bank Problems browser (labs-dsa-problems.js) remembers Memory / full screen choices made while a problem is open */
+  function pref(k,on){try{document.dispatchEvent(new CustomEvent("pg:pref",{detail:{k,on}}));}catch(e){}}
   memBox.onchange=()=>setMem(memBox.checked);
   PGhost.classList.toggle("pg-nomem",!memOn);memBox.checked=memOn;
   /* full screen: the Fullscreen API when it is allowed, otherwise (iPhone) an expanded layout that hides the site chrome */
@@ -1233,7 +1235,7 @@
     const de=document.documentElement;
     if(on&&api&&de.requestFullscreen&&!document.fullscreenElement){apiFull=true;de.requestFullscreen().catch(()=>{apiFull=false;});}
     if(!on&&document.fullscreenElement){apiFull=false;document.exitFullscreen().catch(()=>{});}
-    afterResize();}
+    afterResize();pref("full",on);}
   fullBtn.onclick=()=>setFull(!document.body.classList.contains("pg-full"),true);
   document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&apiFull){apiFull=false;setFull(false);}});
   if(LS.get("js1-pg-full")==="1")setFull(true,false); // a browser asks for a click before real full screen, so a reload opens the expanded layout

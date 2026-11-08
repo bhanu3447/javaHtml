@@ -1487,7 +1487,9 @@ function mPut(vm,o,k,v,n,ifAbsent,lazy){
 function growLazy(o){if(!o.tree&&o.cap&&o.es.length>o.cap*0.75&&o.cap<(1<<30)){o.cap*=2;}}
 function mRemove(vm,o,k,n){if(o.imm)vm.thr("UnsupportedOperationException",null,n);const e=mFind(vm,o,k,n);if(!e)return null;mDel(vm,o,e);return e;}
 function mDel(vm,o,e){const i=o.es.indexOf(e);if(i>=0){o.es.splice(i,1);if(o.tree)rbDel(o,e);}if(!o.tree){const b=o.ix.get(e.h);if(b){b.splice(b.indexOf(e),1);if(!b.length)o.ix.delete(e.h);}}o.mod++;vm.touch(o);}
-function mClear(vm,o,n){if(o.imm)vm.thr("UnsupportedOperationException",null,n);o.es.length=0;o.ix.clear();o.rbt=null;o.mod++;vm.touch(o);}
+function mClear(vm,o,n){if(o.imm)vm.thr("UnsupportedOperationException",null,n);
+  if(o.src){for(const e of o.es.slice()){const f=mFind(vm,o.src,e.k,n);if(f)mDel(vm,o.src,f);}o.src.mod++;vm.touch(o.src);} // dsa-lab 2026-11-08: subMap(…).clear() / headSet(…).clear() write through to the source
+  o.es.length=0;o.ix.clear();o.rbt=null;o.mod++;vm.touch(o);}
 /* TreeMap/TreeSet keep a shadow red-black tree for the DSA Lab drawing: the JDK's own put/deleteEntry with fixAfterInsertion/
    fixAfterDeletion, so shape and colours match a real TreeMap. Keys are ordered by their rank in the sorted es array (the user's
    comparator never runs twice). Off above 512 entries. Node: {e, l, r, p, red}. Not modelled: buildFromSorted (new TreeMap(sortedMap)). */
@@ -1790,6 +1792,10 @@ const LIBS={
     compare:(vm,a,n)=>{const x=num(vm.unbox(a[0],n)),y=num(vm.unbox(a[1],n));return x<y?-1:x>y?1:0;},max:(vm,a,n)=>Math.max(num(vm.unbox(a[0],n)),num(vm.unbox(a[1],n))),min:(vm,a,n)=>Math.min(num(vm.unbox(a[0],n)),num(vm.unbox(a[1],n))),
     sum:(vm,a,n)=>(num(vm.unbox(a[0],n))+num(vm.unbox(a[1],n)))|0,signum:(vm,a)=>Math.sign(num(a[0])),abs:(vm,a)=>Math.abs(num(a[0]))|0,
     bitCount:(vm,a)=>{let x=num(a[0])>>>0,c=0;while(x){c+=x&1;x>>>=1;}return c;},hashCode:(vm,a)=>num(a[0]),
+    toUnsignedString:(vm,a)=>vm.str((num(a[0])>>>0).toString(a.length>1?num(a[1]):10)), // dsa-lab 2026-11-08
+    parseUnsignedInt:(vm,a,n)=>{const s=a[0]===null?null:S(vm,a[0],n),r=a[1]!==undefined?num(a[1]):10;const t=s===null?"":s.replace(/^[+]/,"");let ok=s!==null&&t.length>0&&!/^-/.test(s),v=0;
+      if(ok)for(const c of t.toLowerCase()){const d=parseInt(c,36);if(isNaN(d)||d>=r){ok=false;break;}v=v*r+d;}
+      if(!ok||v>4294967295)vm.thr("NumberFormatException",s===null?"Cannot parse null string: null":'For input string: "'+s+'"'+(r!==10?" under radix "+r:""),n);return v|0;},
     reverse:(vm,a)=>{let x=num(a[0])>>>0,r=0;for(let i=0;i<32;i++){r=(r<<1)|(x&1);x>>>=1;}return r|0;},
     highestOneBit:(vm,a)=>{const x=num(a[0]);return x===0?0:(1<<(31-Math.clz32(x)))|0;},numberOfLeadingZeros:(vm,a)=>Math.clz32(num(a[0])),
     numberOfTrailingZeros:(vm,a)=>{const x=num(a[0]);if(x===0)return 32;let c=0;while(!((x>>>c)&1))c++;return c;}},
@@ -1797,7 +1803,8 @@ const LIBS={
     valueOf:(vm,a,n)=>vm.box(a[0] instanceof HObj&&a[0].kind==="str"?parseIntJ(vm,a[0].s,10,n,true):toL(vm.unbox(a[0],n))),
     toString:(vm,a,n)=>vm.str(toL(vm.unbox(a[0],n)).toString(a.length>1?num(a[1]):10)),compare:(vm,a,n)=>{const x=toL(vm.unbox(a[0],n)),y=toL(vm.unbox(a[1],n));return x<y?-1:x>y?1:0;},
     max:(vm,a)=>{const x=toL(a[0]),y=toL(a[1]);return x>y?x:y;},min:(vm,a)=>{const x=toL(a[0]),y=toL(a[1]);return x<y?x:y;},sum:(vm,a)=>BigInt.asIntN(64,toL(a[0])+toL(a[1])),abs:(vm,a)=>{const x=toL(a[0]);return x<0n?BigInt.asIntN(64,-x):x;},
-    toBinaryString:(vm,a)=>vm.str(BigInt.asUintN(64,toL(a[0])).toString(2)),toHexString:(vm,a)=>vm.str(BigInt.asUintN(64,toL(a[0])).toString(16))},
+    toBinaryString:(vm,a)=>vm.str(BigInt.asUintN(64,toL(a[0])).toString(2)),toHexString:(vm,a)=>vm.str(BigInt.asUintN(64,toL(a[0])).toString(16)),
+    bitCount:(vm,a)=>{let x=BigInt.asUintN(64,toL(a[0])),c=0;while(x){c+=Number(x&1n);x>>=1n;}return c;}}, // dsa-lab 2026-11-08: bitCount
   Double:{parseDouble:(vm,a,n)=>D(parseDblJ(vm,a[0]===null?null:S(vm,a[0],n),n)),valueOf:(vm,a,n)=>vm.box(a[0] instanceof HObj&&a[0].kind==="str"?D(parseDblJ(vm,a[0].s,n)):toPrim("double",vm.unbox(a[0],n))),
     toString:(vm,a,n)=>vm.str(fmtD(num(vm.unbox(a[0],n)))),isNaN:(vm,a)=>Number.isNaN(num(a[0])),isInfinite:(vm,a)=>!isFinite(num(a[0]))&&!Number.isNaN(num(a[0])),isFinite:(vm,a)=>isFinite(num(a[0])),
     compare:(vm,a,n)=>dblCmp(num(vm.unbox(a[0],n)),num(vm.unbox(a[1],n))),max:(vm,a)=>D(Math.max(num(a[0]),num(a[1]))),min:(vm,a)=>D(Math.min(num(a[0]),num(a[1]))),sum:(vm,a)=>D(num(a[0])+num(a[1])),
@@ -1853,6 +1860,8 @@ const LIBS={
     swap:(vm,a,n)=>{const l=a[0],i=num(a[1]),j=num(a[2]);chkIdx(vm,l,i,n);chkIdx(vm,l,j,n);const t=l.a[i];l.a[i]=l.a[j];l.a[j]=t;vm.touch(l);syncBack(vm,l);},
     max:(vm,a,n)=>{const xs=toArr(vm,a[0],n);if(!xs.length)vm.thr("NoSuchElementException",null,n);const cf=vm.cmpWith(a[1]||null,n);return xs.reduce((m,x)=>cf(x,m)>0?x:m);},
     min:(vm,a,n)=>{const xs=toArr(vm,a[0],n);if(!xs.length)vm.thr("NoSuchElementException",null,n);const cf=vm.cmpWith(a[1]||null,n);return xs.reduce((m,x)=>cf(x,m)<0?x:m);},
+    binarySearch:(vm,a,n)=>{const xs=toArr(vm,a[0],n),cf=vm.cmpWith(a[2]||null,n);let lo=0,hi=xs.length-1; // dsa-lab 2026-11-08
+      while(lo<=hi){const mid=(lo+hi)>>>1;const c=cf(xs[mid],vm.box(a[1]));if(c<0)lo=mid+1;else if(c>0)hi=mid-1;else return mid;}return -(lo+1);},
     frequency:(vm,a,n)=>toArr(vm,a[0],n).filter(x=>a[1]===null?x===null:vm.jeq(a[1],x)).length,
     unmodifiableList:(vm,a,n)=>lNew(vm,"ImmutableList",toArr(vm,a[0],n),{imm:true}),unmodifiableSet:(vm,a,n)=>{const s=mNew(vm,"set","LinkedHashSet",{imm:false});for(const x of toArr(vm,a[0],n))mPut(vm,s,x,PRESENT,n);s.imm=true;return s;},
     unmodifiableMap:(vm,a,n)=>{const m=mNew(vm,"map","LinkedHashMap");for(const e of mOrder(a[0]))mPut(vm,m,e.k,e.v,n);m.imm=true;return m;},
@@ -1961,6 +1970,8 @@ const STR={
   contains:(vm,o,a,n)=>o.s.includes(S(vm,a[0],n)),
   equals:(vm,o,a)=>a[0] instanceof HObj&&a[0].kind==="str"&&a[0].s===o.s,equalsIgnoreCase:(vm,o,a)=>a[0] instanceof HObj&&a[0].kind==="str"&&a[0].s.length===o.s.length&&(a[0].s.toUpperCase()===o.s.toUpperCase()||a[0].s.toLowerCase()===o.s.toLowerCase()),
   contentEquals:(vm,o,a,n)=>S(vm,a[0],n)===o.s,
+  regionMatches:(vm,o,a,n)=>{const ic=a.length===5&&typeof a[0]==="boolean"?a[0]:false,b=a.length===5?a.slice(1):a,t=I(vm,b[0],n),x=S(vm,b[1],n),u=I(vm,b[2],n),len=I(vm,b[3],n); // dsa-lab 2026-11-08
+    if(u<0||t<0||t>o.s.length-len||u>x.length-len)return len<=0&&t>=0&&u>=0&&t<=o.s.length&&u<=x.length;let p=o.s.substr(t,len),q=x.substr(u,len);if(ic){p=p.toUpperCase().toLowerCase();q=q.toUpperCase().toLowerCase();}return p===q;},
   compareTo:(vm,o,a,n)=>{if(a[0]===null)vm.thr("NullPointerException",null,n);return strCmp(o.s,a[0].s);},compareToIgnoreCase:(vm,o,a)=>strCmp(o.s.toUpperCase().toLowerCase(),a[0].s.toUpperCase().toLowerCase()),
   toUpperCase:(vm,o)=>{const r=o.s.toUpperCase();return r===o.s?o:vm.str(r);},toLowerCase:(vm,o)=>{const r=o.s.toLowerCase();return r===o.s?o:vm.str(r);},
   trim:(vm,o)=>{const r=o.s.replace(/^[\x00-\x20]+|[\x00-\x20]+$/g,"");return r===o.s?o:vm.str(r);},strip:(vm,o)=>{const r=o.s.trim();return r===o.s?o:vm.str(r);},
@@ -2091,7 +2102,7 @@ function navE(vm,o,k,n,how){if(!o.tree)vm.fatal(n,how+"() needs a TreeSet or Tre
   switch(how){case "floor":return f?o.es[i]:o.es[i-1]||null;case "ceiling":return f?o.es[i]:o.es[i]||null;case "higher":return f?o.es[i+1]||null:o.es[i]||null;case "lower":return o.es[i-1]||null;}}
 function navK(vm,o,k,n,how){const e=navE(vm,o,k,n,how);return e?e.k:null;}
 function subTree(vm,o,kind,lo,hi,loInc,hiInc,n){const r=mNew(vm,kind,o.cls);r.cmp=o.cmp;const cf=vm.cmpWith(o.cmp,n);
-  for(const e of o.es){if(lo!==null){const c=cf(e.k,vm.box(lo));if(c<0||(c===0&&!loInc))continue;}if(hi!==null){const c=cf(e.k,vm.box(hi));if(c>0||(c===0&&!hiInc))continue;}mPut(vm,r,e.k,e.v,n);}return r;}
+  for(const e of o.es){if(lo!==null){const c=cf(e.k,vm.box(lo));if(c<0||(c===0&&!loInc))continue;}if(hi!==null){const c=cf(e.k,vm.box(hi));if(c>0||(c===0&&!hiInc))continue;}mPut(vm,r,e.k,e.v,n);}r.src=o;return r;}
 const MAP={
   size:(vm,o)=>o.es.length,isEmpty:(vm,o)=>o.es.length===0,
   put:(vm,o,a,n)=>{const old=mPut(vm,o,a[0],a[1],n);vm.note({t:"put",o});return old;},

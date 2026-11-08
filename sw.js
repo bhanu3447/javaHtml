@@ -23,6 +23,14 @@ const netFirst = async (cache, req, key) => {
   catch (e) { const hit = await c.match(key); if (hit) return hit; throw e; }
 };
 
+const cacheFirst = async (cache, req, key) => {
+  const c = await caches.open(cache), hit = await c.match(key);
+  if (hit) return hit;
+  const r = await fetch(req);
+  if (r.ok) c.put(key, r.clone());
+  return r;
+};
+
 self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
@@ -34,6 +42,9 @@ self.addEventListener("fetch", (e) => {
     e.respondWith(swr(SITE, req)); return;
   }
   const sign = u.pathname.match(/\/storage\/v1\/object\/sign\/site\/(.+)$/);
+  /* perf v1 (2026-11-08): a signed URL stamped &v=<content hash> (lock.mjs upload + page function) is that exact file, so
+     it is served from the cache once fetched; unstamped ones stay network first */
+  if (sign && u.searchParams.has("v")) { e.respondWith(cacheFirst(PRIV, req, "https://zl.local/site/" + sign[1] + "?v=" + u.searchParams.get("v"))); return; }
   if (sign) { e.respondWith(netFirst(PRIV, req, "https://zl.local/site/" + sign[1])); return; }
   if (/(^|\.)(cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com|unpkg\.com|fonts\.googleapis\.com|fonts\.gstatic\.com)$/.test(u.hostname)) { e.respondWith(swr(CDN, req)); return; }
 });

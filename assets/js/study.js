@@ -21,7 +21,7 @@ const put=(k,v)=>st.set(k,JSON.stringify(v));
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const q1=(s,r)=>(r||document).querySelector(s),qa=(s,r)=>Array.prototype.slice.call((r||document).querySelectorAll(s));
 const DAY=864e5,INT=[1,3,7,21,60],GAP=[1,2,4],AGAIN=10*60*1000,CAP=30;
-const PRE={l:"java",f:"spring",s:"sql",p:"patterns",n:"n8n",d:"dsa",r:"redis",k:"kafka",g:"nginx",h:"sysdesign",b:"behavioural",c:"docker",a:"api",v:"cicd",o:"os",w:"networks",q:"dbms"},CNAME={dbms:"DBMS",java:"Java",sql:"SQL",patterns:"Design Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"Operating Systems",networks:"Computer Networks",spring:"Spring Boot"};
+const PRE={l:"java",f:"spring",s:"sql",p:"patterns",n:"n8n",d:"dsa",r:"redis",k:"kafka",g:"nginx",h:"sysdesign",b:"behavioural",c:"docker",a:"api",v:"cicd",o:"os",w:"networks",q:"dbms",m:"lld"},CNAME={dbms:"DBMS",java:"Java",sql:"SQL",patterns:"Design Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",lld:"Low-Level Design",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"Operating Systems",networks:"Computer Networks",spring:"Spring Boot"};
 const RCD={d1:["Day 1 · define",0],d3:["Day 3 · explain why",2],d7:["Day 7 · apply",6]};
 const courseOf=k=>PRE[String(k)[0]]||"";
 const tag=k=>(CNAME[courseOf(k)]||"")+" · "+String(k).toUpperCase();
@@ -82,7 +82,7 @@ function summarise(){
     nx=rest.find(p=>(p.sections||[]).some(s=>!d[s.id]))||rest[0];
   /* graded tasks solved in this course's labs (each kit keeps its own store of solved ids) */
   const TK={redis:"js1-redis-tasks",kafka:"js1-kafka-tasks",nginx:"js1-nginx-tasks",sysdesign:"js1-sd-tasks"}[CID],tasks=TK?Object.keys(J(TK,{})).length:0;
-  sum[CID]={name:CNAME[CID]||CID,home:CID+"/index.html",total,und,qn,qa:qa_,qc,weak:weak.sort((a,b)=>a.pct-b.pct).slice(0,3),tasks,
+  sum[CID]={name:CNAME[CID]||CID,home:"courses/"+CID+"/index.html",total,und,qn,qa:qa_,qc,weak:weak.sort((a,b)=>a.pct-b.pct).slice(0,3),tasks,
     last:me&&me.key!=="home"?{f:me.file,n:me.name,t:Date.now()}:prev.last||null,
     next:at<0?prev.next||null:nx?{f:nx.file,n:nx.name}:null,t:Date.now()};
   put("js1-sum",sum);
@@ -157,6 +157,17 @@ nav button.cs-open:hover{color:color-mix(in srgb,#f59e0b 45%,var(--text,#111));b
 @keyframes csRay{0%,100%{opacity:.3}50%{opacity:1}}
 @keyframes csWig{0%,100%{transform:rotate(0)}30%{transform:rotate(-14deg)}65%{transform:rotate(10deg)}}
 @keyframes csFlash{0%{filter:none}35%{filter:drop-shadow(0 0 8px #fbbf24) brightness(1.5);transform:scale(1.25)}100%{filter:none;transform:scale(1)}}
+.cs-st{font:600 .75rem Inter,system-ui,sans-serif;color:var(--muted,#5b6474);white-space:nowrap;cursor:help}.cs-st b{color:var(--text,#111)}.cs-st .cs-dn{color:#d97706}
+.cs-pick{flex:none;padding:0 16px 10px;flex-wrap:wrap;gap:6px;max-height:88px;overflow:auto}.cs-pick[hidden]{display:none}
+.cs-lh{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin:26px 0 10px;padding-top:14px;border-top:1px solid var(--line,#e3e7ef);font:800 1.05rem "Inter Tight",Inter,system-ui,sans-serif}
+.cs-sec:first-child .cs-lh,.cs-sec[hidden]+.cs-sec .cs-lh{margin-top:0}.cs-lh a{font:600 .78rem Inter,system-ui,sans-serif;color:var(--accent,#4f46e5);text-decoration:none}
+.cs-known{box-shadow:inset 0 -2px 0 rgba(16,185,129,.75)}.cs-miss{box-shadow:inset 0 -2px 0 rgba(239,68,68,.75)}.cs-due{box-shadow:inset 0 -2px 0 rgba(245,158,11,.9)}
+.cs-rt{display:inline-flex;gap:4px;margin-left:6px;vertical-align:middle;white-space:nowrap}
+.cs-rt button{width:28px;height:22px;padding:0;border-radius:7px;border:1px solid var(--line,#e3e7ef);background:var(--surface,#fff);cursor:pointer;font:700 .8rem/1 Inter,system-ui,sans-serif}
+.cs-y{color:#059669}.cs-n{color:#dc2626}.cs-y:hover{background:rgba(16,185,129,.16)}.cs-n:hover{background:rgba(239,68,68,.16)}.cs-rt button:focus-visible{outline:2px solid var(--accent,#4f46e5);outline-offset:1px}
+.sd-cs{display:block;margin-bottom:6px;font:700 .66rem "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--accent,#4f46e5)}
+.sd-q pre{margin:8px 0 0;overflow-x:auto;padding:10px 12px;border-radius:10px;background:var(--code-bg,#0f1320);color:var(--code-text,#e6e9f0);font:.8rem/1.55 "JetBrains Mono",monospace;white-space:pre}
+@media (max-width:620px){.cs-st{order:9;flex-basis:100%;padding:0 4px}}
 .cs-dlg{width:min(1060px,calc(100vw - 24px));max-width:calc(100vw - 24px)}.cs-body{min-width:0}.cs-t{flex:1 1 220px;min-width:0;font:700 .95rem Inter,system-ui,sans-serif;padding:0 4px}
 .cs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));grid-auto-flow:row dense;gap:12px}
 .cs-card{min-width:0;border:1px solid var(--line,#e3e7ef);border-radius:14px;padding:12px 14px;background:var(--bg,#f7f8fb)}.cs-card.wide{grid-column:1/-1}
@@ -170,9 +181,22 @@ nav button.cs-open:hover{color:color-mix(in srgb,#f59e0b 45%,var(--text,#111));b
 .cs-links{display:flex;flex-wrap:wrap;gap:6px}.cs-links a{font:600 .8rem Inter,system-ui,sans-serif;padding:5px 10px;border-radius:99px;border:1px solid var(--line,#e3e7ef);color:var(--accent,#4f46e5);text-decoration:none}
 .cs-hide .cs-a:not(.on){filter:blur(5px);cursor:pointer;user-select:none}.cs-a:focus-visible{outline:2px solid var(--accent,#4f46e5);outline-offset:2px;border-radius:4px}
 @media (prefers-reduced-motion:no-preference){.cs-a{transition:filter .15s}}
-@media print{body.csprint>*:not(.cs-dlg){display:none!important}body.csprint .cs-dlg{position:static;display:block;width:auto;max-height:none;margin:0;border:0;box-shadow:none;animation:none}
+@media print{body.csprint>*:not(.cs-dlg){display:none!important}body.csprint .cs-dlg{position:static;display:block!important;width:auto;max-height:none;margin:0;border:0;box-shadow:none;animation:none}
   body.csprint .cs-dlg .sd-h button{display:none}body.csprint .cs-body{overflow:visible;padding:8px 0 0}body.csprint .cs-a{filter:none!important}
-  body.csprint .cs-card{break-inside:avoid}body.csprint .cs-grid{grid-template-columns:1fr 1fr;gap:8px}body.csprint .cs-card.wide{grid-column:1/-1}}`;
+  body.csprint .cs-card{break-inside:avoid}body.csprint .cs-grid{grid-template-columns:1fr 1fr;gap:8px}body.csprint .cs-card.wide{grid-column:1/-1}
+  body.csprint .cs-pick,body.csprint .cs-rt,body.csprint .cs-st,body.csprint .cs-sec[hidden],body.csprint .cs-lh a{display:none!important}
+  body.csprint .cs-a{box-shadow:none!important}body.csprint .cs-card pre{white-space:pre-wrap;overflow:visible}body.csprint .cs-sec+.cs-sec{break-before:page}body.csprint .cs-lh{border:0;margin-top:0}}
+/* company question bank (2026-11-08) */
+.qt-badge{display:inline-flex;align-items:center;gap:3px;margin-left:8px;padding:2px 8px;border-radius:99px;font:700 .72rem Inter,system-ui,sans-serif;background:rgba(245,158,11,.16);color:#b45309;vertical-align:middle}
+.qt-box{margin-top:12px;padding-top:10px;border-top:1px dashed var(--line,#e3e7ef);display:grid;gap:8px}
+.qt-chips{display:flex;flex-wrap:wrap;gap:6px}.qt-chips:empty{display:none}
+.qt-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:99px;font:600 .78rem Inter,system-ui,sans-serif;border:1px solid var(--line,#e3e7ef);background:var(--bg2,rgba(127,127,127,.06))}
+.qt-chip.mine{border-color:#f59e0b}.qt-x{border:0;background:none;color:inherit;cursor:pointer;font:700 1rem/1 Inter,sans-serif;padding:0 2px;min-width:24px;min-height:24px}
+.qt-rep>summary{cursor:pointer;font:600 .82rem Inter,system-ui,sans-serif;color:var(--accent,#4f46e5);list-style:none}.qt-rep>summary::-webkit-details-marker{display:none}
+.qt-f{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:end;margin-top:8px}.qt-f label{display:grid;gap:3px;font:600 .75rem Inter,system-ui,sans-serif;color:var(--muted,#5b6474)}
+.qt-f input,.qt-f select{font:500 .9rem Inter,system-ui,sans-serif;padding:7px 10px;min-height:36px;border-radius:8px;border:1px solid var(--line,#e3e7ef);background:var(--bg,#fff);color:var(--text,#0f172a);min-width:0;max-width:100%}
+.qt-msg{font-size:.8rem;color:var(--muted,#5b6474)}.qt-note{font-size:.75rem;color:var(--muted,#5b6474);margin:6px 0 0}
+.sd-card .qt-chips{margin-top:8px}`;
 function addCss(){if(q1("#sdCss"))return;const s=document.createElement("style");s.id="sdCss";s.textContent=css;document.head.appendChild(s);}
 
 /* ---------- the panel ---------- */
@@ -205,14 +229,14 @@ function review(){
   body().innerHTML='<div class="sd-stats"><span><b>'+all.length+(all.length>=CAP?"+":"")+"</b>due now</span><span><b>"+Object.keys(srs).length+"</b>cards in your deck</span><span><b>"+streak()+"</b>day streak</span></div>"+
     (CID?'<div class="sd-row" role="group" aria-label="Which courses"><b>From</b><button type="button" class="sd-chip" data-sc="all" aria-pressed="'+(scope!=="course")+'">All courses</button><button type="button" class="sd-chip" data-sc="course" aria-pressed="'+(scope==="course")+'">'+esc(CNAME[CID]||CID)+" only</button></div>":"")+
     '<div class="sd-row">'+(list.length?'<button type="button" class="sd-b pri" data-go="1">Start · '+list.length+(list.length===1?" card":" cards")+"</button>":"")+"</div>"+
-    (list.length?'<p class="xb-msg">Wrong quiz answers, recall prompts of the lessons you started, sections you marked as understood and "Explain it back" answers come back after 1, 3, 7, 21 and 60 days. A miss starts the card again.</p>':
-      '<div class="sd-empty" style="margin-top:12px">Nothing is due. Answer a lesson quiz, mark sections as understood or use "Explain it back", and the cards come back here on the right day.</div>');
+    (list.length?'<p class="xb-msg">Wrong quiz answers, recall prompts of the lessons you started, sections you marked as understood, cheat sheet answers you rated ✓ / ✗ and "Explain it back" answers come back after 1, 3, 7, 21 and 60 days. A miss starts the card again.</p>':
+      '<div class="sd-empty" style="margin-top:12px">Nothing is due. Answer a lesson quiz, mark sections as understood, rate cheat sheet answers or use "Explain it back", and the cards come back here on the right day.</div>');
   body().onclick=e=>{const b=e.target.closest("button");if(!b)return;
     if(b.dataset.sc){scope=b.dataset.sc;put("js1-srs-scope",scope);review();return;}
     if(b.dataset.go){cards=list.slice();ci=0;again=new Set();tally={ok:0,no:0};card();}};}
 function card(){
   if(ci>=cards.length){finishReview();return;}
-  const c=cards[ci],top='<div class="sd-top"><span>Card '+(ci+1)+" / "+cards.length+" · "+esc(c.c==="q"?"Quiz":c.c==="r"?RCD[c.d][0]:c.c==="x"?"Explain it back":"Section review")+'</span><span>'+esc(c.k?tag(c.k):"")+"</span></div>"+
+  const c=cards[ci],top='<div class="sd-top"><span>Card '+(ci+1)+" / "+cards.length+" · "+esc(c.c==="q"?"Quiz":c.c==="r"?RCD[c.d][0]:c.c==="x"?"Explain it back":c.c==="cs"?"Cheat sheet":c.c==="sx"?"Stream drill":"Section review")+'</span><span>'+esc(c.k?tag(c.k):"")+"</span></div>"+
     '<div class="sd-bar" aria-hidden="true"><i style="transform:scaleX('+(ci/cards.length)+')"></i></div>';
   let h="";
   if(c.c==="q")h='<div class="sd-q">'+c.q+'</div><div class="sd-opts" role="group" aria-label="Options">'+c.o.map((o,j)=>'<button type="button" class="sd-opt" data-j="'+j+'"><i>'+"ABCDEF"[j]+"</i><span>"+o+"</span></button>").join("")+'</div><div class="sd-a" hidden aria-live="polite"></div><div class="sd-row" hidden><button type="button" class="sd-b pri" data-next="1">Next card</button></div>';
@@ -240,22 +264,33 @@ function finishReview(){badge();
 
 /* Mock interview (this course's interview cards; ported from the v1 #mockviz) */
 let mk={deck:[],res:[],i:0,shown:false,active:false,timer:null,end:0};
-const mhist=()=>J("js1-mock",{}),mcfg=()=>Object.assign({ls:[],weak:false,n:10,t:60},J("js1-mock-cfg",{}));
+const mhist=()=>J("js1-mock",{}),mcfg=()=>Object.assign({ls:[],weak:false,n:10,t:60,co:"",rd:""},J("js1-mock-cfg",{}));
 function mockStop(){clearInterval(mk.timer);mk.timer=null;}
 function mock(){
   mk.active=false;mockStop();
   const QS=COURSE.qa||[],h=mhist(),cfg=mcfg(),isWeak=q=>h[q.k]&&h[q.k].r>1,LSH=[...new Set(QS.map(q=>q.l))];
-  const pool=QS.filter(q=>(!cfg.ls.length||cfg.ls.includes(q.l))&&(!cfg.weak||isWeak(q))),size=cfg.n?Math.min(pool.length,cfg.n):pool.length;
+  /* company question bank: companies / rounds reported on this course's cards (loads once, then redraws this panel) */
+  if(!QT){qtLoad().then(()=>{if(tab==="mock"&&!mk.active)mock();}).catch(()=>{});}
+  const tagsOf=q=>(QT&&QT[q.k])||[],COS={};QS.forEach(q=>tagsOf(q).forEach(t=>{COS[t.co]=(COS[t.co]||0)+t.n;}));
+  const coList=Object.keys(COS).sort((a,b)=>COS[b]-COS[a]).slice(0,10);
+  const coOk=q=>(!cfg.co||tagsOf(q).some(t=>t.co===cfg.co))&&(!cfg.rd||tagsOf(q).some(t=>t.r===cfg.rd&&(!cfg.co||t.co===cfg.co)));
+  const pool=QS.filter(q=>(!cfg.ls.length||cfg.ls.includes(q.l))&&(!cfg.weak||isWeak(q))&&coOk(q)),size=cfg.n?Math.min(pool.length,cfg.n):pool.length;
   const chip=(f,v,t)=>'<button type="button" class="sd-chip" data-'+f+'="'+v+'" aria-pressed="'+(cfg[f]===v)+'">'+t+"</button>";
   body().innerHTML='<div class="sd-stats"><span><b>'+QS.length+"</b>questions</span><span><b>"+QS.filter(q=>h[q.k]&&h[q.k].r===1).length+"</b>nailed</span><span><b>"+QS.filter(isWeak).length+"</b>weak</span></div>"+
     '<div class="sd-row" role="group" aria-label="Lessons"><b>Lessons</b>'+LSH.map(l=>'<button type="button" class="sd-chip" data-l="'+esc(l)+'" aria-pressed="'+cfg.ls.includes(l)+'">'+esc(l)+"</button>").join("")+
       '<button type="button" class="sd-chip" data-w="1" aria-pressed="'+cfg.weak+'">Weak only</button></div>'+
+    (coList.length||cfg.co?'<div class="sd-row" role="group" aria-label="Asked at company"><b>Asked at</b><button type="button" class="sd-chip" data-co="" aria-pressed="'+!cfg.co+'">Any</button>'+
+      coList.map(c=>'<button type="button" class="sd-chip" data-co="'+esc(c)+'" aria-pressed="'+(cfg.co===c)+'">🏢 '+esc(qtTitle(c))+" · "+COS[c]+"</button>").join("")+"</div>"+
+      '<div class="sd-row" role="group" aria-label="Interview round"><b>Stage</b><button type="button" class="sd-chip" data-rd="" aria-pressed="'+!cfg.rd+'">Any</button>'+
+      Object.keys(QROUND).map(r=>'<button type="button" class="sd-chip" data-rd="'+r+'" aria-pressed="'+(cfg.rd===r)+'">'+QROUND[r]+"</button>").join("")+"</div>"
+      :'<p class="xb-msg">No company reports on this course yet. After revealing an answer, tap “Asked in a real interview?” to start the company question bank.</p>')+
     '<div class="sd-row" role="group" aria-label="Questions per round"><b>Round</b>'+[5,10,20,0].map(v=>chip("n",v,v?v+" questions":"All")).join("")+"</div>"+
     '<div class="sd-row" role="group" aria-label="Time per question"><b>Timer</b>'+[0,45,60,90,120].map(v=>chip("t",v,v?v+" s":"Off")).join("")+"</div>"+
     '<div class="sd-row"><button type="button" class="sd-b pri" data-start="1"'+(size?"":" disabled")+">Start round · "+size+(size===1?" question":" questions")+"</button></div>"+
     '<p class="xb-msg">No lesson selected means all lessons. Answer aloud as if to an interviewer, then rate yourself honestly. Keys: Space reveals, 1 · 2 · 3 rate, Esc ends the round.</p>';
   body().onclick=e=>{const b=e.target.closest("button");if(!b)return;const D=b.dataset,c=mcfg();
     if(D.start){mockStart(pool,cfg);return;}
+    if(D.co!=null)c.co=D.co;else if(D.rd!=null)c.rd=D.rd;else
     if(D.l)c.ls=c.ls.includes(D.l)?c.ls.filter(x=>x!==D.l):c.ls.concat(D.l);else if(D.w)c.weak=!c.weak;else if(D.n!=null)c.n=+D.n;else if(D.t!=null)c.t=+D.t;else return;
     put("js1-mock-cfg",c);mock();};}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
@@ -264,7 +299,7 @@ function secLink(id){const x=SECP[id];return x?href(x.p.file+"#"+id):"#"+id;}
 function mockShow(){
   mk.shown=false;const q=mk.deck[mk.i],t=mk.cfg.t;
   body().innerHTML='<div class="sd-card"><div class="sd-top"><span>Question '+(mk.i+1)+" / "+mk.deck.length+" · "+esc(q.l)+'</span><a href="'+esc(secLink(q.sec))+'">'+esc(q.st)+"</a></div>"+
-    '<div class="sd-q">'+q.q+"</div>"+(t?'<div class="sd-tm"><span class="sd-bar"><i></i></span><span class="sd-s">'+t+" s</span></div>":"")+
+    '<div class="sd-q">'+q.q+'</div><div class="qt-chips">'+qtChips(q.k,false)+"</div>"+(t?'<div class="sd-tm"><span class="sd-bar"><i></i></span><span class="sd-s">'+t+" s</span></div>":"")+
     '<div class="sd-a" hidden></div><div class="sd-row"><button type="button" class="sd-b pri" data-rv="1">Reveal answer</button><button type="button" class="sd-b" data-end="1">End round</button></div></div>';
   body().onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.dataset.rv)mockReveal();else if(b.dataset.end)mockFinish();else if(b.dataset.r)mockRate(+b.dataset.r);};
   mockStop();if(t){mk.end=Date.now()+t*1000;mk.timer=setInterval(mockTick,250);mockTick();}
@@ -273,7 +308,8 @@ function mockTick(){const tm=q1(".sd-tm",body());if(!tm){mockStop();return;}cons
   q1(".sd-bar i",tm).style.transform="scaleX("+f+")";q1(".sd-s",tm).textContent=left?Math.ceil(left/1000)+" s":"Time's up";tm.classList.toggle("low",left>0&&f<.25);
   if(!left){mockStop();mockReveal();}}
 function mockReveal(){if(mk.shown||!mk.active)return;mk.shown=true;mockStop();
-  const a=q1(".sd-a",body());a.hidden=false;a.innerHTML="<b>Model answer.</b> "+mk.deck[mk.i].a;
+  const a=q1(".sd-a",body());a.hidden=false;a.innerHTML="<b>Model answer.</b> "+mk.deck[mk.i].a+qtForm(mk.deck[mk.i].k);
+  const qb=q1(".qt-box",a);if(qb){q1(".qt-chips",qb).remove();qtWire(qb,k=>{const c=q1(".sd-card > .qt-chips",body());if(c)c.innerHTML=qtChips(k,false);});}
   const r=q1(".sd-row",body().lastElementChild);r.innerHTML='<button type="button" class="sd-b ok" data-r="1">✓ Nailed it</button><button type="button" class="sd-b" data-r="2">~ Shaky</button><button type="button" class="sd-b no" data-r="3">✗ Missed</button><button type="button" class="sd-b" data-end="1">End round</button>';
   q1("[data-r]",body()).focus();}
 function mockRate(r){if(!mk.shown)return;const q=mk.deck[mk.i],h=mhist();mk.res[mk.i]=r;h[q.k]={r,t:Date.now()};put("js1-mock",h);if(++mk.i<mk.deck.length)mockShow();else mockFinish();}
@@ -359,46 +395,151 @@ function a11y(){
 /* ---------- cheat sheet ---------- */
 function cheat(){document.body.classList.add("cheat");addCss();const off=()=>{document.body.classList.remove("cheat");removeEventListener("afterprint",off);};addEventListener("afterprint",off);print();}
 
-/* ---------- lesson cheat sheet (2026-11-08): a lesson's <template id="cheatsheet"> opens as a pop-up panel.
-   Cards .cs-card (h3 + content, .wide spans the row); .cs-a = an answer, blurred in self-test mode until clicked;
-   Print prints only the sheet. Self-test on/off in js1-cs-hide ("0" = off). ---------- */
+/* ---------- cheat sheets (2026-11-08): a lesson's <template id="cheatsheet"> opens as a pop-up panel; a course home with
+   <meta name="zl-sheets" data-src="…/sheets-<course>.js"> (written by build-index.mjs, locked) opens every lesson's sheet in one pack
+   (lesson chips, Print = one lesson per page). Cards .cs-card (h3 + content, .wide spans the row); .cs-a = an answer, blurred in
+   self-test mode until clicked. A revealed answer gets ✓ / ✗: that makes it a Review today card (c:"cs", id cs:<lesson>:<hash of
+   question + answer>, same 1·3·7·21·60-day ladder) and the sheet underlines it known / missed / due from then on.
+   Self-test on/off in js1-cs-hide ("0" = off). ---------- */
 let csDlg=null;
+const hash=s=>{let h=5381;for(let i=0;i<s.length;i++)h=((h*33)^s.charCodeAt(i))>>>0;return h.toString(36);};
+const txt=el=>(el?el.textContent:"").replace(/\s+/g," ").trim();
+/* the question Review today shows for an answer: the card title + the code just before it, its row and column, or its line */
+function cue(a){
+  const card=a.closest(".cs-card"),hd=card?txt(q1("h3",card)):"",pre=a.closest("pre"),td=a.closest("td,th");let q="";
+  if(pre){const code=q1("code",pre)||pre;let s="";
+    for(const n of code.childNodes){if(n===a)break;if(n.nodeType!==1){s+=n.textContent;continue;}
+      if(n.classList.contains("cs-a"))s="";else if(!n.classList.contains("cs-rt"))s+=n.textContent;}
+    q="<pre>"+esc(s.replace(/^\n+|\s+$/g,"").split("\n").slice(-8).join("\n"))+"</pre>";}
+  else if(td){const tr=td.parentElement,tb=td.closest("table"),i=Array.prototype.indexOf.call(tr.children,td),h0=tb.rows[0];
+    const row=i?txt(tr.children[0]):"",col=h0&&h0!==tr&&h0.children[i]?txt(h0.children[i]):"";
+    q=(row?"<b>"+esc(row)+"</b>":"")+(row&&col?" · ":"")+esc(col);}
+  else{const box=a.closest("li,p")||a.parentElement,i=qa(".cs-a",box).indexOf(a),c=box.cloneNode(true);
+    qa(".cs-rt",c).forEach(x=>x.remove());qa(".cs-a",c).forEach((x,j)=>x.replaceWith(document.createTextNode(j===i?" ___ ":" … ")));q=c.innerHTML.trim().replace(/\s*___$/,"");}
+  return '<small class="sd-cs">'+esc(hd)+"</small>"+q;}
+function csMark(a){const c=srs[a.dataset.id];a.classList.remove("cs-known","cs-miss","cs-due");
+  if(c)a.classList.add(c.due<=Date.now()?"cs-due":c.b>0?"cs-known":"cs-miss");}
+function csStats(){const as=qa(".cs-sec:not([hidden]) .cs-a",csDlg),n=c=>as.filter(a=>a.classList.contains(c)).length,d=n("cs-due");
+  q1(".cs-st",csDlg).innerHTML="<b>"+n("cs-known")+"</b> / "+as.length+" known"+(d?' · <b class="cs-dn">'+d+"</b> due":"");}
+function csChips(a,on){const n=a.nextElementSibling;if(n&&n.classList.contains("cs-rt"))n.remove();
+  if(on)a.insertAdjacentHTML("afterend",'<span class="cs-rt" role="group" aria-label="Did you know it?"><button type="button" class="cs-y" title="Knew it · comes back later">✓</button><button type="button" class="cs-n" title="Missed it · comes back soon">✗</button></span>');}
+function csRate(a,ok){srs=J("js1-srs",{});const id=a.dataset.id;
+  if(!srs[id])srs[id]={b:0,due:0,c:"cs",k:a.dataset.k};
+  Object.assign(srs[id],{q:cue(a),a:a.innerHTML});grade({id},ok);csMark(a);csStats();badge();}
+function csFill(list,pack){srs=J("js1-srs",{});const b=q1(".cs-body",csDlg);
+  b.innerHTML=list.map(s=>'<div class="cs-sec" data-k="'+esc(s.k)+'">'+(pack?'<h2 class="cs-lh"><span>'+esc(s.name||s.k)+'</span><a href="'+esc(href(s.file))+'">Open the lesson ↗</a></h2>':"")+s.html+"</div>").join("");
+  qa(".cs-sec",b).forEach((sec,i)=>{const s=list[i];
+    qa(".cs-a",sec).forEach(a=>{a.dataset.id="cs:"+s.k+":"+hash(cue(a)+"|"+a.innerHTML);a.dataset.k=s.k;csMark(a);});
+    if(pack)qa('a[href^="#"]',sec).forEach(x=>x.href=href(s.file)+x.getAttribute("href"));});
+  const pk=q1(".cs-pick",csDlg);pk.hidden=!pack;
+  pk.innerHTML=pack?'<button type="button" class="sd-chip" data-pk="" aria-pressed="true">All</button>'+list.map(s=>'<button type="button" class="sd-chip" data-pk="'+esc(s.k)+'" aria-pressed="false">'+esc(s.short||s.k)+"</button>").join(""):"";
+  csStats();}
 function sheetMode(on){if(!csDlg)return;csDlg.classList.toggle("cs-hide",on);st.set("js1-cs-hide",on?"1":"0");
   const m=q1(".cs-mode",csDlg);m.setAttribute("aria-pressed",String(on));m.textContent=on?"Self-test: on":"Self-test: off";
-  qa(".cs-a",csDlg).forEach(a=>{a.classList.remove("on");if(on){a.tabIndex=0;a.setAttribute("role","button");a.title="Click to reveal";}else{a.removeAttribute("tabindex");a.removeAttribute("role");a.removeAttribute("title");}});}
+  qa(".cs-rt",csDlg).forEach(x=>x.remove());
+  qa(".cs-a",csDlg).forEach(a=>{a.classList.remove("on");if(on){a.tabIndex=0;a.setAttribute("role","button");a.title="Click to reveal, then ✓ or ✗";}else{a.removeAttribute("tabindex");a.removeAttribute("role");a.removeAttribute("title");}});}
 function sheetPrint(){const off=()=>{document.body.classList.remove("csprint");removeEventListener("afterprint",off);csDlg.close();csDlg.showModal();};
   document.body.classList.add("csprint");addEventListener("afterprint",off);csDlg.close();csDlg.show();print();}
-function sheet(){
-  const tpl=q1("template#cheatsheet");if(!tpl)return;addCss();
+function csOpen(title){addCss();
   if(!csDlg){csDlg=document.createElement("dialog");csDlg.className="sd-dlg cs-dlg";csDlg.setAttribute("aria-labelledby","csT");
-    csDlg.innerHTML='<div class="sd-h"><b id="csT" class="cs-t">📄 Cheat sheet · '+esc(document.body.dataset.name||document.title)+'</b>'+
+    csDlg.innerHTML='<div class="sd-h"><b id="csT" class="cs-t"></b><span class="cs-st" aria-live="polite" title="Green = known, amber = due again, red = missed. In self-test mode reveal an answer, then press ✓ or ✗: it joins Review today."></span>'+
       '<button type="button" class="sd-b cs-mode"></button><button type="button" class="sd-b cs-all">Reveal all</button>'+
-      '<button type="button" class="sd-b cs-pr">Print</button><button type="button" class="sd-x" aria-label="Close cheat sheet">✕</button></div><div class="sd-body cs-body"></div>';
-    q1(".cs-body",csDlg).appendChild(tpl.content.cloneNode(true));document.body.appendChild(csDlg);
+      '<button type="button" class="sd-b cs-pr">Print</button><button type="button" class="sd-x" aria-label="Close cheat sheet">✕</button></div>'+
+      '<div class="sd-row cs-pick" role="group" aria-label="Lessons" hidden></div><div class="sd-body cs-body"></div>';
+    document.body.appendChild(csDlg);
     q1(".cs-mode",csDlg).onclick=()=>sheetMode(!csDlg.classList.contains("cs-hide"));
-    q1(".cs-all",csDlg).onclick=()=>qa(".cs-a",csDlg).forEach(a=>a.classList.add("on"));
+    q1(".cs-all",csDlg).onclick=()=>qa(".cs-sec:not([hidden]) .cs-a",csDlg).forEach(a=>{a.classList.add("on");csChips(a,false);});
     q1(".cs-pr",csDlg).onclick=sheetPrint;q1(".sd-x",csDlg).onclick=()=>csDlg.close();
-    const flip=e=>{const a=e.target.closest(".cs-a");if(a&&csDlg.classList.contains("cs-hide")){a.classList.toggle("on");e.preventDefault();}};
-    csDlg.addEventListener("click",e=>{if(e.target===csDlg)return csDlg.close();if(e.target.closest('a[href^="#"]'))return csDlg.close();flip(e);});
-    csDlg.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" ")flip(e);});}
-  sheetMode(st.get("js1-cs-hide")!=="0");if(!csDlg.open)csDlg.showModal();q1(".cs-body",csDlg).scrollTop=0;}
+    const flip=e=>{const a=e.target.closest(".cs-a");if(a&&csDlg.classList.contains("cs-hide")){csChips(a,a.classList.toggle("on"));e.preventDefault();}};
+    csDlg.addEventListener("click",e=>{if(e.target===csDlg)return csDlg.close();
+      const r=e.target.closest(".cs-y,.cs-n");if(r){const g=r.parentElement;csRate(g.previousElementSibling,r.classList.contains("cs-y"));g.remove();return;}
+      const p=e.target.closest("[data-pk]");if(p){qa("[data-pk]",csDlg).forEach(x=>x.setAttribute("aria-pressed",String(x===p)));
+        qa(".cs-sec",csDlg).forEach(s=>s.hidden=!!p.dataset.pk&&s.dataset.k!==p.dataset.pk);csStats();q1(".cs-body",csDlg).scrollTop=0;return;}
+      if(e.target.closest('a[href^="#"]'))return csDlg.close();flip(e);});
+    csDlg.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&!e.target.closest("button"))flip(e);});}
+  q1("#csT",csDlg).textContent=title;}
+function csShow(){sheetMode(st.get("js1-cs-hide")!=="0");if(!csDlg.open)csDlg.showModal();q1(".cs-body",csDlg).scrollTop=0;}
+function sheet(){const tpl=q1("template#cheatsheet");if(!tpl)return;
+  csOpen("💡 Cheat sheet · "+(document.body.dataset.name||document.title));csFill([{k:document.body.dataset.page||PAGE||"page",html:tpl.innerHTML}],false);csShow();}
+/* the course pack: every lesson's sheet, loaded on first use from the signed data-src of <meta name="zl-sheets"> */
+function pack(){const m=q1('meta[name="zl-sheets"]');if(!m)return;
+  const go=()=>{const L=window.SHEETS||[];csOpen("💡 All cheat sheets · "+(CNAME[CID]||CID)+" · "+L.length+" lessons");csFill(L,true);csShow();};
+  if(window.SHEETS)return go();
+  const s=document.createElement("script");s.src=m.getAttribute("data-src");s.onload=go;
+  s.onerror=()=>{s.remove();csOpen("Cheat sheets");q1(".cs-pick",csDlg).hidden=true;q1(".cs-st",csDlg).textContent="";
+    q1(".cs-body",csDlg).innerHTML='<div class="sd-empty">The cheat sheets could not be loaded. Check the connection and try again.</div>';if(!csDlg.open)csDlg.showModal();};
+  document.head.appendChild(s);}
 /* 💡 bulb in the top nav (2026-11-08, user: "cheat sheet on the top with some bulb button show effect"): amber glow,
    pulses until the sheet is first opened (js1-cs-seen), lights up on click, then opens. No nav → old pill under the lead. */
-function sheetBtn(){if(!q1("template#cheatsheet")||q1(".cs-open"))return;
+function sheetBtn(){const all=!q1("template#cheatsheet");if((all&&!q1('meta[name="zl-sheets"]'))||q1(".cs-open"))return;
   const anchor=q1("#studyBtn")||q1("#cmdBtn"),b=document.createElement("button");b.type="button";b.className="cs-open";
-  b.title="Cheat sheet of this lesson";b.setAttribute("aria-label","Open the cheat sheet of this lesson");
-  b.innerHTML='<span class="cs-bulb" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g class="cs-rays"><path d="M12 1v1.5M4.2 4.2l1 1M19.8 4.2l-1 1M1.5 11H3M21 11h1.5"/></g><path class="cs-glass" d="M9 17.5h6M9.5 21h5M8.2 14.6A6 6 0 1 1 15.8 14.6c-.6.6-.8 1.3-.8 2.1v.8H9v-.8c0-.8-.2-1.5-.8-2.1z"/></svg></span><span class="cs-lbl">Cheat sheet</span>';
+  b.title=all?"Every lesson's cheat sheet in one printable view":"Cheat sheet of this lesson";b.setAttribute("aria-label",all?"Open all cheat sheets of this course":"Open the cheat sheet of this lesson");
+  b.innerHTML='<span class="cs-bulb" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><g class="cs-rays"><path d="M12 1v1.5M4.2 4.2l1 1M19.8 4.2l-1 1M1.5 11H3M21 11h1.5"/></g><path class="cs-glass" d="M9 17.5h6M9.5 21h5M8.2 14.6A6 6 0 1 1 15.8 14.6c-.6.6-.8 1.3-.8 2.1v.8H9v-.8c0-.8-.2-1.5-.8-2.1z"/></svg></span><span class="cs-lbl">'+(all?"All cheat sheets":"Cheat sheet")+'</span>';
   if(st.get("js1-cs-seen")!=="1")b.classList.add("cs-new");
-  b.onclick=()=>{b.classList.remove("cs-new");st.set("js1-cs-seen","1");b.classList.add("cs-lit");setTimeout(()=>b.classList.remove("cs-lit"),700);sheet();};
+  b.onclick=()=>{b.classList.remove("cs-new");st.set("js1-cs-seen","1");b.classList.add("cs-lit");setTimeout(()=>b.classList.remove("cs-lit"),700);(all?pack:sheet)();};
   if(anchor)return anchor.before(b);
   const h=q1("header#top"),ld=h&&q1(".lead",h);if(!h)return;b.classList.add("sd-b","cs-pill");ld?ld.after(b):h.appendChild(b);}
 
-window.STUDY={open,due,dash,cheat,badge,sheet};
+/* ---------- Company question bank (2026-11-08): "I was asked this at <company>, <round>" on interview cards ----------
+   Live site: public.question_tags (own reports) + qtag_counts() (everyone's counts, needs a face login); cached 10 min in
+   sessionStorage zls-qt. Without the lock (file://) reports stay in this browser (js1-qtags {key: [[company, round]]}).
+   Card key = COURSE.qa k = "<section id>:<Q label>" (build-index.mjs). Shown on every details.d card (badge in the summary,
+   chips + Report form in the answer) and as Company / Round filters + chips in the mock interview. */
+const QROUND={online:"Online test",phone:"Phone screen",tech:"Technical",design:"Design / machine coding",manager:"Managerial",hr:"HR"};
+const QCOMMON=["Amazon","Google","Microsoft","Meta","Apple","Adobe","Atlassian","Oracle","SAP","Salesforce","Uber","Flipkart","Walmart","PayPal","Goldman Sachs","JPMorgan","Morgan Stanley","Paytm","PhonePe","Swiggy","Zomato","Razorpay","CRED","Zoho","Freshworks","TCS","Infosys","Wipro","HCLTech","Tech Mahindra","Cognizant","Accenture","Capgemini","LTIMindtree","Deloitte","IBM"];
+const qsb=()=>{const A=window.AUTH;return A&&A.on&&A.sb?A.sb:null;};
+let QT=null;   /* {key: [{co, r, n, mine}]} */
+const qtNorm=s=>String(s||"").trim().replace(/\s+/g," ").slice(0,60);
+const qtTitle=s=>s.replace(/\b\w/g,c=>c.toUpperCase());
+async function qtLoad(force){
+  if(QT&&!force)return QT;
+  const sb=qsb();
+  if(!sb){const L=J("js1-qtags",{});QT={};for(const k in L)QT[k]=(L[k]||[]).map(([co,r])=>({co:co.toLowerCase(),r,n:1,mine:true}));return QT;}
+  if(!force){try{const c=JSON.parse(sessionStorage.getItem("zls-qt")||"null");if(c&&Date.now()-c.t<6e5){QT=c.d;return QT;}}catch(e){}}
+  const r=await sb.rpc("qtag_counts");QT={};
+  if(!r.error)(r.data||[]).forEach(x=>{(QT[x.q_key]=QT[x.q_key]||[]).push({co:x.company,r:x.round,n:+x.n,mine:!!x.mine});});
+  try{sessionStorage.setItem("zls-qt",JSON.stringify({t:Date.now(),d:QT}));}catch(e){}
+  return QT;}
+async function qtAdd(k,co,r,del){
+  const sb=qsb();co=qtNorm(co);if(co.length<2||!QROUND[r])return "Type the company name (2–60 letters) and pick the round.";
+  if(!sb){const L=J("js1-qtags",{}),a=(L[k]||[]).filter(([c,x])=>!(c.toLowerCase()===co.toLowerCase()&&x===r));if(!del)a.push([co,r]);L[k]=a;put("js1-qtags",L);await qtLoad(true);return "";}
+  const q=del?await sb.from("question_tags").delete().eq("q_key",k).ilike("company",co).eq("round",r)
+             :await sb.from("question_tags").insert({q_key:k,company:co,round:r});
+  if(q.error&&!/duplicate/i.test(q.error.message))return /face|permission|policy/i.test(q.error.message)?"Log in again with your face to report.":q.error.message;
+  await qtLoad(true);return "";}
+const qtChips=(k,withMine)=>{const a=(QT&&QT[k])||[];if(!a.length)return "";
+  return a.slice().sort((x,y)=>y.n-x.n).map(t=>'<span class="qt-chip'+(t.mine?" mine":"")+'" title="'+esc(QROUND[t.r]||t.r)+(t.mine?" · you reported this":"")+'">🏢 '+esc(qtTitle(t.co))+" · "+esc(QROUND[t.r]||t.r)+(t.n>1?" <b>×"+t.n+"</b>":"")+
+    (withMine&&t.mine?' <button type="button" class="qt-x" data-qtdel="'+esc(t.co)+'|'+t.r+'" aria-label="Remove my report">×</button>':"")+"</span>").join("");};
+function qtForm(k){
+  const known=new Set(QCOMMON);for(const kk in (QT||{}))QT[kk].forEach(t=>known.add(qtTitle(t.co)));
+  return '<div class="qt-box" data-qk="'+esc(k)+'"><div class="qt-chips">'+qtChips(k,true)+'</div>'+
+    '<details class="qt-rep"><summary>🏢 Asked in a real interview? Report it</summary><form class="qt-f"><label>Company <input name="co" list="qtList" maxlength="60" autocomplete="off" required placeholder="e.g. Infosys"></label>'+
+    '<label>Round <select name="r">'+Object.keys(QROUND).map(r=>'<option value="'+r+'"'+(r==="tech"?" selected":"")+">"+QROUND[r]+"</option>").join("")+"</select></label>"+
+    '<button type="submit" class="sd-b pri">Save</button><span class="qt-msg" aria-live="polite"></span></form>'+
+    '<p class="qt-note">Reports are shared (company and round only, never your name) and build this site\'s company question bank.</p></details>'+
+    (document.getElementById("qtList")?"":'<datalist id="qtList">'+[...known].sort().map(c=>'<option value="'+esc(c)+'">').join("")+"</datalist>")+"</div>";}
+function qtWire(root,after){
+  root.addEventListener("submit",async e=>{const f=e.target.closest(".qt-f");if(!f)return;e.preventDefault();const box=f.closest(".qt-box"),m=q1(".qt-msg",f);
+    m.textContent="Saving…";const err=await qtAdd(box.dataset.qk,f.co.value,f.r.value);m.textContent=err||"Saved. Thank you!";
+    if(!err){f.co.value="";q1(".qt-chips",box).innerHTML=qtChips(box.dataset.qk,true);if(after)after(box.dataset.qk);}});
+  root.addEventListener("click",async e=>{const b=e.target.closest("[data-qtdel]");if(!b)return;e.preventDefault();e.stopPropagation();const box=b.closest(".qt-box"),[co,r]=b.dataset.qtdel.split("|");
+    await qtAdd(box.dataset.qk,co,r,true);q1(".qt-chips",box).innerHTML=qtChips(box.dataset.qk,true);if(after)after(box.dataset.qk);});}
+const qtBadge=k=>{const n=((QT&&QT[k])||[]).reduce((a,t)=>a+t.n,0);return n?'<span class="qt-badge" title="Reported in real interviews '+n+(n===1?" time":" times")+'">🏢 '+n+"</span>":"";};
+/* every interview card on a lesson page */
+async function qtCards(){
+  const cards=qa("section[id] details.d");if(!cards.length)return;
+  await qtLoad().catch(()=>{QT=QT||{};});
+  const keyOf=d=>{const s=d.closest("section[id]"),l=q1("summary .q",d);return s&&l?s.id+":"+l.textContent.trim():"";};
+  const paint=d=>{const k=keyOf(d);if(!k)return;let b=q1(":scope > summary .qt-badge",d);const h=qtBadge(k);
+    if(b)b.outerHTML=h||"";else if(h)q1("summary",d).insertAdjacentHTML("beforeend",h);};
+  cards.forEach(d=>{paint(d);d.addEventListener("toggle",()=>{if(!d.open||q1(".qt-box",d))return;const k=keyOf(d),body=q1(":scope > .b",d);if(!k||!body)return;
+    body.insertAdjacentHTML("beforeend",qtForm(k));qtWire(q1(".qt-box",body),()=>paint(d));});});}
+window.STUDY={open,due,dash,cheat,badge,sheet,pack};
 if(CID&&COURSE.pages&&COURSE.pages.length){
-  enrol();backfill();summarise();addCss();explain();navBtn();sheetBtn();a11y();
+  enrol();backfill();summarise();addCss();explain();navBtn();sheetBtn();a11y();qtCards().catch(()=>{});
   document.addEventListener("quizanswer",()=>{enrol();summarise();badge();});
   document.addEventListener("click",e=>{if(e.target.closest(".secfoot .sf-done"))setTimeout(()=>{backfill();summarise();badge();},0);});
   const h=decodeURIComponent(location.hash);if(h==="#study-review"||h==="#study-mock"||h==="#study-progress"){history.replaceState(null,"",location.pathname+location.search);open(h.slice(7));}
-  else if(h==="#cheatsheet"){history.replaceState(null,"",location.pathname+location.search);sheet();}
+  else if(h==="#cheatsheet"){history.replaceState(null,"",location.pathname+location.search);q1("template#cheatsheet")?sheet():pack();}
   setInterval(badge,30*60*1000);}
 })();

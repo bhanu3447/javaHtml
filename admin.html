@@ -11,17 +11,17 @@
 </head>
 <body class="au">
 <div class="au-top"><a class="au-brand" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a><span class="au-sp"></span><a class="au-btn sm" href="index.html">All courses</a><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
-<script src="assets/js/loader.js?v=2cfed151"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Loading the admin panel",steps:false});</script>
+<script src="assets/js/loader.js?v=c2409ad4"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Loading the admin panel",steps:false});</script>
 <main class="au-wrap" id="app"></main>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=366cf650"></script>
+<script src="assets/js/auth.js?v=ddb9f07c"></script>
 <script>
 /* admin v1: course requests, approved photos (invites), people, roles. Owner and admins only; the database checks every action again. */
 (function(){
   try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
   var app=document.getElementById("app"),esc=AUTH.esc,C=AUTH.COURSES,ME=null,D={people:[],access:[],invites:[]};
-  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",networks:"Networks",dbms:"DBMS",resume:"Resume"};
+  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",networks:"Networks",dbms:"DBMS",lld:"LLD",resume:"Resume"};
   function zlDone(){if(window.ZLc){ZLc.leave();window.ZLc=null;}}   /* the loader leaves at the first render or card */
   function card(t,actions){zlDone();app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">🔒</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
 
@@ -35,7 +35,10 @@
     /* selfies are private: short-lived signed links, owner/admins only */
     var paths=p.data.filter(function(u){return u.selfie_path;}).map(function(u){return u.selfie_path;}),urls={};
     if(paths.length){var sg=await AUTH.sb.storage.from("selfies").createSignedUrls(paths,3600);(sg.data||[]).forEach(function(x,k){if(x.signedUrl)urls[paths[k]]=x.signedUrl;});}
-    D={people:p.data,access:a.data,invites:i.data,urls:urls,errors:pe.error?null:pe.data};render();
+    /* learner progress + company question reports (2026-11-08): optional, they exist only after those parts of supabase/setup.sql have run */
+    var po=await AUTH.sb.rpc("progress_overview");
+    var qt=await AUTH.sb.from("question_tags").select("id,user_id,q_key,company,round,created_at").order("created_at",{ascending:false}).limit(60);
+    D={people:p.data,access:a.data,invites:i.data,urls:urls,errors:pe.error?null:pe.data,progress:po.error?null:po.data,tags:qt.error?null:qt.data};render();
   }
   function person(id){return D.people.find(function(x){return x.id===id;})||{email:"?"};}
   function face(u,big){var src=u.selfie_path&&D.urls[u.selfie_path];return src?'<img class="au-face'+(big?' big':'')+'" src="'+esc(src)+'" alt="Selfie of '+esc(u.name||u.email)+'" loading="lazy">':'<span class="au-face'+(big?' big':'')+'" aria-hidden="true">'+esc((u.name||u.email||"?").charAt(0).toUpperCase())+'</span>';}
@@ -91,7 +94,11 @@
     if(D.errors)errs='<section class="au-panel"><h2>Page errors <span class="au-count">'+D.errors.length+'</span></h2><p>JavaScript errors that learners’ browsers hit on course pages (newest first, at most 3 per page view). Fix, publish, then clear them.</p><div class="au-rows">'+
       (D.errors.length?D.errors.map(function(x){return '<div class="au-row"><div class="au-who"><b>'+esc(x.msg)+'</b><small>'+esc(x.page)+(x.src?' · '+esc(x.src):'')+' · '+new Date(x.created_at).toLocaleString()+'</small><small>'+esc(x.ua||'')+'</small></div></div>';}).join("")+
         '<div class="au-row"><button class="au-btn sm no" data-clrerr="1">Clear all page errors</button></div>':'<div class="au-empty">No errors reported.</div>')+'</div></section>';
-    zlDone();app.innerHTML=h+pre+errs;
+    var prog=D.progress?progressPanel(D.progress.filter(function(r){var u=person(r.user_id);return u.role==="learner";})):'';
+    var RN={online:"Online test",phone:"Phone screen",tech:"Technical",design:"Design / machine coding",manager:"Managerial",hr:"HR"},tags='';
+    if(D.tags)tags='<section class="au-panel"><h2>Company question reports <span class="au-count">'+D.tags.length+'</span></h2><p>Learners mark interview cards with “I was asked this at …”. Others see only the company, round and count, never who reported it. Remove anything that looks wrong or abusive.</p><div class="au-rows">'+
+      (D.tags.length?D.tags.map(function(t){var u=person(t.user_id);return '<div class="au-row"><div class="au-who"><b>'+esc(t.company)+' · '+esc(RN[t.round]||t.round)+'</b><small>'+esc(t.q_key)+' · by '+esc(u.name||u.email)+' · '+new Date(t.created_at).toLocaleString()+'</small></div><button class="au-btn sm no" data-deltag="'+t.id+'">Remove</button></div>';}).join(""):'<div class="au-empty">No reports yet.</div>')+'</div></section>';
+    zlDone();app.innerHTML=h+prog+tags+pre+errs;
     document.getElementById("inv").onsubmit=invite;
     document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();
   }
@@ -100,6 +107,39 @@
     document.querySelectorAll(".au-person").forEach(function(r){var hit=!q||r.dataset.find.indexOf(q)>=0;r.hidden=!hit;if(hit)n++;});
     document.getElementById("pplNone").hidden=n>0;}
 
+  /* Learner progress (2026-11-08, kb/lock/access-lock.md → "Progress sync"): from public.progress_overview() (owner/admins), which
+     returns each learner's synced js1-sum, js1-days, quiz-miss questions and interview-day rounds. Optional: hidden until the
+     progress part of supabase/setup.sql has run. */
+  var CN={java:"Java",sql:"SQL",dsa:"DSA",spring:"Spring",patterns:"Patterns",lld:"LLD",api:"REST API",sysdesign:"System Design",docker:"Docker",cicd:"CI/CD",os:"OS",networks:"Networks",dbms:"DBMS",behavioural:"Behavioural",redis:"Redis",kafka:"Kafka",nginx:"NGINX",n8n:"n8n"};
+  function dstr(t){var d=new Date(t);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+  function streakOf(days){var s=new Set(days||[]),n=0,t=Date.now();if(!s.has(dstr(t)))t-=864e5;while(s.has(dstr(t))){n++;t-=864e5;}return n;}
+  function ago(t){var m=Math.round((Date.now()-new Date(t))/6e4);return m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago";}
+  function progressPanel(rows){
+    var esc=AUTH.esc,now=Date.now(),act7=0,weak={},miss={},stop={},crs={};
+    var list=rows.map(function(r){var sum=r.sum||{},days=r.days||[],cs=Object.keys(sum).sort(function(a,b){return (sum[b].t||0)-(sum[a].t||0);});
+      var d14=0;for(var i=0;i<14;i++)if(days.indexOf(dstr(now-i*864e5))>=0)d14++;
+      var idle=(now-new Date(r.updated_at))/864e5;if(idle<=7)act7++;
+      cs.forEach(function(c){var x=sum[c];crs[c]=crs[c]||{n:0,und:0,tot:0,qc:0,qa:0};var k=crs[c];k.n++;k.und+=x.und||0;k.tot+=x.total||0;k.qc+=x.qc||0;k.qa+=x.qa||0;
+        (x.weak||[]).forEach(function(w){var id=c+"|"+w.n;weak[id]=weak[id]||{c:c,n:w.n,u:0,p:0};weak[id].u++;weak[id].p+=w.pct;});
+        if(idle>7&&x.last&&x.last.n){var s=c+"|"+x.last.n;stop[s]=stop[s]||{c:c,n:x.last.n,u:0};stop[s].u++;}});
+      for(var q in (r.misses||{})){miss[q]=miss[q]||{q:r.misses[q],u:0};miss[q].u++;}
+      var id=Array.isArray(r.iday)?r.iday.slice(-5):[],ip=id.length?Math.round(id.reduce(function(a,x){return a+(x.n?100*x.pts/x.n:0);},0)/id.length):null;
+      return {r:r,sum:sum,cs:cs,streak:streakOf(days),d14:d14,ip:ip,idle:idle};}).sort(function(a,b){return new Date(b.r.updated_at)-new Date(a.r.updated_at);});
+    var top=function(o,f,n){return Object.keys(o).map(function(k){return o[k];}).sort(f).slice(0,n);};
+    var pct=function(a,b){return b?Math.round(100*a/b):0;};
+    var h='<section class="au-panel"><h2>Learner progress <span class="au-count">'+rows.length+'</span></h2><p>From each learner’s synced progress (sections marked understood, quiz answers, reviews, mock rounds). Updated whenever they study while logged in. <b>'+act7+'</b> active in the last 7 days.</p>';
+    h+='<div class="au-rows">'+list.map(function(x){var r=x.r;
+      return '<div class="au-row"><div class="au-who"><b>'+esc(r.name||r.username||r.email)+'</b><small>@'+esc(r.username||"")+' · synced '+ago(r.updated_at)+' · streak '+x.streak+' · '+x.d14+' of last 14 days'+(x.ip!=null?' · mock '+x.ip+'%':'')+'</small></div>'+
+        '<div class="au-chips">'+(x.cs.length?x.cs.slice(0,6).map(function(c){var s=x.sum[c];return '<span class="au-chip" title="sections understood · quiz accuracy">'+esc(CN[c]||c)+' '+pct(s.und,s.total)+'% · '+pct(s.qc,s.qa)+'%</span>';}).join(""):'<span class="au-chip">no lesson opened yet</span>')+'</div></div>';}).join("")+'</div>';
+    var C=Object.keys(crs).sort(function(a,b){return crs[b].n-crs[a].n;});
+    if(C.length)h+='<h3>Courses</h3><div class="au-rows">'+C.map(function(c){var k=crs[c];return '<div class="au-row"><div class="au-who"><b>'+esc(CN[c]||c)+'</b><small>'+k.n+' learner'+(k.n===1?'':'s')+' · avg sections understood '+pct(k.und,k.tot)+'% · quiz accuracy '+pct(k.qc,k.qa)+'%</small></div></div>';}).join("")+'</div>';
+    var S=top(stop,function(a,b){return b.u-a.u;},10);
+    if(S.length)h+='<h3>Where learners stop</h3><p>Last lesson of learners who have not studied for more than 7 days.</p><div class="au-rows">'+S.map(function(s){return '<div class="au-row"><div class="au-who"><b>'+esc(s.n)+'</b><small>'+esc(CN[s.c]||s.c)+' · '+s.u+' learner'+(s.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>';
+    var W=top(weak,function(a,b){return b.u-a.u||a.p/a.u-b.p/b.u;},10);
+    if(W.length)h+='<h3>Weakest lessons</h3><p>Lessons where learners get under 60% of the quiz right.</p><div class="au-rows">'+W.map(function(w){return '<div class="au-row"><div class="au-who"><b>'+esc(w.n)+'</b><small>'+esc(CN[w.c]||w.c)+' · '+w.u+' learner'+(w.u===1?'':'s')+' · avg '+Math.round(w.p/w.u)+'% correct</small></div></div>';}).join("")+'</div>';
+    var M=top(miss,function(a,b){return b.u-a.u;},15);
+    if(M.length)h+='<h3>Most-missed quiz questions</h3><div class="au-rows">'+M.map(function(m){return '<div class="au-row"><div class="au-who"><b>'+esc(String(m.q||"").replace(/<[^>]*>/g,"").slice(0,300))+'</b><small>missed by '+m.u+' learner'+(m.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>';
+    return h+'</section>';}
   async function call(name,args){var r=await AUTH.sb.rpc(name,args);if(r.error){alert(r.error.message);return false;}return true;}
   async function rpc(name,args){await call(name,args);await load();}
   /* giving a course to an account that is still waiting (or blocked) approves the account first, or the course would not open */
@@ -133,6 +173,7 @@
       b.disabled=true;await rpc("set_role",{p_user:b.dataset.u,p_role:b.dataset.role});}
     else if(b.dataset.clrerr){if(!confirm("Clear every reported page error?"))return;
       b.disabled=true;var ce=await AUTH.sb.from("client_errors").delete().gte("id",0);if(ce.error)alert(ce.error.message);await load();}
+    else if(b.dataset.deltag){b.disabled=true;var dt=await AUTH.sb.from("question_tags").delete().eq("id",b.dataset.deltag);if(dt.error)alert(dt.error.message);await load();}
     else if(b.dataset.delinv){if(!confirm("Remove this approval? They will not be able to register."))return;
       b.disabled=true;var r=await AUTH.sb.from("invites").delete().eq("id",b.dataset.delinv);if(r.error)alert(r.error.message);await load();}
   });
