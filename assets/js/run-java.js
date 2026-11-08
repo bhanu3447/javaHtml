@@ -10,6 +10,7 @@
   const API="https://wandbox.org/api/compile.json",COMPILERS=["openjdk-jdk-22+36","openjdk-jdk-21+35"];
   const strip=src=>src.replace(/^([ \t]*)public(\s+)(?=(?:(?:final|abstract|sealed|non-sealed|static|strictfp)\s+)*(?:class|interface|enum|record)\b)/gm,"$1");
   const readsIn=src=>/System\.in\b|new\s+Scanner\s*\(|BufferedReader|Console\(\)/.test(src);
+  window.RJexec=(src,stdin)=>exec(src,stdin);   /* the DSA bank hidden tests run their own program (labs-dsa-bank.js) */
   async function exec(src,stdin){let last=null;
     for(const compiler of COMPILERS){const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),90000);
       try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({compiler,code:strip(src),stdin:stdin||"",options:""}),signal:ctl.signal});

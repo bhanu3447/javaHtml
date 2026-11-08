@@ -7,10 +7,26 @@
   /* a symmetric lemniscate: two mirrored loops (outer tangents vertical at x = 8 and x = 56) crossing at (32, 18) */
   var D="M32 18C25 7 8 7 8 18C8 29 25 29 32 18C39 7 56 7 56 18C56 29 39 29 32 18";
   var STEPS=["Sign-in","Access","Lesson"];
-  function dark(){var t="";try{t=String(localStorage.getItem("js1-theme")||"");}catch(e){}
-    var a=document.documentElement.getAttribute("data-theme")||"";
-    if(/light/.test(a)||/light/.test(t))return false;if(/dark/.test(a)||/dark/.test(t))return true;
-    return !!(window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches);}
+  /* themes v1 (2026-11-08): the loader wears the site's theme, resolved like course.js does: <html data-theme>, else js1-theme
+     (null = "auto" = by time of day: 5–9 sunset, 9–17 light, 17–21 dark, 21–5 midnight; "" = system), else the OS setting.
+     Each named theme: [dark, bg, text, muted, line, accent, accent-2, third glow colour] (from course.css :root[data-theme]). */
+  var TH={light:0,dark:1,
+    midnight:[1,"#070b1a","#e4e9ff","#8a96c2","rgba(120,140,220,.12)","#3b82f6","#a78bfa","#22d3ee"],
+    nord:[1,"#2e3440","#eceff4","#b8c1d1","rgba(216,222,233,.10)","#a3c0dd","#c9a6c6","#88c0d0"],
+    dracula:[1,"#1e1f29","#f8f8f2","#a4a9c7","rgba(248,248,242,.08)","#b79cf7","#ff79c6","#8be9fd"],
+    forest:[1,"#0b1410","#e3f1e8","#8fae9c","rgba(160,220,190,.09)","#27b37a","#a3e635","#2dd4bf"],
+    sunset:[0,"#fff8f3","#2a1a14","#7d5f52","rgba(120,60,30,.10)","#be123c","#f97316","#f59e0b"],
+    ocean:[0,"#f2f8fb","#0b2534","#4b6b7d","rgba(11,37,52,.09)","#0e7490","#2563eb","#06b6d4"],
+    sepia:[0,"#f4ecd8","#3b2f20","#76644c","rgba(59,47,32,.10)","#8f4a26","#b8860b","#6b8e23"]};
+  function theme(){var a=document.documentElement.getAttribute("data-theme")||"",t=null;
+    if(!TH.hasOwnProperty(a)){try{t=localStorage.getItem("js1-theme");}catch(e){}
+      if(t===null||t==="auto"){var h=new Date().getHours();a=h>=5&&h<9?"sunset":h>=9&&h<17?"light":h>=17&&h<21?"dark":"midnight";}
+      else a=TH.hasOwnProperty(t)?t:"";}
+    if(!a)a=window.matchMedia&&matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";
+    return a;}
+  function dark(){var x=TH[theme()];return typeof x==="number"?!!x:!!x[0];}
+  function vars(){var x=TH[theme()];if(typeof x==="number")return "";
+    return ' style="--zl-bg:'+x[1]+";--zl-fg:"+x[2]+";--zl-mu:"+x[3]+";--zl-ln:"+x[4]+";--zl-a:"+x[5]+";--zl-b:"+x[6]+";--zl-c:"+x[7]+'"';}
   function still(){return !!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches);}
 
   var CSS=
@@ -107,7 +123,7 @@
 
   var n=0;
   function html(o){o=o||{};var id=++n,step=o.step||0,lite=!!o.lite;
-    return '<div class="zl'+(dark()?" zl-dark":"")+'"'+(o.id?' id="'+o.id+'"':"")+' role="status" aria-live="polite">'+
+    return '<div class="zl'+(dark()?" zl-dark":"")+'"'+vars()+(o.id?' id="'+o.id+'"':"")+' role="status" aria-live="polite">'+
       '<div class="zl-au" aria-hidden="true"><i></i><i></i><i></i></div><div class="zl-grid" aria-hidden="true"></div>'+(still()||lite?"":fly(o.course))+'<div class="zl-bar" aria-hidden="true"><i></i></div>'+
       '<div class="zl-box"><div class="zl-hero"><span class="zl-orb" aria-hidden="true"></span>'+mark(id,lite)+"</div>"+'<span class="zl-brand">'+(NAME[o.course]?NAME[o.course]+" · ":"")+'Zero to Advanced</span><p class="zl-msg">'+(o.msg||"Loading")+"</p>"+
       (o.steps===false?"":'<ol class="zl-steps">'+STEPS.map(function(t,i){return '<li class="'+(i<step?"done":i===step?"now":"")+'"><b>'+(i<step?"✓":"")+"</b>"+t+"</li>";}).join("")+"</ol>")+

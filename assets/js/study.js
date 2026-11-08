@@ -237,7 +237,7 @@ function review(){
     if(b.dataset.go){cards=list.slice();ci=0;again=new Set();tally={ok:0,no:0};card();}};}
 function card(){
   if(ci>=cards.length){finishReview();return;}
-  const c=cards[ci],top='<div class="sd-top"><span>Card '+(ci+1)+" / "+cards.length+" · "+esc(c.c==="q"?"Quiz":c.c==="r"?RCD[c.d][0]:c.c==="x"?"Explain it back":c.c==="cs"?"Cheat sheet":c.c==="sx"?"Stream drill":c.c==="ld"?"LLD case":"Section review")+'</span><span>'+esc(c.k?tag(c.k):"")+"</span></div>"+
+  const c=cards[ci],top='<div class="sd-top"><span>Card '+(ci+1)+" / "+cards.length+" · "+esc(c.c==="q"?"Quiz":c.c==="r"?RCD[c.d][0]:c.c==="x"?"Explain it back":c.c==="cs"?"Cheat sheet":c.c==="sx"?"Stream drill":c.c==="ld"?"LLD case":c.c==="db"?"DSA re-solve":"Section review")+'</span><span>'+esc(c.k?tag(c.k):"")+"</span></div>"+
     '<div class="sd-bar" aria-hidden="true"><i style="transform:scaleX('+(ci/cards.length)+')"></i></div>';
   let h="";
   if(c.c==="q")h='<div class="sd-q">'+c.q+'</div><div class="sd-opts" role="group" aria-label="Options">'+c.o.map((o,j)=>'<button type="button" class="sd-opt" data-j="'+j+'"><i>'+"ABCDEF"[j]+"</i><span>"+o+"</span></button>").join("")+'</div><div class="sd-a" hidden aria-live="polite"></div><div class="sd-row" hidden><button type="button" class="sd-b pri" data-next="1">Next card</button></div>';
@@ -250,7 +250,7 @@ function card(){
       const a=q1(".sd-a",body());a.hidden=false;a.className="sd-a "+(ok?"okk":"nok");a.innerHTML="<b>"+(ok?"Correct.":"Not quite — the answer is "+"ABCDEF"[c.a]+".")+"</b> "+(c.e||"");
       rate(ok,false);const r=q1("[data-next]",body());r.parentElement.hidden=false;r.focus();return;}
     if(b.dataset.next){ci++;card();return;}
-    if(b.dataset.show){const a=q1(".sd-a",body());a.hidden=false;a.innerHTML=(c.c==="x"?"<b>The summary.</b> ":"")+(c.a||c.m||"")+(c.c==="ld"&&c.u?'<p class="ldq-go"><a href="'+esc(href(c.u))+'" target="_blank" rel="noopener">Open the case study ↗</a></p>':"");
+    if(b.dataset.show){const a=q1(".sd-a",body());a.hidden=false;a.innerHTML=(c.c==="x"?"<b>The summary.</b> ":"")+(c.a||c.m||"")+((c.c==="ld"||c.c==="db")&&c.u?'<p class="ldq-go"><a href="'+esc(href(c.u))+'" target="_blank" rel="noopener">'+(c.c==="db"?"Open the problem ↗":"Open the case study ↗")+'</a></p>':"");
       b.parentElement.innerHTML='<button type="button" class="sd-b ok" data-g="1">✓ Knew it</button><button type="button" class="sd-b no" data-g="0">✗ Not yet</button>';q1("[data-g]",body()).focus();return;}
     if(b.dataset.g!=null){rate(b.dataset.g==="1",true);}};
   const f=q1(".sd-opt,[data-show],[data-g]",body());if(f)f.focus();}
