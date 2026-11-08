@@ -1230,14 +1230,19 @@
   PGhost.classList.toggle("pg-nomem",!memOn);memBox.checked=memOn;
   /* full screen: the Fullscreen API when it is allowed, otherwise (iPhone) an expanded layout that hides the site chrome */
   let apiFull=false;
+  /* the button says "Exit" only when the page is really full screen (or the API is missing); after a reload the expanded layout comes back
+     without real full screen (the browser needs a click), so the button then offers it instead of leaving (fix 2026-11-09, user: "full screen not working") */
+  const canApi=()=>!!document.documentElement.requestFullscreen;
+  function fullLabel(){const on=document.body.classList.contains("pg-full"),real=!!document.fullscreenElement||(on&&!canApi());
+    fullBtn.setAttribute("aria-pressed",String(real));fullBtn.querySelector("span").textContent=real?"Exit full screen":"Full screen";}
   function setFull(on,api){
-    document.body.classList.toggle("pg-full",on);fullBtn.setAttribute("aria-pressed",String(on));fullBtn.querySelector("span").textContent=on?"Exit full screen":"Full screen";LS.set("js1-pg-full",on?"1":"0");
+    document.body.classList.toggle("pg-full",on);LS.set("js1-pg-full",on?"1":"0");
     const de=document.documentElement;
-    if(on&&api&&de.requestFullscreen&&!document.fullscreenElement){apiFull=true;de.requestFullscreen().catch(()=>{apiFull=false;});}
+    if(on&&api&&canApi()&&!document.fullscreenElement){apiFull=true;de.requestFullscreen().catch(()=>{apiFull=false;fullLabel();});}
     if(!on&&document.fullscreenElement){apiFull=false;document.exitFullscreen().catch(()=>{});}
-    afterResize();pref("full",on);}
-  fullBtn.onclick=()=>setFull(!document.body.classList.contains("pg-full"),true);
-  document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&apiFull){apiFull=false;setFull(false);}});
+    fullLabel();afterResize();pref("full",on);}
+  fullBtn.onclick=()=>{const on=document.body.classList.contains("pg-full");setFull(!(on&&(document.fullscreenElement||!canApi())),true);};
+  document.addEventListener("fullscreenchange",()=>{if(!document.fullscreenElement&&apiFull){apiFull=false;setFull(false);}else fullLabel();});
   if(LS.get("js1-pg-full")==="1")setFull(true,false); // a browser asks for a click before real full screen, so a reload opens the expanded layout
   /* resizable panels: editor width (x) and the bottom panels' height (y), saved as "width,height" */
   const sp=(LS.get("js1-pg-split")||"").split(",");if(+sp[0])PGhost.style.setProperty("--pg-lw",sp[0]+"px");if(+sp[1])PGhost.style.setProperty("--pg-bh",sp[1]+"px");

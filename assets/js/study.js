@@ -377,7 +377,20 @@ function navBtn(){
   const cmd=q1("#cmdBtn");if(!cmd||q1("#studyBtn"))return;
   const b=document.createElement("button");b.type="button";b.id="studyBtn";b.className=cmd.className;
   b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h12v16H6.5a2.5 2.5 0 0 0 0 5H18"/><path d="M9 8h6M9 12h4"/></svg>';
-  b.onclick=()=>open("review");cmd.before(b);badge();}
+  b.onclick=()=>open("review");cmd.before(b);badge();pgBtn(b);}
+/* playground icon (2026-11-09, user: "which course have playground that icon in the header"): courses with a playground get a nav button
+   next to Study that opens it; hidden on the playground page itself */
+const PGS={java:["courses/java/playground.html","Java Visual Playground"],dsa:["courses/java/playground.html","DSA Lab (visual playground)"],
+  patterns:["courses/patterns/lld-playground.html","LLD Playground"],lld:["courses/patterns/lld-playground.html","LLD Playground"],
+  spring:["courses/spring/playground.html","Spring Playground"],redis:["courses/redis/playground.html","Redis Playground"],
+  kafka:["courses/kafka/playground.html","Kafka Playground"],nginx:["courses/nginx/playground.html","NGINX Playground"],
+  docker:["courses/docker/playground.html","Docker Playground"],api:["courses/api/playground.html","REST API Playground"],
+  sysdesign:["courses/sysdesign/playground.html","System Design Playground"]};
+function pgBtn(study){const p=PGS[document.body.dataset.course||"java"];if(!p||q1("#pgNavBtn"))return;
+  if(location.pathname.replace(/\\/g,"/").endsWith("/"+p[0]))return;
+  const b=document.createElement("button");b.type="button";b.id="pgNavBtn";b.className=study.className;b.title="Open the "+p[1];b.setAttribute("aria-label","Open the "+p[1]);
+  b.innerHTML='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18"/><path d="m10 12.5 4 2.25-4 2.25z" fill="currentColor"/></svg>';
+  b.onclick=()=>{location.href=href(p[0]);};study.before(b);}
 function badge(){const b=q1("#studyBtn");if(!b)return;const n=due();let s=q1(".sd-badge",b);
   const lab="Study: review today, mock interview, progress"+(n?" ("+n+" due)":"");b.title=lab;b.setAttribute("aria-label",lab);
   if(!n){if(s)s.remove();return;}if(!s){s=document.createElement("span");s.className="sd-badge";s.setAttribute("aria-hidden","true");b.appendChild(s);}s.textContent=n>99?"99+":String(n);}
