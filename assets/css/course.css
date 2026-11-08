@@ -24739,3 +24739,76 @@ html.no-motion .dslb-bar i,html.no-motion .dslb-dot,html.no-motion .dslb-lv>summ
 .ld7-mark{margin-top:10px}
 @media (max-width:560px){.ld7-bar,.ld7-chips,.ld7-meta{padding-left:12px;padding-right:12px}.ld7-stage>div>.viz,.ld7-grade .viz,.ld7-body .viz,.ld7-two .viz{margin-left:8px;margin-right:8px}.ld7-card,.ld7-ta,.ld7-qs{margin-left:12px;margin-right:12px}}
 /* end lld L07 v1 */
+/* lld review+tags v1 (2026-11-08): "Asked at" company chips under every LLDK.req header (.ldk-qt, filled by study.js), M07's
+   Asked-at filter, the LLD case card's link in Review today. kb/site/site-internals.md → Study tools → LLD case cards. */
+.ldk-qt{margin:12px 18px 0;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);min-width:0}
+.ldk-qt:empty{display:none}
+.ldq-hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;font-size:.88rem}
+.ldq-hd b{font-weight:700;color:var(--text)}
+.ldq-none{color:var(--muted);font-size:.84rem}
+.ldk-qt .qt-box{margin-top:6px;padding-top:0;border-top:0;gap:6px}
+.ldk-qt .qt-chips{margin-top:0}
+.ldk-qt .qt-f input{max-width:min(260px,100%)}
+.ldq-at select{max-width:min(240px,calc(100vw - 120px))}
+.ldq-go{margin:10px 0 0}
+.ldq-go a{font-weight:600}
+@media (max-width:560px){.ldk-qt{margin-left:12px;margin-right:12px;padding:9px 11px}}
+/* end lld review+tags v1 */
+/* lld L10 v1 */
+.ld10-help{margin:12px 18px 0;font-size:.88rem;color:var(--muted)}
+.ld10-code{margin:10px 18px 0;padding:8px 0;background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-line);border-radius:12px;font:12.5px/1.6 "JetBrains Mono",monospace;overflow:auto;max-height:520px;tab-size:4;font-variant-ligatures:none}
+.ld10-ln{display:block;padding:0 12px 0 0;white-space:pre;cursor:pointer;border-left:3px solid transparent;min-height:1.6em;width:max-content;min-width:100%;box-sizing:border-box}
+.ld10-ln>i{font-style:normal;display:inline-block;width:3.2em;padding-right:.8em;text-align:right;color:var(--muted);user-select:none}
+.ld10-ln:hover{background:color-mix(in srgb,#8b5cf6 10%,var(--code-bg))}
+.ld10-ln.mk{background:color-mix(in srgb,#f59e0b 16%,var(--code-bg));border-left-color:#f59e0b}
+.ld10-ln.sel{background:color-mix(in srgb,#8b5cf6 26%,var(--code-bg));border-left-color:#a78bfa}
+.ld10-ln.mdl>i{color:#f87171;font-weight:700}
+.ld10-ln.mdl.mk>i{color:#4ade80}
+.ld10-form{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:12px 18px 0;font-size:.88rem}
+.ld10-form input,.ld10-form select{font:inherit;color:var(--text);background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:6px 8px}
+.ld10-form input{width:5em}.ld10-form select{max-width:100%}
+.ld10-list{margin:10px 18px 0;padding-left:22px;display:grid;gap:4px;font-size:.88rem}
+.ld10-list:empty{display:none}
+.ld10-lr{font:600 .78rem "JetBrains Mono",monospace;color:var(--muted)}
+.ld10-x{margin-left:6px;border:1px solid var(--line);background:var(--soft);color:var(--muted);border-radius:7px;padding:0 7px;cursor:pointer;font:inherit}
+.ld10-res{margin:6px 18px 4px}
+.ld10-find{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.ld10-find>li{padding:10px 13px;border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:0 11px 11px 0;background:var(--surface);font-size:.9rem}
+.ld10-find>li.ld10-hit{border-left-color:var(--good);background:var(--good-soft)}
+.ld10-find>li.ld10-near{border-left-color:var(--amber);background:var(--amber-soft)}
+.ld10-find>li.ld10-miss{border-left-color:var(--bad);background:var(--bad-soft)}
+.ld10-find p{margin:6px 0 0}.ld10-find em{font-style:normal;font-weight:600}
+.ld10-fh{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.ld10-ic{font-weight:700;width:1.1em}
+.ld10-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.ld10-risk{font:600 .72rem Inter,sans-serif;padding:2px 8px;border-radius:99px;border:1px solid var(--line);background:var(--soft)}
+.ld10-r-bug{color:var(--bad)}.ld10-r-conc{color:#8b5cf6}.ld10-r-test{color:var(--accent)}.ld10-r-change{color:var(--amber)}
+.ld10-h4{margin:14px 0 4px;font-size:.92rem}
+.ld10-fa{margin:0;padding-left:20px;font-size:.88rem;display:grid;gap:4px}
+.ld10-tabs{display:flex;flex-wrap:wrap;gap:6px;margin:12px 18px 0}
+.ld10-tabs button{font:600 .82rem Inter,sans-serif;color:var(--text);background:var(--soft);border:1px solid var(--line);border-radius:99px;padding:5px 12px;cursor:pointer}
+.ld10-tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.ld10-card{margin:12px 18px 0;padding:12px 15px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.ld10-card h4{margin:0 0 6px;font-size:1rem}.ld10-mv{margin:0 0 6px;font-size:.92rem}
+.ld10-ul{margin:4px 0 0;padding-left:20px;font-size:.88rem}
+.ld10-meta{margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;gap:2px}
+.ld10-tl{font-size:.78rem;margin-left:6px}
+.ld10-card .ldk-verd{margin:10px 0 0}
+.ld10-dd{margin:10px 18px 0}.ld10-dd .ldk-code{margin:8px 0 0;max-height:420px}
+.ld10-fold{color:var(--muted);font-style:italic}
+@media (max-width:560px){.ld10-help,.ld10-code,.ld10-form,.ld10-list,.ld10-res,.ld10-tabs,.ld10-card,.ld10-dd{margin-left:12px;margin-right:12px}.ld10-ln>i{width:2.4em;padding-right:.5em}}
+/* end lld L10 v1 */
+/* lld L08 v1 (assets/labs/lld/labs-lld-08.js): follow-up program details .ld8-v2 (race panels reuse .ld0-spot/.ld0-cars/.ld0-acc) */
+.ld8-v2{margin:14px 0}
+.ld8-v2 .code{margin:0 12px 12px}
+/* end lld L08 v1 */
+/* lld L09 v1 (assets/labs/lld/labs-lld-09.js): follow-up program details .ld9-v2 (race panels reuse .ld0-spot/.ld0-cars) */
+.ld9-v2{margin:14px 0}
+.ld9-v2 .code{margin:0 12px 12px}
+/* end lld L09 v1 */
+/* lld integ v1 (2026-11-08): the course home's "Continue: …" button (course.js adds a.lx-cont with the last section's long title) wraps
+   instead of pushing the page sideways at phone width; M07's surprise requirement (.ld7-fu) and refactor review list (.ld7-rv) */
+.cta .btn.lx-cont{display:inline-block;max-width:100%;min-width:0;white-space:normal;overflow-wrap:anywhere;text-align:center}
+.ld7-fu{margin:18px 0 0;padding-top:4px;border-top:1px dashed var(--line)}.ld7-fu>p.ldk-mut{margin:0 18px 8px}
+.ld7-rv{padding-left:20px}.ld7-rv li{margin:8px 0}.ld7-rv li>div{font-size:.88rem;margin-top:2px}
+/* end lld integ v1 */

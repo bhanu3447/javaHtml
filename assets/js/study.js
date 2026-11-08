@@ -218,7 +218,7 @@ function tabs(){const n=due(),T=[["review","Review today"+(n?'<span class="sd-n"
   q1(".sd-tabs",dlg).innerHTML=T.filter(([t])=>t!=="mock"||(COURSE.qa||[]).length).map(([t,h])=>'<button type="button" role="tab" data-t="'+t+'" aria-selected="'+(t===tab)+'" tabindex="'+(t===tab?0:-1)+'">'+h+"</button>").join("");}
 function body(){return q1(".sd-body",dlg);}
 function show(t){tab=t;mockStop();tabs();({review:review,mock:mock,progress:progress})[t]();}
-function open(t){panel();enrol();if(!dlg.open)dlg.showModal();show(t||"review");const b=q1('.sd-tabs [aria-selected="true"]',dlg);if(b)b.focus();}
+function open(t){panel();enrol();ldEnrol().then(n=>{if(n&&dlg&&dlg.open&&tab==="review"&&!cards.length)review();}).catch(()=>{});if(!dlg.open)dlg.showModal();show(t||"review");const b=q1('.sd-tabs [aria-selected="true"]',dlg);if(b)b.focus();}
 
 /* Review today */
 let cards=[],ci=0,again=new Set(),tally={ok:0,no:0};
@@ -226,17 +226,18 @@ function review(){
   backfill();
   const all=deck("all"),mine=CID?deck("course"):all;
   const list=scope==="course"&&CID?mine:all;
+  if(list.some(c=>c.c==="ld"))ldFresh(list);
   body().innerHTML='<div class="sd-stats"><span><b>'+all.length+(all.length>=CAP?"+":"")+"</b>due now</span><span><b>"+Object.keys(srs).length+"</b>cards in your deck</span><span><b>"+streak()+"</b>day streak</span></div>"+
     (CID?'<div class="sd-row" role="group" aria-label="Which courses"><b>From</b><button type="button" class="sd-chip" data-sc="all" aria-pressed="'+(scope!=="course")+'">All courses</button><button type="button" class="sd-chip" data-sc="course" aria-pressed="'+(scope==="course")+'">'+esc(CNAME[CID]||CID)+" only</button></div>":"")+
     '<div class="sd-row">'+(list.length?'<button type="button" class="sd-b pri" data-go="1">Start · '+list.length+(list.length===1?" card":" cards")+"</button>":"")+"</div>"+
-    (list.length?'<p class="xb-msg">Wrong quiz answers, recall prompts of the lessons you started, sections you marked as understood, cheat sheet answers you rated ✓ / ✗ and "Explain it back" answers come back after 1, 3, 7, 21 and 60 days. A miss starts the card again.</p>':
+    (list.length?'<p class="xb-msg">Wrong quiz answers, recall prompts of the lessons you started, sections you marked as understood, cheat sheet answers you rated ✓ / ✗, LLD case studies you finished and "Explain it back" answers come back after 1, 3, 7, 21 and 60 days. A miss starts the card again.</p>':
       '<div class="sd-empty" style="margin-top:12px">Nothing is due. Answer a lesson quiz, mark sections as understood, rate cheat sheet answers or use "Explain it back", and the cards come back here on the right day.</div>');
   body().onclick=e=>{const b=e.target.closest("button");if(!b)return;
     if(b.dataset.sc){scope=b.dataset.sc;put("js1-srs-scope",scope);review();return;}
     if(b.dataset.go){cards=list.slice();ci=0;again=new Set();tally={ok:0,no:0};card();}};}
 function card(){
   if(ci>=cards.length){finishReview();return;}
-  const c=cards[ci],top='<div class="sd-top"><span>Card '+(ci+1)+" / "+cards.length+" · "+esc(c.c==="q"?"Quiz":c.c==="r"?RCD[c.d][0]:c.c==="x"?"Explain it back":c.c==="cs"?"Cheat sheet":c.c==="sx"?"Stream drill":"Section review")+'</span><span>'+esc(c.k?tag(c.k):"")+"</span></div>"+
+  const c=cards[ci],top='<div class="sd-top"><span>Card '+(ci+1)+" / "+cards.length+" · "+esc(c.c==="q"?"Quiz":c.c==="r"?RCD[c.d][0]:c.c==="x"?"Explain it back":c.c==="cs"?"Cheat sheet":c.c==="sx"?"Stream drill":c.c==="ld"?"LLD case":"Section review")+'</span><span>'+esc(c.k?tag(c.k):"")+"</span></div>"+
     '<div class="sd-bar" aria-hidden="true"><i style="transform:scaleX('+(ci/cards.length)+')"></i></div>';
   let h="";
   if(c.c==="q")h='<div class="sd-q">'+c.q+'</div><div class="sd-opts" role="group" aria-label="Options">'+c.o.map((o,j)=>'<button type="button" class="sd-opt" data-j="'+j+'"><i>'+"ABCDEF"[j]+"</i><span>"+o+"</span></button>").join("")+'</div><div class="sd-a" hidden aria-live="polite"></div><div class="sd-row" hidden><button type="button" class="sd-b pri" data-next="1">Next card</button></div>';
@@ -249,7 +250,7 @@ function card(){
       const a=q1(".sd-a",body());a.hidden=false;a.className="sd-a "+(ok?"okk":"nok");a.innerHTML="<b>"+(ok?"Correct.":"Not quite — the answer is "+"ABCDEF"[c.a]+".")+"</b> "+(c.e||"");
       rate(ok,false);const r=q1("[data-next]",body());r.parentElement.hidden=false;r.focus();return;}
     if(b.dataset.next){ci++;card();return;}
-    if(b.dataset.show){const a=q1(".sd-a",body());a.hidden=false;a.innerHTML=(c.c==="x"?"<b>The summary.</b> ":"")+(c.a||c.m||"");
+    if(b.dataset.show){const a=q1(".sd-a",body());a.hidden=false;a.innerHTML=(c.c==="x"?"<b>The summary.</b> ":"")+(c.a||c.m||"")+(c.c==="ld"&&c.u?'<p class="ldq-go"><a href="'+esc(href(c.u))+'" target="_blank" rel="noopener">Open the case study ↗</a></p>':"");
       b.parentElement.innerHTML='<button type="button" class="sd-b ok" data-g="1">✓ Knew it</button><button type="button" class="sd-b no" data-g="0">✗ Not yet</button>';q1("[data-g]",body()).focus();return;}
     if(b.dataset.g!=null){rate(b.dataset.g==="1",true);}};
   const f=q1(".sd-opt,[data-show],[data-g]",body());if(f)f.focus();}
@@ -489,17 +490,18 @@ const QROUND={online:"Online test",phone:"Phone screen",tech:"Technical",design:
 const QCOMMON=["Amazon","Google","Microsoft","Meta","Apple","Adobe","Atlassian","Oracle","SAP","Salesforce","Uber","Flipkart","Walmart","PayPal","Goldman Sachs","JPMorgan","Morgan Stanley","Paytm","PhonePe","Swiggy","Zomato","Razorpay","CRED","Zoho","Freshworks","TCS","Infosys","Wipro","HCLTech","Tech Mahindra","Cognizant","Accenture","Capgemini","LTIMindtree","Deloitte","IBM"];
 const qsb=()=>{const A=window.AUTH;return A&&A.on&&A.sb?A.sb:null;};
 let QT=null;   /* {key: [{co, r, n, mine}]} */
+const qtFire=()=>setTimeout(()=>{try{document.dispatchEvent(new Event("qtready"));}catch(e){}},0);   /* M07's "Asked at" filters listen */
 const qtNorm=s=>String(s||"").trim().replace(/\s+/g," ").slice(0,60);
 const qtTitle=s=>s.replace(/\b\w/g,c=>c.toUpperCase());
 async function qtLoad(force){
   if(QT&&!force)return QT;
   const sb=qsb();
-  if(!sb){const L=J("js1-qtags",{});QT={};for(const k in L)QT[k]=(L[k]||[]).map(([co,r])=>({co:co.toLowerCase(),r,n:1,mine:true}));return QT;}
-  if(!force){try{const c=JSON.parse(sessionStorage.getItem("zls-qt")||"null");if(c&&Date.now()-c.t<6e5){QT=c.d;return QT;}}catch(e){}}
+  if(!sb){const L=J("js1-qtags",{});QT={};for(const k in L)QT[k]=(L[k]||[]).map(([co,r])=>({co:co.toLowerCase(),r,n:1,mine:true}));qtFire();return QT;}
+  if(!force){try{const c=JSON.parse(sessionStorage.getItem("zls-qt")||"null");if(c&&Date.now()-c.t<6e5){QT=c.d;qtFire();return QT;}}catch(e){}}
   const r=await sb.rpc("qtag_counts");QT={};
   if(!r.error)(r.data||[]).forEach(x=>{(QT[x.q_key]=QT[x.q_key]||[]).push({co:x.company,r:x.round,n:+x.n,mine:!!x.mine});});
   try{sessionStorage.setItem("zls-qt",JSON.stringify({t:Date.now(),d:QT}));}catch(e){}
-  return QT;}
+  qtFire();return QT;}
 async function qtAdd(k,co,r,del){
   const sb=qsb();co=qtNorm(co);if(co.length<2||!QROUND[r])return "Type the company name (2–60 letters) and pick the round.";
   if(!sb){const L=J("js1-qtags",{}),a=(L[k]||[]).filter(([c,x])=>!(c.toLowerCase()===co.toLowerCase()&&x===r));if(!del)a.push([co,r]);L[k]=a;put("js1-qtags",L);await qtLoad(true);return "";}
@@ -513,13 +515,16 @@ const qtChips=(k,withMine)=>{const a=(QT&&QT[k])||[];if(!a.length)return "";
 function qtForm(k){
   const known=new Set(QCOMMON);for(const kk in (QT||{}))QT[kk].forEach(t=>known.add(qtTitle(t.co)));
   return '<div class="qt-box" data-qk="'+esc(k)+'"><div class="qt-chips">'+qtChips(k,true)+'</div>'+
-    '<details class="qt-rep"><summary>🏢 Asked in a real interview? Report it</summary><form class="qt-f"><label>Company <input name="co" list="qtList" maxlength="60" autocomplete="off" required placeholder="e.g. Infosys"></label>'+
+    '<details class="qt-rep"><summary>🏢 Asked in a real interview? Report it</summary><form class="qt-f" novalidate><label>Company <input name="co" list="qtList" maxlength="60" autocomplete="off" required placeholder="e.g. Infosys"></label>'+
     '<label>Round <select name="r">'+Object.keys(QROUND).map(r=>'<option value="'+r+'"'+(r==="tech"?" selected":"")+">"+QROUND[r]+"</option>").join("")+"</select></label>"+
     '<button type="submit" class="sd-b pri">Save</button><span class="qt-msg" aria-live="polite"></span></form>'+
     '<p class="qt-note">Reports are shared (company and round only, never your name) and build this site\'s company question bank.</p></details>'+
     (document.getElementById("qtList")?"":'<datalist id="qtList">'+[...known].sort().map(c=>'<option value="'+esc(c)+'">').join("")+"</datalist>")+"</div>";}
 function qtWire(root,after){
   root.addEventListener("submit",async e=>{const f=e.target.closest(".qt-f");if(!f)return;e.preventDefault();const box=f.closest(".qt-box"),m=q1(".qt-msg",f);
+    /* novalidate + this check: the browser's own "fill in this field" bubble when the field is on screen, and no console warning
+       ("invalid form control … is not focusable") when the form is submitted while its <details> is closed; qtAdd still validates */
+    if(!f.co.checkValidity()&&f.co.getClientRects().length){f.co.reportValidity();return;}
     m.textContent="Saving…";const err=await qtAdd(box.dataset.qk,f.co.value,f.r.value);m.textContent=err||"Saved. Thank you!";
     if(!err){f.co.value="";q1(".qt-chips",box).innerHTML=qtChips(box.dataset.qk,true);if(after)after(box.dataset.qk);}});
   root.addEventListener("click",async e=>{const b=e.target.closest("[data-qtdel]");if(!b)return;e.preventDefault();e.stopPropagation();const box=b.closest(".qt-box"),[co,r]=b.dataset.qtdel.split("|");
@@ -534,9 +539,51 @@ async function qtCards(){
     if(b)b.outerHTML=h||"";else if(h)q1("summary",d).insertAdjacentHTML("beforeend",h);};
   cards.forEach(d=>{paint(d);d.addEventListener("toggle",()=>{if(!d.open||q1(".qt-box",d))return;const k=keyOf(d),body=q1(":scope > .b",d);if(!k||!body)return;
     body.insertAdjacentHTML("beforeend",qtForm(k));qtWire(q1(".qt-box",body),()=>paint(d));});});}
-window.STUDY={open,due,dash,cheat,badge,sheet,pack};
+/* ---------- LLD case studies (lld review+tags v1, 2026-11-08; kb/site/site-internals.md → Study tools → "LLD case cards") ----------
+   A finished case (kit test passed or rubric fully scored: js1-lld-done {"id:x"|"p:problem"|"t:title": …}; M07 rounds saved:
+   js1-lld-timed / js1-lld-mock rounds[].id) becomes a Review today card ld:<caseId> {c:"ld", k:"m02", q, a, u, n, t, p}, box 0,
+   due in 1 day. Q/A come from assets/data/lld-review.js (window.LLD_REVIEW, generated by scripts/lld-review.mjs from
+   lld-cases.js), loaded only when needed from the signed data-src of <meta name="zl-lldrev"> (lock.mjs upload adds it) or the
+   plain path. The card keeps its own copy (reviewable from any course); a later load refreshes the copy.
+   Every LLDK.req panel has an empty .ldk-qt slot: it gets the case's company chips (bank key "lld:<caseId>") + the report form. */
+let LDP=null;
+function ldData(){if(window.LLD_REVIEW)return Promise.resolve(window.LLD_REVIEW);if(LDP)return LDP;
+  LDP=new Promise(res=>{const m=q1('meta[name="zl-lldrev"]'),s=document.createElement("script");s.src=(m&&m.getAttribute("data-src"))||ROOT+"assets/data/lld-review.js";
+    s.onload=()=>res(window.LLD_REVIEW&&window.LLD_REVIEW.cases?window.LLD_REVIEW:null);s.onerror=()=>{s.remove();LDP=null;res(null);};document.head.appendChild(s);});
+  return LDP;}
+const ldSplit=r=>{const i=r.indexOf(":");return [r.slice(0,i),r.slice(i+1)];};
+const ldFind=(D,r)=>{const [t,v]=ldSplit(r);return D.cases.find(c=>t==="id"?c.id===v:t==="p"?c.p===v:c.t===v);};
+const ldCopy=c=>({q:c.q,a:c.a,u:"courses/lld/"+c.href,n:c.n,t:c.t,p:c.p||"",k:String(c.m||"m00").toLowerCase()});
+function ldRefs(){const R=new Set(Object.keys(J("js1-lld-done",{})));
+  ["js1-lld-timed","js1-lld-mock"].forEach(k=>((J(k,{})||{}).rounds||[]).forEach(r=>{if(r&&r.id)R.add("id:"+r.id);}));
+  return [...R].filter(r=>/^(id|p|t):./.test(r));}
+function ldHave(r){const [t,v]=ldSplit(r);if(t==="id")return !!srs["ld:"+v];
+  for(const id in srs){const c=srs[id];if(c&&c.c==="ld"&&(t==="p"?c.p===v:c.t===v))return true;}return false;}
+async function ldEnrol(){srs=J("js1-srs",{});const todo=ldRefs().filter(r=>!ldHave(r));if(!todo.length)return 0;
+  const D=await ldData();if(!D)return 0;srs=J("js1-srs",{});const now=Date.now();let n=0;
+  todo.forEach(r=>{const c=ldFind(D,r);if(!c||srs["ld:"+c.id])return;srs["ld:"+c.id]=Object.assign({b:0,due:now+DAY,c:"ld"},ldCopy(c));n++;});
+  if(n){saveSrs();badge();}return n;}
+function ldFresh(list){ldData().then(D=>{if(!D)return;srs=J("js1-srs",{});let ch=false;
+  for(const id in srs){const c=srs[id];if(!c||c.c!=="ld")continue;const x=D.cases.find(k=>"ld:"+k.id===id);if(!x)continue;const cp=ldCopy(x);
+    if(cp.q!==c.q||cp.a!==c.a||cp.u!==c.u){Object.assign(c,cp);ch=true;}}
+  if(ch){saveSrs();(list||[]).forEach(c=>{const x=c.c==="ld"&&D.cases.find(k=>"ld:"+k.id===c.id);if(x)Object.assign(c,ldCopy(x));});}});}
+/* "Asked at" chips + report form under an LLDK.req header */
+async function ldTag(host){const slot=host&&q1(":scope > .ldk-qt",host);if(!slot||slot.dataset.on)return;slot.dataset.on="1";
+  let id=host.dataset.ldkCase||"";
+  if(!id){const D=await ldData(),c=D&&D.cases.find(x=>x.t===host.dataset.ldkTitle);if(!c){slot.hidden=true;return;}id=c.id;}
+  await qtLoad().catch(()=>{QT=QT||{};});
+  const k="lld:"+id;
+  slot.innerHTML='<div class="ldq-hd"><b>🏢 Asked at</b><span class="ldq-none"></span></div>'+qtForm(k);
+  const none=()=>{const e=!((QT&&QT[k])||[]).length;slot.classList.toggle("ldq-empty",e);
+    q1(".ldq-none",slot).textContent=e?"No company has been reported for this case yet. Were you asked it in a real interview? Report it below.":"";};
+  none();qtWire(q1(".qt-box",slot),none);}
+const ldTags=()=>qa(".ldk-req").forEach(h=>ldTag(h).catch(()=>{}));
+window.STUDY={open,due,dash,cheat,badge,sheet,pack,
+  qt:{load:()=>qtLoad().catch(()=>QT||{}),get:()=>QT||{},title:qtTitle,ROUND:QROUND}};
 if(CID&&COURSE.pages&&COURSE.pages.length){
   enrol();backfill();summarise();addCss();explain();navBtn();sheetBtn();a11y();qtCards().catch(()=>{});
+  ldEnrol().catch(()=>{});ldTags();document.addEventListener("lldreq",e=>{ldTag(e.detail&&e.detail.host).catch(()=>{});});
+  document.addEventListener("lldcase",()=>{ldEnrol().catch(()=>{});});
   document.addEventListener("quizanswer",()=>{enrol();summarise();badge();});
   document.addEventListener("click",e=>{if(e.target.closest(".secfoot .sf-done"))setTimeout(()=>{backfill();summarise();badge();},0);});
   const h=decodeURIComponent(location.hash);if(h==="#study-review"||h==="#study-mock"||h==="#study-progress"){history.replaceState(null,"",location.pathname+location.search);open(h.slice(7));}
