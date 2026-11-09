@@ -74,6 +74,7 @@ nav .gh[hidden]{display:none}
 .course.dbms{--c:#14b8a6;--c2:#7c3aed}
 .course.behavioural{--c:#db2777;--c2:#9d174d}
 .course.lld{--c:#8b5cf6;--c2:#ec4899}
+.course.python{--c:#3776ab;--c2:#f5b301}
 footer{padding:0 0 40px;color:var(--muted);font-size:13px}
 footer a{color:inherit}
 @media (prefers-reduced-motion:reduce){.btn,.course,.course .go{transition:none}}
@@ -108,6 +109,7 @@ nav .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient
 .csw-m a i.k-cicd{background:linear-gradient(135deg,#10b981,#0e7490)}
 .csw-m a i.k-os{background:linear-gradient(135deg,#eab308,#7c3aed)}
 .csw-m a i.k-networks{background:linear-gradient(135deg,#0ea5e9,#4f46e5)}
+.csw-m a i.k-python{background:linear-gradient(135deg,#3776ab,#f5b301)}
 .csw-m a i.k-dbms{background:linear-gradient(135deg,#14b8a6,#7c3aed)}
 .csw-m a i.k-behavioural{background:linear-gradient(135deg,#db2777,#9d174d)}
 .csw-m a i.k-lld{background:linear-gradient(135deg,#8b5cf6,#db2777)}
@@ -161,7 +163,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 </style>
 </head>
 <body>
-<script src="assets/js/loader.js?v=8b62be1b"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
+<script src="assets/js/loader.js?v=fa04fa6d"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
 <nav><div class="wrap">
   <a class="brand" href="index.html" aria-label="Zero to Advanced, all courses"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i></a>
   <div class="csw" id="courseSel">
@@ -181,6 +183,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
       <a role="menuitem" tabindex="-1" data-c="api" href="courses/api/index.html"><i class="k-api">A</i><span><b>REST API Design</b><small>Zero to production · A00–A12 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="cicd" href="courses/cicd/index.html"><i class="k-cicd">V</i><span><b>CI/CD</b><small>Zero to production · V00–V12 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="os" href="courses/os/index.html"><i class="k-os">O</i><span><b>Operating Systems</b><small>For interviews · O00–O13 complete</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="python" href="courses/python/index.html"><i class="k-python">Y</i><span><b>Python</b><small>Beginner to experienced · Y00–Y28 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="networks" href="courses/networks/index.html"><i class="k-networks">W</i><span><b>Computer Networks</b><small>For interviews · W00–W12 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="dbms" href="courses/dbms/index.html"><i class="k-dbms">Q</i><span><b>DBMS</b><small>For interviews · Q00–Q12 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="lld" href="courses/lld/index.html"><i class="k-lld">L</i><span><b>Low-Level Design</b><small>Machine coding round · M00–M01 live</small></span></a>
@@ -210,6 +213,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <a class="btn" href="courses/api/index.html">REST API</a>
     <a class="btn" href="courses/cicd/index.html">CI/CD</a>
     <a class="btn" href="courses/os/index.html">OS</a>
+    <a class="btn" href="courses/python/index.html">Python</a>
     <a class="btn" href="courses/networks/index.html">Networks</a>
     <a class="btn" href="courses/dbms/index.html">DBMS</a>
     <a class="btn" href="courses/lld/index.html">LLD</a>
@@ -324,6 +328,13 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     <span class="st"><span><b>13</b> lessons</span><span><b>13</b> live</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
+  <a class="course python" href="courses/python/index.html">
+    <span class="ic" aria-hidden="true">Y</span>
+    <b>Python: Beginner to Experienced</b>
+    <p>Python from your first line to a backend in production, in learning order: how it runs, names and objects, the built-in types and what is inside them, functions, errors, modules and files; classes, the data model, generators, decorators and typing; how CPython works, the GIL and asyncio; FastAPI and SQLAlchemy; Python for coding rounds. Real Python 3.13 runs in your browser, with a visualiser that draws every name and object as your code runs.</p>
+    <span class="st"><span><b>29</b> lessons</span><span><b>29</b> live</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
   <a class="course os" href="courses/os/index.html">
     <span class="ic" aria-hidden="true">O</span>
     <b>Operating Systems for Interviews</b>
@@ -373,7 +384,7 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
 <script>
 /* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
 (function(){try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
-  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="cicd"||c==="os"||c==="networks"||c==="dbms"||c==="lld"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="cicd"?"CI/CD":c==="os"?"Operating Systems":c==="networks"?"Computer Networks":c==="dbms"?"DBMS":c==="lld"?"Low-Level Design":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
+  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="cicd"||c==="os"||c==="networks"||c==="python"||c==="dbms"||c==="lld"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="cicd"?"CI/CD":c==="os"?"Operating Systems":c==="python"?"Python":c==="networks"?"Computer Networks":c==="dbms"?"DBMS":c==="lld"?"Low-Level Design":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
   /* course menu: the same control as the nav of every course page (button + menu, Esc / arrows / click outside) */
   var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m"),items=function(){return Array.prototype.slice.call(m.querySelectorAll("a"));};
   function open(o){m.hidden=!o;bt.setAttribute("aria-expanded",String(o));if(o)items()[0].focus();}
@@ -386,11 +397,11 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=49778ae2"></script>
-<script src="assets/js/plan-outline.js?v=a5f76407"></script>
+<script src="assets/js/study.js?v=c274efb9"></script>
+<script src="assets/js/plan-outline.js?v=f933cb0c"></script>
 <script src="assets/js/plan.js?v=7dd4d918"></script>
 <script src="assets/js/course-logos.js?v=aa2c1315"></script>
-<script src="assets/js/ready.js?v=907cc449"></script>
+<script src="assets/js/ready.js?v=9cd7eca1"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
    shown only once there is something to show. Interview readiness (2026-11-08, ready.js) always shows (0 % with "start here").
@@ -403,7 +414,7 @@ hubPaint();
 </script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=ddb9f07c"></script>
+<script src="assets/js/auth.js?v=b194b380"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/lock/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};

@@ -108,6 +108,7 @@
     os:W(["Operating Systems","the kernel"],["fork()","exec","PCB","context switch","SRTF","round robin","mutex","semaphore","deadlock","Banker's","TLB","page fault","LRU","inode","SCAN"]),
     networks:W(["Networks","packets"],["TCP","UDP","SYN","ACK","IP","/24","ARP","DNS","TTL","HTTP/2","TLS","QUIC","NAT","RTT","cwnd"]),
     dbms:W(["DBMS","theory"],["X⁺","BCNF","3NF","candidate key","B+ tree","2PL","WAL","ACID","π σ ⋈","precedence graph","MVCC","ARIES","FD","schema"]),
+    python:W(["Python","objects"],["def","import","self","list","dict","yield","async","None","f\"{x}\"","is vs ==","*args","with","lambda","@decorator","[x for x in xs]"]),
     lld:W(["Low-Level Design","machine coding"],["class diagram","interface","ParkingLot","synchronized","ConcurrentHashMap","Strategy","State","enum","SOLID","LRU","requirements","Observer","test()","now add X"]),
     api:W(["REST API","contract"],["GET","POST","PUT","PATCH","DELETE","201","404","409","ETag","Idempotency-Key","OpenAPI","cursor","Cache-Control","application/json"]),
     sysdesign:W(["System Design","scale"],["QPS","p99","shard","replica","cache hit","CDN","load balancer","CAP","quorum","fan-out","idempotent","backoff","SLO","consistent hash"]),
@@ -116,7 +117,7 @@
     n8n:W(["n8n","Automation"],["Webhook","{{ $json }}","HTTP Request","IF","Merge","Cron","AI Agent","Set","Code","Split Out","workflow","Wait","Switch","Error Trigger"]),
     resume:W(["Resume","ATS"],["LaTeX","impact","skills","keywords","projects","metrics","PDF","match %","summary","experience"]),
     all:W(["Java","SQL","Spring Boot","DSA","Patterns","n8n"],["SELECT *","class Car","@Bean","JOIN","λ","O(log n)","Stream","{ }","HashMap","GROUP BY","record","@Transactional","Webhook","Strategy"])};
-  var NAME={behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"Operating Systems",networks:"Networks",dbms:"DBMS",lld:"Low-Level Design",sysdesign:"System Design",nginx:"NGINX",kafka:"Kafka",redis:"Redis",java:"Java",sql:"SQL",spring:"Spring Boot",patterns:"Patterns",dsa:"DSA",n8n:"n8n",resume:"Resume"};
+  var NAME={behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"Operating Systems",networks:"Networks",dbms:"DBMS",lld:"Low-Level Design",python:"Python",sysdesign:"System Design",nginx:"NGINX",kafka:"Kafka",redis:"Redis",java:"Java",sql:"SQL",spring:"Spring Boot",patterns:"Patterns",dsa:"DSA",n8n:"n8n",resume:"Resume"};
   function fly(course){var set=FLY[course]||FLY.all,k=set.length;return '<div class="zl-fly" aria-hidden="true">'+set.map(function(w,i){
       var a=(i*137.5)%360*Math.PI/180,r=34+(i*29)%22;   /* golden-angle spread, 34–56 vmax out from the centre */
       return '<span'+(w[1]?' class="w"':"")+' style="--x:'+(Math.cos(a)*r).toFixed(1)+'vmax;--y:'+(Math.sin(a)*r*.62).toFixed(1)+'vmax;--d:'+(-(i*6.4/k)).toFixed(2)+'s">'+w[0]+"</span>";}).join("")+"</div>";}

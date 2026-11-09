@@ -21,7 +21,7 @@ const put=(k,v)=>st.set(k,JSON.stringify(v));
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const q1=(s,r)=>(r||document).querySelector(s),qa=(s,r)=>Array.prototype.slice.call((r||document).querySelectorAll(s));
 const DAY=864e5,INT=[1,3,7,21,60],GAP=[1,2,4],AGAIN=10*60*1000,CAP=30;
-const PRE={l:"java",f:"spring",s:"sql",p:"patterns",n:"n8n",d:"dsa",r:"redis",k:"kafka",g:"nginx",h:"sysdesign",b:"behavioural",c:"docker",a:"api",v:"cicd",o:"os",w:"networks",q:"dbms",m:"lld"},CNAME={dbms:"DBMS",java:"Java",sql:"SQL",patterns:"Design Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",lld:"Low-Level Design",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"Operating Systems",networks:"Computer Networks",spring:"Spring Boot"};
+const PRE={l:"java",f:"spring",s:"sql",p:"patterns",n:"n8n",d:"dsa",r:"redis",k:"kafka",g:"nginx",h:"sysdesign",b:"behavioural",c:"docker",a:"api",v:"cicd",o:"os",w:"networks",q:"dbms",m:"lld",y:"python"},CNAME={dbms:"DBMS",java:"Java",sql:"SQL",patterns:"Design Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",lld:"Low-Level Design",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"Operating Systems",networks:"Computer Networks",python:"Python",spring:"Spring Boot"};
 const RCD={d1:["Day 1 · define",0],d3:["Day 3 · explain why",2],d7:["Day 7 · apply",6]};
 const courseOf=k=>PRE[String(k)[0]]||"";
 const tag=k=>(CNAME[courseOf(k)]||"")+" · "+String(k).toUpperCase();
@@ -385,7 +385,7 @@ const PGS={java:["courses/java/playground.html","Java Visual Playground"],dsa:["
   spring:["courses/spring/playground.html","Spring Playground"],redis:["courses/redis/playground.html","Redis Playground"],
   kafka:["courses/kafka/playground.html","Kafka Playground"],nginx:["courses/nginx/playground.html","NGINX Playground"],
   docker:["courses/docker/playground.html","Docker Playground"],api:["courses/api/playground.html","REST API Playground"],
-  sysdesign:["courses/sysdesign/playground.html","System Design Playground"]};
+  sysdesign:["courses/sysdesign/playground.html","System Design Playground"],python:["courses/python/playground.html","Python Playground"]};
 function pgBtn(study){const p=PGS[document.body.dataset.course||"java"];if(!p||q1("#pgNavBtn"))return;
   if(location.pathname.replace(/\\/g,"/").endsWith("/"+p[0]))return;
   const b=document.createElement("button");b.type="button";b.id="pgNavBtn";b.className=study.className;b.title="Open the "+p[1];b.setAttribute("aria-label","Open the "+p[1]);

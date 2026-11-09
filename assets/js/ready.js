@@ -12,7 +12,7 @@ const J=(k,d)=>{try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const NAME={java:"Java",sql:"SQL",dsa:"DSA",spring:"Spring Boot",patterns:"Design Patterns",lld:"Low-Level Design",api:"REST API",
   sysdesign:"System Design",docker:"Docker & K8s",cicd:"CI/CD",os:"Operating Systems",networks:"Networks",dbms:"DBMS",
-  behavioural:"Behavioural",redis:"Redis",kafka:"Kafka",nginx:"NGINX"};
+  behavioural:"Behavioural",redis:"Redis",kafka:"Kafka",nginx:"NGINX",python:"Python"};
 /* weights add up to 100 per role; picked from what each round of that hiring loop tests (not from any company's data) */
 const ROLES={
   backend:{n:"Java backend (fresher)",d:"Service and product companies hiring Java freshers: core Java, SQL, coding, a little Spring and the HR round.",
