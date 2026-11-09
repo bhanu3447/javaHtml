@@ -38,7 +38,11 @@
     /* learner progress + company question reports (2026-11-08): optional, they exist only after those parts of supabase/setup.sql have run */
     var po=await AUTH.sb.rpc("progress_overview");
     var qt=await AUTH.sb.from("question_tags").select("id,user_id,q_key,company,round,created_at").order("created_at",{ascending:false}).limit(60);
-    D={people:p.data,access:a.data,invites:i.data,urls:urls,errors:pe.error?null:pe.data,progress:po.error?null:po.data,tags:qt.error?null:qt.data};render();
+    /* face check mode (2026-11-09): optional, the app_settings table exists only after that part of supabase/setup.sql has run */
+    var fm=await AUTH.sb.from("app_settings").select("value").eq("key","face_mode").maybeSingle();
+    var pf=await AUTH.sb.from("profiles").select("id,face_mode");   /* per-person override; the column exists after the same part of setup.sql */
+    if(!pf.error)pf.data.forEach(function(x){var u=p.data.find(function(y){return y.id===x.id;});if(u)u.face_mode=x.face_mode;});
+    D={people:p.data,access:a.data,invites:i.data,urls:urls,errors:pe.error?null:pe.data,progress:po.error?null:po.data,tags:qt.error?null:qt.data,faceMode:fm.error||!fm.data?null:fm.data.value};render();
   }
   function person(id){return D.people.find(function(x){return x.id===id;})||{email:"?"};}
   function face(u,big){var src=u.selfie_path&&D.urls[u.selfie_path];return src?'<img class="au-face'+(big?' big':'')+'" src="'+esc(src)+'" alt="Selfie of '+esc(u.name||u.email)+'" loading="lazy">':'<span class="au-face'+(big?' big':'')+'" aria-hidden="true">'+esc((u.name||u.email||"?").charAt(0).toUpperCase())+'</span>';}
@@ -83,9 +87,13 @@
         :u.status==="rejected"?'<span class="au-chip" data-s="rejected">blocked</span><button class="au-btn sm ok" data-acct="approved"'+id+'>Unblock</button>'
         :'<button class="au-btn sm" data-acct="rejected"'+id+'>Block</button>';
       if(owner&&u.role!=="owner")role=u.role==="admin"?'<button class="au-btn sm" data-role="learner"'+id+'>Remove admin</button>':'<button class="au-btn sm" data-role="admin"'+id+'>Make admin</button>';
+      var fsel='';   /* face check for this person: Default follows "Face check at login"; the owner never gets a face check */
+      if(D.faceMode&&u.role!=="owner"&&"face_mode" in u){var fv=u.face_mode||"";
+        fsel='<select class="au-btn sm" data-fmu="'+u.id+'" aria-label="Face check for '+esc(u.name||u.email)+'" title="Face check at login for this person">'+
+          [["","Face: default ("+D.faceMode+")"],["live","Face: live"],["photo","Face: photo"]].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===fv?' selected':'')+'>'+o[1]+'</option>';}).join("")+'</select>';}
       if(!me&&u.role!=="owner"&&(u.role==="learner"||owner))del='<button class="au-btn sm no" data-del="1"'+id+'>Remove user</button>';
       var find=[u.name,u.username,u.email].join(" ").toLowerCase();
-      return '<div class="au-row au-person" data-find="'+esc(find)+'">'+face(u)+'<div class="au-who"><b>'+esc(u.name||u.email)+(me?' (you)':'')+'</b><small>'+(u.username?'@'+esc(u.username)+' · ':'')+esc(u.email)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span>'+acct+role+del+
+      return '<div class="au-row au-person" data-find="'+esc(find)+'">'+face(u)+'<div class="au-who"><b>'+esc(u.name||u.email)+(me?' (you)':'')+'</b><small>'+(u.username?'@'+esc(u.username)+' · ':'')+esc(u.email)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span>'+acct+role+fsel+del+
         '<div class="au-chips au-courses">'+chips+'</div></div>';}).join("");
     if(!D.people.some(function(u){return u.role==="learner";}))
       h+='<div class="au-empty"><b>No learners yet.</b> Course buttons (+ Java, ✓ SQL…) appear on each learner row. Owner and admins always open every course, so their rows have none. Share the site link: when someone registers, they appear here.</div>';
@@ -98,7 +106,11 @@
     var RN={online:"Online test",phone:"Phone screen",tech:"Technical",design:"Design / machine coding",manager:"Managerial",hr:"HR"},tags='';
     if(D.tags)tags='<section class="au-panel"><h2>Company question reports <span class="au-count">'+D.tags.length+'</span></h2><p>Learners mark interview cards with “I was asked this at …”. Others see only the company, round and count, never who reported it. Remove anything that looks wrong or abusive.</p><div class="au-rows">'+
       (D.tags.length?D.tags.map(function(t){var u=person(t.user_id);return '<div class="au-row"><div class="au-who"><b>'+esc(t.company)+' · '+esc(RN[t.round]||t.round)+'</b><small>'+esc(t.q_key)+' · by '+esc(u.name||u.email)+' · '+new Date(t.created_at).toLocaleString()+'</small></div><button class="au-btn sm no" data-deltag="'+t.id+'">Remove</button></div>';}).join(""):'<div class="au-empty">No reports yet.</div>')+'</div></section>';
-    zlDone();app.innerHTML=h+prog+tags+pre+errs;
+    var fmode='';
+    if(D.faceMode){var live=D.faceMode!=="photo";
+      fmode='<section class="au-panel"><h2>Face check at login <span class="au-count">'+(live?"live":"photo")+'</span></h2><p><b>Live</b>: look straight, then turn the head left and right (about 7 s, stops a printed photo). <b>Photo</b>: one straight picture (about 2 s, faster). Both check the face against the account and run the anti-spoofing model. Applies to registrations and to everyone set to “Face: default” in People and courses; pick Live or Photo there to set one person apart.</p>'+
+        '<div class="au-chips"><button class="au-chip" data-s="'+(live?"approved":"none")+'" data-fmode="live" aria-pressed="'+live+'">'+(live?"✓ ":"")+'Live (head turns)</button><button class="au-chip" data-s="'+(live?"none":"approved")+'" data-fmode="photo" aria-pressed="'+!live+'">'+(live?"":"✓ ")+'Photo (one picture)</button></div></section>';}
+    zlDone();app.innerHTML=h+fmode+prog+tags+pre+errs;
     document.getElementById("inv").onsubmit=invite;
     document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();
   }
@@ -171,12 +183,18 @@
       await load();}
     else if(b.dataset.role){if(!confirm(b.dataset.role==="admin"?"Make this person an admin? Admins can approve people and courses.":"Remove admin rights?"))return;
       b.disabled=true;await rpc("set_role",{p_user:b.dataset.u,p_role:b.dataset.role});}
+    else if(b.dataset.fmode){if(b.dataset.fmode===D.faceMode)return;
+      if(b.dataset.fmode==="photo"&&!confirm("Switch to a single photo? Faster for everyone, but a printed photo or a screen is then stopped only by the anti-spoofing model, not by head turns."))return;
+      b.disabled=true;await rpc("set_face_mode",{p_mode:b.dataset.fmode});}
     else if(b.dataset.clrerr){if(!confirm("Clear every reported page error?"))return;
       b.disabled=true;var ce=await AUTH.sb.from("client_errors").delete().gte("id",0);if(ce.error)alert(ce.error.message);await load();}
     else if(b.dataset.deltag){b.disabled=true;var dt=await AUTH.sb.from("question_tags").delete().eq("id",b.dataset.deltag);if(dt.error)alert(dt.error.message);await load();}
     else if(b.dataset.delinv){if(!confirm("Remove this approval? They will not be able to register."))return;
       b.disabled=true;var r=await AUTH.sb.from("invites").delete().eq("id",b.dataset.delinv);if(r.error)alert(r.error.message);await load();}
   });
+
+  app.addEventListener("change",async function(e){var s=e.target.closest("select[data-fmu]");if(!s)return;
+    s.disabled=true;await rpc("set_user_face_mode",{p_user:s.dataset.fmu,p_mode:s.value||null});});
 
   /* the photo is shrunk to 640px wide in the browser before it is sent */
   function shrink(file){return new Promise(function(ok,no){var img=new Image();img.onload=function(){

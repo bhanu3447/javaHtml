@@ -92,7 +92,7 @@
             <button class="au-btn pri lg-go" type="button" id="next1"><span>Next: take a selfie →</span></button>
           </div>
           <div id="s2" class="lg-stack" hidden>
-            <p class="lg-note">Good light, alone in the picture. The camera asks you to look straight, then to turn your head left and right (random order). This face is checked at every login, and the owner sees it when approving you.</p>
+            <p class="lg-note">Good light, alone in the picture. The camera asks you to look straight (and, when the owner has the live check on, to turn your head left and right). This face is checked at every login, and the owner sees it when approving you.</p>
             <div class="lg-camslot" id="upCam"></div>
             <div class="lg-row"><button class="au-btn" type="button" id="back2">← Back</button><button class="au-btn pri" type="button" id="snap" disabled>Start face check</button></div>
             <ul class="lg-checks" id="checks" hidden><li data-k="face">Live check: real face, real head turns</li><li data-k="dup">Checking it isn't already registered</li><li data-k="acct">Creating your account</li></ul>
@@ -116,7 +116,7 @@
 <script>
 /* login v4: log in = username/email + password, then a LIVE face check every time (login function; lasts 1 hour);
    register = details + live selfie (register function, account waits for the owner). Live check: the server sends a random
-   head-turn order; the camera takes 3 pictures (straight, then each turn) and the server checks pose, anti-spoofing and identity.
+   head-turn order; the camera takes 3 pictures (straight, then each turn), or 1 straight one when face_mode = "photo" (admin.html), and the server checks pose, anti-spoofing and identity.
    Docs: kb/lock/access-lock.md */
 (function(){
   try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
@@ -169,6 +169,8 @@
     me.button=q(".au-ph button");
     return me;
   }
+  /* face_mode (admin.html): steps = [] -> one straight picture, else head turns too; the check lists say which */
+  function faceText(steps){var turns=steps&&steps.length;document.querySelectorAll('.lg-checks [data-k="face"]').forEach(function(li){li.textContent=turns?"Live check: real face, real head turns":"Live check: real face";});return turns;}
   function mark(list,k,s){var li=$(list).querySelector('[data-k="'+k+'"]');if(li)li.className=s||"";}
   function marks(list,keys,failK){var i=keys.indexOf(failK);keys.forEach(function(k,j){mark(list,k,failK?(j<i?"ok":j===i?"bad":""):"ok");});}
 
@@ -212,7 +214,8 @@
     if(!r.ok){say($("inMsg"),r.error||"Could not log in.","err");return;}
     chal=r;
     $("l2Title").textContent=r.face==="enroll"?"Save your face":"Show your face";
-    $("l2Note").textContent=r.face==="enroll"?"Password correct. Your account has no face yet: this check saves it for every future login. Follow the arrows on the camera.":"Password correct. Follow the arrows on the camera: look straight, then turn your head the way it says.";
+    var turns=faceText(r.steps);
+    $("l2Note").textContent=(r.face==="enroll"?"Password correct. Your account has no face yet: this check saves it for every future login. ":"Password correct. ")+(turns?"Follow the arrows on the camera: look straight, then turn your head the way it says.":"Look straight at the camera: it takes one picture after 3-2-1.");
     loginStep(2);var err=await inCam.start();if(err)say($("l2Msg"),err,"err");};
   inCam.button.onclick=async function(){var err=await inCam.start();if(err)say($("l2Msg"),err,"err");};
   var chal=null;
@@ -224,7 +227,7 @@
     if(!chal||!chal.challenge){chal=await AUTH.fn("login",{id:$("inId").value.trim(),password:$("inPass").value.trim()});}
     if(!chal.challenge){say($("l2Msg"),chal.error||"Could not start the face check.","err");b.disabled=false;return;}
     if(!inCam.photo&&!$("inCam").querySelector("video").srcObject){var e0=await inCam.start();if(e0){say($("l2Msg"),e0,"err");b.disabled=false;return;}}
-    var shots=await inCam.live(chal.steps),used=chal;chal=null;
+    faceText(chal.steps);var shots=await inCam.live(chal.steps),used=chal;chal=null;
     busy(b,true);say($("l2Msg"),"");$("inChecks").hidden=false;mark("inChecks","face","run");mark("inChecks","match","");
     var t=setTimeout(function(){mark("inChecks","face","ok");mark("inChecks","match","run");},2000);
     var r=await AUTH.fn("login",{id:$("inId").value.trim(),password:$("inPass").value.trim(),images:shots,challenge:used.challenge});
@@ -258,7 +261,7 @@
     if(b.dataset.m==="snap"){b.disabled=true;say($("upMsg"),"");upChal=await AUTH.fn("register",{challenge:true});
       if(!upChal.challenge){say($("upMsg"),upChal.error||"Could not start the face check.","err");b.disabled=false;return;}
       if(!$("upCam").querySelector("video").srcObject){var e0=await upCam.start();if(e0){say($("upMsg"),e0,"err");b.disabled=false;return;}}
-      upShots=await upCam.live(upChal.steps);b.textContent="Use this photo";b.dataset.m="send";b.disabled=false;return;}
+      faceText(upChal.steps);upShots=await upCam.live(upChal.steps);b.textContent="Use this photo";b.dataset.m="send";b.disabled=false;return;}
     busy(b,true);$("back2").disabled=true;say($("upMsg"),"");$("checks").hidden=false;["face","dup","acct"].forEach(function(k){mark("checks",k,"");});
     mark("checks","face","run");
     var t1=setTimeout(function(){mark("checks","face","ok");mark("checks","dup","run");},2500),t2=setTimeout(function(){mark("checks","dup","ok");mark("checks","acct","run");},4500);
