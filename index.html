@@ -189,7 +189,10 @@ h1{font-size:clamp(30px,4vw,46px);margin:0 0 8px}
 .course .st span b{font-size:12px}
 .course .go{top:18px;right:16px;font-size:18px}
 .course .pill{top:20px;right:16px}
-.course .pill.au-st{right:42px}
+.course .pill.au-st{position:static;grid-column:1/-1;justify-self:start;align-self:end;margin-top:2px;font-size:10.5px;padding:5px 9px;background:var(--soft);color:var(--muted);border:1px solid var(--line)}
+.course:hover .pill.au-st{color:var(--c);border-color:color-mix(in srgb,var(--c) 40%,var(--line))}
+.course .pill.au-st[data-s="approved"]{color:color-mix(in srgb,#16a34a 80%,var(--text));border-color:color-mix(in srgb,#16a34a 35%,var(--line));background:color-mix(in srgb,#16a34a 10%,var(--surface))}
+.course .pill.au-st[data-s="pending"],.course .pill.au-st[data-s="account"]{color:color-mix(in srgb,#d97706 80%,var(--text));border-color:color-mix(in srgb,#d97706 35%,var(--line));background:color-mix(in srgb,#d97706 10%,var(--surface))}
 .course.soon{grid-column:auto;display:grid;padding-right:18px}
 @media (min-width:621px){.courses{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:900px){.courses{grid-template-columns:repeat(3,minmax(0,1fr))}}
@@ -351,7 +354,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <span class="ic" aria-hidden="true">N</span>
     <b>n8n Automation: Zero to Selling Flows</b>
     <p>No coding needed to start. Watch data move through a live mini n8n canvas for every idea: triggers, items, expressions, APIs, logic, AI agents and production. Then build real client flows and learn to price, pitch and hand them over.</p>
-    <span class="st"><span><b>14</b> lessons planned</span><span><b>1</b> live</span><span><b>4</b> visual labs</span></span>
+    <span class="st"><span><b>17</b> lessons</span><span><b>17</b> live</span><span><b>4</b> visual labs</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course dsa" href="courses/dsa/index.html">
@@ -456,7 +459,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <span class="ic" aria-hidden="true">I</span>
     <b>Behavioural Interview: Stories that Get Offers</b>
     <p>The round that decides whether a team wants to work with you, in learning order: how the round is scored, building a story bank from your real experience, STAR in depth, then ownership and impact, conflict, failure and feedback, teamwork and leadership, ambiguity and priorities, openers, the HR and offer conversation, and a timed mock round. Your story bank is saved in this browser and follows you through every lesson.</p>
-    <span class="st"><span><b>11</b> lessons</span><span><b>11</b> live</span></span>
+    <span class="st"><span><b>15</b> pages</span><span><b>B00–B11</b> + incident room</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course n8n" href="courses/resume/index.html">
@@ -526,7 +529,7 @@ hubPaint();
   AUTH.syncPull().then(function(n){if(n){try{if(window.PLAN)PLAN.render();}catch(e){}hubPaint();}AUTH.syncPush();AUTH.syncWatch();});
   var LABEL={approved:"OPEN",pending:"WAITING",rejected:"NOT APPROVED",none:"LOCKED",account:"ACCOUNT PENDING"};
   document.querySelectorAll(".course[href]").forEach(function(a){var c=a.getAttribute("href").replace(/^courses\//,"").split("/")[0];
-    var s=me?(me.approved?(me.access[c]||"none"):"account"):"none",p=document.createElement("span");p.className="pill au-st";p.textContent=LABEL[s];a.appendChild(p);});
+    var s=me?(me.approved?(me.access[c]||"none"):"account"):"none",p=document.createElement("span");p.className="pill au-st";p.setAttribute("data-s",s);p.textContent=LABEL[s];a.appendChild(p);});
   if(!me){acct.textContent="Log in";return;}
   acct.textContent="Log out ("+(me.profile.name||me.profile.email)+")";acct.href="#";
   acct.onclick=async function(e){e.preventDefault();await AUTH.signOut();location.reload();};
