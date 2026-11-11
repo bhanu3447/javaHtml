@@ -203,6 +203,41 @@ h1{font-size:clamp(30px,4vw,46px);margin:0 0 8px}
 @media (min-width:1600px){header,header[class]{padding:48px 0 24px}.lead{font-size:16px}}
 @media (min-width:2400px){body>.wrap,nav .wrap{max-width:1680px}h1{font-size:54px}.course>b{font-size:19px}.course p{font-size:14.5px}}
 @media (max-width:480px){body>.wrap{padding:0 16px}nav .wrap{padding-left:16px;padding-right:16px}header,header[class]{padding:28px 0 16px}}
+/* buttons v1 (hub, 2026-11-12): the course pages' Buttons v1 scale (course.late.css) copied here, since the hub loads no course CSS.
+   sm 30 / md 38 / lg 46 (sm, md 44 on touch screens), radius 10, 14px/600, hover 1px lift, active .98, focus 2px accent ring
+   offset 2, disabled .5; <= 760px an invisible ::before grows every target to >= 44x44. plan.js / ready.js inject their CSS after
+   this, so their controls are reached through #plan / #readyIn. Notes: kb/site/site-internals.md -> "Buttons v1". */
+:root{--btn-h-sm:30px;--btn-h-md:38px;--btn-h-lg:46px;--btn-px-sm:12px;--btn-px-md:16px;--btn-px-lg:20px;--btn-gap:8px;--btn-r:10px;
+  --btn-fs:.875rem;--btn-fs-sm:.8125rem;--btn-fw:600;--btn-dur:140ms;--btn-ease:cubic-bezier(.2,.8,.2,1);--btn-ring:var(--accent);--btn-touch:44px}
+@media (pointer:coarse){:root{--btn-h-sm:44px;--btn-h-md:44px}}
+.btn{min-height:var(--btn-h-md);padding:0 var(--btn-px-md);gap:var(--btn-gap);border-radius:var(--btn-r);font-size:var(--btn-fs);font-weight:var(--btn-fw);line-height:1.2;justify-content:center;
+  transition:background-color var(--btn-dur) var(--btn-ease),border-color var(--btn-dur) var(--btn-ease),color var(--btn-dur) var(--btn-ease),box-shadow var(--btn-dur) var(--btn-ease),translate var(--btn-dur) var(--btn-ease),scale var(--btn-dur) var(--btn-ease)}
+.cta .btn.pri{min-height:var(--btn-h-lg);padding:0 var(--btn-px-lg)}
+.csw-b{height:var(--btn-h-sm);border-radius:var(--btn-r)}
+nav .gh{min-height:var(--btn-h-sm);padding:0 var(--btn-px-sm);border-radius:var(--btn-r);font-weight:500}
+#plan .pl-b{min-height:var(--btn-h-md);padding:0 var(--btn-px-md);border-radius:var(--btn-r);font-size:var(--btn-fs);font-weight:var(--btn-fw)}
+#plan .pl-b.pl-pri{background:var(--accent-fill);border-color:var(--accent-fill)}
+#plan .pl-chip{min-height:var(--btn-h-sm);padding:0 var(--btn-px-sm);font-size:var(--btn-fs-sm)}
+#readyIn .rd-tab{min-height:var(--btn-h-sm);padding:0 14px;font-size:var(--btn-fs-sm)}
+/* states: hover lifts 1px (translate, so nothing else's transform is touched), press .98 */
+.btn:hover:not([aria-disabled="true"]){transform:none;translate:0 -1px}
+#plan .pl-b:hover:not(:disabled){translate:0 -1px}
+.btn:active,#plan .pl-b:active:not(:disabled){translate:0 0;scale:.98}
+.csw-b:active,nav .gh:active,#plan .pl-chip:active,#readyIn .rd-tab:active{scale:.98}
+#plan .pl-b,#plan .pl-chip,#readyIn .rd-tab,nav .gh{transition:background-color var(--btn-dur) var(--btn-ease),border-color var(--btn-dur) var(--btn-ease),color var(--btn-dur) var(--btn-ease),translate var(--btn-dur) var(--btn-ease),scale var(--btn-dur) var(--btn-ease)}
+.btn:focus-visible,.csw-b:focus-visible,nav .gh:focus-visible,nav .brand:focus-visible,#plan .pl-b:focus-visible{outline:2px solid var(--btn-ring);outline-offset:2px;border-radius:var(--btn-r)}
+#plan .pl-chip:focus-visible,#readyIn .rd-tab:focus-visible{outline:2px solid var(--btn-ring);outline-offset:2px}
+.btn[aria-disabled="true"],#plan .pl-b:disabled,#plan .pl-chip:disabled{opacity:.5;cursor:not-allowed;translate:none;scale:none}
+@media (prefers-reduced-motion:reduce){
+  .btn:hover:not([aria-disabled="true"]),.btn:active,#plan .pl-b:hover:not(:disabled),#plan .pl-b:active:not(:disabled),.csw-b:active,nav .gh:active,#plan .pl-chip:active,#readyIn .rd-tab:active{transform:none;translate:none;scale:none}
+}
+html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active,html.no-motion #plan .pl-b:hover:not(:disabled),html.no-motion #plan .pl-b:active:not(:disabled){transform:none;translate:none;scale:none}
+/* touch targets <= 760px: an invisible hit area >= 44x44 around each control's centre; the layout does not move */
+@media (max-width:760px){
+  :where(.btn,.csw-b,nav .gh,#plan .pl-b,#plan .pl-chip,#plan .pl-cell,#readyIn .rd-tab){position:relative}
+  .btn::before,.csw-b::before,nav .gh::before,#plan .pl-b::before,#plan .pl-chip::before,#plan .pl-cell::before,#readyIn .rd-tab::before{content:"";position:absolute;inset:min(0px,calc((100% - var(--btn-touch))/2))}
+}
+/* end buttons v1 (hub) */
 </style>
 </head>
 <body>
@@ -458,7 +493,7 @@ h1{font-size:clamp(30px,4vw,46px);margin:0 0 8px}
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=f399751f"></script>
+<script src="assets/js/study.js?v=c78c9877"></script>
 <script src="assets/js/plan-outline.js?v=9f0cbf59"></script>
 <script src="assets/js/plan.js?v=11fc3af9"></script>
 <script src="assets/js/course-logos.js?v=1b7bdc28"></script>
