@@ -160,10 +160,49 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
   .course b{font-size:27px}
   .course p{font-size:16px}
 }
+/* hub v3 (ui v9, 2026-11-11): a wide, dense dashboard. Compact header with only the Continue button (the 19 course buttons
+   repeated the cards and the nav menu), course grid first (2 / 3 / 4 columns, icon beside the title, 3-line blurbs),
+   then study plan | interview readiness side by side on wide screens, both as matching cards. Overrides hub v1/v2 above. */
+body>.wrap{max-width:1360px;padding:0 32px;display:flex;flex-direction:column}
+nav .wrap{max-width:1360px;padding-left:32px;padding-right:32px}
+header,header[class]{padding:40px 0 22px}
+.tag{margin-bottom:10px;font-size:11px}
+h1{font-size:clamp(30px,4vw,46px);margin:0 0 8px}
+.lead{font-size:15.5px;line-height:1.6;max-width:720px;margin:0 0 16px}
+.cta .btn:not(.pri){display:none}
+.cta:not(:has(.btn.pri:not([hidden]))){display:none}
+.courses{order:1;gap:14px;padding:0 0 30px}
+#dash{order:2}#plan{order:3}#ready{order:4}footer{order:9;padding-top:8px}
+#plan,.dash{padding:0 0 26px;min-width:0}
+#plan h2,.dash h2{font:700 1.02rem "Inter Tight",Inter,sans-serif;letter-spacing:-.01em;margin:0 0 10px}
+#readyIn{border:1px solid var(--line);border-radius:18px;background:var(--surface);padding:18px 20px;box-shadow:var(--shadow)}
+.course{display:grid;grid-template-columns:40px minmax(0,1fr);align-content:start;column-gap:12px;row-gap:10px;padding:18px 18px 16px;border-radius:16px}
+.course::before{height:3px}
+.course .ic{width:40px;height:40px;border-radius:11px;font-size:18px}
+.course>b{font-size:17px;line-height:1.2;align-self:center;padding-right:26px}
+.course p{grid-column:1/-1;font-size:13.5px;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.course .st{grid-column:1/-1;align-self:end;gap:4px 12px;font-size:12px;padding-top:2px}
+.course .st span b{font-size:12px}
+.course .go{top:18px;right:16px;font-size:18px}
+.course .pill{top:20px;right:16px}
+.course .pill.au-st{right:42px}
+.course.soon{grid-column:auto;display:grid;padding-right:18px}
+@media (min-width:621px){.courses{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:900px){.courses{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1200px){
+  .courses{grid-template-columns:repeat(4,minmax(0,1fr))}
+  body>.wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:20px;align-items:start}
+  body>.wrap>*{grid-column:1/-1}
+  body>.wrap>#plan{grid-column:1;order:3}
+  body>.wrap>#ready{grid-column:2;order:3}
+}
+@media (min-width:1600px){header,header[class]{padding:48px 0 24px}.lead{font-size:16px}}
+@media (min-width:2400px){body>.wrap,nav .wrap{max-width:1680px}h1{font-size:54px}.course>b{font-size:19px}.course p{font-size:14.5px}}
+@media (max-width:480px){body>.wrap{padding:0 16px}nav .wrap{padding-left:16px;padding-right:16px}header,header[class]{padding:28px 0 16px}}
 </style>
 </head>
 <body>
-<script src="assets/js/loader.js?v=fa04fa6d"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
+<script src="assets/js/loader.js?v=ee4eddde"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
 <nav><div class="wrap">
   <a class="brand" href="index.html" aria-label="Zero to Advanced, all courses"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i></a>
   <div class="csw" id="courseSel">
@@ -397,11 +436,11 @@ footer{padding-bottom:calc(40px + env(safe-area-inset-bottom))}
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=c274efb9"></script>
-<script src="assets/js/plan-outline.js?v=2f4f9dba"></script>
-<script src="assets/js/plan.js?v=7dd4d918"></script>
-<script src="assets/js/course-logos.js?v=aa2c1315"></script>
-<script src="assets/js/ready.js?v=9cd7eca1"></script>
+<script src="assets/js/study.js?v=8f46bfe3"></script>
+<script src="assets/js/plan-outline.js?v=eac917ee"></script>
+<script src="assets/js/plan.js?v=11fc3af9"></script>
+<script src="assets/js/course-logos.js?v=1b7bdc28"></script>
+<script src="assets/js/ready.js?v=6f90e006"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
    shown only once there is something to show. Interview readiness (2026-11-08, ready.js) always shows (0 % with "start here").
@@ -412,7 +451,7 @@ window.hubPaint=function(){
     var d=document.getElementById("dash");STUDY.dash(document.getElementById("dashIn"));d.hidden=false;}}catch(e){}};
 hubPaint();
 </script>
-<script src="assets/js/auth-config.js?v=e1142d0a"></script>
+<script src="assets/js/auth-config.js?v=94003b06"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="assets/js/auth.js?v=b194b380"></script>
 <script>

@@ -1,24 +1,4 @@
-/* Run Python (2026-11-09, kb/python/python-plan.md → Running Python): real CPython 3.13 compiled to WebAssembly (Pyodide 0.29.5,
-   from jsdelivr), inside a Web Worker so a run can be stopped (the worker is killed and a new one starts) and the page never freezes.
-   Loaded only on Python pages; Python itself (~10 MB) is fetched on the first Run and then comes from the browser cache.
-   window.PYR:
-     run({files: {"main.py": src, …}, main, stdin, echo, timeout, onOut(text, isErr)}) → {ok, error, ms, stopped, timedOut}
-        files are written to /home/pyodide (so `import helper` works), main runs as __main__; input() reads lines of `stdin`
-        and echoes them like a terminal (echo: false turns that off, for graded tasks); uncaught errors come back as the usual traceback text.
-     trace({src, files, stdin, max, all}) → {steps, out, err, limit}: the step-by-step record the visualiser draws (one step per line /
-        call / return / exception of main.py; values are ["v", repr] inline or ["r", id] arrows into step.h, the objects;
-        all = true draws ints and strings as objects too).
-     repl(src, onOut) → {state: "more" | "error" | "ok", error}: one entry of a real REPL (codeop, "single" mode, so expression values
-        are echoed like >>> does); the namespace persists in the worker until it is stopped.
-     stop(), warm() (start loading early), onStatus(fn(text)), VERSION.
-   Limits: no threads or subprocesses (WebAssembly), no sockets, files live in memory for the session. Before each job the worker
-   loads tzdata when the code uses zoneinfo, and any package of the Pyodide distribution the code imports (loadPackagesFromImports). */
-"use strict";
-(function(){
-  if(window.PYR)return;
-  const BASE="https://cdn.jsdelivr.net/pyodide/v0.29.5/full/",VERSION="Python 3.13 · Pyodide 0.29.5";
-  /* Python helpers defined once in the worker */
-  const PRELUDE=String.raw`
+"use strict";(function(){if(window.PYR)return;const BASE="https://cdn.jsdelivr.net/pyodide/v0.29.5/full/",VERSION="Python 3.13 · Pyodide 0.29.5",PRELUDE=String.raw`
 def _pyrun(src, stdin_text, main, echo=True):
     # echo: write each line read by input() after its prompt, like a terminal (False for graded tasks: judges never echo input)
     import sys, io, builtins, traceback, importlib, os
@@ -69,9 +49,7 @@ def _pyrepl(src):
     finally:
         sys.stdout.flush()
     return "O"
-`;
-  /* the tracer: kept in sync with scratchpad tests (kb/python/python-plan.md → Running Python) */
-  const TRACER=String.raw`
+`,TRACER=String.raw`
 def _pyviz(src, stdin_text, max_steps, objects_all):
     import sys, json, builtins, types, io, traceback
     FILE = "<main.py>"
@@ -207,8 +185,7 @@ def _pyviz(src, stdin_text, max_steps, objects_all):
         sys.settrace(None)
         sys.stdout, sys.stderr, builtins.input = old
     return json.dumps({"steps": steps, "out": out.getvalue(), "err": err, "limit": limit})
-`;
-  const WORKER=`importScripts(${JSON.stringify(BASE+"pyodide.js")});
+`,WORKER=`importScripts(${JSON.stringify(BASE+"pyodide.js")});
 let py=null,job=0,known=[];
 const ready=loadPyodide({indexURL:${JSON.stringify(BASE)}}).then(p=>{py=p;p.runPython(${JSON.stringify(PRELUDE)});p.runPython(${JSON.stringify(TRACER)});postMessage({t:"ready"});return p;},
   e=>{postMessage({t:"fail",error:String(e&&e.message||e)});});
@@ -234,51 +211,6 @@ onmessage=async e=>{const m=e.data;await ready;if(!py)return;job=m.id;const t0=p
       postMessage({t:"done",id:m.id,repl:r,ms:performance.now()-t0});}
     else if(m.op==="trace"){const fn=py.globals.get("_pyviz"),r=fn(m.src,m.stdin||"",m.max||600,!!m.all);fn.destroy();
       postMessage({t:"done",id:m.id,trace:r,ms:performance.now()-t0});}
-  }catch(x){postMessage({t:"done",id:m.id,error:String(x&&x.message||x),ms:performance.now()-t0});}};`;
+  }catch(x){postMessage({t:"done",id:m.id,error:String(x&&x.message||x),ms:performance.now()-t0});}};`;let W=null,wReady=null,seq=0,cur=null;const status=[],say=s=>status.forEach(f=>{try{f(s)}catch{}});function worker(){if(W)return wReady;let url;try{url=URL.createObjectURL(new Blob([WORKER],{type:"text/javascript"})),W=new Worker(url)}catch{return W=null,Promise.reject(new Error("This browser cannot start a Web Worker here, so Python cannot run."))}return say("Loading Python (about 10 MB the first time, then cached)…"),wReady=new Promise((ok,no)=>{W.onmessage=e=>{const m=e.data;if(m.t==="ready")say(""),ok();else if(m.t==="fail")say(""),no(new Error("Python could not load: "+m.error+". Check the internet connection and try again.")),kill();else if(cur&&m.id===cur.id){if(m.t==="out")cur.onOut(m.s,m.err);else if(m.t==="done"){const c=cur;cur=null,clearTimeout(c.timer),m.error&&/fatally failed|fatal error/i.test(m.error)&&(kill(),m.error+=`
 
-  let W=null,wReady=null,seq=0,cur=null;const status=[];
-  const say=s=>status.forEach(f=>{try{f(s);}catch(_){}});
-  function worker(){
-    if(W)return wReady;
-    let url;try{url=URL.createObjectURL(new Blob([WORKER],{type:"text/javascript"}));W=new Worker(url);}
-    catch(e){W=null;return Promise.reject(new Error("This browser cannot start a Web Worker here, so Python cannot run."));}
-    say("Loading Python (about 10 MB the first time, then cached)…");
-    wReady=new Promise((ok,no)=>{
-      W.onmessage=e=>{const m=e.data;
-        if(m.t==="ready"){say("");ok();}
-        else if(m.t==="fail"){say("");no(new Error("Python could not load: "+m.error+". Check the internet connection and try again."));kill();}
-        else if(cur&&m.id===cur.id){if(m.t==="out")cur.onOut(m.s,m.err);else if(m.t==="done"){const c=cur;cur=null;clearTimeout(c.timer);
-          /* a fatal Pyodide error (e.g. the browser's C stack overflowed) leaves the worker unusable: start a fresh one next time */
-          if(m.error&&/fatally failed|fatal error/i.test(m.error)){kill();m.error+="\n\nThe Python runtime crashed (usually recursion too deep for the browser's stack) and has been restarted. Run again.";}
-          c.done(m);}}};
-      W.onerror=e=>{say("");no(new Error("Python could not load ("+(e.message||"network error")+")."));kill();};});
-    wReady.catch(()=>{});
-    return wReady;}
-  function kill(){if(W){W.terminate();W=null;wReady=null;}}
-  function send(msg,opt){
-    stop();
-    return worker().then(()=>new Promise(done=>{const id=++seq;
-      cur={id,onOut:opt.onOut||(()=>{}),done};
-      if(opt.timeout)cur.timer=setTimeout(()=>{if(cur&&cur.id===id){const c=cur;cur=null;kill();c.done({timedOut:true});}},opt.timeout);
-      cur.stop=()=>{const c=cur;cur=null;clearTimeout(c.timer);kill();c.done({stopped:true});};
-      W.postMessage(Object.assign({id},msg));}));}
-  function stop(){if(cur&&cur.stop)cur.stop();}
-  window.PYR={VERSION,
-    warm(){return worker().catch(()=>{});},
-    onStatus(f){status.push(f);},
-    stop,
-    busy(){return !!cur;},
-    async run(o){const t0=performance.now();
-      const m=await send({op:"run",files:o.files,main:o.main||"main.py",stdin:o.stdin||"",echo:o.echo!==false},{onOut:o.onOut,timeout:o.timeout||15000});
-      return {ok:!m.error&&!m.timedOut&&!m.stopped,error:m.error||null,ms:m.ms||performance.now()-t0,stopped:!!m.stopped,timedOut:!!m.timedOut};},
-    /* one REPL entry (the namespace lives in the worker; ■ Stop or any new worker starts it empty) → {state: "more"|"error"|"ok", error} */
-    async repl(src,onOut){const m=await send({op:"repl",src},{onOut,timeout:15000});
-      if(m.timedOut||m.stopped)return {state:"error",error:m.timedOut?"Stopped after 15 s.":"Stopped."};
-      if(m.error)return {state:"error",error:m.error};
-      return m.repl==="M"?{state:"more"}:m.repl[0]==="E"?{state:"error",error:m.repl.slice(1)}:{state:"ok"};},
-    async trace(o){const m=await send({op:"trace",files:o.files||null,src:o.src,stdin:o.stdin||"",max:o.max||600,all:!!o.all},{timeout:o.timeout||20000});
-      if(m.timedOut)return {steps:[],out:"",err:"The visualiser stopped after "+Math.round((o.timeout||20000)/1000)+" s.",limit:true};
-      if(m.stopped)return null;
-      if(m.error)return {steps:[],out:"",err:m.error,limit:false};
-      return JSON.parse(m.trace);}};
-})();
+The Python runtime crashed (usually recursion too deep for the browser's stack) and has been restarted. Run again.`),c.done(m)}}},W.onerror=e=>{say(""),no(new Error("Python could not load ("+(e.message||"network error")+").")),kill()}}),wReady.catch(()=>{}),wReady}function kill(){W&&(W.terminate(),W=null,wReady=null)}function send(msg,opt){return stop(),worker().then(()=>new Promise(done=>{const id=++seq;cur={id,onOut:opt.onOut||(()=>{}),done},opt.timeout&&(cur.timer=setTimeout(()=>{if(cur&&cur.id===id){const c=cur;cur=null,kill(),c.done({timedOut:!0})}},opt.timeout)),cur.stop=()=>{const c=cur;cur=null,clearTimeout(c.timer),kill(),c.done({stopped:!0})},W.postMessage(Object.assign({id},msg))}))}function stop(){cur&&cur.stop&&cur.stop()}window.PYR={VERSION,warm(){return worker().catch(()=>{})},onStatus(f){status.push(f)},stop,busy(){return!!cur},async run(o){const t0=performance.now(),m=await send({op:"run",files:o.files,main:o.main||"main.py",stdin:o.stdin||"",echo:o.echo!==!1},{onOut:o.onOut,timeout:o.timeout||15e3});return{ok:!m.error&&!m.timedOut&&!m.stopped,error:m.error||null,ms:m.ms||performance.now()-t0,stopped:!!m.stopped,timedOut:!!m.timedOut}},async repl(src,onOut){const m=await send({op:"repl",src},{onOut,timeout:15e3});return m.timedOut||m.stopped?{state:"error",error:m.timedOut?"Stopped after 15 s.":"Stopped."}:m.error?{state:"error",error:m.error}:m.repl==="M"?{state:"more"}:m.repl[0]==="E"?{state:"error",error:m.repl.slice(1)}:{state:"ok"}},async trace(o){const m=await send({op:"trace",files:o.files||null,src:o.src,stdin:o.stdin||"",max:o.max||600,all:!!o.all},{timeout:o.timeout||2e4});return m.timedOut?{steps:[],out:"",err:"The visualiser stopped after "+Math.round((o.timeout||2e4)/1e3)+" s.",limit:!0}:m.stopped?null:m.error?{steps:[],out:"",err:m.error,limit:!1}:JSON.parse(m.trace)}}})();

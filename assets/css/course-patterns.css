@@ -1,0 +1,1 @@
+.lp-app,.lp-wide{--lp-w:min(1320px,calc(100vw - 64px));width:var(--lp-w);margin-left:calc((100% - var(--lp-w)) / 2);font-size:15px}.lp-app{margin-top:16px}@media (max-width:920px){.lp-app,.lp-wide{width:auto;margin-left:0}}
