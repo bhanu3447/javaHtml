@@ -220,6 +220,25 @@ h1{font-size:clamp(30px,4vw,46px);margin:0 0 8px}
 @media (min-width:1600px){header,header[class]{padding:48px 0 24px}.lead{font-size:16px}}
 @media (min-width:2400px){body>.wrap,nav .wrap{max-width:1680px}h1{font-size:54px}.course>b{font-size:19px}.course p{font-size:14.5px}}
 @media (max-width:480px){body>.wrap{padding:0 16px}nav .wrap{padding-left:16px;padding-right:16px}header,header[class]{padding:28px 0 16px}}
+/* hub width v1 (2026-11-13, user: "left and right unnecessary space, sections not in the proper space"): the page uses the screen
+   (side gutter 3vw, at most 1760 px), and the readiness areas sit in two columns so the plan | readiness row ends level */
+@media (min-width:1200px){
+  body>.wrap,nav .wrap{max-width:1760px;padding-left:clamp(24px,3vw,56px);padding-right:clamp(24px,3vw,56px)}
+  body>.wrap{column-gap:24px}
+  #readyIn .rd-lh{display:none}
+  #readyIn .rd-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px;margin-top:6px}
+  #readyIn .rd-row{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"n p" "b b";gap:8px 12px}
+}
+@media (min-width:2400px){body>.wrap,nav .wrap{max-width:2000px}}
+/* switcher search v1 (2026-11-13): same search box as the course pages (course.js) */
+.csw-s{position:sticky;top:-6px;z-index:1;display:flex;align-items:center;margin:-6px -6px 4px;padding:8px;background:var(--surface);border-bottom:1px solid var(--line);border-radius:14px 14px 0 0}
+.csw-s>svg{position:absolute;left:18px;width:15px;height:15px;color:var(--muted);pointer-events:none}
+.csw-s input{flex:1;min-width:0;box-sizing:border-box;height:34px;margin:0;padding:0 10px 0 32px;border:1px solid var(--line);border-radius:9px;background:var(--soft);color:var(--text);font:500 .86rem Inter,sans-serif;outline:none}
+.csw-s input::placeholder{color:var(--muted)}
+.csw-s input:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 22%,transparent)}
+.csw-m a[hidden],.csw-no[hidden]{display:none}
+.csw-no{margin:0;padding:12px 10px;font:500 .8rem Inter,sans-serif;color:var(--muted)}
+@media (max-width:640px){.csw-s input{font-size:16px;height:40px}}
 /* buttons v1 (hub, 2026-11-12): the course pages' Buttons v1 scale (course.late.css) copied here, since the hub loads no course CSS.
    sm 30 / md 38 / lg 46 (sm, md 44 on touch screens), radius 10, 14px/600, hover 1px lift, active .98, focus 2px accent ring
    offset 2, disabled .5; <= 760px an invisible ::before grows every target to >= 44x44. plan.js / ready.js inject their CSS after
@@ -536,20 +555,29 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
 /* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
 (function(){  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="cicd"||c==="os"||c==="cloud"||c==="linux"||c==="git"||c==="kubernetes"||c==="networks"||c==="python"||c==="dbms"||c==="lld"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="cicd"?"CI/CD":c==="os"?"Operating Systems":c==="cloud"?"Cloud (AWS)":c==="linux"?"Linux":c==="python"?"Python":c==="networks"?"Computer Networks":c==="dbms"?"DBMS":c==="lld"?"Low-Level Design":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
   /* course menu: the same control as the nav of every course page (button + menu, Esc / arrows / click outside) */
-  var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m"),items=function(){return Array.prototype.slice.call(m.querySelectorAll("a"));};
-  function open(o){m.hidden=!o;bt.setAttribute("aria-expanded",String(o));if(o)items()[0].focus();}
+  var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m");
+  /* switcher search v1 (2026-11-13): type to filter, Enter opens the first match (same as course.js) */
+  var sb=document.createElement("div");sb.className="csw-s";sb.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" placeholder="Search courses" aria-label="Search courses" autocomplete="off" spellcheck="false">';
+  var no=document.createElement("p");no.className="csw-no";no.hidden=true;no.textContent="No course matches";
+  m.insertBefore(no,m.firstChild);m.insertBefore(sb,m.firstChild);var q=sb.querySelector("input");
+  function rows(){return Array.prototype.slice.call(m.querySelectorAll("a[data-c]"));}
+  function items(){return [q].concat(Array.prototype.slice.call(m.querySelectorAll("a")).filter(function(a){return !a.hidden;}));}
+  function filter(){var t=q.value.trim().toLowerCase(),n=0;rows().forEach(function(a){var hit=!t||(a.textContent+" "+a.dataset.c).toLowerCase().indexOf(t)>=0;a.hidden=!hit;if(hit)n++;});no.hidden=n>0;}
+  q.addEventListener("input",function(){filter();m.scrollTop=0;});
+  q.addEventListener("keydown",function(e){if(e.key==="Enter"){var a=rows().filter(function(x){return !x.hidden;})[0];if(a){e.preventDefault();a.click();}}});
+  function open(o){m.hidden=!o;bt.setAttribute("aria-expanded",String(o));if(o){q.value="";filter();if(matchMedia("(pointer:fine)").matches)q.focus();else (items()[1]||q).focus();}}
   bt.onclick=function(){open(m.hidden);};
   m.addEventListener("click",function(e){var a=e.target.closest("a[data-c]");if(a){try{localStorage.setItem("js1-course",a.dataset.c);}catch(x){}}});
   document.addEventListener("click",function(e){if(!m.hidden&&!w.contains(e.target))open(false);});
   /* switcher scroll v1: a wheel over the open list never moves the page behind it (at the list's top or end it does nothing) */
   m.addEventListener("wheel",function(e){var t=m.scrollTop,max=m.scrollHeight-m.clientHeight;if(e.ctrlKey)return;if(max<=0||(e.deltaY<0&&t<=0)||(e.deltaY>0&&t>=max-1))e.preventDefault();},{passive:false});
   w.addEventListener("keydown",function(e){var it=items(),i=it.indexOf(document.activeElement);
-    if(e.key==="Escape"){open(false);bt.focus();}
+    if(e.key==="Escape"){if(e.target===q&&q.value){q.value="";filter();return;}open(false);bt.focus();}
     else if(e.key==="ArrowDown"){e.preventDefault();if(m.hidden)open(true);else it[(i+1)%it.length].focus();}
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=cd12759b"></script>
+<script src="assets/js/study.js?v=36a6f62b"></script>
 <script src="assets/js/plan-outline.js?v=90851cb3"></script>
 <script src="assets/js/plan.js?v=7dd4d918"></script>
 <script src="assets/js/course-logos.js?v=66536251"></script>
