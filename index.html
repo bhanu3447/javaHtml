@@ -72,6 +72,7 @@ nav .gh[hidden]{display:none}
 .course.os{--c:#eab308;--c2:#7c3aed}
 .course.cloud{--c:#38bdf8;--c2:#f59e0b}
 .course.linux{--c:#22c55e;--c2:#0ea5e9}
+.course.git{--c:#f05033;--c2:#f59e0b}
 .course.networks{--c:#0ea5e9;--c2:#4f46e5}
 .course.dbms{--c:#14b8a6;--c2:#7c3aed}
 .course.behavioural{--c:#db2777;--c2:#9d174d}
@@ -114,6 +115,7 @@ nav .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient
 .csw-m a i.k-os{background:linear-gradient(135deg,#eab308,#7c3aed)}
 .csw-m a i.k-cloud{background:linear-gradient(135deg,#38bdf8,#f59e0b)}
 .csw-m a i.k-linux{background:linear-gradient(135deg,#22c55e,#0ea5e9)}
+.csw-m a i.k-git{background:linear-gradient(135deg,#f05033,#f59e0b)}
 .csw-m a i.k-networks{background:linear-gradient(135deg,#0ea5e9,#4f46e5)}
 .csw-m a i.k-python{background:linear-gradient(135deg,#3776ab,#f5b301)}
 .csw-m a i.k-dbms{background:linear-gradient(135deg,#14b8a6,#7c3aed)}
@@ -246,7 +248,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
 </style>
 </head>
 <body>
-<script src="assets/js/loader.js?v=8120f78b"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
+<script src="assets/js/loader.js?v=105657ae"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
 <nav><div class="wrap">
   <a class="brand" href="index.html" aria-label="Zero to Advanced, all courses"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i></a>
   <div class="csw" id="courseSel">
@@ -268,6 +270,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
       <a role="menuitem" tabindex="-1" data-c="os" href="courses/os/index.html"><i class="k-os">O</i><span><b>Operating Systems</b><small>For interviews · O00–O13 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="cloud" href="courses/cloud/index.html"><i class="k-cloud">E</i><span><b>Cloud (AWS)</b><small>For backend interviews · E00–E12 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="linux" href="courses/linux/index.html"><i class="k-linux">X</i><span><b>Linux and the shell</b><small>For backend interviews · X00–X11 live</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="git" href="courses/git/index.html"><i class="k-git">T</i><span><b>Git</b><small>For interviews and teams · T00–T11 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="python" href="courses/python/index.html"><i class="k-python">Y</i><span><b>Python</b><small>Beginner to experienced · Y00–Y28 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="networks" href="courses/networks/index.html"><i class="k-networks">W</i><span><b>Computer Networks</b><small>For interviews · W00–W12 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="dbms" href="courses/dbms/index.html"><i class="k-dbms">Q</i><span><b>DBMS</b><small>For interviews · Q00–Q12 complete</small></span></a>
@@ -300,6 +303,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <a class="btn" href="courses/os/index.html">OS</a>
     <a class="btn" href="courses/cloud/index.html">Cloud</a>
     <a class="btn" href="courses/linux/index.html">Linux</a>
+    <a class="btn" href="courses/git/index.html">Git</a>
     <a class="btn" href="courses/python/index.html">Python</a>
     <a class="btn" href="courses/networks/index.html">Networks</a>
     <a class="btn" href="courses/dbms/index.html">DBMS</a>
@@ -443,6 +447,13 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <span class="st"><span><b>12</b> lessons</span><span><b>12</b> live</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
+  <a class="course git" href="courses/git/index.html">
+    <span class="ic" aria-hidden="true">T</span>
+    <b>Git for Backend Interviews and Teams</b>
+    <p>Git from the first commit to the questions interviews ask, in learning order: the three areas and your first commits; commits, diffs and history; branches and HEAD; merging and conflicts; undoing anything (restore, reset, revert, reflog); remotes, fetch, pull and push; rebase and rewriting history; stash, tags, bisect and blame; team workflows and pull requests; the <code>.git</code> folder from the inside; disaster drills; an interview set. Every lab runs on a simulated repository in the page whose output is checked against real Git.</p>
+    <span class="st"><span><b>12</b> lessons</span><span><b>12</b> live</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
   <a class="course networks" href="courses/networks/index.html">
     <span class="ic" aria-hidden="true">W</span>
     <b>Computer Networks for Interviews</b>
@@ -485,7 +496,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
 <script>
 /* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
 (function(){try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
-  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="cicd"||c==="os"||c==="cloud"||c==="linux"||c==="networks"||c==="python"||c==="dbms"||c==="lld"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="cicd"?"CI/CD":c==="os"?"Operating Systems":c==="cloud"?"Cloud (AWS)":c==="linux"?"Linux":c==="python"?"Python":c==="networks"?"Computer Networks":c==="dbms"?"DBMS":c==="lld"?"Low-Level Design":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
+  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="cicd"||c==="os"||c==="cloud"||c==="linux"||c==="git"||c==="networks"||c==="python"||c==="dbms"||c==="lld"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="cicd"?"CI/CD":c==="os"?"Operating Systems":c==="cloud"?"Cloud (AWS)":c==="linux"?"Linux":c==="python"?"Python":c==="networks"?"Computer Networks":c==="dbms"?"DBMS":c==="lld"?"Low-Level Design":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
   /* course menu: the same control as the nav of every course page (button + menu, Esc / arrows / click outside) */
   var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m"),items=function(){return Array.prototype.slice.call(m.querySelectorAll("a"));};
   function open(o){m.hidden=!o;bt.setAttribute("aria-expanded",String(o));if(o)items()[0].focus();}
@@ -500,11 +511,11 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=ab10dac0"></script>
-<script src="assets/js/plan-outline.js?v=ec7c62db"></script>
+<script src="assets/js/study.js?v=18b362e8"></script>
+<script src="assets/js/plan-outline.js?v=55f8d1e0"></script>
 <script src="assets/js/plan.js?v=7dd4d918"></script>
 <script src="assets/js/course-logos.js?v=66536251"></script>
-<script src="assets/js/ready.js?v=343168ce"></script>
+<script src="assets/js/ready.js?v=3222362b"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
    shown only once there is something to show. Interview readiness (2026-11-08, ready.js) always shows (0 % with "start here").
@@ -518,7 +529,7 @@ hubPaint();
 </script>
 <script src="assets/js/auth-config.js?v=94003b06"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=a98d17bd"></script>
+<script src="assets/js/auth.js?v=6bc93d2b"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/lock/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};
