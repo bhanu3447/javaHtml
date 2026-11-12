@@ -7,7 +7,15 @@
 <title>Log in · Zero to Advanced</title>
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/auth.css?v=0b572cc7">
+<link rel="stylesheet" href="assets/css/auth.css?v=dd0732d1">
+<script>/* themes v2 (2026-11-13): the theme picked in the courses (course.js, localStorage js1-theme), set before first paint and
+   resolved the same way (nothing saved / "auto" = by time of day, "study" = its study theme, "" = system, else the named theme) */
+(function(){var N=" light dark midnight nord dracula forest sunset ocean sepia focus monk paper matcha amber cafe dawn momentum ",S={sunset:"dawn",light:"paper",dark:"focus",midnight:"amber"};
+  function pick(){var t=null;try{t=localStorage.getItem("js1-theme");}catch(e){}
+    if(t===null||t==="auto"||t==="study"){var h=new Date().getHours(),a=h>=5&&h<9?"sunset":h>=9&&h<17?"light":h>=17&&h<21?"dark":"midnight";return t==="study"?S[a]:a;}
+    return t&&N.indexOf(" "+t+" ")>=0?t:"";}
+  function set(){var a=pick(),r=document.documentElement;if(r.getAttribute("data-theme")===(a||null))return;if(a)r.setAttribute("data-theme",a);else r.removeAttribute("data-theme");}
+  set();addEventListener("storage",function(e){if(!e.key||e.key==="js1-theme")set();});setInterval(set,60000);})();</script>
 </head>
 <body class="au">
 <div class="lg">
@@ -32,7 +40,7 @@
     <h1>Every expert was once<br>a <span>beginner.</span></h1>
     <p class="lg-lead">Short lessons, a visual lab for every idea and real code you can run. One concept at a time, for as long as you want to keep growing.</p>
     <p class="lg-tk" aria-live="off">Today you could learn <b id="lgTopic">why a String never changes</b></p>
-    <ul class="lg-chips"><li id="lgCount">23 courses</li><li>Visual labs</li><li>▶ Run real Java</li><li>Interview-ready</li></ul>
+    <ul class="lg-chips"><li id="lgCount">24 courses</li><li>Visual labs</li><li>▶ Run real Java</li><li>Interview-ready</li></ul>
     <ol class="lg-how">
       <li><b>1</b><span><strong>Register</strong>with a quick selfie</span></li>
       <li><b>2</b><span><strong>Get approved</strong>by the course owner</span></li>
@@ -109,17 +117,17 @@
     </div>
   </main>
 </div>
-<script src="assets/js/loader.js?v=105657ae"></script>
+<script src="assets/js/loader.js?v=cedb2528"></script>
 <script src="assets/js/auth-config.js?v=94003b06"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=6bc93d2b"></script>
+<script src="assets/js/auth.js?v=cd1ff6ec"></script>
 <script>
 /* login v4: log in = username/email + password, then a LIVE face check every time (login function; lasts 1 hour);
    register = details + live selfie (register function, account waits for the owner). Live check: the server sends a random
    head-turn order; the camera takes 3 pictures (straight, then each turn), or 1 straight one when face_mode = "photo" (admin.html), and the server checks pose, anti-spoofing and identity.
    Docs: kb/lock/access-lock.md */
 (function(){
-  try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
+  
   var $=function(id){return document.getElementById(id);};
   var next=AUTH.safeNext(new URLSearchParams(location.search).get("next"));
   var calm=matchMedia("(prefers-reduced-motion: reduce)").matches;

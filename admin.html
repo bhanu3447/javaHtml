@@ -7,7 +7,15 @@
 <title>Admin · Zero to Advanced</title>
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/auth.css?v=0b572cc7">
+<link rel="stylesheet" href="assets/css/auth.css?v=dd0732d1">
+<script>/* themes v2 (2026-11-13): the theme picked in the courses (course.js, localStorage js1-theme), set before first paint and
+   resolved the same way (nothing saved / "auto" = by time of day, "study" = its study theme, "" = system, else the named theme) */
+(function(){var N=" light dark midnight nord dracula forest sunset ocean sepia focus monk paper matcha amber cafe dawn momentum ",S={sunset:"dawn",light:"paper",dark:"focus",midnight:"amber"};
+  function pick(){var t=null;try{t=localStorage.getItem("js1-theme");}catch(e){}
+    if(t===null||t==="auto"||t==="study"){var h=new Date().getHours(),a=h>=5&&h<9?"sunset":h>=9&&h<17?"light":h>=17&&h<21?"dark":"midnight";return t==="study"?S[a]:a;}
+    return t&&N.indexOf(" "+t+" ")>=0?t:"";}
+  function set(){var a=pick(),r=document.documentElement;if(r.getAttribute("data-theme")===(a||null))return;if(a)r.setAttribute("data-theme",a);else r.removeAttribute("data-theme");}
+  set();addEventListener("storage",function(e){if(!e.key||e.key==="js1-theme")set();});setInterval(set,60000);})();</script>
 <style>
 /* admin v2 (2026-11-11): admin-only layout, scoped to body.adm (auth.css stays shared with login). Theme tokens from auth.css only.
    Summary strip with jump links, the two queues side by side, compact people rows (actions on the right, Remove user set apart,
@@ -97,17 +105,17 @@
 </head>
 <body class="au adm">
 <div class="au-top"><a class="au-brand" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a><span class="au-sp"></span><a class="au-btn sm" href="index.html">All courses</a><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
-<script src="assets/js/loader.js?v=105657ae"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Loading the admin panel",steps:false});</script>
+<script src="assets/js/loader.js?v=cedb2528"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Loading the admin panel",steps:false});</script>
 <main class="au-wrap" id="app"></main>
 <script src="assets/js/auth-config.js?v=94003b06"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=6bc93d2b"></script>
+<script src="assets/js/auth.js?v=cd1ff6ec"></script>
 <script>
 /* admin v1: course requests, approved photos (invites), people, roles. Owner and admins only; the database checks every action again. */
 (function(){
-  try{var t=localStorage.getItem("js1-theme");if(t==="dark"||t==="light")document.documentElement.dataset.theme=t;}catch(e){}
+  
   var app=document.getElementById("app"),esc=AUTH.esc,C=AUTH.COURSES,ME=null,D={people:[],access:[],invites:[]};
-  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",networks:"Networks",dbms:"DBMS",lld:"LLD",python:"Python",resume:"Resume"};
+  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",networks:"Networks",dbms:"DBMS",lld:"LLD",python:"Python",resume:"Resume"};
   function zlDone(){if(window.ZLc){ZLc.leave();window.ZLc=null;}}   /* the loader leaves at the first render or card */
   function card(t,actions,icon){zlDone();app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">'+(icon||"🔒")+'</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
 
@@ -226,7 +234,7 @@
   /* Learner progress (2026-11-08, kb/lock/access-lock.md → "Progress sync"): from public.progress_overview() (owner/admins), which
      returns each learner's synced js1-sum, js1-days, quiz-miss questions and interview-day rounds. Optional: hidden until the
      progress part of supabase/setup.sql has run. */
-  var CN={java:"Java",sql:"SQL",dsa:"DSA",spring:"Spring",patterns:"Patterns",lld:"LLD",python:"Python",api:"REST API",sysdesign:"System Design",docker:"Docker",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",networks:"Networks",dbms:"DBMS",behavioural:"Behavioural",redis:"Redis",kafka:"Kafka",nginx:"NGINX",n8n:"n8n"};
+  var CN={java:"Java",sql:"SQL",dsa:"DSA",spring:"Spring",patterns:"Patterns",lld:"LLD",python:"Python",api:"REST API",sysdesign:"System Design",docker:"Docker",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",networks:"Networks",dbms:"DBMS",behavioural:"Behavioural",redis:"Redis",kafka:"Kafka",nginx:"NGINX",n8n:"n8n"};
   function dstr(t){var d=new Date(t);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
   function streakOf(days){var s=new Set(days||[]),n=0,t=Date.now();if(!s.has(dstr(t)))t-=864e5;while(s.has(dstr(t))){n++;t-=864e5;}return n;}
   function ago(t){var m=Math.round((Date.now()-new Date(t))/6e4);return m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago";}
