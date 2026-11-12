@@ -496,10 +496,10 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=c78c9877"></script>
+<script src="assets/js/study.js?v=ab10dac0"></script>
 <script src="assets/js/plan-outline.js?v=ec7c62db"></script>
 <script src="assets/js/plan.js?v=7dd4d918"></script>
-<script src="assets/js/course-logos.js?v=aa2c1315"></script>
+<script src="assets/js/course-logos.js?v=66536251"></script>
 <script src="assets/js/ready.js?v=343168ce"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
@@ -507,6 +507,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
    window.hubPaint() redraws all three after the progress sync pulled this account's data from another device. */
 window.hubPaint=function(){
   try{if(window.READY)READY.render(document.getElementById("readyIn"));}catch(e){}
+  try{if(window.STUDY&&STUDY.cards)STUDY.cards();}catch(e){}   /* home dash v1: progress bar + "Last opened" on each started course's card */
   try{if(window.STUDY&&Object.keys(JSON.parse(localStorage.getItem("js1-sum")||"{}")).length){
     var d=document.getElementById("dash");STUDY.dash(document.getElementById("dashIn"));d.hidden=false;}}catch(e){}};
 hubPaint();

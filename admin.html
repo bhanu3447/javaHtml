@@ -8,8 +8,94 @@
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/auth.css?v=0b572cc7">
+<style>
+/* admin v2 (2026-11-11): admin-only layout, scoped to body.adm (auth.css stays shared with login). Theme tokens from auth.css only.
+   Summary strip with jump links, the two queues side by side, compact people rows (actions on the right, Remove user set apart,
+   courses in a collapsible list), progress sub-lists in a grid, settings/moderation panels in pairs, clearer empty/error/busy states. */
+.adm .au-top{position:sticky;top:0;z-index:20;max-width:none;padding:10px max(24px,calc((100% - 1280px)/2 + 24px));background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.adm .au-top small{max-width:40ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm .au-wrap>h1{margin:18px 0 2px}
+.adm .au-wrap>p{max-width:80ch;font-size:14px}
+.adm :where(a,button,select,input,summary):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.adm-sum{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:0 0 14px}
+.adm-sum a{display:grid;gap:2px;padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--surface);box-shadow:var(--shadow);color:var(--text);text-decoration:none;transition:border-color .15s}
+.adm-sum a:hover{border-color:var(--accent)}
+.adm-sum b{font:800 24px/1.1 "Inter Tight",Inter,sans-serif;letter-spacing:-.02em}
+.adm-sum span{font-size:12.5px;font-weight:600;color:var(--muted)}
+.adm-sum a[data-t="wait"]{border-color:color-mix(in srgb,var(--wait) 45%,var(--line));background:linear-gradient(var(--wait-soft),var(--surface))}
+.adm-sum a[data-t="wait"] b{color:var(--wait)}
+.adm-sum a[data-t="no"]{border-color:color-mix(in srgb,var(--no) 40%,var(--line))}
+.adm-sum a[data-t="no"] b{color:var(--no)}
+.adm .au-panel{scroll-margin-top:72px}
+.adm .au-panel h2{font-size:16px}
+.adm .au-panel>p{margin:0 0 12px;max-width:100ch}
+.adm .au-rows{gap:6px;grid-template-columns:minmax(0,1fr)}
+.adm .au-row{gap:8px 10px;border-radius:11px}
+.adm .au-row .au-who small{display:block;font-size:12.5px;line-height:1.45}
+.adm .au-row .au-who b .au-role{display:inline-block;vertical-align:2px;margin-left:6px;font-size:10px;padding:3px 7px}
+.adm .au-empty{display:flex;align-items:center;gap:10px;padding:12px 14px;border:1px dashed var(--line);border-radius:11px;background:color-mix(in srgb,var(--soft) 50%,transparent)}
+.adm .au-empty::before{content:"✓";flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--ok-soft);color:var(--ok);font:700 12px/1 Inter,sans-serif}
+.adm .au-empty.info::before{content:"i";background:var(--accent-soft);color:var(--accent)}
+.adm .au-empty[hidden]{display:none}
+.adm-course{display:inline-block;margin-left:4px;padding:1px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);font-weight:600}
+/* busy: every enabled→disabled button here is waiting for the server */
+.adm #app button.au-btn:disabled,.adm #app .au-chip:disabled[data-tog]{position:relative;color:transparent!important}
+.adm #app button.au-btn:disabled::after,.adm #app .au-chip:disabled[data-tog]::after{content:"";position:absolute;inset:0;margin:auto;width:14px;height:14px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:lgSpin .7s linear infinite}
+.adm .au-chip{min-height:28px;padding:3px 10px}
+.adm .au-chip:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.adm select.au-btn{padding-right:8px;background:var(--surface)}
+/* people */
+.adm-tools{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 10px}
+.adm-tools .au-search{flex:1 1 280px;width:auto;margin:0;min-height:38px}
+.adm-seg{display:inline-flex;padding:3px;border-radius:11px;background:var(--soft);gap:2px}
+.adm-seg button{min-height:32px;padding:4px 11px;border:0;border-radius:8px;background:none;color:var(--muted);font:600 12.5px Inter,system-ui,sans-serif;cursor:pointer}
+.adm-seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.adm-n{font-size:12.5px;color:var(--muted);font-weight:600;white-space:nowrap}
+.adm .au-person{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center}
+.adm .au-person>.au-face{grid-row:1}
+.adm-acts{display:flex;flex-wrap:wrap;justify-content:flex-end;align-items:center;gap:6px}
+.adm-danger{display:inline-flex;padding-left:8px;margin-left:2px;border-left:1px solid var(--line)}
+.adm .au-btn.no[data-del]:hover{background:var(--no-soft)}
+.adm .au-person>.au-courses,.adm-crs{grid-column:1/-1}
+.adm-crs{border-top:1px dashed var(--line);padding-top:6px}
+.adm-crs summary{cursor:pointer;width:max-content;max-width:100%;font-size:12.5px;font-weight:600;color:var(--muted);padding:2px 4px;border-radius:6px;list-style-position:inside}
+.adm-crs summary b{color:var(--text)}
+.adm-crs .au-courses{border:0;padding-top:6px}
+/* panels side by side on wide screens */
+.adm-duo{display:grid;grid-template-columns:minmax(0,1fr);gap:0 14px;align-items:start}
+.adm-duo .au-grid2{grid-template-columns:1fr}
+.adm-subs{display:grid;grid-template-columns:minmax(0,1fr);gap:4px 16px;align-items:start}
+.adm-sub h3{font:700 14px/1.3 Inter,sans-serif;margin:14px 0 4px}
+.adm-sub>p{margin:0 0 8px;font-size:13px;color:var(--muted)}
+.adm-ua{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.adm .au-card small{display:block;margin-top:8px;font-size:12.5px;overflow-wrap:anywhere}
+@media (min-width:1100px){
+  .adm-duo{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .adm-duo>:only-child{grid-column:1/-1}
+  .adm-subs{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+}
+@media (max-width:720px){
+  .adm .au-top{padding:8px 16px}
+  .adm .au-top small{display:none}
+  .adm .au-wrap>h1{font-size:22px;margin-top:12px}
+  .adm .au-wrap>p{font-size:13px;margin-bottom:12px}
+  .adm-sum{grid-template-columns:1fr 1fr;gap:8px}
+  .adm-sum a{grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px;padding:9px 12px}
+  .adm-sum b{font-size:20px}
+  .adm-sum span{line-height:1.25}
+  .adm-danger{padding-left:0;margin-left:0;border-left:0}
+  .adm .au-panel{padding:14px;border-radius:14px}
+  .adm .au-person{grid-template-columns:auto minmax(0,1fr)}
+  .adm-acts{grid-column:1/-1;justify-content:flex-start}
+  .adm .au-face.big{width:56px;height:56px}
+  .adm .au-chip{min-height:32px}
+  .adm-seg{width:100%}
+  .adm-seg button{flex:1;padding:4px 6px}
+}
+@media (prefers-reduced-motion:reduce){.adm-sum a{transition:none}.adm #app .au-btn:disabled::after,.adm #app .au-chip:disabled[data-tog]::after{animation-duration:2.4s}}
+</style>
 </head>
-<body class="au">
+<body class="au adm">
 <div class="au-top"><a class="au-brand" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a><span class="au-sp"></span><a class="au-btn sm" href="index.html">All courses</a><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
 <script src="assets/js/loader.js?v=8120f78b"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Loading the admin panel",steps:false});</script>
 <main class="au-wrap" id="app"></main>
@@ -23,13 +109,13 @@
   var app=document.getElementById("app"),esc=AUTH.esc,C=AUTH.COURSES,ME=null,D={people:[],access:[],invites:[]};
   var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",networks:"Networks",dbms:"DBMS",lld:"LLD",python:"Python",resume:"Resume"};
   function zlDone(){if(window.ZLc){ZLc.leave();window.ZLc=null;}}   /* the loader leaves at the first render or card */
-  function card(t,actions){zlDone();app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">🔒</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
+  function card(t,actions,icon){zlDone();app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">'+(icon||"🔒")+'</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
 
   async function load(){
     var p=await AUTH.sb.from("profiles").select("id,name,username,email,role,status,selfie_path,matched_invite,created_at").order("created_at",{ascending:false});
     var a=await AUTH.sb.from("course_access").select("user_id,course_id,status,requested_at");
     var i=await AUTH.sb.from("invites").select("id,email,name,attempts,used_at,created_at").order("created_at",{ascending:false});
-    var err=p.error||a.error||i.error;if(err){card(esc(err.message));return;}
+    var err=p.error||a.error||i.error;if(err){card('Could not load the admin data. Check your connection and try again; if it keeps failing, log in again.<small>'+esc(err.message)+'</small>','<button class="au-btn pri" type="button" data-reload="1">Try again</button>','⚠️');return;}
     /* page errors (2026-11-04): optional, the table exists only after the client_errors part of supabase/setup.sql has run */
     var pe=await AUTH.sb.from("client_errors").select("id,created_at,page,msg,src,ua").order("created_at",{ascending:false}).limit(40);
     /* selfies are private: short-lived signed links, owner/admins only */
@@ -48,41 +134,55 @@
   function face(u,big){var src=u.selfie_path&&D.urls[u.selfie_path];return src?'<img class="au-face'+(big?' big':'')+'" src="'+esc(src)+'" alt="Selfie of '+esc(u.name||u.email)+'" loading="lazy">':'<span class="au-face'+(big?' big':'')+'" aria-hidden="true">'+esc((u.name||u.email||"?").charAt(0).toUpperCase())+'</span>';}
   function statusOf(uid,c){var r=D.access.find(function(x){return x.user_id===uid&&x.course_id===c;});return r?r.status:"none";}
 
+  /* admin v2 (2026-11-11): same data and actions as v1; layout only: summary strip, queues side by side, compact people rows,
+     a status filter beside the search, courses in a collapsible list (open on wide screens, closed on phones until opened) */
+  function sec(id,title,count,intro,body){return '<section class="au-panel" id="'+id+'"><h2>'+title+' <span class="au-count">'+count+'</span></h2>'+(intro?'<p>'+intro+'</p>':'')+body+'</section>';}
+  function when(t){return '<span title="'+esc(new Date(t).toLocaleString())+'">'+ago(t)+'</span>';}
   function render(){
     var pend=D.access.filter(function(x){return x.status==="pending";});
-    var h='<h1>Admin</h1><p>Approve new accounts and course requests, give or remove courses, block or remove people, and choose admins. Owner and admins open every course.</p>';
     var fresh=D.people.filter(function(u){return u.role==="learner"&&u.status==="pending";});
-    h+='<section class="au-panel"><h2>New registrations <span class="au-count">'+fresh.length+'</span></h2><p>People who registered with a selfie. Check the face and the name, then approve or reject the account.</p><div class="au-rows">';
-    h+=fresh.length?fresh.map(function(u){
-      return '<div class="au-row">'+face(u,true)+'<div class="au-who"><b>'+esc(u.name||"(no name)")+'</b><small>'+esc(u.email)+' · registered '+new Date(u.created_at).toLocaleString()+'</small></div>'+
-        '<button class="au-btn sm ok" data-acct="approved" data-u="'+u.id+'">Approve account</button><button class="au-btn sm no" data-acct="rejected" data-u="'+u.id+'">Reject</button></div>';}).join(""):'<div class="au-empty">No one is waiting.</div>';
-    h+='</div></section>';
+    var learners=D.people.filter(function(u){return u.role==="learner";});
+    var h='<h1>Admin</h1><p>Approve new accounts and course requests, give or remove courses, block or remove people, and choose admins. Owner and admins open every course.</p>';
+    var act7=D.progress?D.progress.filter(function(r){return person(r.user_id).role==="learner"&&(Date.now()-new Date(r.updated_at))/864e5<=7;}).length:null;
+    var tiles=[["adm-reg",fresh.length,"New registrations",fresh.length?"wait":""],["adm-req",pend.length,"Course requests",pend.length?"wait":""],
+      ["adm-ppl",D.people.length,"People · "+learners.length+" learner"+(learners.length===1?"":"s"),""]];
+    if(act7!=null)tiles.push(["adm-prog",act7,"Active in the last 7 days",""]);
+    if(D.errors)tiles.push(["adm-errs",D.errors.length,"Page errors",D.errors.length?"no":""]);
+    h+='<nav class="adm-sum" aria-label="Summary">'+tiles.map(function(t){return '<a href="#'+t[0]+'"'+(t[3]?' data-t="'+t[3]+'"':'')+'><b>'+t[1]+'</b><span>'+t[2]+'</span></a>';}).join("")+'</nav>';
 
-    h+='<section class="au-panel"><h2>Course requests <span class="au-count">'+pend.length+'</span></h2><p>People asking to open a course.</p><div class="au-rows">';
-    h+=pend.length?pend.map(function(r){var u=person(r.user_id);
-      return '<div class="au-row"><div class="au-who"><b>'+esc(u.name||u.email)+'</b><small>'+esc(u.email)+' · wants <b>'+esc(C[r.course_id])+'</b></small></div>'+
-        '<button class="au-btn sm ok" data-dec="approved" data-u="'+r.user_id+'" data-c="'+r.course_id+'">Approve</button>'+
-        '<button class="au-btn sm no" data-dec="rejected" data-u="'+r.user_id+'" data-c="'+r.course_id+'">Reject</button></div>';}).join(""):'<div class="au-empty">No requests waiting.</div>';
-    h+='</div></section>';
+    var reg=sec("adm-reg","New registrations",fresh.length,"People who registered with a selfie. Check the face and the name, then approve or reject the account.",'<div class="au-rows">'+
+      (fresh.length?fresh.map(function(u){
+        return '<div class="au-row">'+face(u,true)+'<div class="au-who"><b>'+esc(u.name||"(no name)")+'</b><small>'+esc(u.email)+'</small><small>registered '+when(u.created_at)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div>'+
+          '<button class="au-btn sm ok" data-acct="approved" data-u="'+u.id+'">Approve account</button><button class="au-btn sm no" data-acct="rejected" data-u="'+u.id+'">Reject</button></div>';}).join(""):'<div class="au-empty">No one is waiting.</div>')+'</div>');
 
-    /* People and courses comes before the pre-approve form, so on a phone the list is not buried under the form */
-    var pre='<section class="au-panel"><h2>Pre-approve by photo <span class="au-count">optional</span></h2><p>Add someone you already know with a clear photo of their face. When they register with this email and their selfie matches, their account is approved automatically. The photo is turned into face numbers and not stored.</p>'+
-      '<div class="au-grid2"><form class="au-form" id="inv"><label>Name<input id="ivName" required></label><label>Email<input id="ivMail" type="email" required></label>'+
+    var req=sec("adm-req","Course requests",pend.length,"People asking to open a course.",'<div class="au-rows">'+
+      (pend.length?pend.map(function(r){var u=person(r.user_id);
+        return '<div class="au-row"><div class="au-who"><b>'+esc(u.name||u.email)+'</b><small>'+esc(u.email)+'</small><small>wants <span class="adm-course">'+esc(C[r.course_id])+'</span>'+(r.requested_at?' · '+when(r.requested_at):'')+'</small></div>'+
+          '<button class="au-btn sm ok" data-dec="approved" data-u="'+r.user_id+'" data-c="'+r.course_id+'">Approve</button>'+
+          '<button class="au-btn sm no" data-dec="rejected" data-u="'+r.user_id+'" data-c="'+r.course_id+'">Reject</button></div>';}).join(""):'<div class="au-empty">No requests waiting.</div>')+'</div>');
+    h+='<div class="adm-duo">'+reg+req+'</div>';
+
+    var pre=sec("adm-pre","Pre-approve by photo","optional","Add someone you already know with a clear photo of their face. When they register with this email and their selfie matches, their account is approved automatically. The photo is turned into face numbers and not stored.",
+      '<div class="au-grid2"><form class="au-form" id="inv"><label>Name<input id="ivName" required autocomplete="off"></label><label>Email<input id="ivMail" type="email" required autocomplete="off"></label>'+
       '<label>Photo<input id="ivPhoto" type="file" accept="image/*" required></label><button class="au-btn pri" type="submit">Pre-approve</button><p class="au-msg" id="ivMsg" role="status"></p></form>'+
       '<div class="au-rows">'+(D.invites.length?D.invites.map(function(v){
         var st=v.used_at?'<span class="au-chip" data-s="approved" disabled>Registered</span>':v.attempts>=5?'<span class="au-chip" data-s="rejected">Locked: 5 failed tries</span>':'<span class="au-chip" data-s="pending">Waiting to register</span>';
-        return '<div class="au-row"><div class="au-who"><b>'+esc(v.name)+'</b><small>'+esc(v.email)+'</small></div>'+st+(v.used_at?'':'<button class="au-btn sm no" data-delinv="'+v.id+'">Remove</button>')+'</div>';}).join(""):'<div class="au-empty">No one approved yet.</div>')+
-      '</div></div></section>';
+        return '<div class="au-row"><div class="au-who"><b>'+esc(v.name)+'</b><small>'+esc(v.email)+'</small></div>'+st+(v.used_at?'':'<button class="au-btn sm no" data-delinv="'+v.id+'">Remove</button>')+'</div>';}).join(""):'<div class="au-empty info">No one pre-approved yet.</div>')+
+      '</div></div>');
 
-    var owner=ME.profile.role==="owner";
-    h+='<section class="au-panel"><h2>People and courses <span class="au-count">'+D.people.length+'</span></h2><p>Give or remove a course with one click: <b>✓</b> = has the course (click to remove), <b>+</b> = no access (click to give). Block stops an account without deleting it; Remove user deletes it for good.'+(owner?' Only you (the owner) can make or remove admins.':'')+'</p>'+
-      '<input class="au-search" id="pplQ" type="search" placeholder="Search by name, username or email" aria-label="Search people" value="'+esc(Q)+'"><div class="au-rows" id="pplRows">';
-    h+=D.people.map(function(u){
-      var staff=u.role==="owner"||u.role==="admin",me=u.id===ME.user.id,id=' data-u="'+u.id+'"',chips,acct='',role='',del='';
-      if(staff)chips='<span class="au-chip" data-s="approved">All courses ('+u.role+')</span>';
-      else chips=Object.keys(C).map(function(c){var s=statusOf(u.id,c),on=s==="approved";
-        return '<button class="au-chip" data-s="'+s+'" data-tog="'+c+'"'+id+' aria-pressed="'+on+'" title="'+(on?"Has "+C[c]+": click to remove":"Click to give "+C[c])+'">'+(on?"✓ ":"+ ")+SHORT[c]+(s==="pending"?" · asked":s==="rejected"?" · refused":"")+'</button>';}).join("")+
-        '<button class="au-btn sm" data-all="approved"'+id+'>Give all</button><button class="au-btn sm" data-all="none"'+id+'>Remove all</button>';
+    var owner=ME.profile.role==="owner",wide=matchMedia("(min-width:721px)").matches,nC=Object.keys(C).length;
+    var segs=[["all","All"],["pending","Waiting"],["rejected","Blocked"],["staff","Admins"]];
+    var ppl='<div class="adm-tools"><input class="au-search" id="pplQ" type="search" placeholder="Search by name, username or email" aria-label="Search people" value="'+esc(Q)+'">'+
+      '<div class="adm-seg" role="group" aria-label="Show">'+segs.map(function(s){return '<button type="button" data-pf="'+s[0]+'" aria-pressed="'+(PF===s[0])+'">'+s[1]+'</button>';}).join("")+'</div>'+
+      '<span class="adm-n" id="pplN" role="status"></span></div><div class="au-rows" id="pplRows">';
+    ppl+=D.people.map(function(u){
+      var staff=u.role==="owner"||u.role==="admin",me=u.id===ME.user.id,id=' data-u="'+u.id+'"',courses,acct='',role='',del='';
+      if(staff)courses='<div class="au-chips au-courses"><span class="au-chip" data-s="approved">All courses ('+u.role+')</span></div>';
+      else{var has=0,asked=0,chips=Object.keys(C).map(function(c){var s=statusOf(u.id,c),on=s==="approved";if(on)has++;if(s==="pending")asked++;
+          return '<button class="au-chip" data-s="'+s+'" data-tog="'+c+'"'+id+' aria-pressed="'+on+'" title="'+(on?"Has "+C[c]+": click to remove":"Click to give "+C[c])+'">'+(on?"✓ ":"+ ")+SHORT[c]+(s==="pending"?" · asked":s==="rejected"?" · refused":"")+'</button>';}).join("")+
+          '<button class="au-btn sm" data-all="approved"'+id+'>Give all</button><button class="au-btn sm" data-all="none"'+id+'>Remove all</button>';
+        var open=u.id in OPEN?OPEN[u.id]:wide;
+        courses='<details class="adm-crs" data-crs="'+u.id+'"'+(open?' open':'')+'><summary>Courses: <b>'+has+'</b> of '+nC+(asked?' · <b>'+asked+'</b> asked':'')+'</summary><div class="au-chips au-courses">'+chips+'</div></details>';}
       if(u.role==="learner")acct=u.status==="pending"?'<span class="au-chip" data-s="pending">account waiting</span><button class="au-btn sm ok" data-acct="approved"'+id+'>Approve</button><button class="au-btn sm no" data-acct="rejected"'+id+'>Reject</button>'
         :u.status==="rejected"?'<span class="au-chip" data-s="rejected">blocked</span><button class="au-btn sm ok" data-acct="approved"'+id+'>Unblock</button>'
         :'<button class="au-btn sm" data-acct="rejected"'+id+'>Block</button>';
@@ -91,32 +191,36 @@
       if(D.faceMode&&u.role!=="owner"&&"face_mode" in u){var fv=u.face_mode||"";
         fsel='<select class="au-btn sm" data-fmu="'+u.id+'" aria-label="Face check for '+esc(u.name||u.email)+'" title="Face check at login for this person">'+
           [["","Face: default ("+D.faceMode+")"],["live","Face: live"],["photo","Face: photo"]].map(function(o){return '<option value="'+o[0]+'"'+(o[0]===fv?' selected':'')+'>'+o[1]+'</option>';}).join("")+'</select>';}
-      if(!me&&u.role!=="owner"&&(u.role==="learner"||owner))del='<button class="au-btn sm no" data-del="1"'+id+'>Remove user</button>';
-      var find=[u.name,u.username,u.email].join(" ").toLowerCase();
-      return '<div class="au-row au-person" data-find="'+esc(find)+'">'+face(u)+'<div class="au-who"><b>'+esc(u.name||u.email)+(me?' (you)':'')+'</b><small>'+(u.username?'@'+esc(u.username)+' · ':'')+esc(u.email)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div><span class="au-role '+u.role+'">'+u.role+'</span>'+acct+role+fsel+del+
-        '<div class="au-chips au-courses">'+chips+'</div></div>';}).join("");
-    if(!D.people.some(function(u){return u.role==="learner";}))
-      h+='<div class="au-empty"><b>No learners yet.</b> Course buttons (+ Java, ✓ SQL…) appear on each learner row. Owner and admins always open every course, so their rows have none. Share the site link: when someone registers, they appear here.</div>';
-    h+='<div class="au-empty" id="pplNone" hidden>No one matches.</div></div></section>';
+      if(!me&&u.role!=="owner"&&(u.role==="learner"||owner))del='<span class="adm-danger"><button class="au-btn sm no" data-del="1"'+id+'>Remove user</button></span>';
+      var find=[u.name,u.username,u.email].join(" ").toLowerCase(),acts=acct+role+fsel+del;
+      return '<div class="au-row au-person" data-find="'+esc(find)+'" data-st="'+(staff?"staff":u.status)+'">'+face(u)+'<div class="au-who"><b>'+esc(u.name||u.email)+(me?' (you)':'')+'<span class="au-role '+u.role+'">'+u.role+'</span></b><small>'+(u.username?'@'+esc(u.username)+' · ':'')+esc(u.email)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div>'+
+        (acts?'<div class="adm-acts">'+acts+'</div>':'')+courses+'</div>';}).join("");
+    if(!learners.length)
+      ppl+='<div class="au-empty info"><span><b>No learners yet.</b> Course buttons (+ Java, ✓ SQL…) appear on each learner row. Owner and admins always open every course, so their rows have none. Share the site link: when someone registers, they appear here.</span></div>';
+    ppl+='<div class="au-empty info" id="pplNone" hidden>No one matches.</div></div>';
+    h+=sec("adm-ppl","People and courses",D.people.length,'Give or remove a course with one click: <b>✓</b> = has the course (click to remove), <b>+</b> = no access (click to give). Block stops an account without deleting it; Remove user deletes it for good.'+(owner?' Only you (the owner) can make or remove admins.':''),ppl);
+
     var errs='';
-    if(D.errors)errs='<section class="au-panel"><h2>Page errors <span class="au-count">'+D.errors.length+'</span></h2><p>JavaScript errors that learners’ browsers hit on course pages (newest first, at most 3 per page view). Fix, publish, then clear them.</p><div class="au-rows">'+
-      (D.errors.length?D.errors.map(function(x){return '<div class="au-row"><div class="au-who"><b>'+esc(x.msg)+'</b><small>'+esc(x.page)+(x.src?' · '+esc(x.src):'')+' · '+new Date(x.created_at).toLocaleString()+'</small><small>'+esc(x.ua||'')+'</small></div></div>';}).join("")+
-        '<div class="au-row"><button class="au-btn sm no" data-clrerr="1">Clear all page errors</button></div>':'<div class="au-empty">No errors reported.</div>')+'</div></section>';
+    if(D.errors)errs=sec("adm-errs","Page errors",D.errors.length,"JavaScript errors that learners’ browsers hit on course pages (newest first, at most 3 per page view). Fix, publish, then clear them.",'<div class="au-rows">'+
+      (D.errors.length?D.errors.map(function(x){return '<div class="au-row"><div class="au-who"><b>'+esc(x.msg)+'</b><small>'+esc(x.page)+(x.src?' · '+esc(x.src):'')+' · '+when(x.created_at)+'</small><small class="adm-ua" title="'+esc(x.ua||'')+'">'+esc(x.ua||'')+'</small></div></div>';}).join("")+
+        '<div class="au-row"><button class="au-btn sm no" data-clrerr="1">Clear all page errors</button></div>':'<div class="au-empty">No errors reported.</div>')+'</div>');
     var prog=D.progress?progressPanel(D.progress.filter(function(r){var u=person(r.user_id);return u.role==="learner";})):'';
     var RN={online:"Online test",phone:"Phone screen",tech:"Technical",design:"Design / machine coding",manager:"Managerial",hr:"HR"},tags='';
-    if(D.tags)tags='<section class="au-panel"><h2>Company question reports <span class="au-count">'+D.tags.length+'</span></h2><p>Learners mark interview cards with “I was asked this at …”. Others see only the company, round and count, never who reported it. Remove anything that looks wrong or abusive.</p><div class="au-rows">'+
-      (D.tags.length?D.tags.map(function(t){var u=person(t.user_id);return '<div class="au-row"><div class="au-who"><b>'+esc(t.company)+' · '+esc(RN[t.round]||t.round)+'</b><small>'+esc(t.q_key)+' · by '+esc(u.name||u.email)+' · '+new Date(t.created_at).toLocaleString()+'</small></div><button class="au-btn sm no" data-deltag="'+t.id+'">Remove</button></div>';}).join(""):'<div class="au-empty">No reports yet.</div>')+'</div></section>';
+    if(D.tags)tags=sec("adm-tags","Company question reports",D.tags.length,"Learners mark interview cards with “I was asked this at …”. Others see only the company, round and count, never who reported it. Remove anything that looks wrong or abusive.",'<div class="au-rows">'+
+      (D.tags.length?D.tags.map(function(t){var u=person(t.user_id);return '<div class="au-row"><div class="au-who"><b>'+esc(t.company)+' · '+esc(RN[t.round]||t.round)+'</b><small>'+esc(t.q_key)+' · by '+esc(u.name||u.email)+' · '+when(t.created_at)+'</small></div><button class="au-btn sm no" data-deltag="'+t.id+'">Remove</button></div>';}).join(""):'<div class="au-empty info">No reports yet.</div>')+'</div>');
     var fmode='';
     if(D.faceMode){var live=D.faceMode!=="photo";
-      fmode='<section class="au-panel"><h2>Face check at login <span class="au-count">'+(live?"live":"photo")+'</span></h2><p><b>Live</b>: look straight, then turn the head left and right (about 7 s, stops a printed photo). <b>Photo</b>: one straight picture (about 2 s, faster). Both check the face against the account and run the anti-spoofing model. Applies to registrations and to everyone set to “Face: default” in People and courses; pick Live or Photo there to set one person apart.</p>'+
-        '<div class="au-chips"><button class="au-chip" data-s="'+(live?"approved":"none")+'" data-fmode="live" aria-pressed="'+live+'">'+(live?"✓ ":"")+'Live (head turns)</button><button class="au-chip" data-s="'+(live?"none":"approved")+'" data-fmode="photo" aria-pressed="'+!live+'">'+(live?"":"✓ ")+'Photo (one picture)</button></div></section>';}
-    zlDone();app.innerHTML=h+fmode+prog+tags+pre+errs;
+      fmode=sec("adm-face","Face check at login",live?"live":"photo",'<b>Live</b>: look straight, then turn the head left and right (about 7 s, stops a printed photo). <b>Photo</b>: one straight picture (about 2 s, faster). Both check the face against the account and run the anti-spoofing model. Applies to registrations and to everyone set to “Face: default” in People and courses; pick Live or Photo there to set one person apart.',
+        '<div class="au-chips"><button class="au-chip" data-s="'+(live?"approved":"none")+'" data-fmode="live" aria-pressed="'+live+'">'+(live?"✓ ":"")+'Live (head turns)</button><button class="au-chip" data-s="'+(live?"none":"approved")+'" data-fmode="photo" aria-pressed="'+!live+'">'+(live?"":"✓ ")+'Photo (one picture)</button></div>');}
+    zlDone();app.innerHTML=h+prog+'<div class="adm-duo">'+fmode+tags+'</div>'+pre+errs;
     document.getElementById("inv").onsubmit=invite;
     document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();
   }
-  var Q="";
-  function filter(){var q=Q.trim().toLowerCase(),n=0;
-    document.querySelectorAll(".au-person").forEach(function(r){var hit=!q||r.dataset.find.indexOf(q)>=0;r.hidden=!hit;if(hit)n++;});
+  var Q="",PF="all",OPEN={};   /* search text, status filter, courses list open/closed per person (kept across re-renders) */
+  app.addEventListener("toggle",function(e){var d=e.target;if(d.dataset&&d.dataset.crs)OPEN[d.dataset.crs]=d.open;},true);
+  function filter(){var q=Q.trim().toLowerCase(),n=0,all=document.querySelectorAll(".au-person");
+    all.forEach(function(r){var hit=(!q||r.dataset.find.indexOf(q)>=0)&&(PF==="all"||r.dataset.st===PF);r.hidden=!hit;if(hit)n++;});
+    document.getElementById("pplN").textContent=n===all.length?all.length+" people":n+" of "+all.length;
     document.getElementById("pplNone").hidden=n>0;}
 
   /* Learner progress (2026-11-08, kb/lock/access-lock.md → "Progress sync"): from public.progress_overview() (owner/admins), which
@@ -139,18 +243,20 @@
       return {r:r,sum:sum,cs:cs,streak:streakOf(days),d14:d14,ip:ip,idle:idle};}).sort(function(a,b){return new Date(b.r.updated_at)-new Date(a.r.updated_at);});
     var top=function(o,f,n){return Object.keys(o).map(function(k){return o[k];}).sort(f).slice(0,n);};
     var pct=function(a,b){return b?Math.round(100*a/b):0;};
-    var h='<section class="au-panel"><h2>Learner progress <span class="au-count">'+rows.length+'</span></h2><p>From each learner’s synced progress (sections marked understood, quiz answers, reviews, mock rounds). Updated whenever they study while logged in. <b>'+act7+'</b> active in the last 7 days.</p>';
+    var sb='',h='<section class="au-panel" id="adm-prog"><h2>Learner progress <span class="au-count">'+rows.length+'</span></h2><p>From each learner’s synced progress (sections marked understood, quiz answers, reviews, mock rounds). Updated whenever they study while logged in. <b>'+act7+'</b> active in the last 7 days.</p>';
     h+='<div class="au-rows">'+list.map(function(x){var r=x.r;
       return '<div class="au-row"><div class="au-who"><b>'+esc(r.name||r.username||r.email)+'</b><small>@'+esc(r.username||"")+' · synced '+ago(r.updated_at)+' · streak '+x.streak+' · '+x.d14+' of last 14 days'+(x.ip!=null?' · mock '+x.ip+'%':'')+'</small></div>'+
         '<div class="au-chips">'+(x.cs.length?x.cs.slice(0,6).map(function(c){var s=x.sum[c];return '<span class="au-chip" title="sections understood · quiz accuracy">'+esc(CN[c]||c)+' '+pct(s.und,s.total)+'% · '+pct(s.qc,s.qa)+'%</span>';}).join(""):'<span class="au-chip">no lesson opened yet</span>')+'</div></div>';}).join("")+'</div>';
     var C=Object.keys(crs).sort(function(a,b){return crs[b].n-crs[a].n;});
-    if(C.length)h+='<h3>Courses</h3><div class="au-rows">'+C.map(function(c){var k=crs[c];return '<div class="au-row"><div class="au-who"><b>'+esc(CN[c]||c)+'</b><small>'+k.n+' learner'+(k.n===1?'':'s')+' · avg sections understood '+pct(k.und,k.tot)+'% · quiz accuracy '+pct(k.qc,k.qa)+'%</small></div></div>';}).join("")+'</div>';
+    if(C.length)sb+='<div class="adm-sub"><h3>Courses</h3><div class="au-rows">'+C.map(function(c){var k=crs[c];return '<div class="au-row"><div class="au-who"><b>'+esc(CN[c]||c)+'</b><small>'+k.n+' learner'+(k.n===1?'':'s')+' · avg sections understood '+pct(k.und,k.tot)+'% · quiz accuracy '+pct(k.qc,k.qa)+'%</small></div></div>';}).join("")+'</div>'+'</div>';
     var S=top(stop,function(a,b){return b.u-a.u;},10);
-    if(S.length)h+='<h3>Where learners stop</h3><p>Last lesson of learners who have not studied for more than 7 days.</p><div class="au-rows">'+S.map(function(s){return '<div class="au-row"><div class="au-who"><b>'+esc(s.n)+'</b><small>'+esc(CN[s.c]||s.c)+' · '+s.u+' learner'+(s.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>';
+    if(S.length)sb+='<div class="adm-sub"><h3>Where learners stop</h3><p>Last lesson of learners who have not studied for more than 7 days.</p><div class="au-rows">'+S.map(function(s){return '<div class="au-row"><div class="au-who"><b>'+esc(s.n)+'</b><small>'+esc(CN[s.c]||s.c)+' · '+s.u+' learner'+(s.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>'+'</div>';
     var W=top(weak,function(a,b){return b.u-a.u||a.p/a.u-b.p/b.u;},10);
-    if(W.length)h+='<h3>Weakest lessons</h3><p>Lessons where learners get under 60% of the quiz right.</p><div class="au-rows">'+W.map(function(w){return '<div class="au-row"><div class="au-who"><b>'+esc(w.n)+'</b><small>'+esc(CN[w.c]||w.c)+' · '+w.u+' learner'+(w.u===1?'':'s')+' · avg '+Math.round(w.p/w.u)+'% correct</small></div></div>';}).join("")+'</div>';
+    if(W.length)sb+='<div class="adm-sub"><h3>Weakest lessons</h3><p>Lessons where learners get under 60% of the quiz right.</p><div class="au-rows">'+W.map(function(w){return '<div class="au-row"><div class="au-who"><b>'+esc(w.n)+'</b><small>'+esc(CN[w.c]||w.c)+' · '+w.u+' learner'+(w.u===1?'':'s')+' · avg '+Math.round(w.p/w.u)+'% correct</small></div></div>';}).join("")+'</div>'+'</div>';
     var M=top(miss,function(a,b){return b.u-a.u;},15);
-    if(M.length)h+='<h3>Most-missed quiz questions</h3><div class="au-rows">'+M.map(function(m){return '<div class="au-row"><div class="au-who"><b>'+esc(String(m.q||"").replace(/<[^>]*>/g,"").slice(0,300))+'</b><small>missed by '+m.u+' learner'+(m.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>';
+    if(M.length)sb+='<div class="adm-sub"><h3>Most-missed quiz questions</h3><div class="au-rows">'+M.map(function(m){return '<div class="au-row"><div class="au-who"><b>'+esc(String(m.q||"").replace(/<[^>]*>/g,"").slice(0,300))+'</b><small>missed by '+m.u+' learner'+(m.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>'+'</div>';
+    if(!rows.length)h+='<div class="au-empty info">No learner has synced progress yet.</div>';
+    if(sb)h+='<div class="adm-subs">'+sb+'</div>';
     return h+'</section>';}
   async function call(name,args){var r=await AUTH.sb.rpc(name,args);if(r.error){alert(r.error.message);return false;}return true;}
   async function rpc(name,args){await call(name,args);await load();}
@@ -162,6 +268,8 @@
     for(var i=0;i<courses.length;i++)if(!await call("decide_access",{p_user:u,p_course:courses[i],p_status:"approved"}))break;
     await load();}
   app.addEventListener("click",async function(e){var b=e.target.closest("button");if(!b||b.disabled)return;
+    if(b.dataset.reload){location.reload();return;}
+    if(b.dataset.pf){PF=b.dataset.pf;document.querySelectorAll("[data-pf]").forEach(function(x){x.setAttribute("aria-pressed",x===b);});filter();return;}   /* people filter: display only */
     var u=b.dataset.u,p=u&&person(u),who=p?(p.name||p.email):"";
     if(b.dataset.acct){if(b.dataset.acct==="rejected"&&!confirm((p.status==="approved"?"Block ":"Reject ")+who+"? They will not be able to open any course until you unblock them."))return;
       b.disabled=true;await rpc("decide_user",{p_user:u,p_status:b.dataset.acct});}
@@ -188,7 +296,8 @@
       b.disabled=true;await rpc("set_face_mode",{p_mode:b.dataset.fmode});}
     else if(b.dataset.clrerr){if(!confirm("Clear every reported page error?"))return;
       b.disabled=true;var ce=await AUTH.sb.from("client_errors").delete().gte("id",0);if(ce.error)alert(ce.error.message);await load();}
-    else if(b.dataset.deltag){b.disabled=true;var dt=await AUTH.sb.from("question_tags").delete().eq("id",b.dataset.deltag);if(dt.error)alert(dt.error.message);await load();}
+    else if(b.dataset.deltag){if(!confirm("Remove this company question report? It cannot be undone."))return;
+      b.disabled=true;var dt=await AUTH.sb.from("question_tags").delete().eq("id",b.dataset.deltag);if(dt.error)alert(dt.error.message);await load();}
     else if(b.dataset.delinv){if(!confirm("Remove this approval? They will not be able to register."))return;
       b.disabled=true;var r=await AUTH.sb.from("invites").delete().eq("id",b.dataset.delinv);if(r.error)alert(r.error.message);await load();}
   });

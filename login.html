@@ -32,7 +32,7 @@
     <h1>Every expert was once<br>a <span>beginner.</span></h1>
     <p class="lg-lead">Short lessons, a visual lab for every idea and real code you can run. One concept at a time, for as long as you want to keep growing.</p>
     <p class="lg-tk" aria-live="off">Today you could learn <b id="lgTopic">why a String never changes</b></p>
-    <ul class="lg-chips"><li>22 courses</li><li>Visual labs</li><li>▶ Run real Java</li><li>Interview-ready</li></ul>
+    <ul class="lg-chips"><li id="lgCount">22 courses</li><li>Visual labs</li><li>▶ Run real Java</li><li>Interview-ready</li></ul>
     <ol class="lg-how">
       <li><b>1</b><span><strong>Register</strong>with a quick selfie</span></li>
       <li><b>2</b><span><strong>Get approved</strong>by the course owner</span></li>
@@ -127,6 +127,10 @@
   function busy(b,on){b.disabled=on;b.classList.toggle("is-busy",on);}
   function shake(){var c=$("card");c.classList.remove("shake");void c.offsetWidth;if(!calm)c.classList.add("shake");}
   if(!AUTH.on)say($("inMsg"),"The course lock is not set up yet (assets/js/auth-config.js).","err");
+
+  /* course count chip: from the lock's course list (auth.js COURSES; the Resume Builder is a tool, not a course).
+     The 19 in the HTML is only the first-paint text; check-all step 3d fails when it drifts from auth.js. */
+  var nC=Object.keys(AUTH.COURSES).length;$("lgCount").textContent=nC+" courses";
 
   /* side panel: a new "today you could learn" topic every few seconds (real lessons); still when motion is reduced */
   var TOPICS=["why a String never changes","what really happens on new","stack vs heap, drawn live","your first SELECT query","the order a query really runs in",
