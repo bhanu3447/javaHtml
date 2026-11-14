@@ -1,0 +1,72 @@
+Photo credits for assets/img/hardware/ (course "Inside a Laptop", lessons HW00 and HW01).
+All files come from Wikimedia Commons. Licence and author were read from each file's Commons page on 2026-11-13.
+Each photo was only resized and re-compressed. Photos under CC BY-SA stay under that licence.
+Product names visible in the photos belong to their owners.
+
+laptop-inside-modular.jpg
+  "Framework Laptop 13 - 2023 AMD Ryzen - Internal motherboard and component view" by Ogidya, CC BY 4.0
+  https://commons.wikimedia.org/wiki/File:Framework_Laptop_13_-_2023_AMD_Ryzen_-_Internal_motherboard_and_component_view.jpg
+  https://creativecommons.org/licenses/by/4.0/
+
+laptop-inside-gaming.jpg
+  "Razer Blade Pro 17 (2020 model) with backplate removed" by Benlisquare, CC BY-SA 4.0
+  https://commons.wikimedia.org/wiki/File:Razer_Blade_Pro_17_(2020_model)_with_backplate_removed.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+ram-sodimm.jpg
+  "DDR 4 RAM SO-DIMM 16GB by Micron-top front PNr°0840" by D-Kuru, CC BY-SA 4.0
+  https://commons.wikimedia.org/wiki/File:DDR_4_RAM_SO-DIMM_16GB_by_Micron-top_front_PNr%C2%B00840.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+ssd-m2-nvme.jpg
+  "Samsung 980 PRO PCIe 4.0 NVMe SSD 1TB-top PNr°0915" by D-Kuru, CC BY-SA 4.0
+  https://commons.wikimedia.org/wiki/File:Samsung_980_PRO_PCIe_4.0_NVMe_SSD_1TB-top_PNr%C2%B00915.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+hdd-opened.jpg
+  "~Hitachi 2.5 Inch Drive, Opened" by ViveaLiyevi, CC0 1.0 (public domain dedication)
+  https://commons.wikimedia.org/wiki/File:~Hitachi_2.5_Inch_Drive,_Opened.tif
+  https://creativecommons.org/publicdomain/zero/1.0/
+
+battery-pack.jpg
+  "Samsung AA-PB9NC6B Li-ion battery pack-3589" by Raimond Spekking, CC BY-SA 4.0
+  https://commons.wikimedia.org/wiki/File:Samsung_AA-PB9NC6B_Li-ion_battery_pack-3589.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+heat-pipe.jpg
+  "Laptop Heat Pipe" by Kristoferb, CC BY-SA 3.0
+  https://commons.wikimedia.org/wiki/File:Laptop_Heat_Pipe.JPG
+  https://creativecommons.org/licenses/by-sa/3.0/
+
+ports-edge.jpg
+  "Acer Swift 3 rear-left edge" by Bobulous, CC BY-SA 4.0
+  https://commons.wikimedia.org/wiki/File:Acer_Swift_3_rear-left_edge.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+wifi-card.jpg
+  "Intel Wi-Fi 6 AX200NGW card with Mini PCIe to M.2 adapters" by Siarhei Besarab, CC BY-SA 4.0
+  https://commons.wikimedia.org/wiki/File:Intel_Wi-Fi_6_AX200NGW_card_with_Mini_PCIe_to_M.2_adapters.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+cmos-battery.jpg
+  "Yakumo Notebook 536S - CR2032 backup battery on motherboard-4667" by Raimond Spekking, CC BY-SA 4.0
+  https://commons.wikimedia.org/wiki/File:Yakumo_Notebook_536S_-_CR2032_backup_battery_on_motherboard-4667.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+cpu-laptop-bga.jpg
+  "Intel Core i5-9300H" by Justmakingphotos, CC BY 4.0
+  https://commons.wikimedia.org/wiki/File:Intel_Core_i5-9300H.jpg
+  https://creativecommons.org/licenses/by/4.0/
+
+wafer.jpg
+  "80C196KC wafer" by Mister rf, CC BY-SA 4.0
+  https://commons.wikimedia.org/wiki/File:80C196KC_wafer.jpg
+  https://creativecommons.org/licenses/by-sa/4.0/
+
+cpu-die-shot.jpg
+  "DEC Alpha 21066-AA CPU die shot - 27776409539" by Martijn Boer, public domain
+  https://commons.wikimedia.org/wiki/File:DEC_Alpha_21066-AA_CPU_die_shot_-_27776409539.jpg
+
+first-transistor-replica.jpg
+  "Replica-of-first-transistor", a work of the United States federal government, public domain
+  https://commons.wikimedia.org/wiki/File:Replica-of-first-transistor.jpg
