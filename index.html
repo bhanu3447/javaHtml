@@ -87,6 +87,7 @@ nav .gh[hidden]{display:none}
 .course.websec{--c:#dc2626;--c2:#7c3aed}
 .course.mongodb{--c:#16a34a;--c2:#0d9488}
 .course.hardware{--c:#0ea5e9;--c2:#4f46e5}
+.course.distsys{--c:#0d9488;--c2:#7c3aed}
 .course.networks{--c:#0ea5e9;--c2:#4f46e5}
 .course.dbms{--c:#14b8a6;--c2:#7c3aed}
 .course.behavioural{--c:#db2777;--c2:#9d174d}
@@ -136,6 +137,7 @@ nav .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient
 .csw-m a i.k-websec{background:linear-gradient(135deg,#dc2626,#7c3aed)}
 .csw-m a i.k-mongodb{background:linear-gradient(135deg,#16a34a,#0d9488)}
 .csw-m a i.k-hardware{background:linear-gradient(135deg,#0ea5e9,#4f46e5)}
+.csw-m a i.k-distsys{background:linear-gradient(135deg,#0d9488,#7c3aed)}
 .csw-m a i.k-networks{background:linear-gradient(135deg,#0ea5e9,#4f46e5)}
 .csw-m a i.k-python{background:linear-gradient(135deg,#3776ab,#f5b301)}
 .csw-m a i.k-dbms{background:linear-gradient(135deg,#14b8a6,#7c3aed)}
@@ -333,6 +335,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
       <a role="menuitem" tabindex="-1" data-c="websec" href="courses/websec/index.html"><i class="k-websec">Z</i><span><b>Web Security</b><small>For backend interviews · Z00–Z19 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="mongodb" href="courses/mongodb/index.html"><i class="k-mongodb">M</i><span><b>MongoDB</b><small>Documents · indexes · sharding · MG00–MG18 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="hardware" href="courses/hardware/index.html"><i class="k-hardware">H</i><span><b>Inside a Laptop</b><small>Computer hardware · HW00–HW16 complete</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="distsys" href="courses/distsys/index.html"><i class="k-distsys">D</i><span><b>Distributed Systems</b><small>Clocks · consensus · replication · DS00–DS03 live</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="python" href="courses/python/index.html"><i class="k-python">Y</i><span><b>Python</b><small>Beginner to experienced · Y00–Y28 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="networks" href="courses/networks/index.html"><i class="k-networks">W</i><span><b>Computer Networks</b><small>For interviews · W00–W12 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="dbms" href="courses/dbms/index.html"><i class="k-dbms">Q</i><span><b>DBMS</b><small>For interviews · Q00–Q12 complete</small></span></a>
@@ -372,6 +375,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <a class="btn" href="courses/websec/index.html">Web Security</a>
     <a class="btn" href="courses/mongodb/index.html">MongoDB</a>
     <a class="btn" href="courses/hardware/index.html">Hardware</a>
+    <a class="btn" href="courses/distsys/index.html">Distributed Systems</a>
     <a class="btn" href="courses/python/index.html">Python</a>
     <a class="btn" href="courses/networks/index.html">Networks</a>
     <a class="btn" href="courses/dbms/index.html">DBMS</a>
@@ -382,6 +386,12 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
 
 <!-- Review today for every course (study.js hubBar, drawn by STUDY.cards(); hidden until the review deck has a card) -->
 <div class="sd-rv" id="reviewBar" role="region" aria-label="Review today" hidden></div>
+
+<!-- Today's 15 minutes: one review round, one DSA Judge problem, one design prompt (assets/js/daily.js; pools in plan-outline.js) -->
+<section id="today" aria-labelledby="todayH" hidden>
+  <h2 id="todayH">Today's 15 minutes</h2>
+  <div id="todayIn"></div>
+</section>
 
 <section id="plan" aria-labelledby="planH">
   <h2 id="planH">Your study plan</h2>
@@ -567,6 +577,13 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <span class="st"><span><b>17</b> lessons</span><span><b>17</b> live</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
+  <a class="course distsys" href="courses/distsys/index.html">
+    <span class="ic" aria-hidden="true">D</span>
+    <b>Distributed Systems: from First Principles to Interview Depth</b>
+    <p>What really happens when many computers must act as one, with a courier-network simulator you can break: partial failure and the eight fallacies, system models, physical and logical clocks, failure detection, replication, consistency models (linearizable to eventual, CAP stated precisely), quorums, two-phase commit, Raft and Paxos, locks and fencing tokens, distributed transactions, CRDTs, delivery guarantees, the classic papers, and an interview round. Java programs run on JDK 25.</p>
+    <span class="st"><span><b>17</b> lessons</span><span><b>4</b> live</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
   <a class="course networks" href="courses/networks/index.html">
     <span class="ic" aria-hidden="true">W</span>
     <b>Computer Networks for Interviews</b>
@@ -615,7 +632,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
 </div>
 <script>
 /* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
-(function(){  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="cicd"||c==="os"||c==="cloud"||c==="linux"||c==="git"||c==="kubernetes"||c==="microservices"||c==="observability"||c==="websec"||c==="mongodb"||c==="hardware"||c==="networks"||c==="python"||c==="dbms"||c==="lld"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="cicd"?"CI/CD":c==="os"?"Operating Systems":c==="cloud"?"Cloud (AWS)":c==="linux"?"Linux":c==="microservices"?"Microservices":c==="observability"?"Observability":c==="websec"?"Web Security":c==="mongodb"?"MongoDB":c==="hardware"?"Inside a Laptop":c==="python"?"Python":c==="networks"?"Computer Networks":c==="dbms"?"DBMS":c==="lld"?"Low-Level Design":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
+(function(){  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="cicd"||c==="os"||c==="cloud"||c==="linux"||c==="git"||c==="kubernetes"||c==="microservices"||c==="observability"||c==="websec"||c==="mongodb"||c==="hardware"||c==="distsys"||c==="networks"||c==="python"||c==="dbms"||c==="lld"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="cicd"?"CI/CD":c==="os"?"Operating Systems":c==="cloud"?"Cloud (AWS)":c==="linux"?"Linux":c==="microservices"?"Microservices":c==="observability"?"Observability":c==="websec"?"Web Security":c==="mongodb"?"MongoDB":c==="hardware"?"Inside a Laptop":c==="distsys"?"Distributed Systems":c==="python"?"Python":c==="networks"?"Computer Networks":c==="dbms"?"DBMS":c==="lld"?"Low-Level Design":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
   /* course menu: the same control as the nav of every course page (button + menu, Esc / arrows / click outside) */
   var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m");
   /* switcher search v1 (2026-11-13): type to filter, Enter opens the first match (same as course.js) */
@@ -639,10 +656,11 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=c2676948"></script>
-<script src="assets/js/plan-outline.js?v=90851cb3"></script>
+<script src="assets/js/study.js?v=6131cac9"></script>
+<script src="assets/js/plan-outline.js?v=49e683cc"></script>
 <script src="assets/js/plan.js?v=6c3406df"></script>
-<script src="assets/js/course-logos.js?v=66536251"></script>
+<script src="assets/js/daily.js?v=3a3d9b93"></script>
+<script src="assets/js/course-logos.js?v=c392bec9"></script>
 <script src="assets/js/ready.js?v=4feb38ad"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
@@ -655,9 +673,9 @@ window.hubPaint=function(){
     var d=document.getElementById("dash");STUDY.dash(document.getElementById("dashIn"));d.hidden=false;}}catch(e){}};
 hubPaint();
 </script>
-<script src="assets/js/auth-config.js?v=94003b06"></script>
+<script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=6cffd7aa"></script>
+<script src="assets/js/auth.js?v=8f087a31"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/lock/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};
