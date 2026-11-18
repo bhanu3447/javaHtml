@@ -154,7 +154,7 @@
 <script src="assets/js/loader.js?v=c0618dcd"></script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=a4d64092"></script>
+<script src="assets/js/auth.js?v=8f6f1857"></script>
 <script>
 /* login v4: log in = username/email + password, then a LIVE face check every time (login function; lasts 1 hour);
    register = details + live selfie (register function, account waits for the owner). Live check: the server sends a random
@@ -299,6 +299,7 @@
     var r=await AUTH.fn("login",{id:$("inId").value.trim(),password:$("inPass").value.trim(),images:shots,challenge:used.challenge});
     clearTimeout(t);busy(b,false);
     if(!r.access_token){marks("inChecks",["face","match"],r.code==="face_mismatch"?"match":"face");say($("l2Msg"),r.error||"Face check failed.","err");shake();
+      if(r.code==="locked"){b.textContent="Locked for now";b.disabled=true;return;}   /* lock-out (2026-11-18): no retry button until the hour passes or the owner unlocks */
       inCam.photo=null;var err=await inCam.start();if(err)say($("l2Msg"),err,"err");b.textContent="Try again";b.disabled=false;return;}
     marks("inChecks",["face","match"]);
     await AUTH.sb.auth.setSession({access_token:r.access_token,refresh_token:r.refresh_token});
