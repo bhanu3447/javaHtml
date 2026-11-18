@@ -146,13 +146,13 @@
 <main class="au-wrap" id="app"></main>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=8f6f1857"></script>
+<script src="assets/js/auth.js?v=f03cf86d"></script>
 <script>
 /* admin v1: course requests, approved photos (invites), people, roles. Owner and admins only; the database checks every action again. */
 (function(){
   
   var app=document.getElementById("app"),esc=AUTH.esc,C=AUTH.COURSES,ME=null,D={people:[],access:[],invites:[]};
-  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",microservices:"Microservices",observability:"Observability",websec:"Web Security",mongodb:"MongoDB",hardware:"Hardware",distsys:"Distributed Systems",networks:"Networks",dbms:"DBMS",lld:"LLD",genai:"Gen AI",python:"Python",resume:"Resume",qbank:"Question Bank"};
+  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",microservices:"Microservices",observability:"Observability",websec:"Web Security",mongodb:"MongoDB",hardware:"Hardware",distsys:"Distributed Systems",networks:"Networks",dbms:"DBMS",lld:"LLD",genai:"Gen AI",python:"Python",resume:"Resume",qbank:"Question Bank",interview:"Interview Day"};
   function zlDone(){if(window.ZLc){ZLc.leave();window.ZLc=null;}}   /* the loader leaves at the first render or card */
   function card(t,actions,icon){zlDone();app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">'+(icon||"🔒")+'</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
 
@@ -307,7 +307,7 @@
     if(D.faceMode){var live=D.faceMode!=="photo";
       fmode=sec("adm-face","Face check at login",live?"live":"photo",'<b>Live</b>: look straight, then turn the head left and right (about 7 s, stops a printed photo). <b>Photo</b>: one straight picture (about 2 s, faster). Both check the face against the account and run the anti-spoofing model. Applies to registrations and to everyone set to “Face: default” in People and courses; pick Live or Photo there to set one person apart.',
         '<div class="au-chips"><button class="au-chip" data-s="'+(live?"approved":"none")+'" data-fmode="live" aria-pressed="'+live+'">'+(live?"✓ ":"")+'Live (head turns)</button><button class="au-chip" data-s="'+(live?"none":"approved")+'" data-fmode="photo" aria-pressed="'+!live+'">'+(live?"":"✓ ")+'Photo (one picture)</button></div>');}
-    zlDone();app.innerHTML=h+prog+'<div class="adm-duo">'+fmode+tags+'</div>'+pre+errs;
+    zlDone();app.innerHTML=h+prog+'<div class="adm-duo">'+fmode+tags+'</div>'+pre+errs;idyAdminFill();
     document.getElementById("inv").onsubmit=invite;
     document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();idleFilter();aiCount();
   }
@@ -415,8 +415,27 @@
     var M=top(miss,function(a,b){return b.u-a.u;},15);
     if(M.length)sb+='<div class="adm-sub"><h3>Most-missed quiz questions</h3><div class="au-rows">'+M.map(function(m){return '<div class="au-row"><div class="au-who"><b>'+esc(String(m.q||"").replace(/<[^>]*>/g,"").slice(0,300))+'</b><small>missed by '+m.u+' learner'+(m.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>'+'</div>';
     if(!list.length)h+='<div class="au-empty info">No learner has synced progress yet.</div>';
+    sb+=idyAdminSlot();   /* Interview Day results: its own block, filled by idyAdminFill() */
     if(sb)h+='<div class="adm-subs">'+sb+'</div>';
     return h+'</section>';}
+  /* Interview Day results (2026-11-18, kb/interview/interview-day.md): each learner's synced js1-iloop-hist through the optional RPC
+     iday_overview() (end of supabase/setup.sql). Separate from the rest of the panel: it loads after the page is drawn, and without
+     the RPC (or on any error) the block stays hidden. Everything shown comes from learners' browsers, so it is escaped and type-checked. */
+  var IDYA=null;
+  function idyAdminSlot(){return '<div class="adm-sub" id="adm-idy" hidden></div>';}
+  function idyAdminDraw(){var el=document.getElementById("adm-idy");if(!el||!IDYA||!IDYA.length)return;
+    var DN=["No hire","Lean no hire","Hire","Strong hire"],DS=["rejected","pending","approved","approved"],RN={oa:"Online assessment",tech:"Technical",lld:"LLD",sd:"System design",beh:"Behavioural"};
+    var rows=IDYA.map(function(r){var h=r.hist&&typeof r.hist==="object"&&!Array.isArray(r.hist)?r.hist:{};
+      var L=Object.keys(h).map(function(k){return h[k];}).filter(function(x){return x&&typeof x==="object"&&isFinite(+x.t)&&x.rs&&typeof x.rs==="object";}).sort(function(a,b){return a.t-b.t;});
+      return {r:r,L:L};}).filter(function(x){return x.L.length;}).sort(function(a,b){return b.L[b.L.length-1].t-a.L[a.L.length-1].t;});
+    if(!rows.length)return;
+    el.innerHTML='<h3>Interview Day</h3><p>Full interview loops each learner finished: the decision, the average over the scored rounds, and the last loop round by round. Self-graded unless the AI interviewer graded the technical round.</p><div class="au-rows">'+rows.map(function(x){
+      var last=x.L[x.L.length-1],prev=x.L[x.L.length-2],d=+last.d,avg=Math.round(+last.avg||0),tr=prev?avg-Math.round(+prev.avg||0):null;
+      var rs=Object.keys(RN).filter(function(k){return last.rs[k]&&typeof last.rs[k]==="object";}).map(function(k){var v=last.rs[k];return '<span class="au-chip" data-s="'+(v.s?"none":DS[+v.v]||"none")+'">'+RN[k]+' '+(v.s?"skipped":Math.round(+v.p||0)+"%")+'</span>';}).join("");
+      return '<div class="au-row"><div class="au-who"><b>'+esc(x.r.name||x.r.username||"learner")+' <span class="au-chip" data-s="'+(DS[d]||"none")+'">'+(DN[d]||"Not enough signal")+'</span></b><small>@'+esc(x.r.username||"")+' · '+x.L.length+' loop'+(x.L.length===1?'':'s')+' · last '+ago(+last.end||+last.t)+' · '+esc(String(last.con||"").slice(0,40))+' · '+esc(String(last.lv||"").slice(0,12))+' · average '+avg+'%'+(tr==null?'':' ('+(tr>0?'▲ +':tr<0?'▼ ':'● ')+tr+' vs the loop before)')+'</small></div><span></span><div class="au-chips">'+rs+'</div></div>';}).join("")+'</div>';
+    el.hidden=false;}
+  function idyAdminFill(){if(IDYA){idyAdminDraw();return;}if(IDYA===false||!document.getElementById("adm-idy"))return;IDYA=false;
+    try{AUTH.sb.rpc("iday_overview").then(function(r){if(r&&!r.error&&Array.isArray(r.data)){IDYA=r.data;try{idyAdminDraw();}catch(e){}}},function(){});}catch(e){}}
   function idleFilter(){var rows=document.querySelectorAll("#prgRows .adm-lp");if(!rows.length&&!document.getElementById("prgRows"))return;var n=0;
     rows.forEach(function(r){var d=+r.dataset.idle,hit=IDF==="all"||(IDF==="today"&&r.dataset.today==="1")||(IDF==="never"&&r.dataset.never==="1")||
       (IDF==="i3"&&d>=3)||(IDF==="i7"&&d>=7)||(IDF==="i14"&&d>=14);r.hidden=!hit;if(hit)n++;});

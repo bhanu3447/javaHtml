@@ -404,6 +404,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
   <h2 id="readyH">Interview readiness</h2>
   <div id="readyIn"></div>
 </section>
+<section id="jdp" hidden></section>
 
 <section class="dash" id="dash" aria-labelledby="dashH" hidden>
   <h2 id="dashH">Your progress</h2>
@@ -628,7 +629,20 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <span class="st"><span><b>11</b> lessons</span><span><b>11</b> live</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
+  <a class="course lld" href="courses/interview/index.html" id="idyHub">
+    <span class="ic" aria-hidden="true">D</span>
+    <b>Interview Day: one full loop, one verdict</b>
+    <p>A realistic, company-style interview loop that ties the tools together: an online assessment on the real Judge, a technical round on the interview cards, LLD machine coding, system design on the sketch pad and a behavioural round, each against the clock with pause and resume. It ends in a hiring-committee scorecard: a verdict per round with its evidence, an overall decision, and your weak topics sent to Review today.</p>
+    <span class="st"><span><b>5</b> rounds</span><span id="idyHubLast"><b>19</b> loops to pick</span></span>
+    <span class="go" aria-hidden="true">→</span>
+  </a>
 </section>
+<script>
+/* Interview Day card: the last result (js1-iloop-hist, written by assets/js/iday.js; kb/interview/interview-day.md) */
+(function(){try{var h=JSON.parse(localStorage.getItem("js1-iloop-hist")||"{}"),k=Object.keys(h).sort(function(a,b){return b-a;})[0],r=k&&h[k],el=document.getElementById("idyHubLast");
+  if(!r||!el||typeof r!=="object")return;var D=["No hire","Lean no hire","Hire","Strong hire"],b=document.createElement("b");b.textContent=D[r.d]||"No decision";
+  el.textContent="";el.appendChild(document.createTextNode("Last: "));el.appendChild(b);el.appendChild(document.createTextNode(" · "+Math.round(+r.avg||0)+"% · "+new Date(+r.t).toLocaleDateString(undefined,{day:"numeric",month:"short"})));}catch(e){}})();
+</script>
 
 <footer>Zero to Advanced · <a href="https://github.com/bhanu3447/javaHtml">source</a> · every Java program was run on JDK 25, every SQL query in SQLite</footer>
 </div>
@@ -665,6 +679,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
 <script src="assets/js/course-logos.js?v=7343c8f7"></script>
 <script src="assets/js/ready.js?v=1320a84e"></script>
 <script src="assets/js/genai.js?v=f175f9f1"></script>
+<script src="assets/js/planner.js?v=2feddbbb"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
    shown only once there is something to show. Interview readiness (2026-11-08, ready.js) always shows (0 % with "start here").
@@ -678,7 +693,7 @@ hubPaint();
 </script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=8f6f1857"></script>
+<script src="assets/js/auth.js?v=f03cf86d"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/lock/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};
