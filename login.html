@@ -7,7 +7,7 @@
 <title>Log in · Zero to Advanced</title>
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/auth.css?v=dd0732d1">
+<link rel="stylesheet" href="assets/css/auth.css?v=4ff669ac">
 <script>/* themes v2 (2026-11-13): the theme picked in the courses (course.js, localStorage js1-theme), set before first paint and
    resolved the same way (nothing saved / "auto" = by time of day, "study" = its study theme, "" = system, else the named theme) */
 (function(){var N=" light dark midnight nord dracula forest sunset ocean sepia focus monk paper matcha amber cafe dawn momentum ",S={sunset:"dawn",light:"paper",dark:"focus",midnight:"amber"};
@@ -73,9 +73,12 @@
             <h2 class="lg-h">Welcome back, learner 👋</h2>
             <p class="lg-note">Pick up right where you left off.</p>
             <label>Username or email<input id="inId" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
-            <label>Password<span class="lg-pw"><input type="password" id="inPass" autocomplete="current-password" required><button type="button" class="lg-eye" aria-label="Show password">👁</button></span></label>
-            <button class="au-btn pri lg-go" type="submit" id="inGo"><span>Continue</span></button>
+            <p class="lg-who" id="inWho" hidden><span>Logging in as <b id="inWhoId"></b></span><button type="button" class="lg-link" id="inNotMe">Not you?</button></p>
+            <label id="inPwBox" hidden>Password<span class="lg-pw"><input type="password" id="inPass" autocomplete="current-password"><button type="button" class="lg-eye" aria-label="Show password">👁</button></span></label>
+            <p class="lg-forgot" id="inForgotRow" hidden><button type="button" class="lg-link" id="inForgot">Forgot password?</button></p>
+            <button class="au-btn pri lg-go" type="submit" id="inGo"><span id="inGoTxt">Continue</span></button>
             <p class="au-msg" id="inMsg" role="status"></p>
+            <div class="lg-new" id="inNew" hidden><p>No account with <b id="inNewId"></b> yet.</p><button class="au-btn pri" type="button" id="inNewGo">Register with it</button></div>
             <p class="lg-alt">New here? <a href="#register" id="toUp">Create an account</a></p>
           </div>
           <div id="l2" class="lg-stack" hidden>
@@ -113,10 +116,41 @@
             <a class="au-btn pri" href="index.html" id="doneGo">Go to the courses</a>
           </div>
         </form>
+
+        <!-- FORGOT PASSWORD (opened by the email link): 1 new password, 2 face, 3 done -->
+        <form class="au-form" id="fRe" hidden novalidate>
+          <div id="r1" class="lg-stack">
+            <h2 class="lg-h">Set a new password</h2>
+            <p class="lg-note" id="r1Note">Choose a new password, then show your face: it must match the face saved for this account.</p>
+            <label>New password<span class="lg-pw"><input type="password" id="rePass" autocomplete="new-password" minlength="8"><button type="button" class="lg-eye" aria-label="Show password">👁</button></span></label>
+            <label>Repeat the new password<input type="password" id="rePass2" autocomplete="new-password" minlength="8"></label>
+            <button class="au-btn pri lg-go" type="submit" id="reGo"><span>Continue</span></button>
+            <p class="au-msg" id="reMsg" role="status"></p>
+          </div>
+          <div id="r2" class="lg-stack" hidden>
+            <h2 class="lg-h">Show your face</h2>
+            <p class="lg-note" id="r2Note">Follow the arrows on the camera: look straight, then turn your head the way it says.</p>
+            <div class="lg-camslot" id="reCam"></div>
+            <div class="lg-row"><button class="au-btn" type="button" id="r2Back">← Back</button><button class="au-btn pri" type="button" id="r2Snap" disabled>Start face check</button></div>
+            <ul class="lg-checks" id="reChecks" hidden><li data-k="face">Live check: real face, real head turns</li><li data-k="match">Matching it with your account</li></ul>
+            <p class="au-msg" id="r2Msg" role="status"></p>
+          </div>
+          <div id="r3" class="lg-done" hidden>
+            <svg class="lg-tick" viewBox="0 0 52 52" aria-hidden="true"><circle cx="26" cy="26" r="24"/><path d="M15 27l7 7 15-15"/></svg>
+            <h2 class="lg-h" id="r3Title">Password changed</h2>
+            <p id="r3Text">Every device was logged out. Log in with your new password and your face.</p>
+            <a class="au-btn pri" href="login.html" id="r3Go">Log in</a>
+          </div>
+        </form>
       </section>
     </div>
   </main>
 </div>
+<script>/* forgot password (2026-11-18): take the recovery link's tokens out of the address BEFORE supabase-js loads, so it does not
+   turn them into an ordinary login (which would then be signed out for having no face check). The page script reads window.__lgRec. */
+(function(){var h=location.hash.slice(1);if(!/(^|&)(type=recovery|error_code=|error=)/.test(h))return;var q=new URLSearchParams(h);
+  window.__lgRec={token:q.get("access_token")||"",error:q.get("error_description")||q.get("error_code")||q.get("error")||""};
+  try{history.replaceState(null,"",location.pathname+location.search);}catch(e){location.hash="";}})();</script>
 <script src="assets/js/loader.js?v=c0618dcd"></script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
@@ -206,19 +240,39 @@
     else{$("meIcon").textContent="⏳";$("meTitle").textContent="Waiting for approval";$("meText").textContent="Hi "+name+", your account is created. The owner will check your selfie and approve it; log in again later to see the result.";$("meGo").hidden=true;$("meRe").hidden=false;}
     return me;
   }
-  $("meOut").onclick=async function(){await AUTH.signOut();$("vMe").hidden=true;$("vAuth").hidden=false;loginStep(1);tab(false);};
+  $("meOut").onclick=async function(){await AUTH.signOut();$("vMe").hidden=true;$("vAuth").hidden=false;loginStep(1);idPhase(null);tab(false);};
   $("meRe").onclick=async function(){busy($("meRe"),true);await showMe();busy($("meRe"),false);};
 
   /* LOG IN step 1: password */
   var inCam=Cam($("inCam")),upCam=Cam($("upCam"));
   function loginStep(n){$("l1").hidden=n!==1;$("l2").hidden=n!==2;if(n===1){inCam.reset();$("inChecks").hidden=true;say($("l2Msg"),"");}}
+  /* two-step login (2026-11-18, owner: "first username or email; if available only show password, or else register"):
+     phase A = identifier only -> login {id, check:true} -> {exists}; phase B = password for that identifier.
+     An older login function (no check mode) answers 400 without `exists`: then phase B opens anyway and the
+     password call's no_account answer still routes to Register. */
+  var known=null;
+  function prefillReg(id){if(id.indexOf("@")>0){$("upMail").value=id;}else{$("upUser").value=id.toLowerCase();}}
+  function idPhase(id){known=id||null;var b=!!known;
+    $("inId").readOnly=b;$("inId").closest("label").hidden=b;$("inWho").hidden=!b;$("inPwBox").hidden=!b;$("inForgotRow").hidden=!b;$("inPass").required=b;
+    $("inNew").hidden=true;$("inGoTxt").textContent=b?"Log in":"Continue";if(b){$("inWhoId").textContent=known;}else{$("inPass").value="";}
+    say($("inMsg"),"");($("inPwBox").hidden?$("inId"):$("inPass")).focus({preventScroll:true});}
+  $("inNotMe").onclick=function(){idPhase(null);$("inId").select();};
+  $("inId").addEventListener("input",function(){$("inNew").hidden=true;});
+  $("inNewGo").onclick=function(){prefillReg($("inId").value.trim());tab(true);};
   $("fIn").onsubmit=async function(e){e.preventDefault();if(!AUTH.on)return;
     var id=$("inId").value.trim(),pw=$("inPass").value.trim();
-    if(!id||!pw){say($("inMsg"),"Enter your username (or email) and password.","err");return;}
+    if(!known){
+      if(!id){say($("inMsg"),"Enter your username or email.","err");$("inId").focus();return;}
+      busy($("inGo"),true);say($("inMsg"),"");$("inNew").hidden=true;
+      var c=await AUTH.fn("login",{id:id,check:true});busy($("inGo"),false);
+      if(c.exists===false){$("inNewId").textContent=id;$("inNew").hidden=false;shake();return;}
+      if(c.code==="too_many"){say($("inMsg"),c.error,"err");return;}
+      idPhase(id);return;}
+    id=known;
+    if(!pw){say($("inMsg"),"Enter your password.","err");$("inPass").focus();return;}
     busy($("inGo"),true);say($("inMsg"),"");
     var r=await AUTH.fn("login",{id:id,password:pw});busy($("inGo"),false);
-    if(r.code==="no_account"){say($("inMsg"),"No account found for “"+id+"”. Register first: it takes a minute.","err");shake();
-      if(id.indexOf("@")>0)$("upMail").value=id;else $("upUser").value=id.toLowerCase();return;}
+    if(r.code==="no_account"){idPhase(null);$("inId").value=id;$("inNewId").textContent=id;$("inNew").hidden=false;shake();return;}
     if(r.code==="wrong_password"){say($("inMsg"),"Wrong password. Try again.","err");shake();$("inPass").select();return;}
     if(r.access_token){/* owner: password only, no face step */
       await AUTH.sb.auth.setSession({access_token:r.access_token,refresh_token:r.refresh_token});
@@ -249,6 +303,53 @@
     marks("inChecks",["face","match"]);
     await AUTH.sb.auth.setSession({access_token:r.access_token,refresh_token:r.refresh_token});
     var me=await showMe();if(me&&me.approved)setTimeout(function(){location.href=next;},calm?0:600);};
+
+  /* FORGOT PASSWORD (2026-11-18; reset edge function): "Forgot password?" on the password step asks for an email link
+     (same answer whether or not the account exists); the link comes back to this page with a recovery token (read before
+     supabase-js loads, see the script above); the new password is set only after the live face check matches the account. */
+  $("inForgot").onclick=async function(){var b=this;if(!known)return;b.disabled=true;say($("inMsg"),"");
+    var r=await AUTH.fn("reset",{mode:"send",id:known,redirect:location.href.split(/[?#]/)[0]});b.disabled=false;
+    if(r.ok){say($("inMsg"),"If this account has an email, a reset link is on its way. Open it on this device within an hour; you will also need your face.","ok");}
+    else{say($("inMsg"),r.error||"Could not send the reset link.","err");}};
+  var rec=window.__lgRec||null,reCam=null,reChal=null;
+  async function rfn(body){var C=window.AUTH_CFG||{},j={};
+    try{var r=await fetch(C.url+"/functions/v1/reset",{method:"POST",headers:{"Content-Type":"application/json",apikey:C.anonKey,Authorization:"Bearer "+rec.token},body:JSON.stringify(body)});
+      try{j=await r.json();}catch(e){j={error:"Unexpected answer from the server ("+r.status+")."};}}
+    catch(e){j={error:"Network error: check your internet connection."};}
+    return j;}
+  function reStep(n){["r1","r2","r3"].forEach(function(id,i){$(id).hidden=i!==n-1;});if(n!==2&&reCam){reCam.reset();$("reChecks").hidden=true;}}
+  function reDead(t){reStep(3);$("r3Title").textContent="Reset link not valid";$("r3Text").textContent=t;$("r3Go").textContent="Back to log in";
+    var tk=document.querySelector("#r3 .lg-tick");if(tk)tk.style.display="none";}
+  function openReset(){document.querySelector(".lg-tabs").hidden=true;$("fIn").hidden=true;$("fUp").hidden=true;$("fRe").hidden=false;
+    if(!rec.token){reDead((rec.error?rec.error.replace(/\+/g," ")+". ":"")+"Ask for a new link: log in, enter your username, then “Forgot password?”.");return;}
+    reCam=Cam($("reCam"));reCam.onReady=function(){$("r2Snap").disabled=false;$("r2Snap").textContent="Start face check";};
+    reCam.button.onclick=async function(){var e=await reCam.start();if(e)say($("r2Msg"),e,"err");};
+    reStep(1);$("rePass").focus({preventScroll:true});}
+  $("fRe").onsubmit=async function(e){e.preventDefault();
+    var p1=$("rePass").value,p2=$("rePass2").value;
+    if(p1.length<8){say($("reMsg"),"The password needs at least 8 characters.","err");$("rePass").focus();return;}
+    if(p1!==p2){say($("reMsg"),"The two passwords are not the same.","err");$("rePass2").focus();return;}
+    busy($("reGo"),true);say($("reMsg"),"");reChal=await rfn({mode:"challenge"});busy($("reGo"),false);
+    if(!reChal.challenge){if(reChal.code==="link"){reDead(reChal.error);return;}say($("reMsg"),reChal.error||"Could not start the face check.","err");return;}
+    var turns=faceText(reChal.steps);
+    $("r2Note").textContent=turns?"Follow the arrows on the camera: look straight, then turn your head the way it says.":"Look straight at the camera: it takes one picture after 3-2-1.";
+    reStep(2);var err=await reCam.start();if(err)say($("r2Msg"),err,"err");};
+  $("r2Back").onclick=function(){reStep(1);};
+  $("r2Snap").onclick=async function(){var b=this;b.disabled=true;say($("r2Msg"),"");$("reChecks").hidden=true;
+    if(!reChal||!reChal.challenge){reChal=await rfn({mode:"challenge"});}
+    if(!reChal.challenge){if(reChal.code==="link"){reDead(reChal.error);return;}say($("r2Msg"),reChal.error||"Could not start the face check.","err");b.disabled=false;return;}
+    if(!reCam.photo&&!$("reCam").querySelector("video").srcObject){var e0=await reCam.start();if(e0){say($("r2Msg"),e0,"err");b.disabled=false;return;}}
+    faceText(reChal.steps);var shots=await reCam.live(reChal.steps),used=reChal;reChal=null;
+    busy(b,true);$("reChecks").hidden=false;mark("reChecks","face","run");mark("reChecks","match","");
+    var t=setTimeout(function(){mark("reChecks","face","ok");mark("reChecks","match","run");},2000);
+    var r=await rfn({mode:"reset",images:shots,challenge:used.challenge,password:$("rePass").value});
+    clearTimeout(t);busy(b,false);
+    if(!r.ok){if(r.code==="link"){reDead(r.error);return;}
+      if(r.code==="password"){reStep(1);say($("reMsg"),r.error,"err");return;}
+      marks("reChecks",["face","match"],r.code==="face_mismatch"?"match":"face");say($("r2Msg"),r.error||"Face check failed.","err");shake();
+      reCam.photo=null;var err=await reCam.start();if(err)say($("r2Msg"),err,"err");b.textContent="Try again";b.disabled=false;return;}
+    marks("reChecks",["face","match"]);rec=null;$("rePass").value="";$("rePass2").value="";
+    setTimeout(function(){reStep(3);},calm?0:500);};
 
   /* REGISTER step 1: details with live checks */
   var steps=document.querySelectorAll(".lg-steps span");
@@ -291,7 +392,7 @@
       else{$("doneTitle").textContent="Account created";$("doneText").textContent="The owner will check your selfie and approve your account. Next time, log in with your username, password and face.";$("doneGo").hidden=true;}
     },calm?0:500);};
 
-  (async function(){if(location.hash==="#register")tab(true);if(AUTH.on)await showMe();})();
+  (async function(){if(rec){openReset();return;}if(location.hash==="#register")tab(true);if(AUTH.on)await showMe();})();
 })();
 </script>
 </body>
