@@ -112,6 +112,13 @@
 .adm-ai-save{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:8px;font-size:12px;color:var(--muted)}
 .adm-ai-row :disabled,.adm-ai-bulk :disabled{opacity:.55;cursor:not-allowed}
 .adm-ai-staff{margin:10px 0 0;font-size:12.5px;color:var(--muted)}
+/* AI access search + filters (2026-11-18): display only, like the People filter */
+.adm .adm-ai-row[hidden]{display:none}
+.adm-ai-find{margin-bottom:8px}
+.adm-ai-find .au-search{flex:1 1 220px;min-width:0}
+.adm-ai-find select.au-btn{max-width:100%}
+.adm-ai-find .adm-seg button:focus-visible,.adm-ai-find select:focus-visible,.adm-ai-ck input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.adm-ai-find :disabled{opacity:.55;cursor:not-allowed}
 @media (max-width:720px){.adm .adm-ai-row{grid-template-columns:auto minmax(0,1fr)}.adm .adm-ai-row>.adm-acts{grid-column:1/-1}}
 @media (max-width:720px){.adm-cmp{grid-template-columns:minmax(0,1fr) auto}.adm-cmp>.h,.adm-cmp>.x{display:none}.adm-cmp>.d{grid-column:1/-1;margin-bottom:6px}}
 @media (min-width:1100px){
@@ -146,7 +153,7 @@
 <main class="au-wrap" id="app"></main>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=f03cf86d"></script>
+<script src="assets/js/auth.js?v=47e3f57f"></script>
 <script>
 /* admin v1: course requests, approved photos (invites), people, roles. Owner and admins only; the database checks every action again. */
 (function(){
@@ -186,15 +193,28 @@
   /* ---- AI access (2026-11-18, kb/lock/access-lock.md → §14): plan, features, daily limits and usage per learner. Every write goes
      through the set_ai_access RPC (admins only, checked in the database). D.ai false = the SQL block has not run: controls disabled. ---- */
   var AIF=[["tutor","AI Tutor",50],["codereview","Code review",20],["interviewer","AI interviewer",60],["planner","JD gap planner",3]],AIP=[["off","AI: Off"],["free","AI: Free"],["enterprise","AI: Enterprise"]],AISEL={};
+  var AIQ="",AIPF="all",AIFF="";   /* search text, plan filter, "feature on" filter: display only, kept across re-renders */
   function aiUse(uid,f){var r=(D.aiUse||[]).find(function(x){return x.user_id===uid&&x.feature===f;});return {d1:r?+r.d1||0:0,d7:r?+r.d7||0:0};}
-  function aiCount(){var n=Object.keys(AISEL).filter(function(k){return AISEL[k];}).length,el=document.getElementById("aiN"),all=document.querySelector("input[data-aiall]"),tot=document.querySelectorAll("input[data-aisel]").length;
-    if(el)el.textContent=n?n+" selected":"";if(all)all.checked=!!tot&&n===tot;}
+  /* search + filters hide rows only (nothing is sent); the plan and feature filters need the ai_* columns, so they are skipped until the SQL has run */
+  function aiShow(){var q=AIQ.trim().toLowerCase(),ok=D.ai,n=0,rows=document.querySelectorAll("#aiRows .adm-ai-row");
+    rows.forEach(function(r){var hit=(!q||r.dataset.aiq.indexOf(q)>=0)&&(!ok||((AIPF==="all"||r.dataset.aipl===AIPF)&&(!AIFF||(" "+r.dataset.aifs+" ").indexOf(" "+AIFF+" ")>=0)));r.hidden=!hit;if(hit)n++;});
+    var el=document.getElementById("aiShown"),no=document.getElementById("aiNone");
+    if(el)el.textContent="showing "+n+" of "+rows.length;if(no)no.hidden=n>0||!rows.length;}
+  function aiCount(){aiShow();
+    var n=Object.keys(AISEL).filter(function(k){return AISEL[k];}).length,el=document.getElementById("aiN"),all=document.querySelector("input[data-aiall]"),
+      shown=[].slice.call(document.querySelectorAll("#aiRows .adm-ai-row:not([hidden]) input[data-aisel]")),nS=shown.filter(function(c){return c.checked;}).length;
+    if(el)el.textContent=n?n+" selected"+(n>nS?" ("+(n-nS)+" not shown)":""):"";if(all)all.checked=!!shown.length&&nS===shown.length;}
+  app.addEventListener("input",function(e){if(e.target.id==="aiQ"){AIQ=e.target.value;aiCount();}});
   function aiPanel(){
     var L=D.people.filter(function(u){return u.role==="learner";}),ok=D.ai,dis=ok?'':' disabled';
     Object.keys(AISEL).forEach(function(k){if(!L.some(function(u){return u.id===k;}))delete AISEL[k];});
     var nOn=ok?L.filter(function(u){return u.ai_plan&&u.ai_plan!=="off";}).length:0;
     var hint=ok?'':'<div class="au-empty info" id="aiHint"><span><b>Not set up yet.</b> Run the “AI access gate” block at the end of <code>supabase/setup.sql</code> in the Supabase SQL Editor, then reload this page. Until then AI is off for every learner.</span></div>';
-    var bulk='<div class="adm-tools adm-ai-bulk"><label class="adm-ai-ck"><input type="checkbox" data-aiall="1"'+dis+'> Select all</label>'+
+    var find='<div class="adm-tools adm-ai-find"><input class="au-search" id="aiQ" type="search" placeholder="Search learners by name, username or email" aria-label="Search learners in AI access" value="'+esc(AIQ)+'">'+
+      '<div class="adm-seg" role="group" aria-label="Show learners by AI plan">'+[["all","All"],["off","Off"],["free","Free"],["enterprise","Enterprise"]].map(function(o){return '<button type="button" data-aipf="'+o[0]+'" aria-pressed="'+((ok?AIPF:"all")===o[0])+'"'+dis+'>'+o[1]+'</button>';}).join("")+'</div>'+
+      '<select class="au-btn sm" id="aiFF" aria-label="Show learners who have this feature on"'+dis+'><option value="">Any feature</option>'+AIF.map(function(f){return '<option value="'+f[0]+'"'+(ok&&AIFF===f[0]?' selected':'')+'>'+f[1]+' on</option>';}).join("")+'</select>'+
+      '<span class="adm-n" id="aiShown" role="status"></span></div>';
+    var bulk='<div class="adm-tools adm-ai-bulk"><label class="adm-ai-ck"><input type="checkbox" data-aiall="1"'+dis+'> Select all shown</label>'+
       '<select class="au-btn sm" id="aiBulkPlan" aria-label="Plan for the selected learners"'+dis+'><option value="free">Free</option><option value="enterprise">Enterprise</option></select>'+
       AIF.map(function(f){return '<label class="adm-ai-ck"><input type="checkbox" data-aibf="'+f[0]+'" checked'+dis+'> '+f[1]+'</label>';}).join("")+
       '<button class="au-btn sm ok" data-aibulk="on"'+dis+'>Enable for selected</button><button class="au-btn sm" data-aibulk="off"'+dis+'>Turn off for selected</button><span class="adm-n" id="aiN" role="status"></span></div>';
@@ -203,7 +223,7 @@
         return '<button class="au-chip" data-s="'+(on?"approved":"none")+'" data-aitog="'+f[0]+'"'+id+' aria-pressed="'+on+'"'+dis+' title="'+(on?"On: click to turn "+f[1]+" off":"Click to turn "+f[1]+" on")+'">'+(on?"✓ ":"+ ")+f[1]+'</button>';}).join("");
       var grid=AIF.map(function(f){var us=aiUse(u.id,f[0]),v=typeof LM[f[0]]==="number"?LM[f[0]]:"";d1+=us.d1;d7+=us.d7;
         return '<span>'+f[1]+'</span><span><input class="adm-ai-lim" type="number" min="0" max="100000" step="1" inputmode="numeric" data-ailim="'+f[0]+'" value="'+esc(v)+'" placeholder="'+f[2]+'" aria-label="Daily limit, '+f[1]+', '+esc(nm)+'"'+dis+'></span><span>'+(D.aiUse?us.d1:"—")+'</span><span>'+(D.aiUse?us.d7:"—")+'</span>';}).join("");
-      return '<div class="au-row adm-ai-row" data-aiu="'+u.id+'"><label class="adm-ai-ck"><input type="checkbox" data-aisel="'+u.id+'"'+(AISEL[u.id]?' checked':'')+dis+' aria-label="Select '+esc(nm)+'"></label>'+
+      return '<div class="au-row adm-ai-row" data-aiu="'+u.id+'" data-aiq="'+esc(((u.name||"")+" "+(u.username||"")+" "+(u.email||"")).toLowerCase())+'" data-aipl="'+esc(plan)+'" data-aifs="'+AIF.filter(function(f){return F[f[0]]===true;}).map(function(f){return f[0];}).join(" ")+'"><label class="adm-ai-ck"><input type="checkbox" data-aisel="'+u.id+'"'+(AISEL[u.id]?' checked':'')+dis+' aria-label="Select '+esc(nm)+'"></label>'+
         '<div class="au-who"><b>'+esc(nm)+(u.status!=="approved"?' <span class="au-chip" data-s="'+(u.status==="rejected"?"rejected":"pending")+'">'+(u.status==="rejected"?"blocked":"account waiting")+'</span>':'')+'</b><small>'+(u.username?'@'+esc(u.username)+' · ':'')+esc(u.email)+'</small></div>'+
         '<div class="adm-acts"><select class="au-btn sm" data-aiplan="'+u.id+'" aria-label="AI plan for '+esc(nm)+'"'+dis+'>'+(ok?'':'<option value="" selected>AI: not set up</option>')+
           AIP.map(function(o){return '<option value="'+o[0]+'"'+(o[0]===plan?' selected':'')+'>'+o[1]+'</option>';}).join("")+'</select></div>'+
@@ -213,7 +233,8 @@
           '<div class="adm-ai-save"><button class="au-btn sm" data-aisave="1"'+id+dis+'>Save limits</button><span>Blank = the default shown in grey. 0 = none that day.</span></div></details></div>';}).join("");
     var staffUse=D.aiUse?D.aiUse.filter(function(x){return person(x.user_id).role!=="learner";}).reduce(function(a,x){return a+(+x.d7||0);},0):0;
     return sec("adm-ai","AI access",ok?nOn+" of "+L.length+" on":"not set up",'Off for everyone until you turn it on. Pick a plan (<b>Free</b> now; <b>Enterprise</b> is stored for the paid setup later), then the features this learner may use. A feature works only when the plan is not Off <b>and</b> its chip is ✓; each has a daily limit (rolling 24 h). The server checks this on every AI call.',
-      hint+bulk+'<div class="au-rows" id="aiRows">'+(L.length?rows:'<div class="au-empty info">No learners yet.</div>')+'</div>'+
+      hint+find+bulk+'<div class="au-rows" id="aiRows">'+(L.length?rows:'<div class="au-empty info">No learners yet.</div>')+'</div>'+
+      '<div class="au-empty info" id="aiNone" hidden>No learner matches the search and filters.</div>'+
       '<p class="adm-ai-staff">Owner and admins always have every AI feature, with no daily limit'+(staffUse?' ('+staffUse+' AI calls by owner/admins in the last 7 days)':'')+'.</p>');}
   function person(id){return D.people.find(function(x){return x.id===id;})||{email:"?"};}
   function face(u,big){var src=u.selfie_path&&D.urls[u.selfie_path];return src?'<img class="au-face'+(big?' big':'')+'" src="'+esc(src)+'" alt="Selfie of '+esc(u.name||u.email)+'" loading="lazy">':'<span class="au-face'+(big?' big':'')+'" aria-hidden="true">'+esc((u.name||u.email||"?").charAt(0).toUpperCase())+'</span>';}
@@ -481,6 +502,7 @@
     if(b.dataset.pf){PF=b.dataset.pf;document.querySelectorAll("[data-pf]").forEach(function(x){x.setAttribute("aria-pressed",x===b);});filter();return;}   /* people filter: display only */
     var u=b.dataset.u,p=u&&person(u),who=p?(p.name||p.email):"";
     /* AI access: feature chip, limits, bulk. Turning a feature on while the plan is Off also sets the plan to Free (or it would do nothing). */
+    if(b.dataset.aipf){AIPF=b.dataset.aipf;document.querySelectorAll("[data-aipf]").forEach(function(x){x.setAttribute("aria-pressed",x===b);});aiCount();return;}   /* plan filter: display only */
     if(b.dataset.aitog){var ak=b.dataset.aitog,aF=Object.assign({},p.ai_features||{}),aOn=aF[ak]!==true,aP=aOn&&(p.ai_plan||"off")==="off"?"free":null;aF[ak]=aOn;
       b.disabled=true;var aOk=await call("set_ai_access",{p_user:u,p_plan:aP,p_features:aF,p_limits:null});await load();
       if(aOk&&aP)toast("AI plan of "+who+" set to Free, so the feature works.");return;}
@@ -536,7 +558,8 @@
   app.addEventListener("change",async function(e){var t=e.target;
     /* AI access: row selection (display only) and the plan select */
     if(t.matches("input[data-aisel]")){AISEL[t.dataset.aisel]=t.checked;aiCount();return;}
-    if(t.matches("input[data-aiall]")){document.querySelectorAll("input[data-aisel]").forEach(function(c){c.checked=t.checked;AISEL[c.dataset.aisel]=t.checked;});aiCount();return;}
+    if(t.id==="aiFF"){AIFF=t.value;aiCount();return;}   /* "feature on" filter: display only */
+    if(t.matches("input[data-aiall]")){document.querySelectorAll("#aiRows .adm-ai-row:not([hidden]) input[data-aisel]").forEach(function(c){c.checked=t.checked;AISEL[c.dataset.aisel]=t.checked;});aiCount();return;}
     if(t.matches("select[data-aiplan]")){if(!t.value)return;t.disabled=true;await rpc("set_ai_access",{p_user:t.dataset.aiplan,p_plan:t.value,p_features:null,p_limits:null});return;}
     var s=t.closest("select[data-fmu]");if(!s)return;
     s.disabled=true;await rpc("set_user_face_mode",{p_user:s.dataset.fmu,p_mode:s.value||null});});
@@ -569,36 +592,50 @@
 <!-- ===== AI tutor: most-asked questions (2026-11-18, kb/lock/access-lock.md → §15) =====
      Self-contained block (nothing above calls it): after every render of #app it adds its own panel at the end and reads
      public.tutor_questions (question text + course + lesson + time only; admins read by RLS). A missing table, a learner or
-     the lock being off → no panel. Everything shown is escaped. -->
+     the lock being off → no panel. Everything shown is escaped.
+     v2: a per-course filter (the choice is kept while the page is open; it filters the rows already read, no second query),
+     and retention: once per page load it calls rpc tutor_questions_prune() (deletes rows older than 180 days; a missing
+     function or an error changes nothing here). -->
 <script>
 (function(){
   var app=document.getElementById("app");
   if(!app||!window.AUTH||!AUTH.sb||!window.MutationObserver)return;
-  var esc=AUTH.esc,CN=AUTH.COURSES||{},rows=null,busy=false,MAXR=1000;
+  var esc=AUTH.esc,CN=AUTH.COURSES||{},rows=null,busy=false,MAXR=1000,pickC="",pruned=false;
   function ago(t){var m=Math.max(0,Math.round((Date.now()-new Date(t))/6e4));return m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago";}
   function where(r){return esc((CN[r.course]||r.course)+" · "+String(r.lesson).toUpperCase());}
   function top(map,n){return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return b.n-a.n||new Date(b.t)-new Date(a.t);}).slice(0,n);}
   function html(){
+    var byC={};rows.forEach(function(r){byC[r.course]=(byC[r.course]||0)+1;});
+    var cs=Object.keys(byC).sort(function(a,b){return byC[b]-byC[a]||(a<b?-1:1);});
+    if(pickC&&!byC[pickC])pickC="";
+    var view=pickC?rows.filter(function(r){return r.course===pickC;}):rows;
     var byL={},byQ={},wk=Date.now()-7*864e5,week=0;
-    rows.forEach(function(r){var lk=r.course+"|"+r.lesson,qk=lk+"|"+String(r.q).toLowerCase().replace(/[^a-z0-9\[\] ]+/g," ").replace(/\s+/g," ").trim();
+    view.forEach(function(r){var lk=r.course+"|"+r.lesson,qk=lk+"|"+String(r.q).toLowerCase().replace(/[^a-z0-9\[\] ]+/g," ").replace(/\s+/g," ").trim();
       if(new Date(r.created_at)>=wk)week++;
       (byL[lk]=byL[lk]||{r:r,n:0,t:r.created_at}).n++;(byQ[qk]=byQ[qk]||{r:r,n:0,t:r.created_at}).n++;});
-    var L=top(byL,12),Q=top(byQ,12).filter(function(x){return x.n>1;}),R=rows.slice(0,25);
+    var L=top(byL,12),Q=top(byQ,12).filter(function(x){return x.n>1;}),R=view.slice(0,25);
     var row=function(b,s,n){return '<div class="au-row"><div class="au-who"><b>'+b+'</b><small>'+s+'</small></div>'+(n?'<span class="au-count">'+n+'</span>':'')+'</div>';};
-    var body=rows.length?'<div class="adm-subs">'+
+    var filter=cs.length>1?'<p><label for="admTutorCourse">Course </label><select id="admTutorCourse" style="min-height:32px;max-width:100%;font:inherit">'+
+      '<option value="">All courses ('+rows.length+')</option>'+cs.map(function(c){return '<option value="'+esc(c)+'"'+(c===pickC?" selected":"")+'>'+esc(CN[c]||c)+' ('+byC[c]+')</option>';}).join("")+'</select></p>':'';
+    var body=view.length?'<div class="adm-subs">'+
       '<div class="adm-sub"><h3>Lessons with the most questions</h3><div class="au-rows">'+L.map(function(x){return row(where(x.r),'last asked '+ago(x.t),x.n);}).join("")+'</div></div>'+
       '<div class="adm-sub"><h3>Asked more than once</h3><div class="au-rows">'+(Q.length?Q.map(function(x){return row(esc(x.r.q),where(x.r),x.n+"×");}).join(""):'<div class="au-empty info">No question has been asked twice yet.</div>')+'</div></div></div>'+
       '<div class="adm-sub"><h3>Recent questions</h3><div class="au-rows">'+R.map(function(r){return row(esc(r.q),where(r)+' · <span title="'+esc(new Date(r.created_at).toLocaleString())+'">'+ago(r.created_at)+'</span>');}).join("")+'</div></div>'
       :'<div class="au-empty info">No tutor questions yet.</div>';
-    return '<h2>Tutor: most-asked questions <span class="au-count">'+rows.length+(rows.length>=MAXR?"+":"")+'</span></h2>'+
-      '<p>What learners ask the AI tutor, newest '+MAXR+' ('+week+' in the last 7 days). Only the question text, the course, the lesson and the time are stored: no name, no answer, no code. “[explain] …”, “[quiz] …” are quick actions on that section; “[runfail]” and “[review]” are the Java editor buttons. A lesson that collects many questions is a lesson to improve. '+
-      '<button class="au-btn sm" type="button" id="admTutorRe">Refresh</button></p>'+body;}
+    return '<h2>Tutor: most-asked questions <span class="au-count">'+(pickC?view.length+" of ":"")+rows.length+(rows.length>=MAXR?"+":"")+'</span></h2>'+
+      '<p>What learners ask the AI tutor, newest '+MAXR+' ('+week+' in the last 7 days'+(pickC?' in this course':'')+'). Only the question text, the course, the lesson and the time are stored: no name, no answer, no code; a question is deleted after 180 days. “[explain] …”, “[quiz] …” are quick actions on that section; “[runfail]” and “[review]” are the editor buttons (Java, SQL, Python). A lesson that collects many questions is a lesson to improve. '+
+      '<button class="au-btn sm" type="button" id="admTutorRe">Refresh</button></p>'+filter+body;}
+  function bind(s){
+    s.querySelector("#admTutorRe").onclick=function(){s.remove();rows=null;get();};
+    var c=s.querySelector("#admTutorCourse");
+    if(c)c.onchange=function(){pickC=c.value;s.innerHTML=html();bind(s);var n=s.querySelector("#admTutorCourse");if(n)n.focus();};}
   function put(){
     if(!rows||document.getElementById("adm-tutor")||!app.querySelector(".au-panel"))return;
-    var s=document.createElement("section");s.className="au-panel";s.id="adm-tutor";s.innerHTML=html();app.appendChild(s);
-    s.querySelector("#admTutorRe").onclick=function(){s.remove();rows=null;get();};}
+    var s=document.createElement("section");s.className="au-panel";s.id="adm-tutor";s.innerHTML=html();app.appendChild(s);bind(s);}
   async function get(){
     if(busy||rows)return;busy=true;
+    /* retention: old rows go before the list is read; once per page load, and it may fail quietly (SQL not run yet) */
+    if(!pruned){pruned=true;try{if(typeof AUTH.sb.rpc==="function")await AUTH.sb.rpc("tutor_questions_prune");}catch(e){}}
     try{var r=await AUTH.sb.from("tutor_questions").select("id,created_at,course,lesson,q").order("created_at",{ascending:false}).limit(MAXR);
       rows=r.error||!Array.isArray(r.data)?false:r.data.filter(function(x){return x&&typeof x.q==="string"&&typeof x.course==="string"&&typeof x.lesson==="string";});}
     catch(e){rows=false;}

@@ -144,6 +144,7 @@ nav .brand i{width:22px;height:22px;border-radius:7px;background:linear-gradient
 .csw-m a i.k-dbms{background:linear-gradient(135deg,#14b8a6,#7c3aed)}
 .csw-m a i.k-behavioural{background:linear-gradient(135deg,#db2777,#9d174d)}
 .csw-m a i.k-lld{background:linear-gradient(135deg,#8b5cf6,#db2777)}
+.csw-m a i.k-interview{background:linear-gradient(135deg,#4f46e5,#0ea5e9)}/* Interview Day (2026-11-18): menu entry = course.js switcher entry */
 .csw-m a span{display:flex;flex-direction:column;line-height:1.25}
 .csw-m a b{font:600 .86rem Inter,sans-serif}
 .csw-m a small{font:500 .72rem Inter,sans-serif;color:var(--muted)}
@@ -343,6 +344,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
       <a role="menuitem" tabindex="-1" data-c="dbms" href="courses/dbms/index.html"><i class="k-dbms">Q</i><span><b>DBMS</b><small>For interviews · Q00–Q12 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="lld" href="courses/lld/index.html"><i class="k-lld">L</i><span><b>Low-Level Design</b><small>Machine coding round · M00–M10 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="behavioural" href="courses/behavioural/index.html"><i class="k-behavioural">I</i><span><b>Behavioural Interview</b><small>Stories that get offers · B00–B11 complete</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="interview" href="courses/interview/index.html"><i class="k-interview">D</i><span><b>Interview Day</b><small>Full interview loop · five timed rounds and a scorecard</small></span></a>
     </div>
   </div>
   <a class="gh" id="auAdmin" href="admin.html" hidden>Admin</a>
@@ -672,14 +674,14 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=bc0ddc08"></script>
-<script src="assets/js/plan-outline.js?v=49e683cc"></script>
-<script src="assets/js/plan.js?v=6c3406df"></script>
+<script src="assets/js/study.js?v=1291a52c"></script>
+<script src="assets/js/plan-outline.js?v=bc1da95c"></script>
+<script src="assets/js/plan.js?v=04a26b04"></script>
 <script src="assets/js/daily.js?v=3a3d9b93"></script>
 <script src="assets/js/course-logos.js?v=7343c8f7"></script>
-<script src="assets/js/ready.js?v=1320a84e"></script>
+<script src="assets/js/ready.js?v=e4b140d3"></script>
 <script src="assets/js/genai.js?v=f175f9f1"></script>
-<script src="assets/js/planner.js?v=2feddbbb"></script>
+<script src="assets/js/planner.js?v=bd299544"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
    shown only once there is something to show. Interview readiness (2026-11-08, ready.js) always shows (0 % with "start here").
@@ -693,7 +695,7 @@ hubPaint();
 </script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=f03cf86d"></script>
+<script src="assets/js/auth.js?v=47e3f57f"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/lock/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};
