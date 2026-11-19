@@ -153,7 +153,7 @@
 <main class="au-wrap" id="app"></main>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=47e3f57f"></script>
+<script src="assets/js/auth.js?v=a3ac6dc3"></script>
 <script>
 /* admin v1: course requests, approved photos (invites), people, roles. Owner and admins only; the database checks every action again. */
 (function(){
@@ -358,7 +358,7 @@
   function shortD(t){return t?new Date(t).toLocaleDateString(undefined,{day:"numeric",month:"short"}):"—";}
   function learnerStats(u,r){
     var now=Date.now(),t0=mid(now)+DAYMS,w0=t0-7*DAYMS,w1=t0-14*DAYMS,today=dstr(now);   /* this week = the last 7 calendar days, today included */
-    var days=r&&Array.isArray(r.days)?r.days:[],tm=r&&r.rtime&&typeof r.rtime==="object"&&!Array.isArray(r.rtime)?r.rtime:{},sum=r&&r.sum&&typeof r.sum==="object"?r.sum:{};
+    var days=r&&Array.isArray(r.days)?r.days:[],tm=r&&r.rtime&&typeof r.rtime==="object"&&!Array.isArray(r.rtime)?r.rtime:{},sum=r&&r.sum&&typeof r.sum==="object"&&!Array.isArray(r.sum)?r.sum:{};
     var ents=Object.keys(tm).map(function(k){var e=tm[k]||{};return {k:k,s:+e.s||0,n:String(e.n||k),c:String(e.c||""),f:+e.f||0,t:+e.t||0,d:e.d&&typeof e.d==="object"?e.d:{}};});
     var last=r?new Date(r.updated_at).getTime():new Date(u.created_at||now).getTime(),act={},wkS=0,lwS=0;
     ents.forEach(function(e){if(e.t>last&&e.t<=now)last=e.t;for(var d in e.d){var x=dayMs(d),v=+e.d[d]||0;act[d]=1;if(x>=w0&&x<t0)wkS+=v;else if(x>=w1&&x<w0)lwS+=v;}});
@@ -401,8 +401,9 @@
     var now=Date.now(),act7=0,weak={},miss={},stop={},crs={};
     var list=LS.slice().sort(function(a,b){return b.last-a.last;});
     list.forEach(function(x){var r=x.r;if(!r)return;var sum=x.sum,cs=Object.keys(sum),idle=(now-new Date(r.updated_at))/864e5;if(idle<=7)act7++;
-      cs.forEach(function(c){var s=sum[c]||{};crs[c]=crs[c]||{n:0,und:0,tot:0,qc:0,qa:0};var k=crs[c];k.n++;k.und+=s.und||0;k.tot+=s.total||0;k.qc+=s.qc||0;k.qa+=s.qa||0;
-        (s.weak||[]).forEach(function(w){var id=c+"|"+w.n;weak[id]=weak[id]||{c:c,n:w.n,u:0,p:0};weak[id].u++;weak[id].p+=w.pct;});
+      cs.forEach(function(c){var s=sum[c]&&typeof sum[c]==="object"&&!Array.isArray(sum[c])?sum[c]:{};   /* F33: a value of the wrong shape reads as empty */
+      crs[c]=crs[c]||{n:0,und:0,tot:0,qc:0,qa:0};var k=crs[c];k.n++;k.und+=s.und||0;k.tot+=s.total||0;k.qc+=s.qc||0;k.qa+=s.qa||0;
+        (Array.isArray(s.weak)?s.weak:[]).forEach(function(w){if(!w||typeof w!=="object")return;var id=c+"|"+w.n;weak[id]=weak[id]||{c:c,n:w.n,u:0,p:0};weak[id].u++;weak[id].p+=w.pct;});
         if(idle>7&&s.last&&s.last.n){var q=c+"|"+s.last.n;stop[q]=stop[q]||{c:c,n:s.last.n,u:0};stop[q].u++;}});
       for(var q in (r.misses||{})){miss[q]=miss[q]||{q:r.misses[q],u:0};miss[q].u++;}});
     var top=function(o,f,n){return Object.keys(o).map(function(k){return o[k];}).sort(f).slice(0,n);};
@@ -593,54 +594,65 @@
      Self-contained block (nothing above calls it): after every render of #app it adds its own panel at the end and reads
      public.tutor_questions (question text + course + lesson + time only; admins read by RLS). A missing table, a learner or
      the lock being off → no panel. Everything shown is escaped.
-     v2: a per-course filter (the choice is kept while the page is open; it filters the rows already read, no second query),
-     and retention: once per page load it calls rpc tutor_questions_prune() (deletes rows older than 180 days; a missing
-     function or an error changes nothing here). -->
+     v2: a per-course filter (the choice is kept while the page is open) and retention: once per page load it calls rpc
+     tutor_questions_prune() (deletes rows older than 180 days; a missing function or an error changes nothing here).
+     v3 (2026-11-19): the numbers come from rpc tutor_questions_stats(p_course) over the WHOLE table (a course pick asks again);
+     while that function does not exist (SQL not re-run) it falls back to reading the newest 1,000 rows and counting here. -->
 <script>
 (function(){
   var app=document.getElementById("app");
   if(!app||!window.AUTH||!AUTH.sb||!window.MutationObserver)return;
-  var esc=AUTH.esc,CN=AUTH.COURSES||{},rows=null,busy=false,MAXR=1000,pickC="",pruned=false;
+  var esc=AUTH.esc,CN=AUTH.COURSES||{},M=null,busy=false,MAXR=1000,pickC="",pruned=false,rows=null,srv=null;
   function ago(t){var m=Math.max(0,Math.round((Date.now()-new Date(t))/6e4));return m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago";}
   function where(r){return esc((CN[r.course]||r.course)+" · "+String(r.lesson).toUpperCase());}
   function top(map,n){return Object.keys(map).map(function(k){return map[k];}).sort(function(a,b){return b.n-a.n||new Date(b.t)-new Date(a.t);}).slice(0,n);}
-  function html(){
-    var byC={};rows.forEach(function(r){byC[r.course]=(byC[r.course]||0)+1;});
-    var cs=Object.keys(byC).sort(function(a,b){return byC[b]-byC[a]||(a<b?-1:1);});
-    if(pickC&&!byC[pickC])pickC="";
-    var view=pickC?rows.filter(function(r){return r.course===pickC;}):rows;
-    var byL={},byQ={},wk=Date.now()-7*864e5,week=0;
+  var ok=function(r){return r&&typeof r.q==="string"&&typeof r.course==="string"&&typeof r.lesson==="string";};
+  /* the model both sources produce: {all, total, week, courses {c: n}, lessons [{course, lesson, n, t}], repeats [{q, course, lesson, n, t}],
+     recent [{created_at, course, lesson, q}], whole (true = counted over the whole table on the server)} */
+  function local(){var byC={};rows.forEach(function(r){byC[r.course]=(byC[r.course]||0)+1;});
+    var view=pickC?rows.filter(function(r){return r.course===pickC;}):rows,byL={},byQ={},wk=Date.now()-7*864e5,week=0;
     view.forEach(function(r){var lk=r.course+"|"+r.lesson,qk=lk+"|"+String(r.q).toLowerCase().replace(/[^a-z0-9\[\] ]+/g," ").replace(/\s+/g," ").trim();
       if(new Date(r.created_at)>=wk)week++;
-      (byL[lk]=byL[lk]||{r:r,n:0,t:r.created_at}).n++;(byQ[qk]=byQ[qk]||{r:r,n:0,t:r.created_at}).n++;});
-    var L=top(byL,12),Q=top(byQ,12).filter(function(x){return x.n>1;}),R=view.slice(0,25);
+      (byL[lk]=byL[lk]||{course:r.course,lesson:r.lesson,n:0,t:r.created_at}).n++;(byQ[qk]=byQ[qk]||{q:r.q,course:r.course,lesson:r.lesson,n:0,t:r.created_at}).n++;});
+    return {all:rows.length,total:view.length,week:week,courses:byC,lessons:top(byL,12),repeats:top(byQ,12).filter(function(x){return x.n>1;}),recent:view.slice(0,25),whole:false};}
+  function fromSrv(v){var A=function(x){return Array.isArray(x)?x:[];},N=function(x){x=+x;return isFinite(x)&&x>=0?x:0;};
+    var cs={};if(v.courses&&typeof v.courses==="object")Object.keys(v.courses).forEach(function(k){cs[k]=N(v.courses[k]);});
+    return {all:N(v.all),total:N(v.total),week:N(v.week),courses:cs,lessons:A(v.lessons).filter(function(x){return x&&typeof x.course==="string";}),
+      repeats:A(v.repeats).filter(ok),recent:A(v.recent).filter(ok),whole:true};}
+  function html(){
+    var cs=Object.keys(M.courses).sort(function(a,b){return M.courses[b]-M.courses[a]||(a<b?-1:1);});
     var row=function(b,s,n){return '<div class="au-row"><div class="au-who"><b>'+b+'</b><small>'+s+'</small></div>'+(n?'<span class="au-count">'+n+'</span>':'')+'</div>';};
-    var filter=cs.length>1?'<p><label for="admTutorCourse">Course </label><select id="admTutorCourse" style="min-height:32px;max-width:100%;font:inherit">'+
-      '<option value="">All courses ('+rows.length+')</option>'+cs.map(function(c){return '<option value="'+esc(c)+'"'+(c===pickC?" selected":"")+'>'+esc(CN[c]||c)+' ('+byC[c]+')</option>';}).join("")+'</select></p>':'';
-    var body=view.length?'<div class="adm-subs">'+
-      '<div class="adm-sub"><h3>Lessons with the most questions</h3><div class="au-rows">'+L.map(function(x){return row(where(x.r),'last asked '+ago(x.t),x.n);}).join("")+'</div></div>'+
-      '<div class="adm-sub"><h3>Asked more than once</h3><div class="au-rows">'+(Q.length?Q.map(function(x){return row(esc(x.r.q),where(x.r),x.n+"×");}).join(""):'<div class="au-empty info">No question has been asked twice yet.</div>')+'</div></div></div>'+
-      '<div class="adm-sub"><h3>Recent questions</h3><div class="au-rows">'+R.map(function(r){return row(esc(r.q),where(r)+' · <span title="'+esc(new Date(r.created_at).toLocaleString())+'">'+ago(r.created_at)+'</span>');}).join("")+'</div></div>'
+    var filter=cs.length>1||pickC?'<p><label for="admTutorCourse">Course </label><select id="admTutorCourse" style="min-height:32px;max-width:100%;font:inherit">'+
+      '<option value="">All courses ('+M.all+')</option>'+cs.map(function(c){return '<option value="'+esc(c)+'"'+(c===pickC?" selected":"")+'>'+esc(CN[c]||c)+' ('+M.courses[c]+')</option>';}).join("")+'</select></p>':'';
+    var body=M.total?'<div class="adm-subs">'+
+      '<div class="adm-sub"><h3>Lessons with the most questions</h3><div class="au-rows">'+M.lessons.map(function(x){return row(where(x),'last asked '+ago(x.t),x.n);}).join("")+'</div></div>'+
+      '<div class="adm-sub"><h3>Asked more than once</h3><div class="au-rows">'+(M.repeats.length?M.repeats.map(function(x){return row(esc(x.q),where(x),x.n+"×");}).join(""):'<div class="au-empty info">No question has been asked twice yet.</div>')+'</div></div></div>'+
+      '<div class="adm-sub"><h3>Recent questions</h3><div class="au-rows">'+M.recent.map(function(r){return row(esc(r.q),where(r)+' · <span title="'+esc(new Date(r.created_at).toLocaleString())+'">'+ago(r.created_at)+'</span>');}).join("")+'</div></div>'
       :'<div class="au-empty info">No tutor questions yet.</div>';
-    return '<h2>Tutor: most-asked questions <span class="au-count">'+(pickC?view.length+" of ":"")+rows.length+(rows.length>=MAXR?"+":"")+'</span></h2>'+
-      '<p>What learners ask the AI tutor, newest '+MAXR+' ('+week+' in the last 7 days'+(pickC?' in this course':'')+'). Only the question text, the course, the lesson and the time are stored: no name, no answer, no code; a question is deleted after 180 days. “[explain] …”, “[quiz] …” are quick actions on that section; “[runfail]” and “[review]” are the editor buttons (Java, SQL, Python). A lesson that collects many questions is a lesson to improve. '+
+    return '<h2>Tutor: most-asked questions <span class="au-count">'+(pickC?M.total+" of ":"")+M.all+(!M.whole&&M.all>=MAXR?"+":"")+'</span></h2>'+
+      '<p>What learners ask the AI tutor, '+(M.whole?'all of it':'newest '+MAXR)+' ('+M.week+' in the last 7 days'+(pickC?' in this course':'')+'). Only the question text, the course, the lesson and the time are stored: no name, no answer, no code; a question is deleted after 180 days. “[explain] …”, “[quiz] …” are quick actions on that section; “[runfail]” and “[review]” are the editor buttons (Java, SQL, Python). A lesson that collects many questions is a lesson to improve. '+
       '<button class="au-btn sm" type="button" id="admTutorRe">Refresh</button></p>'+filter+body;}
   function bind(s){
-    s.querySelector("#admTutorRe").onclick=function(){s.remove();rows=null;get();};
+    s.querySelector("#admTutorRe").onclick=function(){s.remove();M=null;rows=null;get();};
     var c=s.querySelector("#admTutorCourse");
-    if(c)c.onchange=function(){pickC=c.value;s.innerHTML=html();bind(s);var n=s.querySelector("#admTutorCourse");if(n)n.focus();};}
+    if(c)c.onchange=async function(){pickC=c.value;c.disabled=true;if(srv)await load();else M=local();
+      if(!M){c.disabled=false;return;}s.innerHTML=html();bind(s);var n=s.querySelector("#admTutorCourse");if(n)n.focus();};}
   function put(){
-    if(!rows||document.getElementById("adm-tutor")||!app.querySelector(".au-panel"))return;
+    if(!M||document.getElementById("adm-tutor")||!app.querySelector(".au-panel"))return;
     var s=document.createElement("section");s.className="au-panel";s.id="adm-tutor";s.innerHTML=html();app.appendChild(s);bind(s);}
+  /* server numbers first; a missing function (or any error) → the newest 1,000 rows, counted here */
+  async function load(){
+    if(srv!==false&&typeof AUTH.sb.rpc==="function"){try{var r=await AUTH.sb.rpc("tutor_questions_stats",{p_course:pickC||null});
+      if(!r.error&&r.data&&typeof r.data==="object"){srv=true;M=fromSrv(r.data);return;}}catch(e){}srv=false;}
+    if(!rows){try{var q=await AUTH.sb.from("tutor_questions").select("id,created_at,course,lesson,q").order("created_at",{ascending:false}).limit(MAXR);
+      rows=q.error||!Array.isArray(q.data)?false:q.data.filter(ok);}catch(e){rows=false;}}
+    M=rows?local():false;}
   async function get(){
-    if(busy||rows)return;busy=true;
+    if(busy||M!==null)return;busy=true;
     /* retention: old rows go before the list is read; once per page load, and it may fail quietly (SQL not run yet) */
     if(!pruned){pruned=true;try{if(typeof AUTH.sb.rpc==="function")await AUTH.sb.rpc("tutor_questions_prune");}catch(e){}}
-    try{var r=await AUTH.sb.from("tutor_questions").select("id,created_at,course,lesson,q").order("created_at",{ascending:false}).limit(MAXR);
-      rows=r.error||!Array.isArray(r.data)?false:r.data.filter(function(x){return x&&typeof x.q==="string"&&typeof x.course==="string"&&typeof x.lesson==="string";});}
-    catch(e){rows=false;}
-    busy=false;put();}
-  function tick(){if(!app.querySelector(".au-panel")||document.getElementById("adm-tutor"))return;if(rows===null)get();else put();}
+    await load();busy=false;put();}
+  function tick(){if(!app.querySelector(".au-panel")||document.getElementById("adm-tutor"))return;if(M===null)get();else put();}
   new MutationObserver(tick).observe(app,{childList:true});tick();
 })();
 </script>

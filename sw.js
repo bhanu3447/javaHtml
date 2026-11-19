@@ -14,11 +14,13 @@
    Never cached: Supabase auth, REST and edge functions (POST, or personal data). */
 const SITE = "zl-site", CDN = "zl-cdn", PRIV = "zl-private";
 self.addEventListener("install", () => self.skipWaiting());
-/* one copy per path: keys come back in insertion order, so the last stamp seen for a path is the newest */
+/* sw v3 (2026-11-18, to-do F34): keep the two newest stamps per path (keys come back in insertion order). With only one, a lesson
+   saved for offline reading before a publish asked for CSS / scripts whose old stamp had just been deleted and opened unstyled. */
+const KEEP_STAMPS = 2;
 const prune = async (name) => {
-  const c = await caches.open(name), last = new Map(), all = await c.keys();
-  for (const r of all) { const u = new URL(r.url); if (u.searchParams.has("v")) last.set(u.origin + u.pathname, r.url); }
-  for (const r of all) { const u = new URL(r.url); if (u.searchParams.has("v") && last.get(u.origin + u.pathname) !== r.url) await c.delete(r); }
+  const c = await caches.open(name), byPath = new Map(), all = await c.keys();
+  for (const r of all) { const u = new URL(r.url); if (u.searchParams.has("v")) { const k = u.origin + u.pathname; (byPath.get(k) || byPath.set(k, []).get(k)).push(r); } }
+  for (const list of byPath.values()) for (const r of list.slice(0, Math.max(0, list.length - KEEP_STAMPS))) await c.delete(r);
 };
 self.addEventListener("activate", (e) => e.waitUntil((async () => {
   for (const k of await caches.keys()) if (![SITE, CDN, PRIV].includes(k)) await caches.delete(k);
@@ -40,13 +42,16 @@ const netFirst = async (cache, req, key) => {
 /* key: string or Request; a stamped key (…?v=hash) also removes the other stamps of the same path once the new one is stored */
 const cacheFirst = async (cache, req, key) => {
   const c = await caches.open(cache), hit = await c.match(key, { ignoreVary: true });
+  /* an opaque (no-cors) CDN answer cannot be checked, so it may be a stored 404 / 500: serve it, but refresh it in the background */
+  if (hit && hit.type === "opaque") fetch(req).then((r) => { if (ok(r)) c.put(key, r.clone()); }).catch(() => { });
   if (hit) return hit;
   const r = await fetch(req);
   if (ok(r)) {
     const k = new URL(typeof key === "string" ? key : key.url);
     c.put(key, r.clone()).then(async () => {
       if (!k.searchParams.has("v")) return;
-      for (const old of await c.keys()) { const u = new URL(old.url); if (u.origin + u.pathname === k.origin + k.pathname && old.url !== k.href) await c.delete(old); }
+      const same = (await c.keys()).filter((old) => { const u = new URL(old.url); return u.origin + u.pathname === k.origin + k.pathname; });
+      for (const old of same.slice(0, Math.max(0, same.length - KEEP_STAMPS))) if (old.url !== k.href) await c.delete(old);
     }).catch(() => { });
   }
   return r;

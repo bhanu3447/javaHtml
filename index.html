@@ -316,7 +316,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <div class="csw-m" role="menu" hidden>
       <a role="menuitem" tabindex="-1" data-c="java" href="courses/java/index.html"><i class="k-java">J</i><span><b>Java</b><small>Zero to Advanced · 42 lessons</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="sql" href="courses/sql/index.html"><i class="k-sql">S</i><span><b>SQL</b><small>Zero to Advanced · 18 lessons</small></span></a>
-      <a role="menuitem" tabindex="-1" data-c="spring" href="courses/spring/index.html"><i class="k-sql">S</i><span><b>Spring Boot</b><small>Core · Boot · JPA · Security · Cloud · F00–F34 complete</small></span></a>
+      <a role="menuitem" tabindex="-1" data-c="spring" href="courses/spring/index.html"><i class="k-sql">S</i><span><b>Spring Boot</b><small>Core · Boot · JPA · Security · Cloud · F00–F37 complete</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="patterns" href="courses/patterns/index.html"><i class="k-patterns">P</i><span><b>Design Patterns</b><small>Beginner to expert · all 23 + capstone</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="n8n" href="courses/n8n/index.html"><i class="k-patterns">N</i><span><b>n8n Automation</b><small>Zero to selling flows · 17 lessons</small></span></a>
       <a role="menuitem" tabindex="-1" data-c="dsa" href="courses/dsa/index.html"><i class="k-dsa">D</i><span><b>DSA</b><small>Data structures and algorithms · D00–D21 complete</small></span></a>
@@ -432,7 +432,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <span class="ic" aria-hidden="true">S</span>
     <b>Spring: Core, Boot, JPA, Security, Cloud</b>
     <p>Open the machines inside a Spring Boot app in learning order: the IoC container and dependency injection, auto-configuration and the request pipeline, Hibernate's persistence context and the N + 1 trap, the security filter chain, and Spring Cloud. Every lab runs on a simulator that reproduces Spring's real behaviour and error messages.</p>
-    <span class="st"><span><b>35</b> lessons</span><span><b>5</b> parts</span><span><b>F00–F34</b> live</span><span><b>+1</b> annotations lab</span></span>
+    <span class="st"><span><b>38</b> lessons</span><span><b>5</b> parts</span><span><b>F00–F37</b> live</span><span><b>+1</b> annotations lab</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course patterns" href="courses/patterns/index.html">
@@ -650,7 +650,10 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
 </div>
 <script>
 /* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
-(function(){  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="cicd"||c==="os"||c==="cloud"||c==="linux"||c==="git"||c==="kubernetes"||c==="microservices"||c==="observability"||c==="websec"||c==="mongodb"||c==="hardware"||c==="distsys"||c==="networks"||c==="genai"||c==="python"||c==="dbms"||c==="lld"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="cicd"?"CI/CD":c==="os"?"Operating Systems":c==="cloud"?"Cloud (AWS)":c==="linux"?"Linux":c==="microservices"?"Microservices":c==="observability"?"Observability":c==="websec"?"Web Security":c==="mongodb"?"MongoDB":c==="hardware"?"Inside a Laptop":c==="distsys"?"Distributed Systems":c==="genai"?"Gen AI":c==="python"?"Python":c==="networks"?"Computer Networks":c==="dbms"?"DBMS":c==="lld"?"Low-Level Design":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
+(function(){  try{var c=localStorage.getItem("js1-course");if(c==="sql"||c==="java"||c==="spring"||c==="patterns"||c==="n8n"||c==="dsa"||c==="redis"||c==="kafka"||c==="nginx"||c==="sysdesign"||c==="docker"||c==="api"||c==="cicd"||c==="os"||c==="cloud"||c==="linux"||c==="git"||c==="kubernetes"||c==="microservices"||c==="observability"||c==="websec"||c==="mongodb"||c==="hardware"||c==="distsys"||c==="networks"||c==="genai"||c==="python"||c==="dbms"||c==="lld"||c==="behavioural"){var a=document.getElementById("cont");a.href="courses/"+c+"/index.html";
+    /* F37 (2026-11-18): straight to the lesson and section you were reading in that course (js1-sum last + js1-last), not its home */
+    try{var sm=(JSON.parse(localStorage.getItem("js1-sum")||"{}")||{})[c],L0=JSON.parse(localStorage.getItem("js1-last")||"null");
+      if(sm&&sm.last&&typeof sm.last.f==="string"&&/^courses\/[a-z0-9]+\/[\w\/.-]+\.html$/.test(sm.last.f))a.href=sm.last.f+(L0&&sm.last.k&&L0.p===sm.last.k&&L0.id?"#"+encodeURIComponent(L0.id):"");}catch(e){}document.getElementById("contName").textContent=c==="sql"?"SQL":c==="spring"?"Spring Boot":c==="patterns"?"Design Patterns":c==="n8n"?"n8n":c==="dsa"?"DSA":c==="redis"?"Redis":c==="kafka"?"Kafka":c==="nginx"?"NGINX":c==="sysdesign"?"System Design":c==="docker"?"Docker":c==="api"?"REST API":c==="cicd"?"CI/CD":c==="os"?"Operating Systems":c==="cloud"?"Cloud (AWS)":c==="linux"?"Linux":c==="microservices"?"Microservices":c==="observability"?"Observability":c==="websec"?"Web Security":c==="mongodb"?"MongoDB":c==="hardware"?"Inside a Laptop":c==="distsys"?"Distributed Systems":c==="genai"?"Gen AI":c==="python"?"Python":c==="networks"?"Computer Networks":c==="dbms"?"DBMS":c==="lld"?"Low-Level Design":c==="behavioural"?"Behavioural":"Java";a.hidden=false;}}catch(e){}
   /* course menu: the same control as the nav of every course page (button + menu, Esc / arrows / click outside) */
   var w=document.getElementById("courseSel"),bt=w.querySelector(".csw-b"),m=w.querySelector(".csw-m");
   /* switcher search v1 (2026-11-13): type to filter, Enter opens the first match (same as course.js) */
@@ -674,8 +677,8 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=1291a52c"></script>
-<script src="assets/js/plan-outline.js?v=bc1da95c"></script>
+<script src="assets/js/study.js?v=b8f4e4f5"></script>
+<script src="assets/js/plan-outline.js?v=3d92f233"></script>
 <script src="assets/js/plan.js?v=04a26b04"></script>
 <script src="assets/js/daily.js?v=3a3d9b93"></script>
 <script src="assets/js/course-logos.js?v=7343c8f7"></script>
@@ -695,7 +698,7 @@ hubPaint();
 </script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=47e3f57f"></script>
+<script src="assets/js/auth.js?v=a3ac6dc3"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/lock/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};
@@ -704,6 +707,14 @@ hubPaint();
   var fail=setTimeout(show,8000),acct=document.getElementById("auAcct"),me=null;
   try{me=await AUTH.me();}catch(e){clearTimeout(fail);show();return;}
   clearTimeout(fail);acct.hidden=false;
+  /* offline hub (2026-11-18, to-do F12): with no network the face check cannot be read; keep the person signed in and open the hub
+     (no lesson content here) with a note, so lessons kept for offline reading are still one click away */
+  if(me&&me.offline){show();acct.textContent="Offline";acct.removeAttribute("href");
+    var ob=document.createElement("div");ob.setAttribute("role","status");ob.className="au-offline";
+    ob.style.cssText="margin:12px auto 0;max-width:1100px;padding:10px 16px;border-radius:12px;border:1px solid var(--line);background:var(--soft);font:500 14px/1.45 Inter,system-ui,sans-serif";
+    ob.textContent="You are offline. Lessons you opened online in the last 7 days still open from this device; your progress here syncs when you are back online.";
+    var hdr=document.querySelector("body>.wrap>header");if(hdr)hdr.before(ob);else document.body.prepend(ob);
+    addEventListener("online",function(){location.reload();},{once:true});return;}
   if(me&&!me.face){await AUTH.signOut(true);me=null;}   /* a login without the face check counts as logged out */
   if(!me){location.replace("login.html?next=index.html");return;}   /* logged-in people only */
   show();

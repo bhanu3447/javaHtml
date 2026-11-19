@@ -154,7 +154,7 @@
 <script src="assets/js/loader.js?v=c0618dcd"></script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=47e3f57f"></script>
+<script src="assets/js/auth.js?v=a3ac6dc3"></script>
 <script>
 /* login v4: log in = username/email + password, then a LIVE face check every time (login function; lasts 1 hour);
    register = details + live selfie (register function, account waits for the owner). Live check: the server sends a random
@@ -168,7 +168,8 @@
   function say(el,t,kind){el.textContent=t||"";el.className="au-msg"+(kind?" "+kind:"");}
   function busy(b,on){b.disabled=on;b.classList.toggle("is-busy",on);}
   function shake(){var c=$("card");c.classList.remove("shake");void c.offsetWidth;if(!calm)c.classList.add("shake");}
-  if(!AUTH.on)say($("inMsg"),"The course lock is not set up yet (assets/js/auth-config.js).","err");
+  /* F12 (2026-11-18): configured but supabase-js did not load = a network problem, not a setup problem */
+  if(!AUTH.on)say($("inMsg"),AUTH.sdkGone?"The sign-in service could not be reached. Check your internet connection and reload.":"The course lock is not set up yet (assets/js/auth-config.js).","err");
 
   /* course count chip: from the lock's course list (auth.js COURSES; the Resume Builder is a tool, not a course).
      The 19 in the HTML is only the first-paint text; check-all step 3d fails when it drifts from auth.js. */
