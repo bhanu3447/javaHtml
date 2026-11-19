@@ -4,18 +4,386 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SQL 00: Databases, DBMS and the language SQL</title>
-<meta name="robots" content="noindex">
-<link rel="manifest" href="../../manifest.webmanifest"><link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#4f46e5">
-<script>try{var t=String(localStorage.getItem("js1-theme")||"");if(/light/.test(t))document.documentElement.dataset.theme="light";else if(/dark/.test(t))document.documentElement.dataset.theme="dark";}catch(e){}</script>
-<link rel="stylesheet" href="../../assets/css/auth.css?v=4ff669ac">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../../assets/css/course.css?v=5692b58c">
+<link rel="stylesheet" href="../../assets/css/course-sql.css?v=b6b55523">
+<link rel="stylesheet" href="../../assets/css/course-sql--labs-sql-s00.css?v=92fe2553">
+<link rel="stylesheet" href="../../assets/css/course.late.css?v=d387a52e">
+<link rel="stylesheet" href="../../assets/css/course-sql.late.css?v=74477c5e">
 </head>
-<body class="au">
-<script src="../../assets/js/loader.js?v=c0618dcd"></script>
-<script>window.ZLc=window.ZL&&ZL.mount({step:0,msg:"Checking your sign-in",course:"courses"});</script>
-<main class="au-gate" id="auGate"></main>
-<script src="../../assets/js/auth-config.js?v=e1142d0a"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="../../assets/js/auth.js?v=a3ac6dc3"></script>
-<script>AUTH.gate("courses/sql/00-foundations.html", "../../");</script>
+<body data-page="s00" data-course="sql" data-name="SQL 00 · Databases and SQL" data-short="S00">
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><i>S</i><span>SQL</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top" class="ph">
+  <div class="tag">SQL 00 · BEFORE SQL</div>
+  <h1>Databases, DBMS and the language <span class="grad">SQL</span></h1>
+  <p class="lead">Before the first query: why databases exist at all, what the database software does for you, the kinds of databases (relational, MongoDB, Redis and the rest), tables and every kind of key, how tables relate, and the five sublanguages of SQL: <b>DDL, DML, DQL, TCL, DCL</b>. Every table on this page comes from a real database running in your browser.</p>
+  <div class="pager"></div>
+</header>
+
+<div class="band" id="sqlfound">
+  <div class="tag">SQL 00 · DATABASES, DBMS AND SQL</div>
+  <h2>From "why not a spreadsheet?" to the five sublanguages</h2>
+  <p class="muted">Seven sections, nine labs, two live editors, fifteen interview questions. Play the visuals first; the text around them is short on purpose and the depth is folded under "Go deeper". The course database is a small car dealership (six tables, about sixty rows) that every lesson shares. The engine is SQLite; where SQL Server, PostgreSQL, MySQL or Oracle differ, the page says so.</p>
+</div>
+
+<!-- S1 -->
+<section id="s-why">
+  <span class="num">S1</span><h2>Data, databases, and why not just files</h2>
+  <div class="tldr"><b>In 30 seconds</b> <b>Data</b> is raw facts ("Asha", "Nellore", 640000). A <b>database</b> is an organised collection of related data, stored so it can be found and changed safely. You could keep the same facts in files or spreadsheets, and small shops do, until <b>many people</b> use the data at once: copies disagree, edits overwrite each other, wrong values slip in, a crash corrupts a file, and anyone holding a copy sees everything. A database fixes all five.</div>
+  <div class="viz ol fd sq" id="sqFiles"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span>Files are every salesperson keeping <b>their own notebook</b> about the same customer. A database is <b>one register at the front desk</b>: one entry per customer, one person writes at a time, the clerk refuses nonsense, and only staff with a key can open the salary page.</span></div>
+  <details class="d" data-lv="A"><summary>Go deeper: data vs information, and the exact words</summary><div class="b">
+    <p><b>Data</b> = raw facts. <b>Information</b> = data given meaning ("Asha, from Nellore, spent ₹28.7 lakh with us in 2024"). The <b>database</b> is the stored data itself; the <b>DBMS</b> (database management system) is the software that manages it; a <b>database system</b> is the two together plus the applications that use them.</p>
+    <p>The five file-system problems have textbook names you will meet in interviews: <b>data redundancy and inconsistency</b>, <b>concurrent-access anomalies</b> (the lost update), <b>integrity problems</b>, <b>atomicity problems</b> (half-done work after a crash) and <b>security problems</b>. Also: <b>data isolation</b> (facts scattered in files of different formats) and <b>difficulty accessing data</b> (a new question needs a new program).</p>
+  </div></details>
+</section>
+
+<!-- S2 -->
+<section id="s-dbms">
+  <span class="num">S2</span><h2>What a DBMS does</h2>
+  <div class="tldr"><b>In 30 seconds</b> A <b>DBMS</b> is the program that owns the data. Everything goes through it: it <b>stores</b> the data on disk, <b>answers queries</b>, lets <b>many users</b> work at once (a <b>lock</b> makes the second writer of a row wait for the first; a <b>transaction</b> is a group of changes that all happen or none do), <b>checks rules</b> on every change, <b>recovers</b> after a crash, and enforces <b>permissions</b>. An <b>RDBMS</b> is a DBMS that stores data as related <b>tables</b> and speaks <b>SQL</b>: MySQL, PostgreSQL, Oracle, SQL Server, SQLite.</div>
+  <div class="viz ol fd sq" id="sqEngine"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span>The DBMS is the <b>showroom manager</b>: you never walk into the records room yourself. You hand over a written request (SQL); the manager checks it makes sense (parser), decides the fastest way to fetch it (optimizer), sends someone to the shelves (executor) and hands back the answer.</span></div>
+  <div class="tw"><table><tr><th></th><th>DBMS</th><th>RDBMS</th></tr>
+    <tr><td>Stores data as</td><td>files, hierarchies, networks, documents…</td><td>tables (relations) linked by keys</td></tr>
+    <tr><td>Relationships</td><td>up to the program</td><td>foreign keys, checked by the database</td></tr>
+    <tr><td>Language</td><td>product-specific</td><td>SQL</td></tr>
+    <tr><td>Rules (constraints), transactions</td><td>limited or none</td><td>built in (ACID, below; Lesson S10)</td></tr>
+    <tr><td>Examples</td><td>early file managers, IBM IMS (hierarchical), XML stores</td><td>MySQL, PostgreSQL, Oracle, SQL Server, SQLite</td></tr>
+  </table></div>
+  <h3>Many users at once: the last car</h3>
+  <p>"Lets many users work at once" is the hardest job on that list. Two salespeople, one Seltos left. Each salesperson's app has its own <b>session</b> (one connection to the database) and sends <b>statements</b> (one SQL command each: <code>SELECT</code> reads a value, <code>UPDATE</code> changes it, <code>INSERT</code> adds a row; Lessons S02 and S03 teach them). Run the two sessions' statements in the order you choose; the numbers are SQLite's real answers.</p>
+  <div class="viz ol fd sq" id="sq00Race"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p class="small muted">Simulation note: a real server runs two sessions at the same time. SQLite on this page has one connection, so the lab interleaves the two sessions' statements on one database in the order you click, which is exactly the bad case concurrency can produce. Locks, isolation levels and <code>SELECT … FOR UPDATE</code> are Lesson S10.</p>
+  <details class="d" data-lv="A"><summary>Go deeper: ACID in four lines</summary><div class="b">
+    <p>A <b>transaction</b> is a group of statements the database treats as one unit ("record the sale <i>and</i> mark the car sold"). ACID is the promise a relational database makes about it:</p>
+    <p><b>Atomicity</b>: all of it happens or none of it (a crash halfway leaves nothing behind). <b>Consistency</b>: every rule (keys, CHECKs) holds before and after. <b>Isolation</b>: transactions running at the same time do not see each other's half-done work (how strictly is the <i>isolation level</i>). <b>Durability</b>: once COMMIT returns, the change survives a power cut, because it is already in the log on disk.</p>
+    <p>The race above is an <b>isolation</b> problem: each session's "read, then write" was correct alone and wrong together. The one-statement fix works because a single UPDATE re-checks <code>in_stock = 1</code> on the row it changes, while it holds that row's write lock.</p>
+  </div></details>
+  <details class="d" data-lv="A"><summary>Go deeper: embedded vs client-server, and the three levels</summary><div class="b">
+    <p><b>Client-server</b> databases (PostgreSQL, MySQL, SQL Server, Oracle) run as a separate server process; your app connects over the network, and many apps share one server. <b>Embedded</b> databases (SQLite, H2) are a library inside your program: no server, the database is one file. SQLite is the most deployed database in the world (every phone has dozens of SQLite files) and it is what runs on this page.</p>
+    <p>The classic <b>three-schema architecture</b>: the <b>external</b> level (what each user sees: views), the <b>conceptual</b> level (all tables, columns, keys: the schema) and the <b>internal</b> level (files, pages, indexes on disk). <b>Data independence</b> means you can change a lower level without breaking the one above: add an index (internal) and no query changes; add a column (conceptual) and existing views keep working.</p>
+    <p><b>Prepared statements and the plan cache.</b> Parsing and optimizing cost time, so drivers let you send the SQL once with placeholders (<code>SELECT … WHERE city = ?</code>), then run it many times with different values. In most products the parsed (and often the planned) statement is reused, and because the value travels separately from the SQL text, it can never be read as SQL: this is also the standard defence against <b>SQL injection</b> (Lesson S11). In Java: <code>PreparedStatement</code>.</p>
+  </div></details>
+</section>
+
+<!-- S3 -->
+<section id="s-types">
+  <span class="num">S3</span><h2>Types of databases: SQL and NoSQL</h2>
+  <div class="tldr"><b>In 30 seconds</b> <b>Relational (SQL)</b> databases keep data in tables with a fixed structure and <b>join</b> them freely (a join reads matching rows from two tables in one query, such as a sale with its car; Lesson S06). <b>NoSQL</b> ("not only SQL") is everything else, each shaped for one kind of question: <b>document</b> (MongoDB: one JSON-like document per thing), <b>key-value</b> (Redis: look up by key, very fast), <b>wide-column</b> (Cassandra: massive writes across many machines), <b>graph</b> (Neo4j: relationships many hops deep), <b>time-series</b> (InfluxDB: readings over time). Choose by the questions you will ask.</div>
+  <div class="viz ol fd sq" id="sqModels"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span>Relational is the <b>dealership's ledger</b> with strict columns. Document is <b>one fat folder per customer</b> with everything stuffed in. Key-value is the <b>key cabinet</b> on the wall: hook number → key. Graph is the <b>referral map</b> pinned on the board with strings.</span></div>
+  <h3>SQL vs NoSQL (the interview table)</h3>
+  <div class="tw"><table><tr><th></th><th>SQL (relational)</th><th>NoSQL</th></tr>
+    <tr><td>Structure</td><td>fixed schema: every row has the same columns</td><td>flexible: documents can differ</td></tr>
+    <tr><td>Relationships</td><td>joins across tables</td><td>usually embedded or duplicated; few or no joins</td></tr>
+    <tr><td>Scaling</td><td>traditionally <b>vertical</b> (a bigger server), plus <b>read replicas</b> (read-only copies that serve SELECTs)</td><td>built for <b>horizontal</b> (more servers, data split across them)</td></tr>
+    <tr><td>Guarantees</td><td><b>ACID</b> transactions (all-or-nothing, see S2)</td><td>often <b>BASE</b>: basically available, soft state, <b>eventually consistent</b> (copies may lag a moment, then agree); many now offer transactions too</td></tr>
+    <tr><td>Best for</td><td>money, orders, inventory, anything with many relationships</td><td>huge scale, flexible or fast-changing shapes, one main access pattern</td></tr>
+  </table></div>
+  <h3>OLTP vs OLAP: two jobs, two kinds of system</h3>
+  <div class="tw"><table><tr><th></th><th>OLTP (transactions)</th><th>OLAP (analytics)</th></tr>
+    <tr><td>Example question</td><td>"Record this sale." "Show Asha's last order."</td><td>"Revenue by region by month for 3 years."</td></tr>
+    <tr><td>Work</td><td>many small reads and writes, a few rows each</td><td>few huge reads over millions of rows</td></tr>
+    <tr><td>Design</td><td>normalised tables (no fact stored twice; Lesson S12)</td><td>star schemas (one wide table of facts ringed by lookup tables; Lesson S12), column storage (each column kept separately, so a total over one column reads only that column)</td></tr>
+    <tr><td>Systems</td><td>PostgreSQL, MySQL, SQL Server, Oracle</td><td>Snowflake, BigQuery, Redshift, ClickHouse</td></tr>
+  </table></div>
+  <details class="d" data-lv="A"><summary>Go deeper: is MongoDB SQL? NewSQL? and why big companies use several</summary><div class="b">
+    <p><b>MongoDB is not SQL.</b> It is a document database with its own query language (<code>db.cars.find({ price: { $gt: 1000000 } })</code>) and an aggregation pipeline that plays the role of <code>GROUP BY</code>. It does support multi-document ACID transactions since version 4.0. Lesson S16 compares it side by side with SQL.</p>
+    <p><b>NewSQL</b> systems (Google Spanner, CockroachDB, YugabyteDB, TiDB) keep SQL and ACID but scale horizontally like NoSQL. <b>Search engines</b> (Elasticsearch, OpenSearch) are another NoSQL family, built for full-text search.</p>
+    <p><b>Polyglot persistence</b>: real systems mix them. An e-commerce site might keep orders in PostgreSQL, sessions in Redis, the product catalogue in MongoDB, search in Elasticsearch and analytics in BigQuery. In a system-design interview, say which store you pick <b>and why</b> (the access pattern), not just the name.</p>
+    <p><b>The line is blurring.</b> PostgreSQL's <code>JSONB</code> column stores a binary JSON document inside a relational row, with indexes on its fields, so one database can hold strict tables and flexible documents. MySQL has a <code>JSON</code> type; SQL Server and Oracle have JSON functions too.</p>
+    <p><b>CAP</b>: when the network between two copies of the data breaks (a <b>partition</b>), a distributed database must choose: refuse some requests to stay <b>consistent</b> (CP: Spanner, HBase), or answer from whichever copy it can reach and accept stale data for a while (AP: Cassandra and DynamoDB by default, eventually consistent). Without a partition you can have both. Interviewers also like <b>PACELC</b>: even with no partition, you trade <b>latency</b> against consistency.</p>
+    <p><b>Scaling SQL horizontally</b> is possible, just not automatic: read replicas for read-heavy load; <b>sharding</b> (split rows across servers by a key such as <code>customer_id</code>; Vitess for MySQL, Citus for PostgreSQL); or a NewSQL database that shards for you. The cost is cross-shard joins and transactions. Lesson S15 goes deeper.</p>
+  </div></details>
+</section>
+
+<!-- S4 -->
+<section id="s-tables">
+  <span class="num">S4</span><h2>Tables, rows, columns and keys</h2>
+  <div class="tldr"><b>In 30 seconds</b> A <b>table</b> holds one kind of thing. A <b>row</b> is one thing (one car), a <b>column</b> is one property every row has (<code>price</code>). The formal words: table = <b>relation</b>, row = <b>tuple</b>, column = <b>attribute</b>; the number of columns is the <b>degree</b>, the number of rows the <b>cardinality</b>, and the allowed values of a column its <b>domain</b>. A <b>key</b> is a column (or set of columns) whose value is different in every row, so it can point at exactly one row.</div>
+  <div class="viz ol fd sq" id="sqCabinet"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span>A database is a <b>filing cabinet</b>: a <b>drawer</b> per kind of thing (table), a <b>folder</b> per thing (row), the same <b>labels</b> on every folder (columns), and a <b>number</b> on each folder that no other folder in that drawer has (primary key).</span></div>
+  <h3>Try it</h3>
+  <p>This shows the whole <code>cars</code> table. <code>SELECT * FROM cars</code> means "every column, every row, of <code>cars</code>"; Lesson S03 explains <code>SELECT</code> properly. Press <b>▶ Run</b> (or <kbd>Ctrl</kbd>+<kbd>Enter</kbd>); change <code>cars</code> to <code>customers</code> and run again.</p>
+<script type="text/x-sql" data-file="cars.sql" data-auto>
+SELECT * FROM cars;
+</script>
+  <h3>Every kind of key</h3>
+  <p>One word first: <b>NULL</b> is SQL's marker for "no value here" (unknown or missing). It is not zero and not empty text, and a primary key column never holds it.</p>
+  <div class="viz ol fd sq" id="sqKeyFind"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="tw"><table><tr><th>Key</th><th>What it is</th><th>In the owners table</th></tr>
+    <tr><td><b>Super key</b></td><td>any set of columns whose values are unique in every row</td><td><code>owner_id</code>, <code>{owner_id, name}</code>, <code>{licence_no, city}</code>…</td></tr>
+    <tr><td><b>Candidate key</b></td><td>a <b>minimal</b> super key: remove any column and it stops being unique</td><td><code>owner_id</code>, <code>licence_no</code></td></tr>
+    <tr><td><b>Primary key</b></td><td>the candidate key you choose; unique and <b>never NULL</b>; one per table</td><td><code>owner_id</code></td></tr>
+    <tr><td><b>Alternate key</b></td><td>the candidate keys you did not choose (declare them <code>UNIQUE NOT NULL</code>)</td><td><code>licence_no</code></td></tr>
+    <tr><td><b>Unique key</b></td><td>a <code>UNIQUE</code> constraint; unlike a primary key it may allow NULL; many per table</td><td><code>email</code></td></tr>
+    <tr><td><b>Composite key</b></td><td>a key made of two or more columns together</td><td>e.g. <code>(order_id, line_no)</code></td></tr>
+    <tr><td><b>Foreign key</b></td><td>a column holding another table's key (next section)</td><td><code>sales.car_id → cars.id</code></td></tr>
+    <tr><td><b>Surrogate</b> vs <b>natural</b></td><td>made-up number vs a real-world identifier</td><td><code>owner_id</code> vs <code>licence_no</code></td></tr>
+  </table></div>
+  <details class="d" data-lv="A"><summary>Go deeper: why most tables use surrogate keys, and NULL in UNIQUE columns</summary><div class="b">
+    <p><b>Natural keys</b> read nicely but real-world values change (a licence is reissued, an email changes) and they are long, and every foreign key copies them. Most teams use a <b>surrogate</b> primary key (<code>id</code>, auto-generated) and put <code>UNIQUE</code> on the natural one, so duplicates are still refused.</p>
+    <p>A key is a <b>rule about all possible data</b>, not a fact about today's rows: two cars that happen to have different prices today do not make <code>price</code> a key. You decide keys from the meaning of the data.</p>
+    <p><b>NULL in a UNIQUE column</b> differs by product: PostgreSQL, MySQL, Oracle and SQLite allow <b>many</b> NULLs (NULL is not equal to NULL); <b>SQL Server allows only one</b> unless you use a filtered unique index (<code>WHERE email IS NOT NULL</code>). PostgreSQL 15+ can opt into SQL Server's behaviour with <code>UNIQUE NULLS NOT DISTINCT</code>. A classic interview follow-up.</p>
+    <p><b>Which kind of generated id?</b> An auto-incrementing integer is small and fast but guessable and needs one central counter; a random <b>UUIDv4</b> can be made anywhere but scatters inserts across the index; time-ordered ids (<b>UUIDv7</b>, Twitter's <b>Snowflake</b>) give both. Lesson S01 draws why this matters in MySQL, which stores rows in primary-key order.</p>
+  </div></details>
+</section>
+
+<!-- S5 -->
+<section id="s-rel">
+  <span class="num">S5</span><h2>Relationships: 1:1, 1:N, M:N</h2>
+  <div class="tldr"><b>In 30 seconds</b> Tables connect through <b>foreign keys</b>: a column that holds another table's primary key (<code>sales.customer_id</code> holds a <code>customers.id</code>). <b>1:1</b>: one row matches at most one row on the other side. <b>1:N</b>: one customer, many sales; the foreign key goes on the <b>many</b> side. <b>M:N</b>: many customers, many car models; it needs a third, <b>junction</b> table holding both keys (<code>sales</code> is one).</div>
+  <div class="viz ol fd sq" id="sqRel"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span>A foreign key is a <b>folder number written on another folder</b>: the sale's folder says "car #3", and you walk to the cars drawer to read about car #3. Nothing about the car is copied into the sale.</span></div>
+  <h3>The whole dealership</h3>
+  <div class="viz ol fd sq" id="sqSchema"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <details class="d" data-lv="A"><summary>Go deeper: self-references, optional vs mandatory, and the schema</summary><div class="b">
+    <p><code>customers.referred_by</code> and <code>employees.manager_id</code> point at <b>their own table</b>: a <b>self-referencing</b> (recursive) relationship, which is how trees are stored (org charts, categories, comment threads). Lesson S08 walks such trees with a recursive CTE.</p>
+    <p>Besides "how many", a relationship has <b>optionality</b>: must every sale have a customer? (yes: <code>customer_id NOT NULL</code>). Must every customer have a sale? (no: Rahul has none). ER diagrams draw both with crow's-foot symbols (Lesson S12).</p>
+    <p>The <b>schema</b> is the design: which tables exist, their columns and types, keys and rules, and how they reference each other. The <b>instance</b> is the data in it at one moment. (In PostgreSQL and SQL Server, "schema" also means a namespace inside a database, like <code>public</code> or <code>dbo</code>.)</p>
+  </div></details>
+</section>
+
+<!-- S6 -->
+<section id="s-sql">
+  <span class="num">S6</span><h2>SQL and its five sublanguages</h2>
+  <div class="tldr"><b>In 30 seconds</b> <b>SQL</b> (Structured Query Language) is the standard language of relational databases (ANSI/ISO since 1986). It is <b>declarative</b>: you say <i>what</i> you want, the DBMS decides <i>how</i> (unlike Java, where you write every step). Its statements fall into five groups: <b>DDL</b> defines structure, <b>DML</b> changes rows, <b>DQL</b> reads rows, <b>TCL</b> controls transactions, <b>DCL</b> controls permissions. Every product speaks a <b>dialect</b>: <b>T-SQL</b> in SQL Server, Oracle SQL, and the MySQL, PostgreSQL and SQLite flavours. (<b>PL/SQL</b> is not Oracle's SQL dialect; it is Oracle's separate <i>procedural</i> language for stored procedures, like PL/pgSQL in PostgreSQL.)</div>
+<div class="sq0-map" role="img" aria-label="SQL sublanguages and their commands">SQL
+├── DDL  Data Definition     CREATE · ALTER · DROP · TRUNCATE · RENAME
+├── DML  Data Manipulation   INSERT · UPDATE · DELETE · MERGE
+├── DQL  Data Query          SELECT (+ WHERE, GROUP BY, HAVING, ORDER BY…)
+├── TCL  Transaction Control BEGIN · COMMIT · ROLLBACK · SAVEPOINT
+└── DCL  Data Control        GRANT · REVOKE</div>
+  <div class="viz ol fd sq" id="sqSub"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="an-strip"><b>💡 Remember it</b><span>Building a showroom: <b>DDL</b> builds the shelves, <b>DML</b> puts cars on them, <b>DQL</b> is a customer looking, <b>TCL</b> is "the deal is final" (commit) or "cancel the deal" (rollback), <b>DCL</b> hands staff their keys.</span></div>
+  <h3>Try it: four sublanguages in one script</h3>
+  <p>This script makes a new table (DDL), starts a transaction (TCL), adds two rows (DML), commits (TCL) and reads them back (DQL). It runs on a throw-away copy of the database, so run it as often as you like. Try adding <code>INSERT INTO test_drives VALUES (3, 99, 'Kiran', '2024-10-03');</code> before <code>COMMIT</code>: car 99 doesn't exist, so the foreign key refuses it. The error stops the script there, so <code>COMMIT</code> never runs; this copy is thrown away, but in a real session the transaction would stay <b>open</b> until you send <code>ROLLBACK</code>.</p>
+<script type="text/x-sql" data-file="sublanguages.sql" data-fresh data-auto>
+-- DDL: define the structure
+CREATE TABLE test_drives (
+  id       INTEGER PRIMARY KEY,
+  car_id   INTEGER NOT NULL REFERENCES cars(id),
+  customer TEXT    NOT NULL,
+  drive_on DATE    NOT NULL
+);
+
+BEGIN;                                                     -- TCL
+INSERT INTO test_drives VALUES (1, 7, 'Asha', '2024-10-01'); -- DML
+INSERT INTO test_drives VALUES (2, 4, 'Ravi', '2024-10-02'); -- DML
+COMMIT;                                                    -- TCL
+
+SELECT * FROM test_drives;                                 -- DQL
+</script>
+  <p class="small muted">DCL (<code>GRANT</code>, <code>REVOKE</code>) is the one group SQLite does not have: an embedded database has no users; the file's permissions decide. PostgreSQL, MySQL, SQL Server and Oracle all have it (Lesson S11).</p>
+  <h3>One language, many dialects</h3>
+  <div class="tw"><table><tr><th></th><th>SQLite</th><th>PostgreSQL</th><th>MySQL</th><th>SQL Server (T-SQL)</th><th>Oracle</th></tr>
+    <tr><td>First 3 rows</td><td><code>LIMIT 3</code></td><td><code>LIMIT 3</code> / <code>FETCH FIRST 3 ROWS ONLY</code></td><td><code>LIMIT 3</code></td><td><code>SELECT TOP 3</code></td><td><code>FETCH FIRST 3 ROWS ONLY</code></td></tr>
+    <tr><td>Auto-numbered id</td><td><code>INTEGER PRIMARY KEY</code></td><td><code>GENERATED ALWAYS AS IDENTITY</code></td><td><code>AUTO_INCREMENT</code></td><td><code>IDENTITY(1,1)</code></td><td><code>GENERATED AS IDENTITY</code></td></tr>
+    <tr><td>Current time</td><td><code>CURRENT_TIMESTAMP</code></td><td><code>NOW()</code></td><td><code>NOW()</code></td><td><code>GETDATE()</code></td><td><code>SYSDATE</code></td></tr>
+    <tr><td>Join text</td><td><code>a || b</code></td><td><code>a || b</code></td><td><code>CONCAT(a, b)</code></td><td><code>a + b</code>, <code>CONCAT</code> (<code>||</code> from SQL Server 2025)</td><td><code>a || b</code></td></tr>
+    <tr><td>Quote a name</td><td><code>"name"</code></td><td><code>"name"</code></td><td><code>`name`</code></td><td><code>[name]</code></td><td><code>"name"</code></td></tr>
+    <tr><td>Procedures in</td><td>none</td><td>PL/pgSQL</td><td>SQL/PSM style</td><td>T-SQL</td><td>PL/SQL</td></tr>
+  </table></div>
+  <div class="note warn"><b>Common mistakes:</b> saying "SQL" when you mean a product ("I know SQL" ≠ "I know MySQL": SQL is the language, MySQL one database that speaks it); text in double quotes (<code>"Asha"</code> is a <i>column name</i> in standard SQL; text goes in <b>single</b> quotes); forgetting the <code>;</code> between statements in a script. Keywords are not case-sensitive (<code>select</code> works); the convention is UPPERCASE keywords, lowercase names. <code>--</code> starts a comment.</div>
+  <details class="d" data-lv="A"><summary>Go deeper: where SQL came from, and the classification debate</summary><div class="b">
+    <p>IBM researchers (Chamberlin and Boyce) designed <b>SEQUEL</b> in 1974 for System R, based on Codd's 1970 relational model; it was renamed SQL. Oracle shipped the first commercial SQL database in 1979. ANSI standardised it in 1986 and ISO in 1987; the standard keeps growing (SQL:1999 added recursive queries, SQL:2003 window functions, SQL:2016 JSON, SQL:2023 property graphs).</p>
+    <p>Some books use only <b>four</b> groups and put <code>SELECT</code> inside DML; Oracle's documentation files <code>COMMIT</code> under "transaction control" and <code>GRANT</code> under DDL. The five-way split (DDL, DML, DQL, TCL, DCL) is the one interviews in India expect. <code>TRUNCATE</code> is filed under <b>DDL</b> in every scheme: it releases the table's storage instead of deleting rows one by one. What else it does differs by product (identity reset, rollback, triggers); Lesson S02 compares it with <code>DELETE</code> and <code>DROP</code>.</p>
+  </div></details>
+</section>
+
+<!-- S7 -->
+<section id="s-review">
+  <span class="num">S7</span><h2>Interview questions and review</h2>
+  <p class="small muted">Click a question to see the answer. Say your answer out loud first.</p>
+  <details class="d" data-lv="B"><summary><span class="q">Q1</span>What is a DBMS, and why use one instead of files?</summary><div class="b">Software that stores and manages a database and is the only way in. Over files it gives: one copy of each fact (no redundancy or inconsistency), safe concurrent access (locks, transactions), integrity rules checked on every change, recovery after crashes, security per user, and a query language so new questions don't need new programs.</div></details>
+  <details class="d" data-lv="B"><summary><span class="q">Q2</span>DBMS vs RDBMS?</summary><div class="b">An RDBMS is a DBMS that stores data in tables (relations) linked by keys, enforces those links with foreign keys, supports ACID transactions and is queried with SQL. "DBMS" is the general term and also covers hierarchical, network, file-based and NoSQL systems.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">Q3</span>SQL vs NoSQL: when do you pick which?</summary><div class="b">SQL when data is relational and correctness matters: money, orders, inventory, many joins, ad-hoc reporting. NoSQL when one access pattern dominates at very large scale or the shape varies: sessions and caches (key-value), catalogues and content (document), chat and event logs (wide-column), relationships many hops deep (graph), metrics (time-series). Name the access pattern, not the brand.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">Q4</span>Primary key vs unique key?</summary><div class="b">Both refuse duplicates. A primary key also refuses NULL and there is exactly one per table; it identifies the row and is what foreign keys point to. A table can have many unique keys, and a unique column may hold NULL (many NULLs in PostgreSQL, MySQL, Oracle and SQLite; only one in SQL Server).</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">Q5</span>Super key vs candidate key vs alternate key?</summary><div class="b">A super key is any column set that is unique per row. A candidate key is a minimal super key (no column can be removed). The primary key is the candidate you choose; the remaining candidates are alternate keys. Every candidate key is a super key; not every super key is a candidate key.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">Q6</span>Surrogate key vs natural key?</summary><div class="b">A natural key comes from the real world (licence number, email); a surrogate key is a generated number with no meaning (id). Surrogates never change and keep foreign keys small, so most designs use a surrogate primary key plus a UNIQUE constraint on the natural key.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">Q7</span>How do you store a many-to-many relationship?</summary><div class="b">With a junction (bridge) table holding the two foreign keys, one row per link, plus any facts about the link itself. If a pair may appear only once (a student enrols in a course once), make the pair the composite primary key or <code>UNIQUE</code>. If it may repeat (Asha can buy a second Swift next year), it is an <b>event</b>: give each row its own id and do <b>not</b> make the pair unique. <code>sales(id, customer_id, car_id, sold_on, amount)</code> is the second kind.</div></details>
+  <details class="d" data-lv="B"><summary><span class="q">Q8</span>What are DDL, DML, DQL, TCL and DCL? Give two commands each.</summary><div class="b">DDL defines structure: CREATE, ALTER, DROP, TRUNCATE. DML changes rows: INSERT, UPDATE, DELETE, MERGE. DQL reads: SELECT. TCL controls transactions: COMMIT, ROLLBACK, SAVEPOINT. DCL controls access: GRANT, REVOKE.</div></details>
+  <details class="d" data-lv="B"><summary><span class="q">Q9</span>Is TRUNCATE DDL or DML?</summary><div class="b">DDL. It removes all rows by releasing the table's storage instead of deleting row by row, so it has no WHERE, is much faster and doesn't fire row-level DELETE triggers. The rest depends on the product. <b>Identity counter</b>: reset in MySQL and SQL Server; in PostgreSQL only with <code>TRUNCATE … RESTART IDENTITY</code> (the default is <code>CONTINUE IDENTITY</code>); not reset in Oracle. <b>Rollback</b>: yes inside a transaction in PostgreSQL and SQL Server; no in Oracle and MySQL (it commits implicitly). SQLite has no TRUNCATE: <code>DELETE FROM t</code> without WHERE takes a similar fast path.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">Q10</span>OLTP vs OLAP?</summary><div class="b">OLTP runs the business: many small, fast reads and writes (place an order), normalised tables, row storage (PostgreSQL, MySQL). OLAP analyses it: few large aggregate queries over history (revenue by region by month), denormalised star schemas, column storage (Snowflake, BigQuery, Redshift). Data usually flows from OLTP to OLAP through an ETL pipeline (extract, transform, load: copy the day's rows out, reshape them, load them into the warehouse).</div></details>
+  <details class="d" data-lv="B"><summary><span class="q">Q11</span>What does ACID mean? Give a one-line example of each.</summary><div class="b">Atomicity: the sale row and the "car sold" flag are written together or not at all. Consistency: a sale for car 99 is refused because the foreign key must hold after every transaction. Isolation: two sessions selling the last car must not both see it as available (the isolation level decides how strictly). Durability: after COMMIT returns, a power cut cannot lose the sale, because it is in the log on disk. Trap: the C in ACID (rules hold) is not the C in CAP (every copy returns the latest write).</div></details>
+  <details class="d" data-lv="A"><summary><span class="q">Q12</span>Two users click "Buy" on the last item at the same moment. How do you stop overselling?</summary><div class="b">Never check in one statement and write in another. Make the check part of the write: <code>UPDATE items SET stock = stock - 1 WHERE id = ? AND stock &gt; 0</code>, then read the affected-row count: 1 = you got it, 0 = sold out. The row lock makes the second UPDATE wait and then re-check the condition. Alternatives: <code>SELECT … FOR UPDATE</code> inside a transaction (pessimistic lock), or a version column checked on update (optimistic lock, Lesson S02). Trap: wrapping the naive read-then-update in a transaction is <b>not</b> enough at the default isolation level of most products.</div></details>
+  <details class="d" data-lv="A"><summary><span class="q">Q13</span>What is the CAP theorem, and where do PostgreSQL and Cassandra sit?</summary><div class="b">In a distributed store, when a network partition happens you must choose between consistency (every read sees the latest write, so some requests are refused) and availability (every request is answered, maybe with stale data). A PostgreSQL primary with synchronous replicas chooses consistency (CP). Cassandra and DynamoDB default to availability with eventual consistency (AP), with tunable quorum reads and writes. Trap: CAP is only about the partition case; "CA" is not a real choice for a distributed system.</div></details>
+  <details class="d" data-lv="A"><summary><span class="q">Q14</span>Can a relational database scale horizontally?</summary><div class="b">Yes, with effort. Reads: add read replicas (watch replication lag: a user may not see their own write). Writes: shard by a key (customer_id, tenant_id) so each server owns a slice, using Vitess (MySQL) or Citus (PostgreSQL), or pick a NewSQL database (Spanner, CockroachDB, TiDB) that shards and keeps ACID across nodes. The cost: cross-shard joins and transactions are slow, and a bad shard key creates hot spots. Say vertical first (simplest), then replicas, then sharding.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">Q15</span><code>SELECT … WHERE city = 'Chennai'</code> takes 8 seconds on 10 million customers. What is happening, and what do you do?</summary><div class="b">The plan is a full table <b>scan</b> (the lab above with the index off): the executor reads every page of the table from the buffer pool or disk and tests the condition on each row, so the cost grows with the table, not with the answer. Fix: <code>CREATE INDEX ix_city ON customers(city)</code>; the plan becomes a <b>search</b> that walks a few index pages to the first 'Chennai' entry and reads only the matching rows. Check with <code>EXPLAIN</code> before and after. Traps a senior names: the index will be <i>ignored</i> if the value matches most of the table (with only three cities, <code>city = 'Chennai'</code> may return a third of the rows and a scan is cheaper); wrapping the column in a function (<code>LOWER(city) = …</code>) also defeats it; every extra index slows every INSERT and UPDATE. Lesson S13 draws the B-tree walk.</div></details>
+  <ul class="takeaways">
+    <li>A database is one shared, safe copy of the data; the DBMS is the software that guards it.</li>
+    <li>Relational = tables + keys + SQL; NoSQL = document, key-value, wide-column, graph, time-series. Pick by access pattern.</li>
+    <li>Table = relation, row = tuple, column = attribute. Candidate key = minimal super key; the primary key is the one you choose.</li>
+    <li>1:N puts the foreign key on the N side; M:N needs a junction table.</li>
+    <li>DDL shapes, DML changes, DQL reads, TCL commits or undoes, DCL grants. TRUNCATE is DDL.</li>
+    <li>Check and change in <b>one</b> statement (<code>UPDATE … WHERE in_stock = 1</code>) and read the affected-row count: that is how two users never buy the same last car.</li>
+  </ul>
+  <h3>Check yourself</h3>
+  <div class="quiz" data-quiz="s00"></div>
+</section>
+
+<!-- cheat sheet: opened as a pop-up by study.js (📄 button, palette, #cheatsheet); .cs-a = hidden in self-test mode -->
+<template id="cheatsheet"><div class="cs-grid">
+  <div class="cs-card wide"><h3>In one line</h3><p>A <b>database</b> is one shared, safe copy of related data; the <b>DBMS</b> is the software that guards it (storage, queries, concurrency, rules, recovery, security). An <b>RDBMS</b> keeps data in tables linked by <b>keys</b> and speaks <b>SQL</b>, whose statements split into <b>DDL, DML, DQL, TCL, DCL</b>. This course runs SQLite and notes where PostgreSQL, MySQL, SQL Server and Oracle differ.</p></div>
+
+  <div class="cs-card"><h3>Must-know facts</h3><ul>
+    <li>Data vs information? <span class="cs-a">Data = raw facts; information = data given meaning</span></li>
+    <li>Database vs DBMS? <span class="cs-a">The stored data vs the software that manages it</span></li>
+    <li>RDBMS examples? <span class="cs-a">MySQL, PostgreSQL, Oracle, SQL Server, SQLite</span></li>
+    <li>SQL is declarative, meaning… <span class="cs-a">you say <b>what</b> you want; the DBMS decides <b>how</b></span></li>
+    <li>SQL standardised by <span class="cs-a">ANSI 1986, ISO 1987 (from IBM's SEQUEL, 1974)</span></li>
+    <li>Table / row / column, formal words? <span class="cs-a">relation / tuple / attribute</span></li>
+    <li>Degree vs cardinality? <span class="cs-a">number of columns vs number of rows</span></li>
+    <li>NULL means… <span class="cs-a">"no value" (unknown/missing): not 0, not empty text</span></li>
+    <li>Embedded vs client-server? <span class="cs-a">SQLite is a library + one file; PostgreSQL/MySQL/SQL Server/Oracle run as a server</span></li>
+  </ul></div>
+
+  <div class="cs-card"><h3>Files vs DBMS: the problems fixed</h3><ul>
+    <li><span class="cs-a"><b>Redundancy and inconsistency</b>: copies disagree</span></li>
+    <li><span class="cs-a"><b>Concurrent-access anomalies</b>: edits overwrite each other (lost update)</span></li>
+    <li><span class="cs-a"><b>Integrity problems</b>: wrong values slip in</span></li>
+    <li><span class="cs-a"><b>Atomicity problems</b>: half-done work after a crash</span></li>
+    <li><span class="cs-a"><b>Security problems</b>: anyone with a copy sees everything</span></li>
+    <li><span class="cs-a">Also: data isolation, difficulty accessing data</span></li>
+  </ul></div>
+
+  <div class="cs-card wide"><h3>Every kind of key</h3><div class="cs-tw"><table>
+    <tr><th>Key</th><th>Meaning</th><th>NULL?</th><th>How many</th></tr>
+    <tr><td>Super key</td><td><span class="cs-a">any column set unique in every row</span></td><td>-</td><td><span class="cs-a">many</span></td></tr>
+    <tr><td>Candidate key</td><td><span class="cs-a">a <b>minimal</b> super key (drop a column, no longer unique)</span></td><td>-</td><td><span class="cs-a">one or more</span></td></tr>
+    <tr><td>Primary key</td><td><span class="cs-a">the candidate you choose to identify rows</span></td><td><span class="cs-a">never</span></td><td><span class="cs-a">exactly one</span></td></tr>
+    <tr><td>Alternate key</td><td><span class="cs-a">candidates not chosen; declare UNIQUE NOT NULL</span></td><td>-</td><td><span class="cs-a">zero or more</span></td></tr>
+    <tr><td>Unique key</td><td><span class="cs-a">UNIQUE constraint, refuses duplicates</span></td><td><span class="cs-a">allowed (many; SQL Server: one)</span></td><td><span class="cs-a">many</span></td></tr>
+    <tr><td>Composite key</td><td><span class="cs-a">two or more columns together, e.g. (order_id, line_no)</span></td><td>-</td><td>-</td></tr>
+    <tr><td>Foreign key</td><td><span class="cs-a">holds another table's key: sales.car_id → cars.id</span></td><td><span class="cs-a">allowed unless NOT NULL</span></td><td><span class="cs-a">many</span></td></tr>
+    <tr><td>Surrogate vs natural</td><td><span class="cs-a">generated id with no meaning vs real-world value (licence_no, email)</span></td><td>-</td><td>-</td></tr>
+  </table></div></div>
+
+  <div class="cs-card"><h3>Relationships</h3><ul>
+    <li>1:1 <span class="cs-a">one row matches at most one row on the other side</span></li>
+    <li>1:N: where does the FK go? <span class="cs-a">on the <b>many</b> side (sales.customer_id)</span></li>
+    <li>M:N needs… <span class="cs-a">a junction (bridge) table holding both foreign keys</span></li>
+    <li>Self-reference <span class="cs-a">FK to its own table (employees.manager_id): how trees are stored</span></li>
+    <li>Schema vs instance? <span class="cs-a">the design (tables, columns, keys) vs the data at one moment</span></li>
+  </ul></div>
+
+  <div class="cs-card wide"><h3>The five sublanguages</h3><div class="cs-tw"><table>
+    <tr><th>Group</th><th>Job</th><th>Commands</th></tr>
+    <tr><td>DDL</td><td><span class="cs-a">defines structure</span></td><td><span class="cs-a">CREATE, ALTER, DROP, TRUNCATE, RENAME</span></td></tr>
+    <tr><td>DML</td><td><span class="cs-a">changes rows</span></td><td><span class="cs-a">INSERT, UPDATE, DELETE, MERGE</span></td></tr>
+    <tr><td>DQL</td><td><span class="cs-a">reads rows</span></td><td><span class="cs-a">SELECT</span></td></tr>
+    <tr><td>TCL</td><td><span class="cs-a">controls transactions</span></td><td><span class="cs-a">BEGIN, COMMIT, ROLLBACK, SAVEPOINT</span></td></tr>
+    <tr><td>DCL</td><td><span class="cs-a">controls permissions</span></td><td><span class="cs-a">GRANT, REVOKE (SQLite has none)</span></td></tr>
+  </table></div></div>
+
+  <div class="cs-card"><h3>SQL vs NoSQL, OLTP vs OLAP</h3><ul>
+    <li>NoSQL families <span class="cs-a">document (MongoDB), key-value (Redis), wide-column (Cassandra), graph (Neo4j), time-series (InfluxDB)</span></li>
+    <li>SQL scales… NoSQL scales… <span class="cs-a">traditionally vertical + read replicas; built for horizontal</span></li>
+    <li>ACID vs BASE <span class="cs-a">all-or-nothing transactions vs basically available, soft state, eventually consistent</span></li>
+    <li>OLTP <span class="cs-a">many small reads/writes, normalised, row storage (PostgreSQL, MySQL)</span></li>
+    <li>OLAP <span class="cs-a">few huge aggregate reads, star schema, column storage (Snowflake, BigQuery)</span></li>
+    <li>Choose by… <span class="cs-a">the access pattern, not the brand</span></li>
+  </ul></div>
+
+  <div class="cs-card"><h3>ACID</h3><ul>
+    <li>A <span class="cs-a"><b>Atomicity</b>: all of it happens or none</span></li>
+    <li>C <span class="cs-a"><b>Consistency</b>: every rule (keys, CHECKs) holds before and after</span></li>
+    <li>I <span class="cs-a"><b>Isolation</b>: no one sees another's half-done work</span></li>
+    <li>D <span class="cs-a"><b>Durability</b>: after COMMIT it survives a power cut (it is in the log)</span></li>
+  </ul></div>
+
+  <div class="cs-card wide"><h3>Dialects</h3><div class="cs-tw"><table>
+    <tr><th></th><th>SQLite</th><th>PostgreSQL</th><th>MySQL</th><th>SQL Server</th><th>Oracle</th></tr>
+    <tr><td>First 3 rows</td><td>LIMIT 3</td><td>LIMIT 3 / FETCH FIRST</td><td>LIMIT 3</td><td><span class="cs-a">SELECT TOP 3</span></td><td><span class="cs-a">FETCH FIRST 3 ROWS ONLY</span></td></tr>
+    <tr><td>Auto id</td><td>INTEGER PRIMARY KEY</td><td>GENERATED ALWAYS AS IDENTITY</td><td><span class="cs-a">AUTO_INCREMENT</span></td><td><span class="cs-a">IDENTITY(1,1)</span></td><td>GENERATED AS IDENTITY</td></tr>
+    <tr><td>Join text</td><td>a || b</td><td>a || b</td><td><span class="cs-a">CONCAT(a, b)</span></td><td><span class="cs-a">a + b, CONCAT</span></td><td>a || b</td></tr>
+    <tr><td>Quote a name</td><td>"name"</td><td>"name"</td><td><span class="cs-a">`name`</span></td><td><span class="cs-a">[name]</span></td><td>"name"</td></tr>
+    <tr><td>Procedures</td><td>none</td><td><span class="cs-a">PL/pgSQL</span></td><td>SQL/PSM style</td><td><span class="cs-a">T-SQL</span></td><td><span class="cs-a">PL/SQL</span></td></tr>
+  </table></div></div>
+
+  <div class="cs-card"><h3>Syntax to know</h3><pre><code>-- DDL
+CREATE TABLE test_drives (
+  id       INTEGER PRIMARY KEY,
+  car_id   INTEGER NOT NULL REFERENCES cars(id),
+  customer TEXT NOT NULL,
+  drive_on DATE NOT NULL
+);
+BEGIN;                                   -- TCL
+INSERT INTO test_drives
+  VALUES (1, 7, 'Asha', '2024-10-01');   -- DML
+COMMIT;                                  -- TCL
+SELECT * FROM test_drives;               -- DQL
+-- check and change in ONE statement
+UPDATE items SET stock = stock - 1
+WHERE id = ? AND stock &gt; 0;</code></pre></div>
+
+  <div class="cs-card"><h3>Predict the result</h3><pre><code>INSERT INTO test_drives
+  VALUES (3, 99, 'Kiran', '2024-10-03');
+-- (no car 99)
+<span class="cs-a">-- refused: FOREIGN KEY constraint failed</span>
+SELECT "Asha" ...   -- standard SQL
+<span class="cs-a">-- "Asha" is a column name, not text</span>
+-- last item, two buyers run:
+UPDATE items SET stock = stock - 1
+WHERE id = 5 AND stock &gt; 0;
+<span class="cs-a">-- first: 1 row affected; second: 0 rows (sold out)</span>
+select * from cars;   -- lowercase
+<span class="cs-a">-- works: keywords are not case-sensitive</span></code></pre></div>
+
+  <div class="cs-card"><h3>Traps</h3><ul>
+    <li>"I know SQL" = "I know MySQL" <span class="cs-a">no: SQL is the language, MySQL one product that speaks it</span></li>
+    <li>Text in double quotes <span class="cs-a">double quotes name columns; text goes in <b>single</b> quotes</span></li>
+    <li>PL/SQL is Oracle's SQL dialect <span class="cs-a">no: it is Oracle's procedural language (like PL/pgSQL)</span></li>
+    <li>TRUNCATE is DML <span class="cs-a">no: DDL in every scheme</span></li>
+    <li>Read stock, then update in a second statement <span class="cs-a">race: two users both buy; put the check in the UPDATE's WHERE and read the row count</span></li>
+    <li>C in ACID = C in CAP <span class="cs-a">no: rules hold vs every copy returns the latest write</span></li>
+    <li>MongoDB is SQL <span class="cs-a">no: a document DB with its own query language (multi-document ACID since 4.0)</span></li>
+  </ul></div>
+
+  <div class="cs-card wide"><h3>30-second answers</h3><ul>
+    <li><b>"Why a DBMS instead of files?"</b> <span class="cs-a">A DBMS keeps one copy of each fact, lets many users work at once safely with locks and transactions, checks rules on every change, recovers after a crash and enforces per-user security. With files, copies disagree, edits overwrite each other and every new question needs a new program.</span></li>
+    <li><b>"Primary key vs unique key?"</b> <span class="cs-a">Both refuse duplicates. A primary key also refuses NULL, there is exactly one per table, and foreign keys point to it. A table can have many unique keys, and they may hold NULL: many NULLs in PostgreSQL, MySQL, Oracle and SQLite, only one in SQL Server.</span></li>
+    <li><b>"Super vs candidate vs alternate key?"</b> <span class="cs-a">A super key is any column set unique per row. A candidate key is a minimal super key. The primary key is the candidate you choose; the others are alternate keys.</span></li>
+    <li><b>"How do you store many-to-many?"</b> <span class="cs-a">With a junction table holding both foreign keys, one row per link. If a pair may appear only once, make the pair the composite primary key or UNIQUE; if it can repeat, like a second purchase, give each row its own id.</span></li>
+    <li><b>"What are DDL, DML, DQL, TCL, DCL?"</b> <span class="cs-a">DDL defines structure (CREATE, ALTER, DROP, TRUNCATE). DML changes rows (INSERT, UPDATE, DELETE, MERGE). DQL reads (SELECT). TCL controls transactions (COMMIT, ROLLBACK, SAVEPOINT) and DCL controls access (GRANT, REVOKE).</span></li>
+  </ul></div>
+
+  <div class="cs-card wide"><h3>Jump to the lesson</h3><div class="cs-links">
+    <a href="#s-why">01 Why databases</a><a href="#s-dbms">02 DBMS</a><a href="#s-types">03 SQL vs NoSQL</a><a href="#s-tables">04 Tables and keys</a>
+    <a href="#s-rel">05 Relationships</a><a href="#s-sql">06 Sublanguages</a><a href="#s-review">07 Interview Qs</a>
+  </div></div>
+</div></template>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>SQL: Zero to Advanced · every query runs in your browser on SQLite (sql.js) · <button type="button" class="ib" data-sq-reset>Reset the database</button></footer>
+</div>
+
+<script src="../../assets/data/sql-index.js?v=26a7c441"></script>
+<script src="../../assets/data/quiz-data.js?v=4e390e4d"></script>
+<script src="../../assets/data/qz-sql-s00.js?v=c4fdaa7b"></script>
+<script src="../../assets/js/course.js?v=eb8d4f99"></script>
+<script src="../../assets/data/sql-seed.js?v=29e0a027"></script>
+<script src="../../assets/labs/sql/labs-sql.js?v=29db205c"></script>
+<script type="text/zl-lazy" src="../../assets/labs/sql/labs-sql-s00.js?v=d92c34d1"></script>
+
+<!-- free sample lesson (lock.mjs PUBLIC_SAMPLES, kb/lock/access-lock.md → §17) -->
+<style>.smp-bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2147482000;width:min(760px,calc(100% - 24px));box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px 10px 16px;border-radius:14px;background:var(--surface,#fff);color:var(--text,#0f172a);border:1px solid var(--line,#e3e7ef);box-shadow:0 10px 30px rgba(0,0,0,.18);font:500 14px/1.4 Inter,system-ui,sans-serif}
+.smp-bar p{margin:0;flex:1 1 260px;min-width:0}.smp-bar b{font-weight:700}
+.smp-bar a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid var(--line,#e3e7ef);color:inherit;background:transparent}
+.smp-bar a.smp-go{background:var(--accent,#4f46e5);border-color:var(--accent,#4f46e5);color:#fff}
+.smp-bar button{min-width:38px;min-height:38px;border:0;border-radius:10px;background:transparent;color:inherit;font-size:18px;cursor:pointer}
+.smp-bar a:focus-visible,.smp-bar button:focus-visible{outline:2px solid var(--accent,#4f46e5);outline-offset:2px}
+body{padding-bottom:96px}@media (max-width:560px){body{padding-bottom:150px}}@media print{.smp-bar{display:none}}</style>
+<div class="smp-bar" id="smpBar" role="region" aria-label="Free sample lesson"><p><b>Free sample lesson.</b> Create a free account to open every course, keep your progress on all your devices and take the mock interviews.</p><a class="smp-go" href="../../login.html#register">Create a free account</a><a href="../../index.html">All courses</a><button type="button" aria-label="Hide this bar" onclick="this.parentNode.remove();document.body.style.paddingBottom='0'">×</button></div>
 </body>
 </html>

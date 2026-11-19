@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/img/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#4f46e5">
 <title>Admin · Zero to Advanced</title>
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/auth.css?v=4ff669ac">
+<link rel="stylesheet" href="assets/css/auth.css?v=63b01c42">
 <script>/* themes v2 (2026-11-13): the theme picked in the courses (course.js, localStorage js1-theme), set before first paint and
    resolved the same way (nothing saved / "auto" = by time of day, "study" = its study theme, "" = system, else the named theme) */
 (function(){var N=" light dark midnight nord dracula forest sunset ocean sepia focus monk paper matcha amber cafe dawn momentum ",S={sunset:"dawn",light:"paper",dark:"focus",midnight:"amber"};
@@ -95,6 +96,9 @@
 .adm-tm b{color:var(--text);font-weight:600}
 .adm-cmp{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,.7fr) minmax(0,1.6fr) minmax(0,.8fr);gap:4px 10px;padding:6px 2px 2px;font-size:12.5px}
 .adm-cmp>span{overflow-wrap:anywhere}.adm-cmp>.h{font-weight:700;color:var(--muted);font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+.adm-hl .adm-hb{display:flex;height:8px;margin:6px 0 4px;border-radius:9px;background:var(--line);overflow:hidden;max-width:100%}.adm-hb>i{display:block;height:100%;background:var(--accent)}
+.adm-hb>i[data-p="conf"]{background:#e5484d}.adm-hb>i[data-p="quiz"]{background:#f59e0b}.adm-hb>i[data-p="drop"]{background:#8b5cf6}.adm-hb>i[data-p="miss"]{background:#0ea5e9}.adm-hb>i[data-p="short"]{background:#94a3b8}.adm-hb>i[data-p="loop"]{background:#14b8a6}.adm-hb>i[data-p="tut"]{background:#64748b}
+.adm-hch{display:inline-block;padding:2px 8px;border-radius:6px;background:var(--line);font-size:12px}.adm-hc{display:flex;flex-wrap:wrap;gap:4px;margin:2px 0}.adm-hd{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere;padding:4px 4px 2px}.adm-hs{display:block;font-size:12.5px;color:var(--muted)}.adm-hnone{font-size:13px;color:var(--muted)}.adm-hrow .au-who{min-width:0}
 .adm-bar{display:block;height:5px;margin-top:3px;border-radius:9px;background:var(--line);overflow:hidden}.adm-bar>i{display:block;height:100%;background:var(--accent)}
 .adm-note{font-size:12.5px;color:var(--muted);margin:6px 0 0}
 .adm-toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:50;max-width:min(560px,calc(100% - 32px));padding:10px 14px;border-radius:12px;background:var(--text);color:var(--bg);font-size:13px;box-shadow:var(--shadow)}
@@ -129,6 +133,11 @@
 @media (max-width:720px){
   .adm .au-top{padding:8px 16px}
   .adm .au-top small{display:none}
+  /* F37d: header actions stay on one row (brand shrinks first); a hidden Log out stays hidden */
+  .adm .au-top{flex-wrap:nowrap;gap:8px}
+  .adm .au-top .au-brand{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:15px}
+  .adm .au-top .au-btn{flex:none;white-space:nowrap}
+  .adm .au-top [hidden]{display:none}
   .adm .au-wrap>h1{font-size:22px;margin-top:12px}
   .adm .au-wrap>p{font-size:13px;margin-bottom:12px}
   .adm-sum{grid-template-columns:1fr 1fr;gap:8px}
@@ -145,6 +154,22 @@
   .adm-seg button{flex:1;padding:4px 6px}
 }
 @media (prefers-reduced-motion:reduce){.adm-sum a{transition:none}.adm #app .au-btn:disabled::after,.adm #app .au-chip:disabled[data-tog]::after{animation-duration:2.4s}}
+/* onboarding v1 (2026-11-19, kb/lock/access-lock.md → §17): registration course pick, approval-time setting, owner funnel (F22, F27) */
+.adm-reg-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center}
+.adm-reg-row>.adm-pick{grid-column:1/-1}
+.adm-pick{display:grid;gap:6px;font-size:12.5px;color:var(--muted)}
+.adm-pick .au-chips{gap:6px}
+.adm-pick select{max-width:100%;min-height:30px;font:inherit;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--text);padding:2px 6px}
+.adm-eta{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 10px;font-size:13px;color:var(--muted)}
+.adm-eta input{min-height:32px;width:9.5em;max-width:100%;padding:3px 9px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--text);font:inherit}
+.adm-eta input:focus-visible,.adm-pick select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.adm-fun{list-style:none;margin:8px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.adm-fun li{display:grid;gap:2px;align-content:start;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft);min-width:0}
+.adm-fun b{font:800 22px/1.15 "Inter Tight",Inter,sans-serif}
+.adm-fun span{font-size:12.5px;font-weight:600;color:var(--muted)}
+.adm-fun small{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.adm-fun .adm-bar>i{background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+@media (max-width:720px){.adm-reg-row{grid-template-columns:auto minmax(0,1fr)}.adm-fun{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body class="au adm">
@@ -152,14 +177,16 @@
 <script src="assets/js/loader.js?v=c0618dcd"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Loading the admin panel",steps:false});</script>
 <main class="au-wrap" id="app"></main>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=a3ac6dc3"></script>
+<script src="assets/js/supabase-2.45.4.min.js?v=cde32431"></script><script>window.supabase||document.write('<scr'+'ipt src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></scr'+'ipt>')</script>
+<script src="assets/js/auth.js?v=e8ceb818"></script><script src="assets/js/plan-outline.js?v=09f2aebc"></script>
 <script>
 /* admin v1: course requests, approved photos (invites), people, roles. Owner and admins only; the database checks every action again. */
 (function(){
   
   var app=document.getElementById("app"),esc=AUTH.esc,C=AUTH.COURSES,ME=null,D={people:[],access:[],invites:[]};
+  /* registry:begin short */
   var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",microservices:"Microservices",observability:"Observability",websec:"Web Security",mongodb:"MongoDB",hardware:"Hardware",distsys:"Distributed Systems",networks:"Networks",dbms:"DBMS",lld:"LLD",genai:"Gen AI",python:"Python",resume:"Resume",qbank:"Question Bank",interview:"Interview Day"};
+  /* registry:end short */
   function zlDone(){if(window.ZLc){ZLc.leave();window.ZLc=null;}}   /* the loader leaves at the first render or card */
   function card(t,actions,icon){zlDone();app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">'+(icon||"🔒")+'</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
 
@@ -188,7 +215,11 @@
     var ai=await AUTH.sb.from("profiles").select("id,ai_plan,ai_features,ai_limits");
     if(!ai.error)(ai.data||[]).forEach(function(x){var u=p.data.find(function(y){return y.id===x.id;});if(u){u.ai_plan=x.ai_plan;u.ai_features=x.ai_features||{};u.ai_limits=x.ai_limits||{};}});
     var au=ai.error?{error:ai.error}:await AUTH.sb.rpc("ai_usage_overview");
-    D={people:p.data,access:a.data,invites:i.data,urls:urls,errors:pe.error?null:pe.data,resets:ra.error?null:ra.data,progress:po.error?null:po.data,logins:la.error?null:la.data,tags:qt.error?null:qt.data,faceMode:fm.error||!fm.data?null:fm.data.value,ai:!ai.error,aiUse:au.error?null:(au.data||[])};render();
+    /* onboarding (2026-11-19, kb/lock/access-lock.md → §17): course pick, rejection reason, consent; optional, they exist after that block of setup.sql */
+    var ob=await AUTH.sb.from("profiles").select("id,wanted_courses,wanted_track,reject_reason,consent_at,consent_version");
+    if(!ob.error)(ob.data||[]).forEach(function(x){var u=p.data.find(function(y){return y.id===x.id;});if(u){u.wanted_courses=Array.isArray(x.wanted_courses)?x.wanted_courses:[];u.wanted_track=x.wanted_track||"";u.reject_reason=x.reject_reason||"";u.consent_at=x.consent_at;u.consent_version=x.consent_version;}});
+    var eta=ob.error?"":await AUTH.approvalEta();
+    D={people:p.data,access:a.data,invites:i.data,urls:urls,errors:pe.error?null:pe.data,resets:ra.error?null:ra.data,progress:po.error?null:po.data,logins:la.error?null:la.data,tags:qt.error?null:qt.data,faceMode:fm.error||!fm.data?null:fm.data.value,ai:!ai.error,aiUse:au.error?null:(au.data||[]),p17:!ob.error,eta:eta};render();
   }
   /* ---- AI access (2026-11-18, kb/lock/access-lock.md → §14): plan, features, daily limits and usage per learner. Every write goes
      through the set_ai_access RPC (admins only, checked in the database). D.ai false = the SQL block has not run: controls disabled. ---- */
@@ -259,12 +290,18 @@
     if(act7!=null)tiles.push(["adm-prog",act7,"Active in the last 7 days",""]);
     if(D.errors)tiles.push(["adm-errs",D.errors.length,"Page errors",D.errors.length?"no":""]);
     h+='<nav class="adm-sum" aria-label="Summary">'+tiles.map(function(t){return '<a href="#'+t[0]+'"'+(t[3]?' data-t="'+t[3]+'"':'')+'><b>'+t[1]+'</b><span>'+t[2]+'</span></a>';}).join("")+'</nav>';
-    h+=weekCard(LS);
+    h+=weekCard(LS)+funnelCard();
 
-    var reg=sec("adm-reg","New registrations",fresh.length,"People who registered with a selfie. Check the face and the name, then approve or reject the account.",'<div class="au-rows">'+
-      (fresh.length?fresh.map(function(u){
-        return '<div class="au-row'+(late(u.created_at)?' is-late':'')+'">'+face(u,true)+'<div class="au-who"><b>'+esc(u.name||"(no name)")+' '+lateBadge(u.created_at)+'</b><small>'+esc(u.email)+'</small><small>registered '+when(u.created_at)+(u.matched_invite?' · matched pre-approved photo':'')+'</small></div>'+
-          '<button class="au-btn sm ok" data-acct="approved" data-u="'+u.id+'">Approve account</button><button class="au-btn sm no" data-acct="rejected" data-u="'+u.id+'">Reject</button></div>';}).join(""):'<div class="au-empty">No one is waiting.</div>')+'</div>');
+    /* §17 (2026-11-19, to-do F22): the courses the registrant picked are pre-selected; the admin edits them, then "Approve + N
+       courses" approves the account and grants them in one step (rpc approve_user). The waiting screen's promise is edited here. */
+    var etaBox=D.p17?'<form class="adm-eta" id="admEta"><label for="admEtaIn">Waiting screen says “usually approved within</label><input id="admEtaIn" maxlength="40" value="'+esc(D.eta||"24 hours")+'" aria-label="Usual approval time"><span>”</span><button class="au-btn sm" type="submit">Save</button></form>':'';
+    var reg=sec("adm-reg","New registrations",fresh.length,"People who registered with a selfie. Check the face and the name, then approve the account (with the courses they picked) or reject it with a reason they will see.",etaBox+'<div class="au-rows">'+
+      (fresh.length?fresh.map(function(u){var pk=pickOf(u),n=pk.length,others=Object.keys(C).filter(function(c){return pk.indexOf(c)<0;});
+        var pick=D.p17?'<div class="adm-pick"><span>'+(u.wanted_track?'Track: <b>'+esc(u.wanted_track)+'</b> · ':'')+(n?'courses to grant (click to leave one out):':'no courses picked: add some, or approve the account only')+'</span>'+
+          '<div class="au-chips">'+pk.map(function(c){return '<button class="au-chip" data-s="approved" data-pk="'+c+'" data-u="'+u.id+'" aria-pressed="true" title="Click to leave '+esc(C[c])+' out">✓ '+esc(SHORT[c]||c)+'</button>';}).join("")+
+          '<select data-pkadd="'+u.id+'" aria-label="Add a course for '+esc(u.name||u.email)+'"><option value="">+ add a course</option>'+others.map(function(c){return '<option value="'+c+'">'+esc(SHORT[c]||c)+'</option>';}).join("")+'</select></div></div>':'';
+        return '<div class="au-row adm-reg-row'+(late(u.created_at)?' is-late':'')+'">'+face(u,true)+'<div class="au-who"><b>'+esc(u.name||"(no name)")+' '+lateBadge(u.created_at)+'</b><small>'+esc(u.email)+'</small><small>registered '+when(u.created_at)+(u.matched_invite?' · matched pre-approved photo':'')+(D.p17?(u.consent_at?' · consent given':' · no consent yet'):'')+'</small></div>'+
+          '<div class="adm-acts"><button class="au-btn sm ok" data-appr="1" data-u="'+u.id+'">'+(n?'Approve + '+n+' course'+(n===1?'':'s'):'Approve account')+'</button><button class="au-btn sm no" data-acct="rejected" data-u="'+u.id+'">Reject</button></div>'+pick+'</div>';}).join(""):'<div class="au-empty">No one is waiting.</div>')+'</div>');
 
     var req=sec("adm-req","Course requests",pend.length,"People asking to open a course.",'<div class="au-rows">'+
       (pend.length?pend.map(function(r){var u=person(r.user_id);
@@ -295,7 +332,7 @@
         var open=u.id in OPEN?OPEN[u.id]:wide;
         courses='<details class="adm-crs" data-crs="'+u.id+'"'+(open?' open':'')+'><summary>Courses: <b>'+has+'</b> of '+nC+(asked?' · <b>'+asked+'</b> asked':'')+'</summary><div class="au-chips au-courses">'+chips+'</div></details>';}
       if(u.role==="learner")acct=u.status==="pending"?'<span class="au-chip" data-s="pending">account waiting</span><button class="au-btn sm ok" data-acct="approved"'+id+'>Approve</button><button class="au-btn sm no" data-acct="rejected"'+id+'>Reject</button>'
-        :u.status==="rejected"?'<span class="au-chip" data-s="rejected">blocked</span><button class="au-btn sm ok" data-acct="approved"'+id+'>Unblock</button>'
+        :u.status==="rejected"?'<span class="au-chip" data-s="rejected"'+(u.reject_reason?' title="Reason they see: '+esc(u.reject_reason)+'"':'')+'>blocked'+(u.reject_reason?' · reason given':'')+'</span><button class="au-btn sm ok" data-acct="approved"'+id+'>Unblock</button>'
         :'<button class="au-btn sm" data-acct="rejected"'+id+'>Block</button>';
       if(owner&&u.role!=="owner")role=u.role==="admin"?'<button class="au-btn sm" data-role="learner"'+id+'>Remove admin</button>':'<button class="au-btn sm" data-role="admin"'+id+'>Make admin</button>';
       var fsel='';   /* face check for this person: Default follows "Face check at login"; the owner never gets a face check */
@@ -328,11 +365,46 @@
     if(D.faceMode){var live=D.faceMode!=="photo";
       fmode=sec("adm-face","Face check at login",live?"live":"photo",'<b>Live</b>: look straight, then turn the head left and right (about 7 s, stops a printed photo). <b>Photo</b>: one straight picture (about 2 s, faster). Both check the face against the account and run the anti-spoofing model. Applies to registrations and to everyone set to “Face: default” in People and courses; pick Live or Photo there to set one person apart.',
         '<div class="au-chips"><button class="au-chip" data-s="'+(live?"approved":"none")+'" data-fmode="live" aria-pressed="'+live+'">'+(live?"✓ ":"")+'Live (head turns)</button><button class="au-chip" data-s="'+(live?"none":"approved")+'" data-fmode="photo" aria-pressed="'+!live+'">'+(live?"":"✓ ")+'Photo (one picture)</button></div>');}
-    zlDone();app.innerHTML=h+prog+'<div class="adm-duo">'+fmode+tags+'</div>'+pre+errs;idyAdminFill();
+    zlDone();app.innerHTML=h+prog+'<div class="adm-duo">'+fmode+tags+'</div>'+pre+errs;idyAdminFill();sfbAdminFill();healthFill();
     document.getElementById("inv").onsubmit=invite;
     document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();idleFilter();aiCount();
   }
   var Q="",PF="all",OPEN={};   /* search text, status filter, courses list open/closed per person (kept across re-renders) */
+  /* §17: the admin's edits of each registrant's course pick (kept across re-renders until approved); starts from wanted_courses */
+  var PICK={},FP="all";
+  function pickOf(u){if(!PICK[u.id])PICK[u.id]=(u.wanted_courses||[]).filter(function(c){return C[c];});return PICK[u.id];}
+  /* owner funnel (2026-11-19, to-do F27): registered → approved → first lesson studied → active on day 7, from profiles and the
+     synced progress (progress_overview: js1-days study days + js1-time reading-time days + js1-sum sections understood). Each step
+     is a subset of the one before; "day 7" counts only learners registered at least 7 days ago. Deleted accounts are not counted. */
+  function funnelCard(){var now=Date.now(),win=FP==="all"?0:+FP*DAYMS,prog={};
+    (D.progress||[]).forEach(function(r){prog[r.user_id]=r;});
+    function days(r){var o={};if(!r)return o;(Array.isArray(r.days)?r.days:[]).forEach(function(d){if(typeof d==="string")o[d]=1;});
+      var tm=r.rtime&&typeof r.rtime==="object"&&!Array.isArray(r.rtime)?r.rtime:{};
+      Object.keys(tm).forEach(function(k){var d=tm[k]&&tm[k].d;if(d&&typeof d==="object")Object.keys(d).forEach(function(x){if(+d[x]>0)o[x]=1;});});return o;}
+    function studied(r){if(Object.keys(days(r)).length)return true;var s=r&&r.sum&&typeof r.sum==="object"?r.sum:{};return Object.keys(s).some(function(c){return s[c]&&+s[c].und>0;});}
+    var reg=D.people.filter(function(u){return u.role==="learner"&&(!win||now-new Date(u.created_at)<=win);}),
+      appr=reg.filter(function(u){return u.status==="approved";}),
+      st=D.progress?appr.filter(function(u){return studied(prog[u.id]);}):[],
+      old=st.filter(function(u){return now-new Date(u.created_at)>=7*DAYMS;}),
+      d7=old.filter(function(u){var t7=mid(new Date(u.created_at).getTime())+7*DAYMS,ds=days(prog[u.id]);return Object.keys(ds).some(function(d){return dayMs(d)>=t7;});});
+    var pc=function(a,b){return b?Math.round(100*a/b)+"%":"—";},R=reg.length;
+    function step(n,label,sub,of){return '<li><b>'+n+'</b><span>'+label+'</span><span class="adm-bar" aria-hidden="true"><i style="width:'+(R?Math.round(100*n/R):0)+'%"></i></span><small>'+sub+'</small></li>';}
+    var body='<ol class="adm-fun">'+step(R,"Registered","learners"+(win?" who registered in the last "+FP+" days":""))+
+      step(appr.length,"Approved",pc(appr.length,R)+" of registered")+
+      (D.progress?step(st.length,"Studied a first lesson",pc(st.length,appr.length)+" of approved")+
+        step(d7.length,"Active on day 7 or later",pc(d7.length,old.length)+" of the "+old.length+" who studied and registered 7+ days ago"):'')+'</ol>'+
+      (D.progress?'':'<p class="adm-note">The study steps appear once the progress part of supabase/setup.sql has run.</p>')+
+      '<p class="adm-note">Studied = at least one study day, reading-time day or section marked understood in the synced progress. Day 7 = activity on a day at least 7 days after registering.</p>';
+    var segs=[["all","All time"],["90","90 days"],["30","30 days"]];
+    return '<section class="au-panel" id="adm-funnel"><h2>Funnel <span class="au-count">registered → day 7</span></h2>'+
+      '<div class="adm-seg" role="group" aria-label="Registered in">'+segs.map(function(s){return '<button type="button" data-fp="'+s[0]+'" aria-pressed="'+(FP===s[0])+'">'+s[1]+'</button>';}).join("")+'</div>'+body+'</section>';}
+  /* reject with an optional reason the learner sees (rpc reject_user / reject_access; without the §17 SQL the old actions, no reason) */
+  async function rejectWith(kind,u,c,who){
+    var r=prompt((kind==="acct"?"Reject or block "+who+"?":"Refuse "+who+"'s request for "+C[c]+"?")+"\n\nOptional: a reason "+who.split(" ")[0]+" will see (leave empty for none). Cancel = do nothing.","");
+    if(r==null)return false;r=r.trim().slice(0,300);
+    if(!D.p17){if(r&&!confirm("Reasons need the 2026-11-19 block of supabase/setup.sql, which has not run. Continue without the reason?"))return false;
+      return kind==="acct"?call("decide_user",{p_user:u,p_status:"rejected"}):call("decide_access",{p_user:u,p_course:c,p_status:"rejected"});}
+    return kind==="acct"?call("reject_user",{p_user:u,p_reason:r}):call("reject_access",{p_user:u,p_course:c,p_reason:r});}
   app.addEventListener("toggle",function(e){var d=e.target;if(d.dataset&&d.dataset.crs)OPEN[d.dataset.crs]=d.open;},true);
   function filter(){var q=Q.trim().toLowerCase(),n=0,all=document.querySelectorAll(".au-person");
     all.forEach(function(r){var hit=(!q||r.dataset.find.indexOf(q)>=0)&&(PF==="all"||r.dataset.st===PF);r.hidden=!hit;if(hit)n++;});
@@ -342,7 +414,9 @@
   /* Learner progress (2026-11-08, kb/lock/access-lock.md → "Progress sync"): from public.progress_overview() (owner/admins), which
      returns each learner's synced js1-sum, js1-days, quiz-miss questions and interview-day rounds. Optional: hidden until the
      progress part of supabase/setup.sql has run. */
-  var CN={java:"Java",sql:"SQL",dsa:"DSA",spring:"Spring",patterns:"Patterns",lld:"LLD",genai:"Gen AI",python:"Python",api:"REST API",sysdesign:"System Design",docker:"Docker",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",microservices:"Microservices",observability:"Observability",websec:"Web Security",mongodb:"MongoDB",hardware:"Hardware",distsys:"Distributed Systems",networks:"Networks",dbms:"DBMS",behavioural:"Behavioural",redis:"Redis",kafka:"Kafka",nginx:"NGINX",n8n:"n8n"};
+  /* registry:begin cn */
+  var CN={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",microservices:"Microservices",observability:"Observability",websec:"Web Security",mongodb:"MongoDB",hardware:"Hardware",distsys:"Distributed Systems",networks:"Networks",dbms:"DBMS",lld:"LLD",genai:"Gen AI",python:"Python",resume:"Resume",qbank:"Question Bank",interview:"Interview Day"};
+  /* registry:end cn */
   function dstr(t){var d=new Date(t);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
   function streakOf(days){var s=new Set(days||[]),n=0,t=Date.now();if(!s.has(dstr(t)))t-=864e5;while(s.has(dstr(t))){n++;t-=864e5;}return n;}
   function ago(t){var m=Math.round((Date.now()-new Date(t))/6e4);return m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago";}
@@ -397,6 +471,7 @@
         (stopped.length?'<p class="adm-stop"><b>Stopped:</b> '+stopped.slice(0,12).map(function(x){return esc(x.u.name||x.u.username||x.u.email)+' ('+x.idle+' d)';}).join(", ")+(stopped.length>12?' and '+(stopped.length-12)+' more':'')+'. <a href="#adm-prog" data-idf-go="i7">Show them</a></p>':'');}
     return '<section class="au-panel" id="adm-week"><h2>This week <span class="au-count">last 7 days</span></h2>'+body+'</section>';}
   /* Learner progress panel: rows with flags, nudge, reading time, course completion; then the course/stop/weak/miss sub-lists */
+  function missLabel(id){var p=String(id||"").split(":");return p.length>=3&&/^\d+$/.test(p[p.length-1])?"Lesson "+p.slice(1,-1).join(":")+" · quiz question "+(+p[p.length-1]+1):String(id||"quiz question");}   /* P0: id q:<quiz>:<i> (i is 0-based, shown 1-based) */
   function progressPanel(LS){
     var now=Date.now(),act7=0,weak={},miss={},stop={},crs={};
     var list=LS.slice().sort(function(a,b){return b.last-a.last;});
@@ -405,12 +480,12 @@
       crs[c]=crs[c]||{n:0,und:0,tot:0,qc:0,qa:0};var k=crs[c];k.n++;k.und+=s.und||0;k.tot+=s.total||0;k.qc+=s.qc||0;k.qa+=s.qa||0;
         (Array.isArray(s.weak)?s.weak:[]).forEach(function(w){if(!w||typeof w!=="object")return;var id=c+"|"+w.n;weak[id]=weak[id]||{c:c,n:w.n,u:0,p:0};weak[id].u++;weak[id].p+=w.pct;});
         if(idle>7&&s.last&&s.last.n){var q=c+"|"+s.last.n;stop[q]=stop[q]||{c:c,n:s.last.n,u:0};stop[q].u++;}});
-      for(var q in (r.misses||{})){miss[q]=miss[q]||{q:r.misses[q],u:0};miss[q].u++;}});
+      for(var q in (r.misses||{})){miss[q]=miss[q]||{id:q,q:r.misses[q],u:0};if(!miss[q].q&&r.misses[q])miss[q].q=r.misses[q];miss[q].u++;}});   /* P0: slim deck ids carry no text (null) */
     var top=function(o,f,n){return Object.keys(o).map(function(k){return o[k];}).sort(f).slice(0,n);};
     var pct=function(a,b){return b?Math.round(100*a/b):0;};
     var segs=[["all","All"],["today","Active today"],["i3","Idle 3+"],["i7","Idle 7+"],["i14","Idle 14+"],["never","Never"]];
     var sb='',h='<section class="au-panel" id="adm-prog"><h2>Learner progress <span class="au-count">'+list.length+'</span></h2><p>From each learner’s synced progress (sections marked understood, quiz answers, reviews, mock rounds, active reading time). Updated whenever they study while logged in. <b>'+act7+'</b> synced in the last 7 days. <b>Nudge</b> copies a ready message to paste into email or chat: sending email from here needs custom SMTP, which is not set up yet.</p>';
-    h+='<div class="adm-tools"><div class="adm-seg" role="group" aria-label="Show learners">'+segs.map(function(s){return '<button type="button" data-idf="'+s[0]+'" aria-pressed="'+(IDF===s[0])+'">'+s[1]+'</button>';}).join("")+'</div><span class="adm-n" id="prgN" role="status"></span></div>';
+    h+=healthSlot();h+='<div class="adm-tools"><div class="adm-seg" role="group" aria-label="Show learners">'+segs.map(function(s){return '<button type="button" data-idf="'+s[0]+'" aria-pressed="'+(IDF===s[0])+'">'+s[1]+'</button>';}).join("")+'</div><span class="adm-n" id="prgN" role="status"></span></div>';
     h+='<div class="au-rows" id="prgRows">'+list.map(function(x){var r=x.r,u=x.u,fl=flagOf(x),nm=(r&&r.name)||u.name||(r&&r.username)||u.username||u.email;
       var d14=0,days=r&&Array.isArray(r.days)?r.days:[];for(var i=0;i<14;i++)if(days.indexOf(dstr(now-i*864e5))>=0)d14++;
       var idy=r&&Array.isArray(r.iday)?r.iday.slice(-5):[],ip=idy.length?Math.round(idy.reduce(function(a,q){return a+(q.n?100*q.pts/q.n:0);},0)/idy.length):null;
@@ -434,8 +509,9 @@
     if(S.length)sb+='<div class="adm-sub"><h3>Where learners stop</h3><p>Last lesson of learners who have not studied for more than 7 days.</p><div class="au-rows">'+S.map(function(s){return '<div class="au-row"><div class="au-who"><b>'+esc(s.n)+'</b><small>'+esc(CN[s.c]||s.c)+' · '+s.u+' learner'+(s.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>'+'</div>';
     var W=top(weak,function(a,b){return b.u-a.u||a.p/a.u-b.p/b.u;},10);
     if(W.length)sb+='<div class="adm-sub"><h3>Weakest lessons</h3><p>Lessons where learners get under 60% of the quiz right.</p><div class="au-rows">'+W.map(function(w){return '<div class="au-row"><div class="au-who"><b>'+esc(w.n)+'</b><small>'+esc(CN[w.c]||w.c)+' · '+w.u+' learner'+(w.u===1?'':'s')+' · avg '+Math.round(w.p/w.u)+'% correct</small></div></div>';}).join("")+'</div>'+'</div>';
+    sb+=sfbAdminSlot();   /* F25 "Most confusing sections": its own block next to Weakest lessons, filled by sfbAdminFill() */
     var M=top(miss,function(a,b){return b.u-a.u;},15);
-    if(M.length)sb+='<div class="adm-sub"><h3>Most-missed quiz questions</h3><div class="au-rows">'+M.map(function(m){return '<div class="au-row"><div class="au-who"><b>'+esc(String(m.q||"").replace(/<[^>]*>/g,"").slice(0,300))+'</b><small>missed by '+m.u+' learner'+(m.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>'+'</div>';
+    if(M.length)sb+='<div class="adm-sub"><h3>Most-missed quiz questions</h3><div class="au-rows">'+M.map(function(m){return '<div class="au-row"><div class="au-who"><b>'+esc(String(m.q||missLabel(m.id)).replace(/<[^>]*>/g,"").slice(0,300))+'</b><small>missed by '+m.u+' learner'+(m.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>'+'</div>';
     if(!list.length)h+='<div class="au-empty info">No learner has synced progress yet.</div>';
     sb+=idyAdminSlot();   /* Interview Day results: its own block, filled by idyAdminFill() */
     if(sb)h+='<div class="adm-subs">'+sb+'</div>';
@@ -443,6 +519,110 @@
   /* Interview Day results (2026-11-18, kb/interview/interview-day.md): each learner's synced js1-iloop-hist through the optional RPC
      iday_overview() (end of supabase/setup.sql). Separate from the rest of the panel: it loads after the page is drawn, and without
      the RPC (or on any error) the block stays hidden. Everything shown comes from learners' browsers, so it is escaped and type-checked. */
+  /* F25 (2026-11-19, kb/lock/access-lock.md §18): anonymous "Clear / Confusing" counts per section from public.section_feedback (admins
+     read by RLS). Without the table, with no votes or on any error the block stays hidden. Titles come from learners' browsers: escaped. */
+  /* P7 (2026-11-19, kb/lock/access-lock.md §19): content health. healthRank(inp) is PURE (tested in scripts/unit-checks/admin-health.test.mjs).
+     inp = {now:ms, lessons:[{c,k,t,f}] (from PLAN_OUTLINE), votes:[{course,lesson,section,title,clear,confusing}],
+       learners:[{idle:days, ql:{"c|k":[correct,answered]}, last:{c,k}|null, time:{"c|k":seconds}, misses:{"q:<k>:<i>":text|null}, loop:["c|k"]}],
+       errors:[{page,msg,created_at}], tutor:[{course,lesson,n}], fixed:{"c:k":iso}}.
+     Each part is capped and needs a minimum sample (votes 3, quiz answers 10, drop-off learners 2, misses 3, short reads 3, loop 2, tutor 2);
+     weights 30/25/20/10/5/5/5. A page with an error row in the last 14 days is "broken" and pinned first. Rows with nothing to show are left out. */
+  function healthRank(inp){
+    var now=inp.now||Date.now(),L={},byFile={},ids=[];
+    (inp.lessons||[]).forEach(function(l){var id=l.c+":"+l.k;L[id]=l;ids.push(id);if(l.f)byFile[l.f]=id;});
+    var R={};function row(id){var l=L[id];if(!l)return null;return R[id]||(R[id]={c:l.c,k:l.k,title:l.t,file:l.f,id:id,parts:{},n:{},ev:{},sections:[],questions:[],errors:[],broken:false,fixed:(inp.fixed&&inp.fixed[id])||null});}
+    var cl=function(x,m){return Math.max(0,Math.min(m,x));};
+    var votes={};(inp.votes||[]).forEach(function(v){if(!v)return;var id=v.course+":"+v.lesson,r=row(id);if(!r)return;var c=+v.confusing||0,k=+v.clear||0;
+      var o=votes[id]=votes[id]||{c:0,n:0};o.c+=c;o.n+=c+k;if(c>0)r.sections.push({s:String(v.section||""),t:String(v.title||v.section||""),c:c,n:c+k});});
+    var q={},cq={},drop={},miss={},shortR={},loop={},tut={};
+    (inp.learners||[]).forEach(function(x){if(!x)return;var ml={};
+      for(var key in (x.ql||{})){var a=x.ql[key];if(!Array.isArray(a))continue;var id=key.replace("|",":"),p=key.split("|")[0];
+        var o=q[id]=q[id]||{c:0,a:0,u:0};o.c+=+a[0]||0;o.a+=+a[1]||0;if((+a[1]||0)>0)o.u++;var oc=cq[p]=cq[p]||{c:0,a:0};oc.c+=+a[0]||0;oc.a+=+a[1]||0;}
+      if(x.last&&x.idle>=7){var d=x.last.c+":"+x.last.k;drop[d]=(drop[d]||0)+1;}
+      for(var tk in (x.time||{})){if((+x.time[tk]||0)>=10&&(+x.time[tk]||0)<120){var s=tk.replace("|",":");shortR[s]=(shortR[s]||0)+1;}}
+      for(var mi in (x.misses||{})){var m=/^q:([^:]+):(\d+)$/.exec(mi);if(!m)continue;var lid=null;
+        for(var i=0;i<ids.length;i++){if(L[ids[i]].k===m[1]){lid=ids[i];break;}}
+        if(!lid)continue;var mo=miss[lid]=miss[lid]||{n:0,u:0,by:{}};mo.n++;if(!ml[lid]){ml[lid]=1;mo.u++;}mo.by[+m[2]+1]=(mo.by[+m[2]+1]||0)+1;}
+      (x.loop||[]).forEach(function(k){var s=k.replace("|",":");loop[s]=(loop[s]||0)+1;});});
+    (inp.tutor||[]).forEach(function(t){var id=t.course+":"+t.lesson;tut[id]=(tut[id]||0)+(+t.n||0);});
+    var err={};(inp.errors||[]).forEach(function(e){if(!e)return;var ts=new Date(e.created_at).getTime();if(!(now-ts<=14*864e5))return;
+      var pg=String(e.page||"").split(/[#?]/)[0],id=null;for(var f in byFile){if(pg.length>=f.length&&pg.slice(-f.length)===f){id=byFile[f];break;}}
+      if(!id)return;(err[id]=err[id]||[]).push(String(e.msg||""));});
+    var W={conf:30,quiz:25,drop:20,miss:10,short:5,loop:5,tut:5};
+    ids.forEach(function(id){var any=false,r=null,get=function(){return r||(r=row(id));};
+      var v=votes[id];if(v&&v.n>=3){get().parts.conf=W.conf*cl(v.c/v.n,1);get().n.conf=v.n;get().ev.conf=v.c+" of "+v.n+" votes confusing";any=true;}
+      var a=q[id],ca=cq[L[id].c];if(a&&a.a>=10&&a.u>=2&&ca&&ca.a>0){var gap=cl(ca.c/ca.a-a.c/a.a,1);if(gap>0){get().parts.quiz=W.quiz*cl(gap/0.4,1);get().n.quiz=a.a;get().ev.quiz=Math.round(100*a.c/a.a)+"% right on "+a.a+" answers (course "+Math.round(100*ca.c/ca.a)+"%)";any=true;}}
+      if(drop[id]>=2){get().parts.drop=W.drop*cl(drop[id]/5,1);get().n.drop=drop[id];get().ev.drop=drop[id]+" learners idle 7+ days stopped here";any=true;}
+      var mo=miss[id];if(mo&&mo.n>=3&&mo.u>=2){var top=0,tn=0;for(var qn in mo.by){if(mo.by[qn]>top){top=mo.by[qn];tn=qn;}}
+        get().parts.miss=W.miss*(top/mo.n);get().n.miss=mo.n;get().ev.miss="question "+tn+" has "+top+" of "+mo.n+" misses";any=true;
+        for(var qk in mo.by)get().questions.push({q:+qk,n:mo.by[qk]});get().questions.sort(function(x,y){return y.n-x.n;});}
+      if(shortR[id]>=3){get().parts.short=W.short*cl(shortR[id]/6,1);get().n.short=shortR[id];get().ev.short=shortR[id]+" learners opened it for under 2 min";any=true;}
+      if(loop[id]>=2){get().parts.loop=W.loop*cl(loop[id]/6,1);get().n.loop=loop[id];get().ev.loop=loop[id]+" weak in Interview Day";any=true;}
+      if(tut[id]>=2){get().parts.tut=W.tut*cl(tut[id]/6,1);get().n.tut=tut[id];get().ev.tut=tut[id]+" tutor questions";any=true;}
+      if(err[id]){get().broken=true;get().errors=err[id].slice(0,5);get().ev.err=err[id].length+" page error"+(err[id].length===1?"":"s")+" in 14 days";any=true;}
+      if(any){var rr=get(),sc=0,low=true,cnt=0,mins={conf:3,quiz:10,drop:2,miss:3,short:3,loop:2,tut:2};for(var p in rr.parts){sc+=rr.parts[p];cnt++;if(rr.n[p]>=2*mins[p])low=false;}
+        rr.score=Math.round(sc*10)/10;rr.low=!rr.broken&&cnt>0&&low;rr.sections.sort(function(x,y){return y.c-x.c;});}else if(r)delete R[id];});
+    return Object.keys(R).map(function(k){return R[k];}).filter(function(r){return r.score!=null;}).sort(function(a,b){return (b.broken-a.broken)||(b.score-a.score)||(a.title<b.title?-1:a.title>b.title?1:0);});}
+  /* P7 data gathering for healthRank (plain debug list; the board comes in P8). Every source is optional: a missing table or RPC just means less evidence. */
+  var HX=null;
+  function healthLessons(){var o=[];(window.PLAN_OUTLINE||[]).forEach(function(c){(c[3]||[]).forEach(function(l){o.push({c:c[0],k:l[0],t:l[1],f:l[2]});});});return o;}
+  function healthInput(){var LS=learnerList(),HXo=HX||{};
+    var learners=LS.filter(function(x){return x.r;}).map(function(x){var r=x.r,ql={},last=null,time={},loop=[];
+      Object.keys(x.sum||{}).forEach(function(c){var s=x.sum[c];if(!s||typeof s!=="object")return;var m=s.ql;if(m&&typeof m==="object")for(var k in m)ql[c+"|"+k]=m[k];
+        if(s.last&&s.last.k&&(!last||+s.last.t>+last.t))last={c:c,k:s.last.k,t:s.last.t};});
+      x.ents.forEach(function(e){if(e.c)time[e.c+"|"+e.k]=e.s;});
+      (Array.isArray(r.iday)?r.iday:[]).forEach(function(d){((d&&d.wk)||[]).forEach(function(w){if(w&&w.c&&w.k)loop.push(w.c+"|"+w.k);});});
+      return {idle:x.idle,ql:ql,last:last,time:time,misses:r.misses||{},loop:loop};});
+    return {now:Date.now(),lessons:healthLessons(),votes:HXo.votes||[],learners:learners,errors:D.errors||[],tutor:HXo.tutor||[],fixed:HXo.fixed||{}};}
+  function healthSlot(){return '<div class="adm-sub" id="adm-health" hidden></div>';}
+  /* P8 board: healthBoardHtml(rows, info) is pure (tested); every learner string goes through esc(). Bar segments = the parts of the score (weights sum to 100). */
+  function healthBoardHtml(rows,info){
+    var PN={conf:"Confusing votes",quiz:"Quiz accuracy gap",drop:"Drop-off",miss:"One question missed",short:"Opened, under 2 min",loop:"Interview Day weak",tut:"Tutor questions"};
+    var h='<h3>Fix first</h3><p>Lessons ranked by learner evidence: votes, quiz answers, drop-off, page errors. Small samples are tagged; numbers are counts, not names.</p>';
+    if(!rows.length)return h+'<p class="adm-hnone">'+(info&&info.learners?'Nothing to fix first: no lesson has enough evidence yet.':'No learner data yet: the board fills in once learners study and vote.')+'</p>';
+    return h+'<div class="au-rows adm-hl">'+rows.slice(0,15).map(function(r){var id=esc(r.id);
+      var seg=Object.keys(r.parts).map(function(p){return '<i data-p="'+p+'" style="width:'+Math.max(1,Math.round(r.parts[p]))+'%" title="'+esc(PN[p]||p)+' '+Math.round(r.parts[p]*10)/10+'"></i>';}).join("");
+      var chips=Object.keys(r.ev).map(function(k){return '<span class="adm-hch">'+esc(r.ev[k])+'</span>';}).join("");
+      var det=(r.sections.length?'<div><b>Sections</b>'+r.sections.slice(0,6).map(function(s){return '<br>#'+esc(s.s)+' '+esc(String(s.t).slice(0,80))+' · '+s.c+' confusing of '+s.n;}).join("")+'</div>':'')+
+        (r.questions.length?'<div><b>Quiz questions missed</b>'+r.questions.slice(0,5).map(function(q){return '<br>Question '+q.q+' · '+q.n+' miss'+(q.n===1?'':'es');}).join("")+'</div>':'')+
+        (r.errors.length?'<div><b>Page errors</b>'+r.errors.map(function(m){return '<br>'+esc(String(m).slice(0,160));}).join("")+'</div>':'');
+      var okf=/^courses\/[A-Za-z0-9._\/-]+\.html$/.test(r.file||"");
+      return '<div class="au-row adm-hrow" data-id="'+id+'"><div class="au-who"><b>'+esc(r.title)+' <span class="au-chip">'+esc(CN[r.c]||r.c)+' · '+esc(String(r.k).toUpperCase())+'</span>'+(r.broken?' <span class="au-chip" data-s="no">broken</span>':'')+(r.low?' <span class="au-chip">low sample</span>':'')+'</b>'+
+        '<small>score '+r.score+(r.fixed?' · fixed on '+esc(String(r.fixed).slice(0,10))+'; quiz numbers include older answers':'')+'</small>'+
+        '<span class="adm-hb" aria-hidden="true">'+seg+'</span><span class="adm-hc">'+chips+'</span>'+(det?'<details class="adm-crs"><summary>Evidence</summary><div class="adm-hd">'+det+'</div></details>':'')+'<span class="adm-hs" role="status"></span></div>'+
+        '<div class="adm-acts">'+(okf?'<a class="au-btn sm" href="'+esc(r.file)+'" target="_blank" rel="noopener">Open lesson</a>':'')+'<button class="au-btn sm" type="button" data-hfix="'+id+'">Mark fixed</button></div></div>';}).join("")+'</div>';}
+  function healthDraw(){var el=document.getElementById("adm-health");if(!el)return;var rows;
+    try{rows=healthRank(healthInput());}catch(e){el.hidden=true;return;}
+    if(!window.PLAN_OUTLINE){el.hidden=true;return;}
+    var info={learners:(D.progress||[]).length};
+    el.innerHTML=healthBoardHtml(rows,info);el.hidden=false;
+    el.onclick=function(ev){var b=ev.target.closest&&ev.target.closest("button[data-hfix]");if(!b)return;var id=b.getAttribute("data-hfix"),row=b.closest(".adm-hrow"),st=row.querySelector(".adm-hs"),r=rows.filter(function(x){return x.id===id;})[0];if(!r)return;
+      if(!b.getAttribute("data-armed")){b.setAttribute("data-armed","1");b.textContent="Confirm: clear its votes and errors";st.textContent="Marks "+r.title+" fixed and deletes its section votes and page errors. Click again to confirm.";
+        setTimeout(function(){if(b.isConnected){b.removeAttribute("data-armed");b.textContent="Mark fixed";if(!b.disabled)st.textContent="";}},8000);return;}
+      b.disabled=true;AUTH.sb.rpc("content_fix_mark",{p_course:r.c,p_lesson:r.k,p_file:r.file||null}).then(function(x){
+        if(!x||x.error){b.disabled=false;b.removeAttribute("data-armed");b.textContent="Mark fixed";st.textContent="Could not mark fixed: "+((x&&x.error&&x.error.message)||"no answer")+(/function|schema/i.test((x&&x.error&&x.error.message)||"")?" (run the Content health block of setup.sql).":"");return;}
+        var f=(x.data&&x.data.fixed_on)||new Date().toISOString();
+        D.errors=(D.errors||[]).filter(function(e){return !(r.file&&String(e.page||"").split(/[#?]/)[0].slice(-r.file.length)===r.file);});
+        HX.votes=(HX.votes||[]).filter(function(v){return !(v.course===r.c&&v.lesson===r.k);});HX.fixed=HX.fixed||{};HX.fixed[r.id]=f;SFBA=null;healthDraw();
+        var nr=document.querySelector('#adm-health .adm-hrow[data-id="'+id+'"] .adm-hs');if(nr)nr.textContent="Marked fixed on "+f.slice(0,10)+".";else{var s=document.createElement("p");s.className="adm-hnone";s.setAttribute("role","status");s.textContent=r.title+" marked fixed on "+f.slice(0,10)+": its votes and page errors were cleared.";el.insertBefore(s,el.children[2]||null);}
+        sfbAdminFill();},function(){b.disabled=false;b.removeAttribute("data-armed");b.textContent="Mark fixed";st.textContent="Could not reach the server.";});};}
+  function healthFill(){if(!document.getElementById("adm-health"))return;if(HX){healthDraw();return;}if(HX===false)return;HX=false;var h={votes:[],tutor:[],fixed:{}},pend=3,fin=function(){if(--pend>0)return;HX=h;try{healthDraw();}catch(e){}};
+    try{AUTH.sb.from("section_feedback").select("course,lesson,section,title,clear,confusing").limit(2000).then(function(r){if(r&&!r.error&&Array.isArray(r.data))h.votes=r.data;fin();},fin);}catch(e){fin();}
+    try{AUTH.sb.rpc("tutor_questions_stats",{p_course:null}).then(function(r){if(r&&!r.error&&r.data&&Array.isArray(r.data.lessons))h.tutor=r.data.lessons;fin();},fin);}catch(e){fin();}
+    try{AUTH.sb.from("app_settings").select("value").eq("key","content_fix").maybeSingle().then(function(r){try{var m=r&&!r.error&&r.data?JSON.parse(r.data.value):null;if(m&&typeof m==="object"&&!Array.isArray(m))h.fixed=m;}catch(e){}fin();},fin);}catch(e){fin();}}
+  var SFBA=null;
+  function sfbAdminSlot(){return '<div class="adm-sub" id="adm-sfb" hidden></div>';}
+  function sfbAdminDraw(){var el=document.getElementById("adm-sfb");if(!el||!SFBA)return;
+    var rows=SFBA.filter(function(r){return r&&+r.confusing>0;}).map(function(r){var c=+r.confusing||0,k=+r.clear||0;return {r:r,c:c,n:c+k,p:Math.round(100*c/(c+k))};})
+      .sort(function(a,b){return b.c-a.c||b.p-a.p;}).slice(0,10);
+    if(!rows.length){el.hidden=true;return;}
+    var votes=SFBA.reduce(function(s,r){return s+(+r.clear||0)+(+r.confusing||0);},0);
+    el.innerHTML='<h3>Most confusing sections</h3><p>Learners’ “Clear / Confusing” votes at the end of each section (anonymous counts, '+votes+' vote'+(votes===1?'':'s')+' in all).</p><div class="au-rows">'+rows.map(function(x){var r=x.r;
+      return '<div class="au-row"><div class="au-who"><b>'+esc(String(r.title||r.section||"").slice(0,80))+'</b><small>'+esc(CN[r.course]||r.course)+' · '+esc(String(r.lesson||"").toUpperCase())+' · #'+esc(r.section)+' · <b>'+x.c+'</b> confusing of '+x.n+' ('+x.p+'%)</small></div></div>';}).join("")+'</div>';
+    el.hidden=false;}
+  function sfbAdminFill(){if(SFBA){sfbAdminDraw();return;}if(SFBA===false||!document.getElementById("adm-sfb"))return;SFBA=false;
+    try{AUTH.sb.from("section_feedback").select("course,lesson,section,title,clear,confusing,updated_at").order("confusing",{ascending:false}).limit(300)
+      .then(function(r){if(r&&!r.error&&Array.isArray(r.data)){SFBA=r.data;try{sfbAdminDraw();}catch(e){}}},function(){});}catch(e){}}
   var IDYA=null;
   function idyAdminSlot(){return '<div class="adm-sub" id="adm-idy" hidden></div>';}
   function idyAdminDraw(){var el=document.getElementById("adm-idy");if(!el||!IDYA||!IDYA.length)return;
@@ -497,7 +677,8 @@
     if(b.dataset.reload){location.reload();return;}
     if(b.dataset.idf){IDF=b.dataset.idf;document.querySelectorAll("[data-idf]").forEach(function(x){x.setAttribute("aria-pressed",x===b);});idleFilter();return;}   /* learner filter: display only */
     if(b.dataset.nudge){var nx=learnerList().find(function(x){return x.u.id===b.dataset.nudge;});if(!nx)return;
-      var ok=await copy(nudgeText(nx));toast(ok?"Nudge for "+(nx.u.name||nx.u.email)+" copied. Paste it into email or chat ("+nx.u.email+"). Sending email from here needs custom SMTP, not set up yet.":"Could not copy: your browser blocked the clipboard.");return;}
+      var mm=window.ADMMAIL?await ADMMAIL.nudge(nx,b):null;if(mm){toast(mm);return;}   /* Email block: sent (or refused) from here; null = copy as before */
+      var ok=await copy(nudgeText(nx));toast(ok?"Nudge for "+(nx.u.name||nx.u.email)+" copied. Paste it into email or chat ("+nx.u.email+"). "+(window.ADMMAIL?ADMMAIL.why(nx):"Sending email from here is not set up yet."):"Could not copy: your browser blocked the clipboard.");return;}
     if(b.dataset.unlock){var lu=person(b.dataset.u);if(!confirm("Unlock the face login of "+(lu.name||lu.email)+"? Their failed face checks of the last hour stop counting."))return;
       b.disabled=true;await rpc("login_unlock",{p_user:b.dataset.u});return;}
     if(b.dataset.pf){PF=b.dataset.pf;document.querySelectorAll("[data-pf]").forEach(function(x){x.setAttribute("aria-pressed",x===b);});filter();return;}   /* people filter: display only */
@@ -522,9 +703,19 @@
       b.disabled=true;var bN=0;
       for(var bi=0;bi<ids.length;bi++){if(!await call("set_ai_access",{p_user:ids[bi],p_plan:bP,p_features:bOn?bF:null,p_limits:null}))break;bN++;}
       AISEL={};await load();toast((bOn?"AI enabled for ":"AI turned off for ")+bN+" of "+ids.length+" learner"+(ids.length===1?"":"s")+".");return;}
-    if(b.dataset.acct){if(b.dataset.acct==="rejected"&&!confirm((p.status==="approved"?"Block ":"Reject ")+who+"? They will not be able to open any course until you unblock them."))return;
+    if(b.dataset.fp){FP=b.dataset.fp;render();return;}   /* funnel period: display only */
+    if(b.dataset.pk){var pl=pickOf(p),pi=pl.indexOf(b.dataset.pk);if(pi>=0)pl.splice(pi,1);render();return;}   /* leave a course out of the grant */
+    if(b.dataset.appr){var gl=pickOf(p).slice();b.disabled=true;
+      /* one step on the server (approve_user); without the §17 SQL: approve, then each course (the older calls) */
+      if(D.p17){var ar=await AUTH.sb.rpc("approve_user",{p_user:u,p_courses:gl});if(ar.error){alert(ar.error.message);b.disabled=false;return;}}
+      else{if(!await call("decide_user",{p_user:u,p_status:"approved"})){b.disabled=false;return;}
+        for(var gi=0;gi<gl.length;gi++)if(!await call("decide_access",{p_user:u,p_course:gl[gi],p_status:"approved"}))break;}
+      delete PICK[u];await load();toast("Approved "+who+(gl.length?" with "+gl.length+" course"+(gl.length===1?"":"s"):"")+".");return;}
+    if(b.dataset.acct){if(b.dataset.acct==="rejected"){b.disabled=true;if(await rejectWith("acct",u,null,who))await load();else b.disabled=false;return;}
       b.disabled=true;await rpc("decide_user",{p_user:u,p_status:b.dataset.acct});}
-    else if(b.dataset.dec){b.disabled=true;await rpc("decide_access",{p_user:u,p_course:b.dataset.c,p_status:b.dataset.dec});}
+    else if(b.dataset.dec){b.disabled=true;
+      if(b.dataset.dec==="rejected"){if(await rejectWith("course",u,b.dataset.c,who))await load();else b.disabled=false;return;}
+      await rpc("decide_access",{p_user:u,p_course:b.dataset.c,p_status:b.dataset.dec});}
     else if(b.dataset.tog){var c=b.dataset.tog;b.disabled=true;
       if(statusOf(u,c)!=="approved"){await give(u,[c]);return;}
       if(!confirm("Remove "+C[c]+" from "+who+"?")){b.disabled=false;return;}
@@ -562,8 +753,14 @@
     if(t.id==="aiFF"){AIFF=t.value;aiCount();return;}   /* "feature on" filter: display only */
     if(t.matches("input[data-aiall]")){document.querySelectorAll("#aiRows .adm-ai-row:not([hidden]) input[data-aisel]").forEach(function(c){c.checked=t.checked;AISEL[c.dataset.aisel]=t.checked;});aiCount();return;}
     if(t.matches("select[data-aiplan]")){if(!t.value)return;t.disabled=true;await rpc("set_ai_access",{p_user:t.dataset.aiplan,p_plan:t.value,p_features:null,p_limits:null});return;}
+    if(t.matches("select[data-pkadd]")){if(t.value){var pp=pickOf(person(t.dataset.pkadd));if(pp.indexOf(t.value)<0)pp.push(t.value);}render();return;}   /* §17: add a course to the grant */
     var s=t.closest("select[data-fmu]");if(!s)return;
     s.disabled=true;await rpc("set_user_face_mode",{p_user:s.dataset.fmu,p_mode:s.value||null});});
+
+  /* §17: the "usually approved within …" text on the waiting screen (rpc set_approval_eta, admins only) */
+  app.addEventListener("submit",async function(e){if(e.target.id!=="admEta")return;e.preventDefault();var v=document.getElementById("admEtaIn").value.trim();
+    if(!v||v.length>40){toast("Write 1 to 40 characters, e.g. 24 hours or 2 working days.");return;}
+    if(await call("set_approval_eta",{p_text:v})){await load();toast("Saved: learners now read “usually approved within "+v+"”.");}});
 
   /* the photo is shrunk to 640px wide in the browser before it is sent */
   function shrink(file){return new Promise(function(ok,no){var img=new Image();img.onload=function(){
@@ -657,5 +854,80 @@
 })();
 </script>
 <!-- ===== end AI tutor panel ===== -->
+<!-- ===== Email block (to-do H item 5, phase P10; kb/lock/access-lock.md → §20) =====
+     Self-contained. Shows whether application mail is set up, the newest 30 rows of public.mail_outbox (kind, person, state: no
+     mail text is stored), "Send a test to me" and "Send queued now". Hidden while the SQL block has not run (the table read
+     fails). The learner rows' Nudge button becomes "Send" only when the edge function `notify` answers status ok AND that
+     learner turned study emails on (profiles.mail_prefs.nudge); otherwise Nudge copies the message as before.
+     window.ADMMAIL = {nudge(x, button) → a message for the toast, or null = "not sent from here, copy instead"; why(x)}. -->
+<script>
+(function(){
+  var app=document.getElementById("app");
+  if(!app||!window.AUTH||!AUTH.sb||!AUTH.fn||!window.MutationObserver)return;
+  var esc=AUTH.esc,ROWS=null,ST=null,WHO={},OPT={},state=0,note="";   /* state 0 = not asked, 1 = asking, 2 = shown, 3 = no table (hidden) */
+  var KIND={approved:"Account approved",rejected:"Account not approved",course_approved:"Course opened",course_rejected:"Course request declined",nudge:"Nudge",weekly:"Weekly summary",owner_digest:"Owner digest"};
+  var CHIP={sent:"approved",queued:"pending",sending:"pending",failed:"rejected",skipped:""};
+  function ago(t){var m=Math.max(0,Math.round((Date.now()-new Date(t))/6e4));return m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago";}
+  function ready(){return !!(ST&&ST.status==="ok");}
+  function nm(x){return x.u.name||x.u.username||x.u.email;}
+  async function rows(){
+    try{var r=await AUTH.sb.from("mail_outbox").select("id,user_id,kind,status,tries,error,created_at,sent_at").order("created_at",{ascending:false}).limit(30);
+      if(r.error||!Array.isArray(r.data))return false;ROWS=r.data;return true;}catch(e){return false;}}
+  async function load(){
+    if(!(await rows())){state=3;return;}
+    try{var s=await AUTH.fn("notify",{mode:"status"});ST=s&&typeof s.configured==="boolean"?s:{gone:true};}catch(e){ST={gone:true};}
+    WHO={};OPT={};
+    try{var p=await AUTH.sb.from("profiles").select("id,name,username,email,mail_prefs");
+      if(!p.error)(p.data||[]).forEach(function(x){WHO[x.id]=x.name||x.username||x.email||"";if(x.mail_prefs&&x.mail_prefs.nudge===true)OPT[x.id]=1;});}catch(e){}
+    state=2;}
+  function html(){
+    var on=ready(),miss=ST&&Array.isArray(ST.missing)?ST.missing.filter(function(k){return /^[A-Z_]{3,30}$/.test(k);}):[];
+    var say=on?"Mail is set up. Decisions on accounts and course requests are mailed automatically; a nudge goes out when you click Send on a learner who turned study emails on."+(ST.cron?"":" The scheduled run is not set up yet (secret CRON_KEY), so queued mail waits until you click “Send queued now”.")
+      :ST&&ST.gone?"The <code>notify</code> function did not answer (not deployed yet, or your face login is over 1 hour old). Mails are only queued; a queued mail is dropped after 48 hours."
+      :"Not set up yet"+(miss.length?": missing secret"+(miss.length>1?"s":"")+" "+miss.map(function(k){return "<code>"+esc(k)+"</code>";}).join(", "):"")+". Mails are only queued; a queued mail is dropped after 48 hours.";
+    var n=Object.keys(OPT).length;
+    return '<h2>Email <span class="au-count">'+(on?"on":"not set up")+'</span></h2><p>'+say+' '+n+' learner'+(n===1?" has":"s have")+' study emails turned on.</p>'+
+      '<div class="au-acts" style="justify-content:flex-start">'+(on?'<button class="au-btn sm" type="button" data-mail="test">Send a test to me</button><button class="au-btn sm" type="button" data-mail="drain">Send queued now</button>':'')+
+      '<button class="au-btn sm" type="button" data-mail="re">Refresh</button></div><p class="au-msg" role="status" id="admMailMsg">'+esc(note)+'</p>'+
+      '<div class="adm-sub"><h3>Last '+ROWS.length+' mail'+(ROWS.length===1?"":"s")+'</h3><div class="au-rows">'+(ROWS.length?ROWS.map(function(r){
+        var st=CHIP.hasOwnProperty(r.status)?r.status:"?";
+        return '<div class="au-row"><div class="au-who"><b>'+esc(KIND.hasOwnProperty(r.kind)?KIND[r.kind]:"Mail")+' · '+esc(WHO[r.user_id]||"deleted account")+'</b><small>'+esc(ago(r.created_at))+
+          (r.status==="sent"&&r.sent_at?" · sent "+esc(ago(r.sent_at)):"")+(r.tries>1?" · "+(+r.tries||0)+" tries":"")+(r.error?" · "+esc(String(r.error).slice(0,120)):"")+'</small></div><span class="au-chip" data-s="'+(CHIP[st]||"")+'">'+esc(st)+'</span></div>';}).join("")
+        :'<div class="au-row"><div class="au-who"><small>Nothing has been queued yet.</small></div><span></span></div>')+'</div></div>';}
+  function mark(){   /* Nudge → Send on the learners who can be mailed from here */
+    var bs=app.querySelectorAll("button[data-nudge]"),on=ready();
+    for(var i=0;i<bs.length;i++){var b=bs[i],want=on&&OPT[b.dataset.nudge]?"Send":"Nudge";
+      if(b.textContent!==want){var al=b.getAttribute("aria-label")||"";b.textContent=want;b.title=want==="Send"?"Email a nudge (at most one per 7 days)":"";
+        b.setAttribute("aria-label",want==="Send"?al.replace("Copy a nudge message for","Email a nudge to"):al.replace("Email a nudge to","Copy a nudge message for"));}}}
+  function put(){
+    var s=document.getElementById("adm-mail");
+    if(!s){if(!app.querySelector(".au-panel"))return;s=document.createElement("section");s.className="au-panel";s.id="adm-mail";app.appendChild(s);
+      s.addEventListener("click",act);}
+    s.innerHTML=html();mark();}
+  async function act(e){
+    var b=e.target.closest("button[data-mail]");if(!b||b.disabled)return;var m=b.dataset.mail;b.disabled=true;note="";
+    if(m==="test"){var r=await AUTH.fn("notify",{mode:"test"});note=r&&r.status==="ok"?"Test mail sent to your own address. Check the inbox (and the spam folder).":(r&&r.error)||"The test mail could not be sent.";}
+    else if(m==="drain"){var d=await AUTH.fn("notify",{mode:"drain"});note=d&&d.status==="ok"?"Sent "+(+d.sent||0)+", failed "+(+d.failed||0)+", waiting "+((+d.retry||0)+(+d.deferred||0))+".":(d&&d.error)||"Could not send.";}
+    if(m==="re")await load();else await rows();
+    if(state===2)put();else{var s=document.getElementById("adm-mail");if(s)s.remove();}}
+  function tick(){
+    if(state===3||!app.querySelector(".au-panel"))return;
+    if(state===0){state=1;load().then(function(){if(state===2)put();});return;}
+    if(state===2){if(!document.getElementById("adm-mail"))put();else mark();}}
+  window.ADMMAIL={
+    nudge:async function(x,b){
+      if(!ready()||!x||!x.u||!OPT[x.u.id])return null;
+      if(b)b.disabled=true;
+      var r=await AUTH.fn("notify",{mode:"nudge",user:x.u.id,idle:x.never?0:Math.max(0,Math.round(+x.idle)||0),never:!!x.never});
+      if(b)b.disabled=false;
+      if(r&&r.status==="ok"){await rows();if(state===2)put();return r.sent?"Nudge emailed to "+nm(x)+".":"Nudge for "+nm(x)+" is queued; it goes out with the next run.";}
+      if(r&&r.status==="recent")return nm(x)+" already got a nudge in the last 7 days. Nothing was sent.";
+      if(r&&r.status==="optout"){delete OPT[x.u.id];mark();}
+      return null;},
+    why:function(x){return !ready()?"Sending email from here is not set up yet.":x&&x.u&&OPT[x.u.id]?"It could not be emailed just now.":"They have not turned on study emails, so nothing is sent from here.";}};
+  new MutationObserver(tick).observe(app,{childList:true,subtree:true});tick();
+})();
+</script>
+<!-- ===== end Email block ===== -->
 </body>
 </html>

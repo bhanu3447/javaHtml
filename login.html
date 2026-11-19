@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/img/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#4f46e5">
 <title>Log in · Zero to Advanced</title>
 <meta name="robots" content="noindex">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/auth.css?v=4ff669ac">
+<link rel="stylesheet" href="assets/css/auth.css?v=63b01c42">
 <script>/* themes v2 (2026-11-13): the theme picked in the courses (course.js, localStorage js1-theme), set before first paint and
    resolved the same way (nothing saved / "auto" = by time of day, "study" = its study theme, "" = system, else the named theme) */
 (function(){var N=" light dark midnight nord dracula forest sunset ocean sepia focus monk paper matcha amber cafe dawn momentum ",S={sunset:"dawn",light:"paper",dark:"focus",midnight:"amber"};
@@ -58,6 +59,17 @@
         <h1 id="meTitle">Welcome back</h1>
         <p id="meText"></p>
         <div class="au-acts"><a class="au-btn pri" id="meGo" href="index.html">Continue</a><button class="au-btn" type="button" id="meRe" hidden>Check again</button><button class="au-btn" type="button" id="meOut">Log out</button></div>
+        <p class="lg-alt lg-legal" id="meLegal"><a href="privacy.html">Privacy</a><span id="meDelBox"> · <a href="privacy.html#delete">Delete my account</a></span></p>
+      </section>
+
+      <!-- §17 (2026-11-19): an account made before the consent box agrees once, at its next login -->
+      <section id="vConsent" hidden>
+        <span class="au-lock" aria-hidden="true">🛡️</span>
+        <h1>One question before you continue</h1>
+        <p>Your account keeps the selfie you registered with and a <b>face template</b> (512 numbers computed from it) so the face check can recognise you at each login. The <a href="privacy.html">privacy page</a> says what else is stored, for how long, and how to delete it all.</p>
+        <label class="lg-consent"><input type="checkbox" id="cnBox"><span>I agree that my selfie and face template are stored and used for the face check at login.</span></label>
+        <div class="au-acts"><button class="au-btn pri" type="button" id="cnGo" disabled>Agree and continue</button><a class="au-btn" href="privacy.html#delete">Delete my account instead</a><button class="au-btn" type="button" id="cnOut">Log out</button></div>
+        <p class="au-msg" id="cnMsg" role="status"></p>
       </section>
 
       <section id="vAuth">
@@ -100,6 +112,14 @@
             <label>Email<input type="email" id="upMail" autocomplete="email" required><small class="lg-err" data-for="upMail"></small></label>
             <label>Password<span class="lg-pw"><input type="password" id="upPass" autocomplete="new-password" minlength="8" required><button type="button" class="lg-eye" aria-label="Show password">👁</button></span>
               <span class="lg-meter" aria-hidden="true"><i></i><i></i><i></i><i></i></span><small class="lg-err" data-for="upPass"></small></label>
+            <!-- §17 (2026-11-19, to-do F22): what the person wants to learn; the owner approves the account and these courses in one step -->
+            <fieldset class="lg-want"><legend>What do you want to learn? <small>optional</small></legend>
+              <div class="au-chips" id="upTracks" role="group" aria-label="Learning tracks"></div>
+              <details class="lg-pick" id="upPick"><summary>Courses: <b id="upPickN">none picked</b></summary><div class="au-chips" id="upCourses" role="group" aria-label="Courses"></div></details>
+            </fieldset>
+            <!-- to-do F23: biometric consent, required before the selfie -->
+            <label class="lg-consent"><input type="checkbox" id="upConsent"><span>I agree that my selfie and a face template (numbers computed from it) are stored and used to check it is me at every login. <a href="privacy.html" target="_blank" rel="noopener">What is stored</a></span></label>
+            <small class="lg-err" data-for="upConsent"></small>
             <button class="au-btn pri lg-go" type="button" id="next1"><span>Next: take a selfie →</span></button>
           </div>
           <div id="s2" class="lg-stack" hidden>
@@ -144,6 +164,7 @@
         </form>
       </section>
     </div>
+    <p class="lg-alt lg-legal"><a href="privacy.html">Privacy: what is stored and how to delete it</a></p>
   </main>
 </div>
 <script>/* forgot password (2026-11-18): take the recovery link's tokens out of the address BEFORE supabase-js loads, so it does not
@@ -153,8 +174,9 @@
   try{history.replaceState(null,"",location.pathname+location.search);}catch(e){location.hash="";}})();</script>
 <script src="assets/js/loader.js?v=c0618dcd"></script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=a3ac6dc3"></script>
+<script src="assets/js/supabase-2.45.4.min.js?v=cde32431"></script><script>window.supabase||document.write('<scr'+'ipt src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></scr'+'ipt>')</script>
+<script src="assets/js/auth.js?v=e8ceb818"></script>
+<script src="assets/js/tracks-data.js?v=6cda7c0d"></script>
 <script>
 /* login v4: log in = username/email + password, then a LIVE face check every time (login function; lasts 1 hour);
    register = details + live selfie (register function, account waits for the owner). Live check: the server sends a random
@@ -234,14 +256,25 @@
   async function showMe(){
     var me=await AUTH.me();if(!me)return null;
     if(!me.face){await AUTH.signOut(true);return null;}
-    $("vAuth").hidden=true;$("vMe").hidden=false;inCam.stop();upCam.stop();
+    $("vAuth").hidden=true;inCam.stop();upCam.stop();
+    /* §17: an account made before the consent box agrees first (needConsent is false while the SQL block has not run) */
+    $("vConsent").hidden=!me.needConsent;$("vMe").hidden=!!me.needConsent;if(me.needConsent){$("cnBox").checked=false;$("cnGo").disabled=true;return me;}
     var name=me.profile.name||me.profile.username||me.profile.email;
+    $("meDelBox").hidden=me.profile.role==="owner";   /* the owner account can never delete itself */
     if(me.approved){$("meIcon").textContent="👋";$("meTitle").textContent="Hi, "+name;$("meText").textContent="You're logged in"+(me.admin?" as "+me.profile.role+".":".");$("meGo").hidden=false;$("meRe").hidden=true;$("meGo").href=next;}
-    else if(me.profile.status==="rejected"){$("meIcon").textContent="✋";$("meTitle").textContent="Not approved";$("meText").textContent="The owner did not approve this account. Ask them if you think this is a mistake.";$("meGo").hidden=true;$("meRe").hidden=true;}
-    else{$("meIcon").textContent="⏳";$("meTitle").textContent="Waiting for approval";$("meText").textContent="Hi "+name+", your account is created. The owner will check your selfie and approve it; log in again later to see the result.";$("meGo").hidden=true;$("meRe").hidden=false;}
+    else if(me.profile.status==="rejected"){var why=me.profile.reject_reason;$("meIcon").textContent="✋";$("meTitle").textContent="Not approved";
+      $("meText").textContent="The owner did not approve this account."+(why?" Reason: "+why+".":"")+" Ask them if you think this is a mistake.";$("meGo").hidden=true;$("meRe").hidden=true;}
+    else{$("meIcon").textContent="⏳";$("meTitle").textContent="Waiting for approval";var wt="Hi "+name+", your account is created. The owner will check your selfie and approve it";
+      $("meText").textContent=wt+"; log in again later to see the result.";$("meGo").hidden=true;$("meRe").hidden=false;
+      AUTH.approvalEta().then(function(eta){if(eta&&!$("vMe").hidden&&$("meTitle").textContent==="Waiting for approval")$("meText").textContent=wt+" (usually within "+eta+"); log in again later to see the result.";});}
     return me;
   }
-  $("meOut").onclick=async function(){await AUTH.signOut();$("vMe").hidden=true;$("vAuth").hidden=false;loginStep(1);idPhase(null);tab(false);};
+  function ready(me){return !!(me&&me.approved&&!me.needConsent);}
+  $("cnBox").onchange=function(){$("cnGo").disabled=!this.checked;};
+  $("cnGo").onclick=async function(){var b=this;busy(b,true);say($("cnMsg"),"");var r=await AUTH.giveConsent();busy(b,false);
+    if(r.error){say($("cnMsg"),r.error,"err");return;}var me=await showMe();if(ready(me))location.href=next;};
+  $("cnOut").onclick=function(){$("meOut").onclick();};
+  $("meOut").onclick=async function(){await AUTH.signOut();$("vMe").hidden=true;$("vConsent").hidden=true;$("vAuth").hidden=false;loginStep(1);idPhase(null);tab(false);};
   $("meRe").onclick=async function(){busy($("meRe"),true);await showMe();busy($("meRe"),false);};
 
   /* LOG IN step 1: password */
@@ -277,7 +310,7 @@
     if(r.code==="wrong_password"){say($("inMsg"),"Wrong password. Try again.","err");shake();$("inPass").select();return;}
     if(r.access_token){/* owner: password only, no face step */
       await AUTH.sb.auth.setSession({access_token:r.access_token,refresh_token:r.refresh_token});
-      var me0=await showMe();if(me0&&me0.approved)location.href=next;return;}
+      var me0=await showMe();if(ready(me0))location.href=next;return;}
     if(!r.ok){say($("inMsg"),r.error||"Could not log in.","err");return;}
     chal=r;
     $("l2Title").textContent=r.face==="enroll"?"Save your face":"Show your face";
@@ -304,7 +337,7 @@
       inCam.photo=null;var err=await inCam.start();if(err)say($("l2Msg"),err,"err");b.textContent="Try again";b.disabled=false;return;}
     marks("inChecks",["face","match"]);
     await AUTH.sb.auth.setSession({access_token:r.access_token,refresh_token:r.refresh_token});
-    var me=await showMe();if(me&&me.approved)setTimeout(function(){location.href=next;},calm?0:600);};
+    var me=await showMe();if(ready(me))setTimeout(function(){location.href=next;},calm?0:600);};
 
   /* FORGOT PASSWORD (2026-11-18; reset edge function): "Forgot password?" on the password step asks for an email link
      (same answer whether or not the account exists); the link comes back to this page with a recovery token (read before
@@ -364,7 +397,26 @@
   function check1(){var ok=err("upName",$("upName").value.trim()?"":"Enter your name.");
     ok=err("upUser",/^[a-z0-9._]{3,20}$/.test($("upUser").value)?"":"3 to 20 letters, numbers, dots or underscores.")&&ok;
     ok=err("upMail",/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($("upMail").value.trim())?"":"Enter a valid email.")&&ok;
-    ok=err("upPass",$("upPass").value.trim().length>=8?"":"At least 8 characters.")&&ok;return ok;}
+    ok=err("upPass",$("upPass").value.trim().length>=8?"":"At least 8 characters.")&&ok;
+    ok=err("upConsent",$("upConsent").checked?"":"Tick this box to continue: the face check at login needs your selfie.")&&ok;return ok;}
+  $("upConsent").addEventListener("change",function(){if(this.checked)err("upConsent","");});
+  /* §17 (2026-11-19, to-do F22): a learning track pre-picks its courses; the person can change the pick. Sent with the
+     registration; the owner's "Approve + N courses" grants them with the account. Optional: nothing picked = the owner decides. */
+  /* F21 (2026-11-19): the tracks are defined once, in assets/js/tracks-data.js (window.ZL_TRACKS; also the hub's Tracks section) */
+  var TRACKS=(window.ZL_TRACKS||[]).map(function(t){return [t.id,t.name,t.courses];});
+  var pickT="",pickC={};
+  $("upTracks").innerHTML=TRACKS.map(function(t){return '<button type="button" class="au-chip" data-tr="'+t[0]+'" aria-pressed="false">'+AUTH.esc(t[1])+'</button>';}).join("")+
+    '<button type="button" class="au-chip" data-tr="own" aria-pressed="false">I’ll pick courses</button>';
+  $("upCourses").innerHTML=Object.keys(AUTH.COURSES).map(function(c){return '<button type="button" class="au-chip" data-pc="'+c+'" aria-pressed="false">'+AUTH.esc(AUTH.COURSES[c].split(":")[0])+'</button>';}).join("");
+  function paintPick(){var ks=Object.keys(pickC).filter(function(c){return pickC[c];});
+    document.querySelectorAll("#upCourses [data-pc]").forEach(function(b){var on=!!pickC[b.dataset.pc];b.setAttribute("aria-pressed",String(on));b.dataset.s=on?"approved":"none";});
+    document.querySelectorAll("#upTracks [data-tr]").forEach(function(b){var on=b.dataset.tr===pickT;b.setAttribute("aria-pressed",String(on));b.dataset.s=on?"approved":"none";});
+    $("upPickN").textContent=ks.length?ks.length+" picked":"none picked";return ks;}
+  $("upTracks").onclick=function(e){var b=e.target.closest("[data-tr]");if(!b)return;var t=TRACKS.find(function(x){return x[0]===b.dataset.tr;});
+    if(pickT===b.dataset.tr){pickT="";pickC={};}else{pickT=b.dataset.tr;pickC={};if(t)t[2].forEach(function(c){if(AUTH.COURSES[c])pickC[c]=true;});}
+    if(pickT==="own")$("upPick").open=true;paintPick();};
+  $("upCourses").onclick=function(e){var b=e.target.closest("[data-pc]");if(!b)return;pickC[b.dataset.pc]=!pickC[b.dataset.pc];if(!pickT)pickT="own";paintPick();};
+  paintPick();
   $("next1").onclick=async function(){if(!check1())return;step(2);var e=await upCam.start();if(e)say($("upMsg"),e,"err");};
   $("back2").onclick=function(){upCam.reset();$("snap").disabled=true;$("snap").textContent="Take selfie";step(1);};
   upCam.button.onclick=async function(){var e=await upCam.start();if(e)say($("upMsg"),e,"err");};
@@ -380,21 +432,27 @@
     busy(b,true);$("back2").disabled=true;say($("upMsg"),"");$("checks").hidden=false;["face","dup","acct"].forEach(function(k){mark("checks",k,"");});
     mark("checks","face","run");
     var t1=setTimeout(function(){mark("checks","face","ok");mark("checks","dup","run");},2500),t2=setTimeout(function(){mark("checks","dup","ok");mark("checks","acct","run");},4500);
-    var r=await AUTH.fn("register",{name:$("upName").value.trim(),username:$("upUser").value,email:$("upMail").value.trim(),password:$("upPass").value.trim(),images:upShots,challenge:upChal&&upChal.challenge});
+    var tr=TRACKS.find(function(x){return x[0]===pickT;});
+    var r=await AUTH.fn("register",{name:$("upName").value.trim(),username:$("upUser").value,email:$("upMail").value.trim(),password:$("upPass").value.trim(),images:upShots,challenge:upChal&&upChal.challenge,
+      consent:$("upConsent").checked?AUTH.CONSENT_V:"",courses:paintPick(),track:tr?tr[1]:pickT==="own"?"Own pick":""});
     clearTimeout(t1);clearTimeout(t2);busy(b,false);$("back2").disabled=false;
     if(!r.ok){var m=r.error||"",faceErr=/no_face|pose|spoof|challenge/.test(r.code||"")||/waking/i.test(m);
       marks("checks",["face","dup","acct"],faceErr?"face":r.code==="duplicate"?"dup":"acct");say($("upMsg"),m||"Registration failed.","err");
       if(faceErr||r.code==="duplicate"){b.dataset.m="snap";b.textContent="Try the face check again";upCam.start();}
-      else{b.textContent="Use this photo";if(/username|email|password|name/i.test(m)){step(1);}}
+      else{b.textContent="Use this photo";if(/username|email|password|name/i.test(m)||r.code==="consent"){step(1);}}
       return;}
     marks("checks",["face","dup","acct"]);
     if(r.access_token)await AUTH.sb.auth.setSession({access_token:r.access_token,refresh_token:r.refresh_token});
     setTimeout(function(){step(3);
       if(r.status==="approved"){$("doneTitle").textContent="You're in!";$("doneText").textContent="Your selfie matched the photo the owner approved, so your account is ready. Open a course and ask for access.";$("doneGo").hidden=false;}
-      else{$("doneTitle").textContent="Account created";$("doneText").textContent="The owner will check your selfie and approve your account. Next time, log in with your username, password and face.";$("doneGo").hidden=true;}
+      else{$("doneTitle").textContent="Account created";var nPick=paintPick().length,dt="The owner will check your selfie and approve your account"+(nPick?" together with the "+nPick+" course"+(nPick===1?"":"s")+" you picked":"");
+        $("doneText").textContent=dt+". Next time, log in with your username, password and face.";$("doneGo").hidden=true;
+        AUTH.approvalEta().then(function(eta){if(eta)$("doneText").textContent=dt+" (usually within "+eta+"). Next time, log in with your username, password and face.";});}
     },calm?0:500);};
 
   (async function(){if(rec){openReset();return;}if(location.hash==="#register")tab(true);if(AUTH.on)await showMe();})();
+  /* the hub's "Create account" links come here with #register while the page is open (same document): switch tabs */
+  addEventListener("hashchange",function(){if(location.hash==="#register"&&!$("vAuth").hidden)tab(true);});
 })();
 </script>
 </body>

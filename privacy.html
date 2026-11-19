@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co; media-src 'self' blob:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="assets/img/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#4f46e5">
+<title>Privacy · Zero to Advanced</title>
+<meta name="description" content="What Zero to Advanced stores about you (selfie, face template, progress, AI questions), where, for how long, and how to delete it.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/auth.css?v=63b01c42">
+<script>/* themes v2: the theme picked in the courses (localStorage js1-theme), resolved like login.html */
+(function(){var N=" light dark midnight nord dracula forest sunset ocean sepia focus monk paper matcha amber cafe dawn momentum ",S={sunset:"dawn",light:"paper",dark:"focus",midnight:"amber"};
+  function pick(){var t=null;try{t=localStorage.getItem("js1-theme");}catch(e){}
+    if(t===null||t==="auto"||t==="study"){var h=new Date().getHours(),a=h>=5&&h<9?"sunset":h>=9&&h<17?"light":h>=17&&h<21?"dark":"midnight";return t==="study"?S[a]:a;}
+    return t&&N.indexOf(" "+t+" ")>=0?t:"";}
+  var a=pick();if(a)document.documentElement.setAttribute("data-theme",a);})();</script>
+</head>
+<body class="au">
+<div class="au-top"><a class="au-brand" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a><span class="au-sp"></span><a class="au-btn sm" href="index.html">All courses</a><a class="au-btn sm" href="login.html">Log in</a></div>
+<main class="pv">
+  <h1>Privacy, in plain words</h1>
+  <p class="pv-lead">What this site keeps about you, where it lives, for how long, who can see it, and how you delete all of it yourself.</p>
+  <p class="pv-meta">Policy version <b id="pvVer">2026-11-19</b>. When this page changes in a way that matters, the version changes and you are asked to agree again at your next login.</p>
+
+  <h2 id="what">What is stored</h2>
+  <table>
+    <thead><tr><th>What</th><th>Why</th><th>How long</th></tr></thead>
+    <tbody>
+      <tr><td>Your account: name, username, email, password (stored only as a one-way hash)</td><td>To log you in and to show the owner who is asking for access</td><td>Until you delete your account</td></tr>
+      <tr><td><b>Your selfie</b> (the photo taken when you registered)</td><td>So the owner can check who registered before approving the account</td><td>Until you delete your account</td></tr>
+      <tr><td><b>Your face template</b>: 512 numbers computed from the selfie (not a photo; it cannot be turned back into one)</td><td>The face check at every login compares a new picture with these numbers, and it stops one person from making two accounts</td><td>Until you delete your account</td></tr>
+      <tr><td>Pictures taken at each login</td><td>Compared with your face template, then thrown away</td><td>Not kept</td></tr>
+      <tr><td>A log of face-check tries: time, success or failure, the network address</td><td>To lock an account after many failed face checks</td><td>Until you delete your account</td></tr>
+      <tr><td>Failed password and password-reset tries: the username or email typed, the network address</td><td>To slow down password guessing</td><td>Failed passwords about 7 days; resets until you delete your account</td></tr>
+      <tr><td>Your course requests and the owner's decisions (with a reason, if one was given)</td><td>To open the courses you were approved for</td><td>Until you delete your account</td></tr>
+      <tr><td><b>Your study progress</b>: sections marked understood, quiz results, review cards, study days, active reading time per page, notes and settings you make in the lessons</td><td>So your progress follows you between devices, and so the owner can see who is studying and where learners get stuck</td><td>Until you delete your account. A copy also sits in your browser; logging out removes it.</td></tr>
+      <tr><td>Interview reports you add ("asked at this company, this round")</td><td>Shown to other learners as anonymous counts only</td><td>Until you remove them or delete your account</td></tr>
+      <tr><td><b>Questions you type to the AI tutor</b>: the question text, the course, the lesson and the hour</td><td>So the owner can see which lessons need a better explanation. No name, no answer and no code are kept with it</td><td>180 days, then deleted automatically</td></tr>
+      <tr><td>How many AI calls you made (who, when, which feature; no text)</td><td>Daily limits on the AI features</td><td>Until you delete your account</td></tr>
+      <tr><td>Error reports from course pages (the error text, the page, your browser version)</td><td>To find and fix broken pages</td><td>Until the owner clears them, or you delete your account</td></tr>
+      <tr><td>Your agreement to this page: the time and the version</td><td>To show you agreed before your face was stored</td><td>Until you delete your account</td></tr>
+      <tr><td>A list of the emails the site sent you: the kind, the time, whether it was delivered. Not the text of the mail</td><td>So a decision on your account reaches you once, and the owner can see when a mail failed</td><td>90 days</td></tr>
+      <tr><td>Your choice about study emails: on or off, and when you chose</td><td>Optional emails are sent only to people who turned them on</td><td>Until you delete your account</td></tr>
+    </tbody>
+  </table>
+
+  <h2 id="where">Where it is kept</h2>
+  <ul>
+    <li><b>Supabase</b> (database, sign-in and private file storage; the project runs in Mumbai, India) holds everything in the table above. Your selfie sits in a private storage bucket that only the owner and admins can open.</li>
+    <li>The <b>face server</b> (Render) receives each picture only to compute the 512 numbers and check that it is a real, live face. It does not keep the picture.</li>
+    <li>When you use an AI feature (tutor, AI interviewer, planner), the text it needs (your question or answer and the lesson's text) is sent to <b>Google's Gemini API</b>, without your name or email.</li>
+    <li><b>Microphone (Interview Day, only when you press Record):</b> the recording and the live transcript stay in your browser's memory and are never uploaded or saved; only a few numbers (pace, filler words, key points covered) are kept in your results. The live transcript uses your browser's own speech service (Chrome and Edge send the audio to the browser maker for this); other browsers show no transcript.</li>
+    <li>Emails are sent through a <b>mail delivery service</b> that works for the course owner. It receives your email address, your first name and the mail itself: fixed sentences, a few counts (for example how many sections you finished this week) and links to this site. It never receives your selfie, your face data, your answers or the reason for a decision.</li>
+    <li>Your browser keeps a copy of your progress and, for 7 days, the lessons you opened, so they work offline. Logging out deletes them from that browser.</li>
+  </ul>
+
+  <h2 id="who">Who can see it</h2>
+  <p>The course owner and the admins they appoint see your name, email, selfie, course access and study progress, to approve accounts and to help you learn. Other learners never see your name, progress or face; they only see anonymous counts of interview reports. Nothing is sold or shared for advertising.</p>
+
+  <h2 id="mail">Emails</h2>
+  <p>There are two kinds. <b>Messages about your account</b> (your account or a course you asked for was approved or not approved) are part of the service and are always sent. <b>Study emails</b> (a weekly summary of your own progress, and a reminder the course owner may send when you have not studied for a while, at most one a week) are <b>off until you turn them on</b>, here or on the home page. Every study email has a link that turns them off again, without logging in.</p>
+  <div class="pv-card" id="pvUnsub" aria-live="polite" hidden></div>
+  <div class="pv-card" id="pvMail" aria-live="polite" hidden></div>
+
+  <h2 id="delete">Delete your account</h2>
+  <p>You can delete your account yourself, at any time. It removes, for good: your account and password, your selfie, your face template, your face-check and login logs, your course access, your synced progress, your interview reports, your job tracker, your AI usage counts, your error reports, the list of emails sent to you and your email choice. AI tutor questions are not linked to you, so they stay until their 180 days are up. The owner's private database backups (kept off the site, newest 14 days) still hold a copy until they roll off. The owner account itself cannot be deleted here.</p>
+  <div class="pv-card pv-del" id="pvDel" aria-live="polite">
+    <p id="pvDelMsg">Checking whether you are logged in…</p>
+  </div>
+  <p class="pv-meta">Cannot log in any more (for example your face no longer passes)? Ask the course owner (the person who approved your account) to delete it for you: the admin page has the same Delete button.</p>
+
+  <h2 id="changes">Questions and changes</h2>
+  <p>Questions about your data go to the course owner. If this page changes, the date above changes and you are asked to agree again before your next lesson.</p>
+  <p><a href="index.html">← All courses</a> · <a href="login.html">Log in</a> · <a href="login.html#register">Create an account</a></p>
+</main>
+<script src="assets/js/auth-config.js?v=e1142d0a"></script>
+<script src="assets/js/supabase-2.45.4.min.js?v=cde32431"></script><script>window.supabase||document.write('<scr'+'ipt src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></scr'+'ipt>')</script>
+<script src="assets/js/auth.js?v=e8ceb818"></script>
+<script>
+/* self-service delete (2026-11-19, kb/lock/access-lock.md → §17; to-do F23): signed in with a face login of the last hour, tick,
+   type the username, Delete → AUTH.deleteAccount (selfie file, then rpc delete_my_account, then this browser is wiped). */
+(function(){
+  var box=document.getElementById("pvDel"),esc=window.AUTH?AUTH.esc:function(s){return String(s);};
+  if(window.AUTH)document.getElementById("pvVer").textContent=AUTH.CONSENT_V;
+  function set(h){box.innerHTML=h;}
+  var login='<a class="au-btn pri" href="login.html?next='+encodeURIComponent("privacy.html#delete")+'">Log in with your face</a>';
+  (async function(){
+    if(!window.AUTH||!AUTH.on){set('<p>'+(window.AUTH&&AUTH.sdkGone?"The sign-in service could not be reached. Check your internet connection and reload this page.":"Accounts are not set up on this copy of the site.")+'</p>');return;}
+    var me=null;try{me=await AUTH.me();}catch(e){}
+    if(!me){set('<p>Log in first: deleting needs your password and your face, so nobody else can delete your account.</p><div class="au-acts">'+login+'</div>');return;}
+    if(me.offline){set('<p>You are offline. Deleting needs the internet.</p>');return;}
+    if(me.profile.role==="owner"){set('<p>You are the <b>owner</b>. The owner account cannot be deleted (it runs the site). Learners delete their accounts here; you can delete anyone else on the admin page.</p>');return;}
+    if(!me.face){set('<p>A face login lasts 1 hour, and yours has ended. Log in again with your face, then come back here.</p><div class="au-acts">'+login+'</div>');return;}
+    var must=me.profile.username||me.profile.email;
+    set('<p>Logged in as <b>'+esc(me.profile.name||must)+'</b>.</p><form class="au-form" id="pvForm" novalidate>'+
+      '<label class="lg-consent"><input type="checkbox" id="pvSure"><span>I understand this deletes my account, my progress and my face data for good. It cannot be undone.</span></label>'+
+      '<label>Type your username <b>'+esc(must)+'</b> to confirm<input type="text" id="pvType" autocomplete="off" autocapitalize="none" spellcheck="false"></label>'+
+      '<div class="au-acts" style="justify-content:flex-start"><button class="au-btn no" type="submit" id="pvGo" disabled>Delete my account</button></div><p class="au-msg" id="pvMsg" role="status"></p></form>');
+    var sure=document.getElementById("pvSure"),typed=document.getElementById("pvType"),go=document.getElementById("pvGo"),msg=document.getElementById("pvMsg");
+    function can(){go.disabled=!(sure.checked&&typed.value.trim().toLowerCase()===String(must).toLowerCase());}
+    sure.onchange=can;typed.oninput=can;
+    document.getElementById("pvForm").onsubmit=async function(e){e.preventDefault();can();if(go.disabled)return;
+      if(!confirm("Delete your account for good? This cannot be undone."))return;
+      go.disabled=true;msg.className="au-msg";msg.textContent="Deleting…";
+      var r=await AUTH.deleteAccount(typed.value.trim());
+      if(r.error){msg.className="au-msg err";msg.textContent=r.error;go.disabled=false;return;}
+      set('<p><b>Your account is deleted.</b> Your selfie, face template, progress and the rest listed above are gone, and this browser no longer holds your progress.</p><div class="au-acts"><a class="au-btn" href="index.html">All courses</a></div>');};
+  })();
+})();
+</script>
+<script>
+/* study emails (2026-11-19, kb/lock/access-lock.md section 20; to-do H item 5): (1) the opt-in checkbox for a signed-in person
+   (profiles.mail_prefs through rpc set_mail_prefs; hidden signed out and until the SQL block has run); (2) the link from a mail,
+   privacy.html?unsub=<signed token>#mail: a button (never automatic: mail scanners open links) that asks the edge function
+   notify to turn study emails off, no login needed. */
+(function(){
+  var A=window.AUTH,ub=document.getElementById("pvUnsub"),mb=document.getElementById("pvMail"),tok="",ON=null;
+  if(!A||!A.on||!ub||!mb)return;
+  try{tok=new URLSearchParams(location.search).get("unsub")||"";}catch(e){}
+  if(!/^[0-9a-f-]{36}[.][A-Za-z0-9_-]{20,100}$/.test(tok))tok="";
+  function box(){if(ON===null){mb.hidden=true;return;}mb.hidden=false;
+    mb.innerHTML='<label class="lg-consent"><input type="checkbox" id="pvMailOn"'+(ON?" checked":"")+'><span>Send me study emails: a weekly summary of my progress and an occasional reminder from the course owner.</span></label><p class="au-msg" id="pvMailMsg" role="status"></p>';
+    var c=document.getElementById("pvMailOn"),m=document.getElementById("pvMailMsg");
+    c.onchange=async function(){var want=c.checked;c.disabled=true;m.className="au-msg";m.textContent="Saving…";var r;
+      try{r=await A.sb.rpc("set_mail_prefs",{p:{nudge:want,weekly:want}});}catch(e){r={error:{message:"network"}};}
+      if(r&&!r.error&&r.data){ON=r.data.weekly===true||r.data.nudge===true;box();document.getElementById("pvMailMsg").textContent=ON?"Study emails are on.":"Study emails are off.";document.getElementById("pvMailOn").focus();return;}
+      var t=String(r&&r.error&&(r.error.code+" "+r.error.message)||"");
+      if(/PGRST202|42883|could not find the function/i.test(t)){ON=null;box();return;}
+      c.checked=!want;c.disabled=false;m.className="au-msg err";m.textContent=/face/i.test(t)?"Log in again with your face, then change this.":"Could not save that just now. Try again later.";};}
+  async function mine(){try{var s=await A.session();if(!s||!s.user)return;
+    var r=await A.sb.from("profiles").select("mail_prefs").eq("id",s.user.id).maybeSingle();if(!r||r.error||!r.data)return;
+    var p=r.data.mail_prefs||{};ON=p.weekly===true||p.nudge===true;box();}catch(e){}}
+  if(tok){ub.hidden=false;
+    ub.innerHTML='<p>Stop the study emails (the weekly summary and the reminders) for the account this link was sent to?</p><div class="au-acts" style="justify-content:flex-start"><button class="au-btn pri" type="button" id="pvUnsubGo">Stop study emails</button></div><p class="au-msg" id="pvUnsubMsg" role="status"></p>';
+    var go=document.getElementById("pvUnsubGo"),um=document.getElementById("pvUnsubMsg");
+    go.onclick=async function(){go.disabled=true;um.className="au-msg";um.textContent="Saving…";var r=await A.fn("notify",{mode:"unsub",token:tok});
+      if(r&&r.status==="ok"){ub.innerHTML="<p><b>Study emails are off.</b> Messages about your account (an approval, a course decision) are still sent. You can turn study emails on again here after logging in.</p>";
+        try{history.replaceState(null,"",location.pathname+"#mail");}catch(e){}if(ON!==null){ON=false;box();}return;}
+      go.disabled=false;um.className="au-msg err";
+      um.textContent=r&&r.status==="link"?"This link is not valid any more. Log in and untick the box on this page instead.":"That did not work just now. Try again in a minute, or log in and untick the box on this page.";};}
+  mine();
+})();
+</script>
+</body>
+</html>

@@ -4,18 +4,820 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>D00: Time and Space Complexity · DSA</title>
-<meta name="robots" content="noindex">
-<link rel="manifest" href="../../manifest.webmanifest"><link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml"><meta name="theme-color" content="#4f46e5">
-<script>try{var t=String(localStorage.getItem("js1-theme")||"");if(/light/.test(t))document.documentElement.dataset.theme="light";else if(/dark/.test(t))document.documentElement.dataset.theme="dark";}catch(e){}</script>
-<link rel="stylesheet" href="../../assets/css/auth.css?v=4ff669ac">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="../../assets/css/course.css?v=5692b58c">
+<link rel="stylesheet" href="../../assets/css/course-dsa.css?v=d997f40f">
+<link rel="stylesheet" href="../../assets/css/course-dsa--labs-dsa.css?v=7164a38b">
+<link rel="stylesheet" href="../../assets/css/course.late.css?v=d387a52e">
+<link rel="stylesheet" href="../../assets/css/course-dsa.late.css?v=6292f45e">
 </head>
-<body class="au">
-<script src="../../assets/js/loader.js?v=c0618dcd"></script>
-<script>window.ZLc=window.ZL&&ZL.mount({step:0,msg:"Checking your sign-in",course:"courses"});</script>
-<main class="au-gate" id="auGate"></main>
-<script src="../../assets/js/auth-config.js?v=e1142d0a"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="../../assets/js/auth.js?v=a3ac6dc3"></script>
-<script>AUTH.gate("courses/dsa/00-complexity.html", "../../");</script>
+<body data-page="d00" data-course="dsa" data-name="D00 · Time and Space Complexity" data-short="D00">
+
+<nav><div class="wrap">
+  <a class="brand" href="index.html"><i>D</i><span>DSA</span></a>
+  <div class="links"></div>
+  <button id="tocBtn" aria-label="Contents" aria-expanded="false">☰</button><button id="theme" aria-label="Toggle theme">◐</button>
+</div><div id="prog"></div></nav>
+
+<div class="wrap">
+<header id="top" class="ph">
+  <div class="tag">DSA · LESSON D00 · START HERE</div>
+  <h1><span class="grad">Time and space</span> complexity</h1>
+  <p class="lead">Before any data structure or algorithm, you need one skill: telling how much <b>work</b> and how much <b>memory</b> a piece of code needs as its input grows. Every interview answer ends with "this is O(n) time and O(1) space", and every solution is judged by it. This lesson builds the skill from zero, with a moving picture for each idea, and ends with real interview questions from Amazon, Google, Meta and Microsoft.</p>
+  <div class="pager"></div>
+</header>
+
+<div class="band" id="dsa00">
+  <div class="tag">LESSON D00</div>
+  <h2>Time and space complexity</h2>
+  <p>You need Java basics: variables, <code>if</code>, loops, methods and arrays (<a href="../java/lessons/10-arrays-bigo.html">Java Lesson 10</a> covers arrays). Everything else, including the little maths, a method that calls itself, ArrayList and HashSet, is explained here the first time it appears. The story: <b>Sharma Motors' website search</b>, which works with 100 cars and times out with 1 lakh.</p>
+  <p class="small">Practise after this lesson: the <a href="bank-complexity.html">Problem Bank · Time and space complexity</a>, 35 company problems in learning order (L0–L5), each with hints, a starter you run and check, and brute force → optimal solutions run on JDK 25.</p>
+</div>
+
+<!-- 0 (intro, 2026-11-12: see kb/dsa/dsa-plan.md "Intro-section trial") -->
+<section id="d0-start">
+  <span class="num">00</span><h2>What "fast" means: count steps, not seconds</h2>
+  <div class="tldr"><b>In 30 seconds</b> A program is a list of instructions. To say how fast it is, we do not use a clock. We <b>count the steps</b> it takes. Then we ask one question: <b>if the input becomes twice as big, what happens to the number of steps?</b> The answer to that question is what this lesson calls complexity.</div>
+  <p><b>The problem it solves.</b> Sharma Motors has a lot full of cars, and every number plate is under a cover. A customer asks for the car with plate KA05. A helper walks along the lot and lifts one cover after another. How long does that take? Asha lifts a cover in 1 second. Ravi needs 3. On a rainy day both are slower. "How many seconds?" has a different answer for every person and every day. "How many covers must be lifted?" has one answer, whoever does the lifting.</p>
+  <p><b>Four words first.</b> An <b>algorithm</b> is a fixed list of instructions for a job: "start at bay 0, lift the cover, is it KA05? If not, go to the next bay." The <b>input</b> is the data the algorithm is given: here, the lot of cars. <b>n</b> is the size of the input: the number of cars. A <b>step</b> is one small action that takes about the same time every time it is done: lifting one cover and reading one plate.</p>
+  <p>Click the cars below. Each click is one step. Then change who is checking, and then double the lot.</p>
+  <div class="viz ol" id="ds00Start"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p><b>Why ask how the count grows?</b> A count for one lot ("6 steps for 6 cars") says little, because every method is quick on 6 cars. Sharma Motors will not stay at 6 cars. This method takes at most n steps for n cars, so twice the cars means twice the steps. Other methods grow in other ways: some need four times the steps when the input doubles, some need only one step more. That pattern of growth, and not the seconds, decides which method still works with 1 lakh cars.</p>
+  <div class="tw"><table><thead><tr><th>Because we count steps and watch how they grow…</th><th>In the lot</th></tr></thead><tbody>
+    <tr><td>The count is the same on every machine and for every person</td><td>6 covers for Asha, 6 covers for Ravi</td></tr>
+    <tr><td>The count is written with n, the input size</td><td>at most n steps for n cars</td></tr>
+    <tr><td>We usually ask for the most steps it can take</td><td>the car is in the last bay, or not in the lot at all (later: <a href="#d0-cases">best, average and worst case</a>)</td></tr>
+    <tr><td>Methods are compared by what happens when n doubles</td><td>here the steps double (later: <a href="#d0-growth">the growth classes</a>)</td></tr>
+    <tr><td>Seconds come back only at the end: steps × time per step</td><td>12 steps × 1 s for Asha, 12 steps × 3 s for Ravi</td></tr>
+  </tbody></table></div>
+<script type="text/x-java" data-file="FindCar.java" data-hl="9,20-23">
+public class FindCar {                      // runs first: java FindCar.java
+
+    static int steps;                            // how many cars we looked at
+
+    // Walk the lot from bay 0 and stop at the plate we want.
+    static int find(String[] lot, String plate) {
+        steps = 0;
+        for (int i = 0; i < lot.length; i++) {
+            steps++;                             // one step = look at one car
+            if (lot[i].equals(plate)) return i;
+        }
+        return -1;                               // looked at every car, not here
+    }
+
+    public static void main(String[] args) {
+        String[] lot6 = {"KA01", "MH12", "DL08", "TN07", "GJ05", "KA05"};
+        String[] lot12 = {"KA01", "MH12", "DL08", "TN07", "GJ05", "UP16",
+                          "RJ14", "WB02", "AP09", "HR26", "PB10", "KA05"};
+
+        System.out.println(find(lot6, "KA01") + " after " + steps + " steps");   // 0 after 1 steps   (lucky: first bay)
+        System.out.println(find(lot6, "KA05") + " after " + steps + " steps");   // 5 after 6 steps   (last bay: the worst case)
+        System.out.println(find(lot12, "KA05") + " after " + steps + " steps");  // 11 after 12 steps (double the cars, double the steps)
+        System.out.println(find(lot12, "ZZ99") + " after " + steps + " steps");  // -1 after 12 steps (not in the lot: every car checked)
+    }
+}
+</script>
+  <div class="note warn"><b>Common mistake</b> Timing one run with a stopwatch and calling the code fast. One run, on one small input, on your own laptop says nothing about 1 lakh cars on a busy server. Count the steps, then ask how the count grows.</div>
+  <div class="an-strip"><b>💡 Remember it</b><span>A drive from Bengaluru to Mysuru. "How long does it take?" depends on the car and the traffic. "How many kilometres is it?" does not. Steps are the <b>kilometres</b> of a program: the same for every driver, and twice the distance is always twice the kilometres.</span></div>
+  <details class="d" data-lv="A"><summary>Go deeper: what exactly is one step, and do seconds never matter?</summary>
+    <p>A step is anything that takes about the same time however big the input is: one comparison, one addition, reading one array slot. Lifting a cover is really three small actions (lift, read, compare). Counting it as 1 or as 3 changes the total from n to 3n, but not the growth: twice the cars is still twice the steps. That is why <a href="#d0-rules">section 04</a> drops such constant factors.</p>
+    <p>Seconds do matter in the end, and you get them back by multiplying: seconds = steps × time per step. This course uses the round figure of 10⁸ simple steps per second (<a href="#d0-limits">section 11</a>). You can also time code in Java with <code>System.nanoTime()</code>, but the number changes from run to run, so it is a check on your step count and not a replacement for it.</p>
+  </details>
+</section>
+
+<!-- 1 -->
+<section id="d0-why">
+  <span class="num">01</span><h2>The problem: a search that times out</h2>
+  <div class="tldr"><b>In 30 seconds</b> Two programs can give the same answer while one takes 1 second and the other 3 hours. Seconds depend on the machine, so we measure something that doesn't: the number of basic <b>steps</b> the code takes, written as a function of the input size <b>n</b> (the number of cars, items, characters…). <b>Time complexity</b> is how that step count grows as n grows. <b>Space complexity</b> is the same idea for extra memory.</div>
+  <p><b>The case.</b> Sharma Motors' website has a "find duplicate listings" check: before a car goes live, the code compares it against every listing. With 100 cars the page answered instantly. The company bought two other dealerships and the list grew to <b>1 lakh (100,000) cars</b>. Now the check takes so long that the page times out. The same code, the same server: only <b>n</b> changed. By section 10 you will know exactly why, and you will fix it.</p>
+  <p><b>Why not just measure seconds?</b> A fast laptop, a slow phone and a busy server give different seconds for the same code. What does not change is how many basic steps the code does. A <b>step</b> is any small operation that takes about the same time whatever the input: reading <code>a[i]</code>, comparing two numbers, adding, assigning. We count steps, and we care about one question: <b>when n doubles, what happens to the step count?</b></p>
+  <div class="an-strip"><b>💡 Remember it</b><span>Asking "how long does checking the lot take?" has no answer: it depends on who walks. Asking "how many cars must be checked?" always has one. Complexity counts <b>cars checked</b>, not minutes.</span></div>
+  <div class="viz ol" id="dsStep"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+</section>
+
+<!-- 2 -->
+<section id="d0-math">
+  <span class="num">02</span><h2>The only maths you need</h2>
+  <div class="tldr"><b>In 30 seconds</b> Four facts cover almost every complexity. <b>Powers</b>: 2ⁿ means 2 × 2 × … n times (2¹⁰ = 1,024). <b>Logarithm</b>: log₂ n is how many times you can halve n before reaching 1 (log₂ 1,024 = 10). <b>Staircase</b>: 1 + 2 + … + n = n(n+1)/2, about n²/2. <b>Doubling sum</b>: 1 + 2 + 4 + … + n is less than 2n.</div>
+  <p><b>Powers</b> grow by multiplying: 2⁵ = 32, 2¹⁰ = 1,024 ≈ a thousand, 2²⁰ ≈ a million, 2³⁰ ≈ a billion. Remember those three: they come up all the time.</p>
+  <p><b>Logarithms</b> are powers in reverse. 2¹⁰ = 1,024, so log₂ 1,024 = 10. In plain words: <b>log₂ n = the number of times you can halve n until 1 is left</b>. So log₂ of a thousand ≈ 10, of a million ≈ 20, of a billion ≈ 30. The log grows <i>very</i> slowly: a thousand times more data adds only 10 steps. In complexity we write just "log n": log₂, log₃ and log₁₀ differ only by a constant factor, and constants are dropped (section 04).</p>
+  <div class="tw"><table><thead><tr><th>n</th><th>log₂ n</th><th>√n</th><th>n²</th><th>2ⁿ</th></tr></thead><tbody>
+    <tr><td>16</td><td>4</td><td>4</td><td>256</td><td>65,536</td></tr>
+    <tr><td>1,024</td><td>10</td><td>32</td><td>about a million</td><td>a 309-digit number</td></tr>
+    <tr><td>1,000,000</td><td>about 20</td><td>1,000</td><td>10¹²</td><td>unthinkable</td></tr>
+  </tbody></table></div>
+  <p><b>The staircase</b>: a loop whose step i does i things costs 1 + 2 + … + n = <b>n(n+1)/2</b>. Draw it and it is half of an n × n square, so it grows like n². <b>The doubling sum</b>: 1 + 2 + 4 + … + 2ᵏ = 2ᵏ⁺¹ − 1, less than twice the last term. Both show up again in sections 05 and 09.</p>
+  <div class="viz ol" id="dsMath"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+</section>
+
+<!-- 3 -->
+<section id="d0-growth">
+  <span class="num">03</span><h2>The growth classes, from fast to hopeless</h2>
+  <div class="tldr"><b>In 30 seconds</b> Almost every algorithm falls into one of seven classes. Read <b>O(f(n))</b> ("big O of f of n") as "the number of steps grows like f(n)"; section 04 makes that exact. From best to worst: <b>O(1)</b> constant, <b>O(log n)</b> logarithmic, <b>O(n)</b> linear, <b>O(n log n)</b>, <b>O(n²)</b> quadratic, <b>O(2ⁿ)</b> exponential, <b>O(n!)</b> factorial. A computer does roughly <b>10⁸ simple steps per second</b>; that number tells you which classes survive a big n.</div>
+  <div class="tw"><table><thead><tr><th>Class</th><th>Name</th><th>At Sharma Motors</th><th>Typical code</th></tr></thead><tbody>
+    <tr><td><b>O(1)</b></td><td>constant</td><td>Take the key off hook number 42</td><td><code>a[i]</code>, a formula</td></tr>
+    <tr><td><b>O(log n)</b></td><td>logarithmic</td><td>Guess a price by halving the range each time</td><td>binary search (section 06)</td></tr>
+    <tr><td><b>O(n)</b></td><td>linear</td><td>Walk past every car once</td><td>one loop</td></tr>
+    <tr><td><b>O(n log n)</b></td><td>linearithmic</td><td>Sort the cars by price (sorting = putting in order; D06)</td><td><code>Arrays.sort</code></td></tr>
+    <tr><td><b>O(n²)</b></td><td>quadratic</td><td>Compare every car with every other car</td><td>two nested loops</td></tr>
+    <tr><td><b>O(2ⁿ)</b></td><td>exponential</td><td>Try every combination of n optional extras</td><td>a method that calls itself twice</td></tr>
+    <tr><td><b>O(n!)</b></td><td>factorial</td><td>Try every order to visit n branches</td><td>all permutations (D13)</td></tr>
+  </tbody></table></div>
+  <div class="viz ol" id="dsRace"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p>The same classes, counted by a real program. Each method does one kind of work, and a static counter records the steps:</p>
+<script type="text/x-java" data-file="StepCounter.java" data-hl="3,5,7,9,11-14,16-19">
+public class StepCounter {                // runs first: java StepCounter.java
+
+    static long steps;                         // one "step" = one basic operation we choose to count
+
+    static void constant(int n)  { steps++; }                                  // O(1): one step, any n
+
+    static void logarithmic(int n) { for (int i = n; i > 1; i /= 2) steps++; } // O(log n): halve until 1
+
+    static void linear(int n)    { for (int i = 0; i < n; i++) steps++; }      // O(n): once per car
+
+    static void nLogN(int n) {                                                 // O(n log n): n times, log n each
+        for (int i = 0; i < n; i++)
+            for (int j = n; j > 1; j /= 2) steps++;
+    }
+
+    static void quadratic(int n) {                                             // O(n²): every car with every car
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++) steps++;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("n        O(1)  O(log n)  O(n)    O(n log n)  O(n^2)");
+        for (int n : new int[] {16, 1_024, 10_000}) {
+            long[] s = new long[5];
+            steps = 0; constant(n);    s[0] = steps;
+            steps = 0; logarithmic(n); s[1] = steps;
+            steps = 0; linear(n);      s[2] = steps;
+            steps = 0; nLogN(n);       s[3] = steps;
+            steps = 0; quadratic(n);   s[4] = steps;
+            System.out.printf("%-8d %-5d %-9d %-7d %-11d %d%n", n, s[0], s[1], s[2], s[3], s[4]);
+        }
+        // n        O(1)  O(log n)  O(n)    O(n log n)  O(n^2)
+        // 16       1     4         16      64          256
+        // 1024     1     10        1024    10240       1048576
+        // 10000    1     13        10000   130000      100000000
+    }
+}
+</script>
+  <h3>Where does 2ⁿ come from? A method that calls itself</h3>
+  <p>A method may call <b>itself</b>; this is called <b>recursion</b>. It must have a <b>base case</b>, an input small enough to answer directly, or it would call itself forever. The classic example is the Fibonacci numbers 0, 1, 1, 2, 3, 5, 8…, where each number is the sum of the two before it. Written directly, <code>fib(n)</code> calls <code>fib(n − 1)</code> and <code>fib(n − 2)</code>, and each of those makes two more calls. Watch the calls pile up:</p>
+  <div class="viz ol" id="dsFib"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+<script type="text/x-java" data-file="FibCalls.java" data-hl="5-9">
+public class FibCalls {                   // runs first: java FibCalls.java
+
+    static long calls;                         // how many times fib was entered
+
+    static long fib(int n) {                   // a method that calls itself (recursion)
+        calls++;
+        if (n <= 1) return n;                  // base case: stop here, no more calls
+        return fib(n - 1) + fib(n - 2);        // two more calls each time: the tree doubles
+    }
+
+    public static void main(String[] args) {
+        for (int n : new int[] {5, 10, 20, 30, 40}) {
+            calls = 0;
+            long v = fib(n);
+            System.out.printf("fib(%d) = %d   calls = %,d%n", n, v, calls);
+        }
+        // fib(5) = 5   calls = 15
+        // fib(10) = 55   calls = 177
+        // fib(20) = 6765   calls = 21,891
+        // fib(30) = 832040   calls = 2,692,537
+        // fib(40) = 102334155   calls = 331,160,281
+        // +10 to n multiplies the calls by about 123 (1.618^10): exponential growth, roughly O(2^n).
+    }
+}
+</script>
+  <p class="small muted">Recursion gets its own lesson (D05); D17 shows how to remove the repeated calls and make fib O(n).</p>
+</section>
+
+<!-- 4 -->
+<section id="d0-rules">
+  <span class="num">04</span><h2>Big-O and its two rules</h2>
+  <div class="tldr"><b>In 30 seconds</b> <b>Big-O</b> describes how the step count grows for <b>large n</b>, as an upper bound. Two rules: <b>drop constant factors</b> (3n + 5 → O(n), 100n → O(n)) and <b>keep only the biggest term</b> (n² + n → O(n²)). For large n, the growth rate decides everything.</div>
+  <p>Writing "this code takes 3n + 5 steps" is precise but not useful: the 3 and the 5 depend on how you count and on the machine. What stays true is the <b>shape</b>: it grows in a straight line with n. Big-O keeps the shape and throws away the rest. Formally, f(n) is O(g(n)) if, beyond some n, f(n) ≤ c · g(n) for some constant c: f grows <b>no faster</b> than g.</p>
+  <ul>
+    <li><b>Drop constants:</b> 2n, n + 7, 100n are all <b>O(n)</b>. n/2 is O(n) too.</li>
+    <li><b>Keep the biggest term:</b> n² + n + 1 is <b>O(n²)</b>; n + log n is <b>O(n)</b>; 2ⁿ + n³ is <b>O(2ⁿ)</b>.</li>
+    <li><b>Different inputs keep different letters:</b> walking n cars and m branches is <b>O(n + m)</b>, not O(n).</li>
+  </ul>
+  <div class="viz ol" id="dsRules"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p><b>When do constants matter?</b> For small n, and between two solutions of the same class. An O(n) loop that does 50 things per car can lose to another O(n) loop that does 2. Interviewers sometimes ask exactly this follow-up.</p>
+</section>
+
+<!-- 5 -->
+<section id="d0-loops">
+  <span class="num">05</span><h2>Counting loops: the eight shapes</h2>
+  <div class="tldr"><b>In 30 seconds</b> Loops one after another <b>add</b>; loops inside each other <b>multiply</b>. A loop variable that doubles or halves gives <b>log n</b>. An inner loop that starts at i + 1 gives a triangle, n²/2, still <b>O(n²)</b>. A loop up to √n is <b>O(√n)</b>. Two different inputs give O(n + m) or O(n · m). An early exit changes the best case, not the worst.</div>
+  <div class="tw"><table><thead><tr><th>#</th><th>Shape</th><th>Steps</th><th>Big-O</th></tr></thead><tbody>
+    <tr><td>1</td><td><code>for i &lt; n</code></td><td>n</td><td>O(n)</td></tr>
+    <tr><td>2</td><td>two loops one after another</td><td>n + n</td><td>O(n)</td></tr>
+    <tr><td>3</td><td>a loop inside a loop</td><td>n × n</td><td>O(n²)</td></tr>
+    <tr><td>4</td><td>inner loop starts at <code>j = i + 1</code></td><td>n(n−1)/2</td><td>O(n²)</td></tr>
+    <tr><td>5</td><td><code>i *= 2</code> or <code>i /= 2</code></td><td>log₂ n</td><td>O(log n)</td></tr>
+    <tr><td>6</td><td><code>i * i &lt;= n</code></td><td>√n</td><td>O(√n)</td></tr>
+    <tr><td>7</td><td>two inputs: one after another / nested</td><td>n + m / n × m</td><td>O(n + m) / O(n · m)</td></tr>
+    <tr><td>8</td><td>loop with <code>break</code> when found</td><td>1 … n</td><td>O(n) worst case</td></tr>
+  </tbody></table></div>
+  <div class="viz ol" id="dsLoops"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+<script type="text/x-java" data-file="LoopShapes.java" data-hl="7,10-11,14,17,20,23,26-27,29,33">
+public class LoopShapes {                 // runs first: java LoopShapes.java
+
+    public static void main(String[] args) {
+        int n = 1_024, m = 100;                // m = a second input, e.g. 100 branches
+        long c;
+
+        c = 0; for (int i = 0; i < n; i++) c++;                                    // 1. one loop
+        System.out.println("1. one loop            " + c);                          // 1024        O(n)
+
+        c = 0; for (int i = 0; i < n; i++) c++;
+               for (int j = 0; j < n; j++) c++;                                     // 2. one after another: add
+        System.out.println("2. one after another   " + c);                          // 2048        O(n + n) = O(n)
+
+        c = 0; for (int i = 0; i < n; i++) for (int j = 0; j < n; j++) c++;        // 3. nested: multiply
+        System.out.println("3. nested              " + c);                          // 1048576     O(n²)
+
+        c = 0; for (int i = 0; i < n; i++) for (int j = i + 1; j < n; j++) c++;    // 4. every pair once
+        System.out.println("4. j starts at i + 1   " + c);                          // 523776      n(n-1)/2 = O(n²)
+
+        c = 0; for (int i = 1; i < n; i *= 2) c++;                                  // 5. i doubles
+        System.out.println("5. i doubles           " + c);                          // 10          O(log n)
+
+        c = 0; for (int i = 1; (long) i * i <= n; i++) c++;                        // 6. up to √n
+        System.out.println("6. i * i <= n          " + c);                          // 32          O(√n)
+
+        c = 0; for (int i = 0; i < n; i++) c++;
+               for (int j = 0; j < m; j++) c++;                                     // 7a. two inputs, one after another
+        System.out.println("7a. n then m           " + c);                          // 1124        O(n + m)
+        c = 0; for (int i = 0; i < n; i++) for (int j = 0; j < m; j++) c++;        // 7b. two inputs, nested
+        System.out.println("7b. n inside m         " + c);                          // 102400      O(n · m)
+
+        int[] cars = new int[n];
+        cars[3] = 7;                                                                // the car we want sits at index 3
+        c = 0; for (int i = 0; i < n; i++) { c++; if (cars[i] == 7) break; }       // 8. early exit
+        System.out.println("8. stops when found    " + c);                          // 4           best case; worst is still O(n)
+    }
+}
+</script>
+  <p><b>Method calls count too.</b> A loop that calls a method costs (loop count) × (cost of the method). <code>for (i &lt; n) list.contains(x)</code> is n × n = O(n²) when <code>contains</code> walks the list. Section 12 lists the costs of the Java methods you will use most.</p>
+</section>
+
+<!-- 6 -->
+<section id="d0-log">
+  <span class="num">06</span><h2>What O(log n) looks like</h2>
+  <div class="tldr"><b>In 30 seconds</b> An algorithm is O(log n) when each step <b>throws away a fixed fraction</b> (usually half) of what is left. The classic is <b>binary search</b> on sorted data: check the middle, keep the half that can still hold the answer. 1,000,000 cars need at most 20 checks.</div>
+  <p>Picture the cars sorted by price on a long row. You want the ₹18 lakh car. Walking from the start could take every car. Instead, look at the <b>middle</b> car: if it is cheaper than 18, the target cannot be on its left, so half the row is gone with one check. Repeat on the half that is left. The data <b>must be sorted</b>, or throwing half away would be wrong. D07 is a full lesson on binary search.</p>
+  <div class="viz ol" id="dsHalve"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+</section>
+
+<!-- 7 -->
+<section id="d0-cases">
+  <span class="num">07</span><h2>Best, average and worst case; O, Ω and Θ</h2>
+  <div class="tldr"><b>In 30 seconds</b> The same code can take different numbers of steps on different inputs of the same size. <b>Best case</b> = the luckiest input, <b>worst case</b> = the unluckiest, <b>average case</b> = the expected count over all inputs. Interviews quote the <b>worst case</b> unless they say otherwise. O is an upper bound, Ω a lower bound, Θ both at once (a tight bound).</div>
+  <div class="viz ol" id="dsCases"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <div class="tw"><table><thead><tr><th>Symbol</th><th>Means</th><th>Linear search</th></tr></thead><tbody>
+    <tr><td><b>O(g)</b> "Big-O"</td><td>grows <b>at most</b> like g (upper bound)</td><td>O(n): never worse than n checks</td></tr>
+    <tr><td><b>Ω(g)</b> "Omega"</td><td>grows <b>at least</b> like g (lower bound)</td><td>Ω(1): at least one check</td></tr>
+    <tr><td><b>Θ(g)</b> "Theta"</td><td>grows <b>exactly</b> like g (both bounds)</td><td>worst case is Θ(n)</td></tr>
+  </tbody></table></div>
+  <p>In everyday interview talk, people say "O(n)" when they mean the tight worst case. That is fine; just know the difference if asked.</p>
+</section>
+
+<!-- 8 -->
+<section id="d0-space">
+  <span class="num">08</span><h2>Space complexity</h2>
+  <div class="tldr"><b>In 30 seconds</b> Space complexity counts the <b>extra memory</b> an algorithm needs as n grows, beyond the input it was given (called <b>auxiliary space</b>). A few variables: <b>O(1)</b>. A new array or set of n items: <b>O(n)</b>. Recursion also uses memory: one stack frame per call that is still waiting, so a call chain n deep is <b>O(n)</b> space.</div>
+  <p><b>Where memory lives in Java.</b> The <b>stack</b> holds each running method's local variables (<code>int i</code>, <code>int tmp</code>, references); it is freed when the method returns. The <b>heap</b> holds arrays and objects created with <code>new</code>. Extra space means what your method adds to either one.</p>
+  <div class="viz ol" id="dsSpace"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <ul>
+    <li><b>The input is not counted</b> as extra space, unless the question says "total space".</li>
+    <li><b>The output can be.</b> If you must return a new array of n items, say so: "O(n) for the output, O(1) besides".</li>
+    <li><b>Recursion is not free.</b> <code>fib(n)</code> from section 03 is at most n calls deep at any moment, so it uses <b>O(n) stack space</b>, even though it makes O(2ⁿ) calls in total. Too deep, and Java throws <code>StackOverflowError</code>.</li>
+  </ul>
+</section>
+
+<!-- 9 -->
+<section id="d0-amortized">
+  <span class="num">09</span><h2>Amortized O(1): the doubling array</h2>
+  <div class="tldr"><b>In 30 seconds</b> An <b>ArrayList</b> is Java's growable list, built on an array. When the array is full it makes one <b>twice as big</b> and copies everything: that single add is O(n). Copies are rare, and the doubling sum (section 02) shows the total copying for n adds is under 2n. So the average cost per add is constant: <b>amortized O(1)</b>.</div>
+  <p>An array's length is fixed (Java Lesson 10). <code>java.util.ArrayList</code> hides an array inside and grows it for you: <code>list.add(x)</code>, <code>list.get(i)</code>, <code>list.size()</code>. "Amortized" means <b>averaged over a long run of operations</b>: an occasional expensive step is paid for by many cheap ones, like a car's yearly service spread over every kilometre.</p>
+  <div class="viz ol" id="dsDouble"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+<script type="text/x-java" data-file="AmortizedAdd.java" data-hl="9-14">
+public class AmortizedAdd {               // runs first: java AmortizedAdd.java
+
+    // A tiny growable array: what ArrayList does inside.
+    static int[] box = new int[1];             // starts with room for 1 car
+    static int size = 0;                       // how many slots are used
+    static long copies = 0;                    // slot copies done while growing
+
+    static void add(int v) {
+        if (size == box.length) {              // full: make a box twice as big and copy everything
+            int[] bigger = new int[box.length * 2];
+            for (int i = 0; i < size; i++) { bigger[i] = box[i]; copies++; }
+            box = bigger;
+        }
+        box[size++] = v;                       // the normal, cheap case: O(1)
+    }
+
+    public static void main(String[] args) {
+        int[] checkpoints = {8, 1_000, 1_000_000};
+        int next = 0;
+        for (int i = 1; i <= 1_000_000; i++) {
+            add(i);
+            if (i == checkpoints[next]) {
+                System.out.printf("adds = %,d   copies = %,d   copies per add = %.2f%n", i, copies, (double) copies / i);
+                next++;
+                if (next == checkpoints.length) break;
+            }
+        }
+        // adds = 8   copies = 7   copies per add = 0.88
+        // adds = 1,000   copies = 1,023   copies per add = 1.02
+        // adds = 1,000,000   copies = 1,048,575   copies per add = 1.05
+        // Copies per add stays below 2 however many cars we add: amortized O(1).
+    }
+}
+</script>
+  <p class="small muted">The real ArrayList grows by 1.5× instead of 2×; any constant factor greater than 1 gives the same amortized O(1).</p>
+</section>
+
+<!-- 10 -->
+<section id="d0-trade">
+  <span class="num">10</span><h2>The fix: trade memory for time</h2>
+  <div class="tldr"><b>In 30 seconds</b> The duplicate check compared every pair of cars: n(n−1)/2 ≈ 5 billion comparisons at 1 lakh cars, <b>O(n²) time, O(1) space</b>. Remembering every VIN seen so far in a <b>HashSet</b> answers "seen it before?" in about one step: <b>O(n) time, O(n) space</b>. Spending memory to save time is the most common optimisation in interviews.</div>
+  <p><b>A HashSet in one paragraph.</b> <code>java.util.HashSet</code> is a box of distinct values. <code>set.add(x)</code> puts x in and returns <code>false</code> if x was already there; <code>set.contains(x)</code> asks "is x inside?". Both take about one step on average, whatever the size, because the set computes where x must be stored instead of searching. D02 shows how. For now: a <b>seen box with an O(1) question</b>.</p>
+  <p><b>Measuring time in Java.</b> <code>System.nanoTime()</code> reads a stopwatch in nanoseconds. Read it before and after, subtract, divide by 1,000,000 for milliseconds. Times change between runs, so trust big differences only.</p>
+<script type="text/x-java" data-file="DuplicateCars.java" data-hl="7-12,15-19,27-31">
+import java.util.HashSet;
+import java.util.Set;
+
+public class DuplicateCars {              // runs first: java DuplicateCars.java
+
+    // Way 1: compare every pair. Time O(n²), extra space O(1).
+    static boolean nestedLoops(int[] vin) {
+        for (int i = 0; i < vin.length; i++)
+            for (int j = i + 1; j < vin.length; j++)
+                if (vin[i] == vin[j]) return true;
+        return false;
+    }
+
+    // Way 2: a "seen box". Time O(n), extra space O(n).
+    static boolean seenBox(int[] vin) {
+        Set<Integer> seen = new HashSet<>();   // a HashSet answers "have I seen this?" in about one step
+        for (int v : vin)
+            if (!seen.add(v)) return true;     // add returns false when v was already inside
+        return false;
+    }
+
+    public static void main(String[] args) {
+        int n = 100_000;                       // 1 lakh cars, every VIN different: the worst case
+        int[] vin = new int[n];
+        for (int i = 0; i < n; i++) vin[i] = 1_000_000 + i;
+
+        long t0 = System.nanoTime();           // a stopwatch in nanoseconds (1 ms = 1,000,000 ns)
+        boolean a = nestedLoops(vin);
+        long t1 = System.nanoTime();
+        boolean b = seenBox(vin);
+        long t2 = System.nanoTime();
+
+        System.out.println("nested loops: " + a + " in " + (t1 - t0) / 1_000_000 + " ms");
+        System.out.println("seen box:     " + b + " in " + (t2 - t1) / 1_000_000 + " ms");
+        // nested loops: false in about 800 ms    (≈ 5,000,000,000 comparisons)
+        // seen box:     false in about 9 ms      (100,000 look-ups)
+        // Times change from machine to machine and run to run; the gap (hundreds of times) does not.
+    }
+}
+</script>
+  <div class="viz ol" id="dsBench"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+  <p><b>Case closed.</b> Sharma Motors swapped the nested loops for the seen box. At 1 lakh cars the check fell from seconds to about 10 ms, and it now grows in a straight line with the stock. The price: memory for 1 lakh VINs, a few megabytes. That trade is almost always worth it.</p>
+</section>
+
+<!-- 11 -->
+<section id="d0-limits">
+  <span class="num">11</span><h2>Read the constraints: what complexity do you need?</h2>
+  <div class="tldr"><b>In 30 seconds</b> Every interview and coding-test problem states a limit on n. With about 10⁸ simple steps per second and a 1–2 second limit, the limit tells you the target before you write any code: n ≤ 10 → n! is fine; ≤ 20 → 2ⁿ; ≤ 500 → n³; ≤ 5,000 → n²; ≤ 10⁶ → n log n; bigger → O(n), O(log n) or O(1).</div>
+  <div class="tw"><table><thead><tr><th>Largest n</th><th>Slowest complexity that fits</th><th>Typical technique</th></tr></thead><tbody>
+    <tr><td>≤ 10</td><td>O(n!)</td><td>try every order (permutations)</td></tr>
+    <tr><td>≤ 20</td><td>O(2ⁿ)</td><td>try every subset (backtracking)</td></tr>
+    <tr><td>≤ 500</td><td>O(n³)</td><td>three nested loops, some DP</td></tr>
+    <tr><td>≤ 5,000</td><td>O(n²)</td><td>every pair, 2D DP</td></tr>
+    <tr><td>≤ 10⁵ – 10⁶</td><td>O(n log n)</td><td>sorting, heaps, binary search</td></tr>
+    <tr><td>≤ 10⁸</td><td>O(n)</td><td>one pass, two pointers, hashing</td></tr>
+    <tr><td>&gt; 10⁸</td><td>O(log n) or O(1)</td><td>binary search on the answer, a formula</td></tr>
+  </tbody></table></div>
+  <div class="viz ol" id="dsLimit"><p class="small muted" style="padding:16px">This visualisation needs JavaScript.</p></div>
+</section>
+
+<!-- 12 -->
+<section id="d0-hidden">
+  <span class="num">12</span><h2>Hidden costs in everyday Java</h2>
+  <div class="tldr"><b>In 30 seconds</b> One innocent-looking line can hide a loop. <code>s = s + "x"</code> copies the whole string, <code>list.contains</code> and <code>list.remove(0)</code> walk or shift the whole ArrayList, <code>substring</code> copies characters. Put any of these inside a loop over n and O(n) silently becomes O(n²).</div>
+  <div class="tw"><table><thead><tr><th>Operation</th><th>Cost</th><th>Why</th></tr></thead><tbody>
+    <tr><td><code>a[i]</code>, <code>list.get(i)</code> (ArrayList)</td><td>O(1)</td><td>address arithmetic</td></tr>
+    <tr><td><code>list.add(x)</code> at the end</td><td>O(1) amortized</td><td>doubling (section 09)</td></tr>
+    <tr><td><code>list.add(0, x)</code>, <code>list.remove(0)</code></td><td>O(n)</td><td>every element shifts one slot</td></tr>
+    <tr><td><code>list.contains(x)</code>, <code>indexOf</code></td><td>O(n)</td><td>walks the list</td></tr>
+    <tr><td><code>set.add / contains</code>, <code>map.get / put</code> (Hash…)</td><td>O(1) average</td><td>computed position (D02)</td></tr>
+    <tr><td><code>s + t</code>, <code>s.substring(…)</code></td><td>O(length)</td><td>Strings never change, so a new one is built</td></tr>
+    <tr><td><code>sb.append(x)</code> (StringBuilder)</td><td>O(1) amortized</td><td>a growable char array</td></tr>
+    <tr><td><code>Arrays.sort</code>, <code>Collections.sort</code></td><td>O(n log n)</td><td>D06</td></tr>
+    <tr><td><code>Arrays.copyOf</code>, <code>clone()</code>, <code>new int[n]</code></td><td>O(n)</td><td>every slot is written</td></tr>
+  </tbody></table></div>
+<script type="text/x-java" data-file="HiddenCost.java" data-hl="8-9,13-14">
+public class HiddenCost {                 // runs first: java HiddenCost.java
+
+    public static void main(String[] args) {
+        int n = 50_000;                        // build a report of 50,000 car codes
+
+        long t0 = System.nanoTime();
+        String report = "";
+        for (int i = 0; i < n; i++)
+            report = report + "C";             // a String can't change: + copies the whole report every time
+        long t1 = System.nanoTime();
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++)
+            sb.append("C");                    // appends in place: amortized O(1), like the doubling array
+        String report2 = sb.toString();
+        long t2 = System.nanoTime();
+
+        System.out.println(report.length() + " chars with +             in " + (t1 - t0) / 1_000_000 + " ms");
+        System.out.println(report2.length() + " chars with StringBuilder in " + (t2 - t1) / 1_000_000 + " ms");
+        // 50000 chars with +             in about 200 ms   (1 + 2 + … + 50,000 ≈ 1.25 billion chars copied: O(n²))
+        // 50000 chars with StringBuilder in about 1 ms     (O(n))
+    }
+}
+</script>
+</section>
+
+<!-- 13 -->
+<section id="d0-company">
+  <span class="num">13</span><h2>Asked at companies</h2>
+  <div class="tldr"><b>In 30 seconds</b> Four classic problems where complexity decides pass or fail. Each one: the brute force first, the observation, the optimal solution, the expected time and space, and the follow-ups interviewers ask. All four are in the <b>Blind 75</b> list. Filter by company or target complexity and tick what you have solved.</div>
+  <p class="small muted">Company tags come from LeetCode's company tags as mirrored on GitHub (<a href="https://github.com/liquidslr/leetcode-company-wise-problems">leetcode-company-wise-problems</a>, updated October 2025): "reported at", not a guarantee. They change over time.</p>
+  <div class="viz ol" id="dsBank" style="padding:14px 16px"><p class="small muted">The filter needs JavaScript.</p></div>
+
+  <div class="dsq" id="dsq-1" data-co="amazon google meta microsoft apple bloomberg adobe uber flipkart" data-t="O(n)">
+    <div class="dsq-h"><span class="dsq-t">Two Sum <a href="https://leetcode.com/problems/two-sum/">LC 1</a></span><span class="dsq-b easy">Easy</span><span class="dsq-b cx">Time O(n) · Space O(n)</span>
+      <span class="dsq-cos"><i>Amazon</i><i>Google</i><i>Meta</i><i>Microsoft</i><i>Apple</i><i>Bloomberg</i><i>Adobe</i><i>Uber</i><i>Flipkart</i></span></div>
+    <div class="dsq-in">
+      <p><b>Problem.</b> Given an array of numbers and a target, return the indexes of the two numbers that add up to the target (exactly one answer exists). <b>At Sharma Motors:</b> a customer has exactly ₹9 lakh for two cars; which two?</p>
+      <p><b>Brute force:</b> try every pair, O(n²) time. <b>Observation:</b> for each price p, the partner must be exactly <code>target − p</code>. Instead of searching for it, <b>remember every price seen so far</b> with its index in a <code>HashMap</code> (a HashSet that also stores a value per key: here price → index). <b>Optimal:</b> one pass, O(n) time, O(n) space.</p>
+      <p><b>Follow-ups:</b> "What if the array is sorted?" (two pointers, O(1) space: D03) · "Return all pairs?" · "Why not sort first?" (sorting loses the original indexes and costs O(n log n)).</p>
+<script type="text/x-java" data-file="TwoSum.java" data-hl="8-13,16-23">
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+public class TwoSum {                     // runs first: java TwoSum.java   (LeetCode 1)
+
+    // Brute force: try every pair. Time O(n²), extra space O(1).
+    static int[] brute(int[] price, int budget) {
+        for (int i = 0; i < price.length; i++)
+            for (int j = i + 1; j < price.length; j++)
+                if (price[i] + price[j] == budget) return new int[] {i, j};
+        return new int[] {-1, -1};
+    }
+
+    // Optimal: remember each price and where it was. Time O(n), extra space O(n).
+    static int[] seenBox(int[] price, int budget) {
+        Map<Integer, Integer> seenAt = new HashMap<>();   // price → index, like a HashSet that also stores a value
+        for (int i = 0; i < price.length; i++) {
+            Integer j = seenAt.get(budget - price[i]);    // the partner I need: have I seen it?
+            if (j != null) return new int[] {j, i};
+            seenAt.put(price[i], i);
+        }
+        return new int[] {-1, -1};
+    }
+
+    public static void main(String[] args) {
+        int[] price = {7, 2, 11, 15};          // two cars a customer can buy for exactly 9 (lakh)
+        System.out.println(Arrays.toString(brute(price, 9)));     // [0, 1]
+        System.out.println(Arrays.toString(seenBox(price, 9)));   // [0, 1]
+        System.out.println(Arrays.toString(seenBox(new int[] {3, 2, 4}, 6)));   // [1, 2]
+        System.out.println(Arrays.toString(seenBox(new int[] {3, 3}, 6)));      // [0, 1]
+    }
+}
+</script>
+      <label class="dsq-done"><input type="checkbox"> I solved it myself</label>
+    </div>
+  </div>
+
+  <div class="dsq" id="dsq-217" data-co="amazon google meta microsoft apple netflix bloomberg" data-t="O(n)">
+    <div class="dsq-h"><span class="dsq-t">Contains Duplicate <a href="https://leetcode.com/problems/contains-duplicate/">LC 217</a></span><span class="dsq-b easy">Easy</span><span class="dsq-b cx">Time O(n) · Space O(n)</span>
+      <span class="dsq-cos"><i>Amazon</i><i>Google</i><i>Meta</i><i>Microsoft</i><i>Apple</i><i>Netflix</i><i>Bloomberg</i></span></div>
+    <div class="dsq-in">
+      <p><b>Problem.</b> Return true if any value appears at least twice. This is exactly the Sharma Motors listing check. Interviewers like it because it has <b>three</b> correct answers with three different trade-offs, and they want you to name all three.</p>
+      <div class="tw"><table><thead><tr><th>Way</th><th>Time</th><th>Extra space</th></tr></thead><tbody>
+        <tr><td>every pair</td><td>O(n²)</td><td>O(1)</td></tr>
+        <tr><td>sort, then compare neighbours</td><td>O(n log n)</td><td>O(1) if you may change the array (else O(n) for a copy)</td></tr>
+        <tr><td>seen box (HashSet)</td><td>O(n)</td><td>O(n)</td></tr>
+      </tbody></table></div>
+      <p><b>Follow-ups:</b> "Memory is tight: which one?" (sort in place) · "Duplicates within k positions of each other?" (LC 219: a sliding window, D04).</p>
+<script type="text/x-java" data-file="ContainsDuplicate.java" data-hl="8-13,16-22,25-29">
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+public class ContainsDuplicate {          // runs first: java ContainsDuplicate.java   (LeetCode 217)
+
+    // 1. Every pair: time O(n²), extra space O(1).
+    static boolean pairs(int[] a) {
+        for (int i = 0; i < a.length; i++)
+            for (int j = i + 1; j < a.length; j++)
+                if (a[i] == a[j]) return true;
+        return false;
+    }
+
+    // 2. Sort first, then equal values sit next to each other: time O(n log n), space O(1) extra*.
+    static boolean sortFirst(int[] a) {
+        int[] s = a.clone();                   // clone so the caller's array is not changed (that copy is O(n) space)
+        Arrays.sort(s);
+        for (int i = 1; i < s.length; i++)
+            if (s[i] == s[i - 1]) return true;
+        return false;
+    }
+
+    // 3. Seen box: time O(n), extra space O(n).
+    static boolean seen(int[] a) {
+        Set<Integer> box = new HashSet<>();
+        for (int v : a) if (!box.add(v)) return true;
+        return false;
+    }
+
+    public static void main(String[] args) {
+        int[][] tests = {{1, 2, 3, 1}, {1, 2, 3, 4}, {1, 1, 1, 3, 3, 4, 3, 2, 4, 2}};
+        for (int[] t : tests)
+            System.out.println(pairs(t) + " " + sortFirst(t) + " " + seen(t));
+        // true true true
+        // false false false
+        // true true true
+    }
+}
+</script>
+      <label class="dsq-done"><input type="checkbox"> I solved it myself</label>
+    </div>
+  </div>
+
+  <div class="dsq" id="dsq-268" data-co="amazon google meta bloomberg microsoft apple" data-t="O(n)">
+    <div class="dsq-h"><span class="dsq-t">Missing Number <a href="https://leetcode.com/problems/missing-number/">LC 268</a></span><span class="dsq-b easy">Easy</span><span class="dsq-b cx">Time O(n) · Space O(1)</span>
+      <span class="dsq-cos"><i>Amazon</i><i>Google</i><i>Meta</i><i>Bloomberg</i><i>Microsoft</i><i>Apple</i></span></div>
+    <div class="dsq-in">
+      <p><b>Problem.</b> An array holds n distinct numbers from 0 to n; one is missing. Find it. <b>At Sharma Motors:</b> service tokens 0…n were handed out and one never came back.</p>
+      <p><b>Brute force:</b> for each x from 0 to n, scan the array: O(n²). <b>Better:</b> a HashSet, O(n) time but O(n) space. <b>Observation:</b> the staircase from section 02! 0 + 1 + … + n = n(n+1)/2, so the missing number is that total minus the actual sum. <b>Optimal:</b> O(n) time, <b>O(1) space</b>. The interviewer is checking whether you push past the HashSet answer.</p>
+      <p><b>Follow-ups:</b> "Can the sum overflow?" (use <code>long</code>, or XOR all indexes and values: D19) · "Two numbers missing?"</p>
+<script type="text/x-java" data-file="MissingNumber.java" data-hl="4-11,14-19">
+public class MissingNumber {              // runs first: java MissingNumber.java   (LeetCode 268)
+
+    // Brute force: for each number 0..n, scan the array. Time O(n²), space O(1).
+    static int brute(int[] a) {
+        for (int x = 0; x <= a.length; x++) {
+            boolean found = false;
+            for (int v : a) if (v == x) { found = true; break; }
+            if (!found) return x;
+        }
+        return -1;
+    }
+
+    // Optimal: the sum 0 + 1 + … + n is n(n+1)/2; what is missing is the gap. Time O(n), space O(1).
+    static int gauss(int[] a) {
+        int n = a.length;
+        long expected = (long) n * (n + 1) / 2;   // long: n(n+1) can overflow an int for big n
+        long actual = 0;
+        for (int v : a) actual += v;
+        return (int) (expected - actual);
+    }
+
+    public static void main(String[] args) {
+        int[] tokens = {3, 0, 1};              // service tokens 0..3 were handed out; one never came back
+        System.out.println(brute(tokens) + " " + gauss(tokens));                       // 2 2
+        System.out.println(gauss(new int[] {0, 1}));                                   // 2
+        System.out.println(gauss(new int[] {9, 6, 4, 2, 3, 5, 7, 0, 1}));              // 8
+    }
+}
+</script>
+      <label class="dsq-done"><input type="checkbox"> I solved it myself</label>
+    </div>
+  </div>
+
+  <div class="dsq" id="dsq-121" data-co="amazon google meta microsoft apple adobe bloomberg flipkart uber" data-t="O(n)">
+    <div class="dsq-h"><span class="dsq-t">Best Time to Buy and Sell Stock <a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">LC 121</a></span><span class="dsq-b easy">Easy</span><span class="dsq-b cx">Time O(n) · Space O(1)</span>
+      <span class="dsq-cos"><i>Amazon</i><i>Google</i><i>Meta</i><i>Microsoft</i><i>Apple</i><i>Adobe</i><i>Bloomberg</i><i>Flipkart</i><i>Uber</i></span></div>
+    <div class="dsq-in">
+      <p><b>Problem.</b> <code>prices[i]</code> is the price on day i. Buy on one day and sell on a <b>later</b> day; return the best profit (0 if none). <b>At Sharma Motors:</b> the trade-in price of a used car, day by day.</p>
+      <p><b>Brute force:</b> every buy day × every later sell day: O(n²). <b>Observation:</b> if you sell today, the best buy day is simply the <b>cheapest day so far</b>. Keep that one number as you walk. <b>Optimal:</b> one pass, O(n) time, O(1) space.</p>
+      <p><b>Follow-ups:</b> "Many trades allowed?" (LC 122, greedy: D16) · "At most two trades?" (LC 123, DP: D18) · "Return the days, not the profit?"</p>
+<script type="text/x-java" data-file="BestTimeToSell.java" data-hl="4-10,13-20">
+public class BestTimeToSell {             // runs first: java BestTimeToSell.java   (LeetCode 121)
+
+    // Brute force: every buy day with every later sell day. Time O(n²), space O(1).
+    static int brute(int[] p) {
+        int best = 0;
+        for (int buy = 0; buy < p.length; buy++)
+            for (int sell = buy + 1; sell < p.length; sell++)
+                best = Math.max(best, p[sell] - p[buy]);
+        return best;
+    }
+
+    // Optimal: walk once, remember the cheapest day so far. Time O(n), space O(1).
+    static int onePass(int[] p) {
+        int cheapest = Integer.MAX_VALUE, best = 0;
+        for (int price : p) {
+            cheapest = Math.min(cheapest, price);            // the best day to have bought, up to today
+            best = Math.max(best, price - cheapest);         // sell today?
+        }
+        return best;
+    }
+
+    public static void main(String[] args) {
+        int[] usedCarPrice = {7, 1, 5, 3, 6, 4};   // a used car's trade-in price, day by day (lakh)
+        System.out.println(brute(usedCarPrice) + " " + onePass(usedCarPrice));   // 5 5   (buy at 1, sell at 6)
+        System.out.println(onePass(new int[] {7, 6, 4, 3, 1}));                 // 0     (prices only fall: don't trade)
+    }
+}
+</script>
+      <label class="dsq-done"><input type="checkbox"> I solved it myself</label>
+    </div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section id="d0-practice">
+  <span class="num">14</span><h2>Practice: 15 problems and the speed drill</h2>
+  <div class="tldr"><b>In 30 seconds</b> Five easy, five medium and five hard "find the time and space complexity" problems in the style interviewers use as follow-ups. Answer out loud, open the hint if you are stuck, then the worked answer. Then run the timed drill until you score 9 / 10.</div>
+  <h3>Easy</h3>
+  <details class="d" data-lv="B"><summary><span class="q">E1</span><code>for (i &lt; n) for (j &lt; 5) c++;</code></summary><div class="b"><p><b>Hint:</b> how many times does the inner loop run, and does it depend on n?</p><p><b>Answer: O(n) time, O(1) space.</b> 5n steps; 5 is a constant.</p></div></details>
+  <details class="d" data-lv="B"><summary><span class="q">E2</span>Print the first 10 cars of a list of n cars.</summary><div class="b"><p><b>Hint:</b> does the work change when n goes from 100 to a million?</p><p><b>Answer: O(1).</b> Always 10 steps (assuming n ≥ 10).</p></div></details>
+  <details class="d" data-lv="B"><summary><span class="q">E3</span><code>while (n &gt; 0) { digits++; n /= 10; }</code></summary><div class="b"><p><b>Hint:</b> n shrinks by a factor each time.</p><p><b>Answer: O(log n)</b> (log₁₀ n, the number of digits). The base doesn't matter in Big-O.</p></div></details>
+  <details class="d" data-lv="B"><summary><span class="q">E4</span>A loop over n, then a separate loop over n, then one over n again.</summary><div class="b"><p><b>Hint:</b> one after another adds.</p><p><b>Answer: O(n).</b> 3n steps.</p></div></details>
+  <details class="d" data-lv="B"><summary><span class="q">E5</span><code>for (i &lt; n) for (j &lt; n) { c++; break; }</code></summary><div class="b"><p><b>Hint:</b> how many times does the inner body really run per i?</p><p><b>Answer: O(n).</b> The break leaves the inner loop after one step, so n × 1. Read the code, not just its shape.</p></div></details>
+  <h3>Medium</h3>
+  <details class="d" data-lv="I"><summary><span class="q">M1</span><code>for (int i = 1; i &lt; n; i *= 2) for (int j = 0; j &lt; i; j++) c++;</code></summary><div class="b"><p><b>Hint:</b> add up the inner counts: 1 + 2 + 4 + … Which sum from section 02 is that?</p><p><b>Answer: O(n).</b> The doubling sum is less than 2n. Many people say O(n log n) here; that is the trap.</p></div></details>
+  <details class="d" data-lv="I"><summary><span class="q">M2</span><code>for (int i = n; i &gt; 0; i /= 2) for (int j = 0; j &lt; n; j++) c++;</code></summary><div class="b"><p><b>Hint:</b> the outer loop halves; the inner loop is always n.</p><p><b>Answer: O(n log n).</b> log n rounds × n each.</p></div></details>
+  <details class="d" data-lv="I"><summary><span class="q">M3</span><code>while (!list.isEmpty()) list.remove(0);</code> on an ArrayList of n</summary><div class="b"><p><b>Hint:</b> what does removing the front do to the others?</p><p><b>Answer: O(n²).</b> Each removal shifts the rest: (n−1) + (n−2) + … = the staircase. Removing from the end instead would be O(n) in total.</p></div></details>
+  <details class="d" data-lv="I"><summary><span class="q">M4</span><code>for (int i = 0; i &lt; s.length(); i++) set.add(s.substring(i));</code></summary><div class="b"><p><b>Hint:</b> what does <code>substring</code> cost?</p><p><b>Answer: O(n²) time and O(n²) space.</b> Suffix i has n − i characters, copied and stored: the staircase again.</p></div></details>
+  <details class="d" data-lv="I"><summary><span class="q">M5</span><code>int[][] grid = new int[n][n];</code> then one pass over it</summary><div class="b"><p><b>Hint:</b> count the cells.</p><p><b>Answer: O(n²) time and O(n²) space.</b> n² cells are created and visited.</p></div></details>
+  <h3>Hard</h3>
+  <details class="d" data-lv="A"><summary><span class="q">H1</span><code>for (int i = 1; i &lt;= n; i++) for (int j = 0; j &lt; n; j += i) c++;</code></summary><div class="b"><p><b>Hint:</b> the inner loop runs n/i times. Add n/1 + n/2 + n/3 + … + n/n.</p><p><b>Answer: O(n log n).</b> n × (1 + 1/2 + 1/3 + … + 1/n), and that "harmonic sum" grows like log n. This pattern appears in the sieve of primes (D19).</p></div></details>
+  <details class="d" data-lv="A"><summary><span class="q">H2</span><code>void f(int n) { if (n &lt;= 1) return; f(n / 2); }</code></summary><div class="b"><p><b>Hint:</b> how deep does the chain of calls go?</p><p><b>Answer: O(log n) time and O(log n) stack space.</b> One call per halving, and they are all waiting on the stack at the deepest point.</p></div></details>
+  <details class="d" data-lv="A"><summary><span class="q">H3</span><code>void f(int n) { if (n &lt;= 1) return; for (i &lt; n) c++; f(n / 2); }</code></summary><div class="b"><p><b>Hint:</b> the work per call is n, then n/2, then n/4…</p><p><b>Answer: O(n) time, O(log n) space.</b> n + n/2 + n/4 + … &lt; 2n (the doubling sum read backwards).</p></div></details>
+  <details class="d" data-lv="A"><summary><span class="q">H4</span>n model names, each up to L letters; sort the letters of every name.</summary><div class="b"><p><b>Hint:</b> two different sizes: keep both letters.</p><p><b>Answer: O(n · L log L) time.</b> n sorts, each of L letters. Writing O(n log n) here loses marks.</p></div></details>
+  <details class="d" data-lv="A"><summary><span class="q">H5</span>For every number from 1 to n, check whether it is prime by trying divisors up to its square root.</summary><div class="b"><p><b>Hint:</b> each check is O(√k) for k up to n.</p><p><b>Answer: O(n√n).</b> Up to n checks of up to √n steps. The sieve in D19 does it in O(n log log n).</p></div></details>
+  <div class="viz ol" id="dsDrill"><p class="small muted" style="padding:16px">This drill needs JavaScript.</p></div>
+  <h3 id="d0-guess">Guess the complexity: 72 snippets</h3>
+  <p>Interviewers ask "time and space?" straight after every solution. Each snippet below asks for both. Check to see the one-sentence reason, the line that decides it, and the growth curve, with step counts measured by running the code. Missed snippets come back first, and the classic traps (a loop that looks O(n²) but is O(n), <code>s += c</code>, recursion stack space, <code>substring</code>, sorting inside a loop) have their own filter.</p>
+  <div class="viz ol" id="dcxDrill"><p class="small muted" style="padding:16px">This drill needs JavaScript.</p></div>
+</section>
+
+<!-- bank:start · generated by scripts/dsa-bank/lessons.mjs from the bank data; do not edit by hand -->
+<!-- 15 -->
+<section id="d0-bank" class="dslb" data-bank="complexity" data-file="bank-complexity.html">
+  <span class="num">15</span><h2>Problem bank: 35 problems</h2>
+  <div class="tldr"><b>In 30 seconds</b> Every problem of the <a href="bank-complexity.html">Time and space complexity bank</a>, in learning order from L0 (pure basics) to L5 (ultra hard and twists). <b>Open in bank</b> gives the story, the pattern pick, three hints, a starter you run and check, and brute force → optimal solutions run on JDK 25; <b>Visualize</b> steps through it in the DSA Lab. The dots are your bank progress: half = tried, full = solved.</div>
+  <div class="dslb-top"><div class="dslb-prog"><span class="dslb-bar" aria-hidden="true"><i></i></span><span class="dslb-sum" aria-live="polite"><b>0</b> / 35 solved</span></div>
+    <a class="btn pri dslb-go" href="bank-complexity.html">Start the bank →</a></div>
+  <details class="dslb-lv" data-lv="0" open><summary><span class="dbk-lv dbk-l0">L0</span><b class="dslb-ln">Pure basics</b><span class="dslb-cnt"><span class="dslb-dn">0</span> / 7 solved</span></summary>
+  <ol class="dslb-list">
+  <li class="dslb-p" data-id="loop-shapes"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">1</span><span class="dslb-tw"><span class="dslb-t">Add or multiply? Count the steps of three loop shapes</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#64748b">Count the loop shape</span><span class="dbk-pc" style="--pc:#0ea5e9">Replace the loop with a formula</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-loop-shapes">Open in bank</a><a href="../java/playground.html#p=complexity/loop-shapes" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="handshakes"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">2</span><span class="dslb-tw"><span class="dslb-t">Handshakes: every pair once (j starts at i + 1)</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#64748b">Count the loop shape</span><span class="dbk-pc" style="--pc:#0ea5e9">Replace the loop with a formula</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-handshakes">Open in bank</a><a href="../java/playground.html#p=complexity/handshakes" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="count-odds"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">3</span><span class="dslb-tw"><span class="dslb-t">Count Odd Numbers in an Interval Range</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0ea5e9">Replace the loop with a formula</span><span class="dbk-pc" style="--pc:#f59e0b">Read the constraints first</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-count-odds">Open in bank</a><a href="../java/playground.html#p=complexity/count-odds" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="halving"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">4</span><span class="dslb-tw"><span class="dslb-t">How many times can n be halved? (the O(log n) loop)</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#22c55e">Halving or doubling: log n</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-halving">Open in bank</a><a href="../java/playground.html#p=complexity/halving" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="tournament"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">5</span><span class="dslb-tw"><span class="dslb-t">Count of Matches in Tournament</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0ea5e9">Replace the loop with a formula</span><span class="dbk-pc" style="--pc:#22c55e">Halving or doubling: log n</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-tournament">Open in bank</a><a href="../java/playground.html#p=complexity/tournament" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="matrix-diagonal"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">6</span><span class="dslb-tw"><span class="dslb-t">Matrix Diagonal Sum</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#64748b">Count the loop shape</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-matrix-diagonal">Open in bank</a><a href="../java/playground.html#p=complexity/matrix-diagonal" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="two-calls"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">7</span><span class="dslb-tw"><span class="dslb-t">Two calls or one: f(n − 1) + f(n − 1)</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#ef4444">Recursion tree: count the calls</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-two-calls">Open in bank</a><a href="../java/playground.html#p=complexity/two-calls" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  </ol></details>
+  <details class="dslb-lv" data-lv="1"><summary><span class="dbk-lv dbk-l1">L1</span><b class="dslb-ln">Easy</b><span class="dslb-cnt"><span class="dslb-dn">0</span> / 6 solved</span></summary>
+  <ol class="dslb-list">
+  <li class="dslb-p" data-id="string-builder"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">8</span><span class="dslb-tw"><span class="dslb-t">Build a long report: String + in a loop vs StringBuilder</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#b45309">Hidden cost in a Java call</span><span class="dbk-pc" style="--pc:#d946ef">Amortized: count the total</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-string-builder">Open in bank</a><a href="../java/playground.html#p=complexity/string-builder" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="remove-front"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">9</span><span class="dslb-tw"><span class="dslb-t">Car wash queue: list.remove(0) vs ArrayDeque</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#b45309">Hidden cost in a Java call</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-remove-front">Open in bank</a><a href="../java/playground.html#p=complexity/remove-front" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="dedupe-order"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">10</span><span class="dslb-tw"><span class="dslb-t">Remove duplicate plates, keep the order: List.contains vs HashSet</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#6366f1">Trade memory for time</span><span class="dbk-pc" style="--pc:#b45309">Hidden cost in a Java call</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-dedupe-order">Open in bank</a><a href="../java/playground.html#p=complexity/dedupe-order" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="perfect-number"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">11</span><span class="dslb-tw"><span class="dslb-t">Perfect Number</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#14b8a6">Stop at √n (divisor pairs)</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-perfect-number">Open in bank</a><a href="../java/playground.html#p=complexity/perfect-number" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="calc-money"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">12</span><span class="dslb-tw"><span class="dslb-t">Calculate Money in Leetcode Bank</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0ea5e9">Replace the loop with a formula</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-calc-money">Open in bank</a><a href="../java/playground.html#p=complexity/calc-money" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="pivot-integer"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">13</span><span class="dslb-tw"><span class="dslb-t">Find the Pivot Integer</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0ea5e9">Replace the loop with a formula</span><span class="dbk-pc" style="--pc:#0d9488">Precompute once, answer fast</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-pivot-integer">Open in bank</a><a href="../java/playground.html#p=complexity/pivot-integer" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  </ol></details>
+  <details class="dslb-lv" data-lv="2"><summary><span class="dbk-lv dbk-l2">L2</span><b class="dslb-ln">Core patterns</b><span class="dslb-cnt"><span class="dslb-dn">0</span> / 7 solved</span></summary>
+  <ol class="dslb-list">
+  <li class="dslb-p" data-id="binary-counter"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">14</span><span class="dslb-tw"><span class="dslb-t">Binary counter: total bit flips (amortized analysis)</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#d946ef">Amortized: count the total</span><span class="dbk-pc" style="--pc:#0ea5e9">Replace the loop with a formula</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-binary-counter">Open in bank</a><a href="../java/playground.html#p=complexity/binary-counter" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="good-triplets"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">15</span><span class="dslb-tw"><span class="dslb-t">Count Good Triplets (read the constraints)</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#f59e0b">Read the constraints first</span><span class="dbk-pc" style="--pc:#64748b">Count the loop shape</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-good-triplets">Open in bank</a><a href="../java/playground.html#p=complexity/good-triplets" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="sequential-digits"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">16</span><span class="dslb-tw"><span class="dslb-t">Sequential Digits (generate, don't scan)</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#f59e0b">Read the constraints first</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-sequential-digits">Open in bank</a><a href="../java/playground.html#p=complexity/sequential-digits" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="pairs-diff-k"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">17</span><span class="dslb-tw"><span class="dslb-t">Count Number of Pairs With Absolute Difference K</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#6366f1">Trade memory for time</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-pairs-diff-k">Open in bank</a><a href="../java/playground.html#p=complexity/pairs-diff-k" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="product-last-k"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">18</span><span class="dslb-tw"><span class="dslb-t">Product of the Last K Numbers</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0d9488">Precompute once, answer fast</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-product-last-k">Open in bank</a><a href="../java/playground.html#p=complexity/product-last-k" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="limited-sum"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">19</span><span class="dslb-tw"><span class="dslb-t">Longest Subsequence With Limited Sum</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#2563eb">Sort once, then binary search</span><span class="dbk-pc" style="--pc:#0d9488">Precompute once, answer fast</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-limited-sum">Open in bank</a><a href="../java/playground.html#p=complexity/limited-sum" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="max-population"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">20</span><span class="dslb-tw"><span class="dslb-t">Maximum Population Year</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0d9488">Precompute once, answer fast</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-max-population">Open in bank</a><a href="../java/playground.html#p=complexity/max-population" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  </ol></details>
+  <details class="dslb-lv" data-lv="3"><summary><span class="dbk-lv dbk-l3">L3</span><b class="dslb-ln">Interview standard</b><span class="dslb-cnt"><span class="dslb-dn">0</span> / 7 solved</span></summary>
+  <ol class="dslb-list">
+  <li class="dslb-p" data-id="divisor-counts"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">21</span><span class="dslb-tw"><span class="dslb-t">Divisor counts of every number up to n (the harmonic loop)</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#7c3aed">Harmonic loop: n/1 + n/2 + …</span><span class="dbk-pc" style="--pc:#14b8a6">Stop at √n (divisor pairs)</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-divisor-counts">Open in bank</a><a href="../java/playground.html#p=complexity/divisor-counts" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="kth-factor"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">22</span><span class="dslb-tw"><span class="dslb-t">The kth Factor of n</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#14b8a6">Stop at √n (divisor pairs)</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-kth-factor">Open in bank</a><a href="../java/playground.html#p=complexity/kth-factor" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="odd-length-sums"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">23</span><span class="dslb-tw"><span class="dslb-t">Sum of All Odd Length Subarrays</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#be185d">Count each element's contribution</span><span class="dbk-pc" style="--pc:#0d9488">Precompute once, answer fast</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-odd-length-sums">Open in bank</a><a href="../java/playground.html#p=complexity/odd-length-sums" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="zero-filled"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">24</span><span class="dslb-tw"><span class="dslb-t">Number of Zero-Filled Subarrays</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0ea5e9">Replace the loop with a formula</span><span class="dbk-pc" style="--pc:#be185d">Count each element's contribution</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-zero-filled">Open in bank</a><a href="../java/playground.html#p=complexity/zero-filled" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="count-teams"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">25</span><span class="dslb-tw"><span class="dslb-t">Count Number of Teams</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#ca8a04">Fix the middle, count both sides</span><span class="dbk-pc" style="--pc:#f59e0b">Read the constraints first</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-count-teams">Open in bank</a><a href="../java/playground.html#p=complexity/count-teams" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="stack-increment"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">26</span><span class="dslb-tw"><span class="dslb-t">Design a Stack With Increment Operation</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#d946ef">Amortized: count the total</span><span class="dbk-pc" style="--pc:#0d9488">Precompute once, answer fast</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-stack-increment">Open in bank</a><a href="../java/playground.html#p=complexity/stack-increment" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="min-moves"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">27</span><span class="dslb-tw"><span class="dslb-t">Minimum Moves to Equal Array Elements</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0ea5e9">Replace the loop with a formula</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-min-moves">Open in bank</a><a href="../java/playground.html#p=complexity/min-moves" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  </ol></details>
+  <details class="dslb-lv" data-lv="4"><summary><span class="dbk-lv dbk-l4">L4</span><b class="dslb-ln">Hard</b><span class="dslb-cnt"><span class="dslb-dn">0</span> / 5 solved</span></summary>
+  <ol class="dslb-list">
+  <li class="dslb-p" data-id="bulb-switcher"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">28</span><span class="dslb-tw"><span class="dslb-t">Bulb Switcher</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#7c3aed">Harmonic loop: n/1 + n/2 + …</span><span class="dbk-pc" style="--pc:#14b8a6">Stop at √n (divisor pairs)</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-bulb-switcher">Open in bank</a><a href="../java/playground.html#p=complexity/bulb-switcher" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="xor-triplets"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">29</span><span class="dslb-tw"><span class="dslb-t">Count Triplets That Can Form Two Arrays of Equal XOR</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0d9488">Precompute once, answer fast</span><span class="dbk-pc" style="--pc:#be185d">Count each element's contribution</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-xor-triplets">Open in bank</a><a href="../java/playground.html#p=complexity/xor-triplets" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="spf-sieve"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">30</span><span class="dslb-tw"><span class="dslb-t">Factorise many numbers fast: the smallest-prime-factor sieve</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#0d9488">Precompute once, answer fast</span><span class="dbk-pc" style="--pc:#7c3aed">Harmonic loop: n/1 + n/2 + …</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-spf-sieve">Open in bank</a><a href="../java/playground.html#p=complexity/spf-sieve" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="fib-matrix"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">31</span><span class="dslb-tw"><span class="dslb-t">N-th Fibonacci for n up to 10¹⁸ (matrix power)</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#dc2626">Square and halve (fast power)</span><span class="dbk-pc" style="--pc:#22c55e">Halving or doubling: log n</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-fib-matrix">Open in bank</a><a href="../java/playground.html#p=complexity/fib-matrix" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="vowel-substrings"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">32</span><span class="dslb-tw"><span class="dslb-t">Vowels of All Substrings</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#be185d">Count each element's contribution</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-vowel-substrings">Open in bank</a><a href="../java/playground.html#p=complexity/vowel-substrings" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  </ol></details>
+  <details class="dslb-lv" data-lv="5"><summary><span class="dbk-lv dbk-l5">L5</span><b class="dslb-ln">Ultra hard and twists</b><span class="dslb-cnt"><span class="dslb-dn">0</span> / 3 solved</span></summary>
+  <ol class="dslb-list">
+  <li class="dslb-p" data-id="floored-pairs"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">33</span><span class="dslb-tw"><span class="dslb-t">Sum of Floored Pairs</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#7c3aed">Harmonic loop: n/1 + n/2 + …</span><span class="dbk-pc" style="--pc:#0d9488">Precompute once, answer fast</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-floored-pairs">Open in bank</a><a href="../java/playground.html#p=complexity/floored-pairs" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="subseq-widths"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">34</span><span class="dslb-tw"><span class="dslb-t">Sum of Subsequence Widths</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#be185d">Count each element's contribution</span><span class="dbk-pc" style="--pc:#2563eb">Sort once, then binary search</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-subseq-widths">Open in bank</a><a href="../java/playground.html#p=complexity/subseq-widths" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  <li class="dslb-p" data-id="quotient-blocks"><span class="dslb-dot" role="img" aria-label="not tried"></span><span class="dslb-n">35</span><span class="dslb-tw"><span class="dslb-t">Sum of n / i for i = 1 … n in O(√n)</span><span class="dslb-pats"><span class="dbk-pc" style="--pc:#475569">Group equal values (√n blocks)</span><span class="dbk-pc" style="--pc:#14b8a6">Stop at √n (divisor pairs)</span></span></span><span class="dslb-acts"><a href="bank-complexity.html#p-quotient-blocks">Open in bank</a><a href="../java/playground.html#p=complexity/quotient-blocks" title="Step through it in the DSA Lab">Visualize<span class="dslb-xl"> in the DSA Lab</span></a></span></li>
+  </ol></details>
+</section>
+<!-- bank:end -->
+
+<!-- 16 -->
+<section id="d0-mistakes">
+  <span class="num">16</span><h2>Common mistakes</h2>
+  <div class="tw"><table><thead><tr><th>Mistake</th><th>Why it is wrong</th><th>Say instead</th></tr></thead><tbody>
+    <tr><td>"It's O(2n)"</td><td>Constants are dropped</td><td>O(n)</td></tr>
+    <tr><td>Using n for two different inputs</td><td>Hides which input drives the cost</td><td>O(n + m) or O(n · m)</td></tr>
+    <tr><td>Ignoring the cost of a library call in a loop</td><td><code>contains</code>, <code>substring</code>, <code>+</code> hide loops</td><td>loop count × call cost</td></tr>
+    <tr><td>"Recursion uses no memory"</td><td>Each waiting call is a stack frame</td><td>O(depth) space</td></tr>
+    <tr><td>Counting the input array as extra space</td><td>It was given to you</td><td>"O(1) extra space"</td></tr>
+    <tr><td>"HashMap is always O(1)"</td><td>That is the average; many collisions make it worse</td><td>"O(1) on average"</td></tr>
+    <tr><td>Every nested loop is O(n²)</td><td>The inner loop may be log n, constant or break early</td><td>count what the inner loop really does</td></tr>
+    <tr><td>Giving the best case as the answer</td><td>Interviews mean the worst case</td><td>state the worst case; mention others if relevant</td></tr>
+  </tbody></table></div>
+</section>
+
+<!-- 17 -->
+<section id="d0-qa">
+  <span class="num">17</span><h2>12 interview questions</h2>
+  <p class="small muted">Answer out loud first, then open the card.</p>
+  <details class="d" data-lv="B"><summary><span class="q">01</span>What is time complexity, and why not just measure seconds?</summary><div class="b">How the number of basic steps grows with the input size n. Seconds depend on the machine, the language and what else is running; the growth rate doesn't, so it compares algorithms fairly and predicts what happens when n grows.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">02</span>What is the difference between O, Ω and Θ?</summary><div class="b">O is an upper bound (grows at most like), Ω a lower bound (at least like), Θ a tight bound (both). Linear search: O(n), Ω(1), and its worst case is Θ(n). In practice "O" is used to mean the tight worst case.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">03</span>Why do we drop constants? Do they ever matter?</summary><div class="b">For large n the growth rate dominates: 100n beats n² beyond n = 100. Constants matter for small n and between two solutions of the same class (for example memory access patterns, or 2 vs 50 operations per element).</div></details>
+  <details class="d" data-lv="B"><summary><span class="q">04</span>What does O(log n) mean? Why is the base of the log not written?</summary><div class="b">Each step removes a constant fraction of the input, as in binary search; log₂ of a million is about 20. log_a n and log_b n differ by a constant factor (log_a n = log_b n / log_b a), and constants are dropped.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">05</span>Nested loops where the inner starts at i + 1: what is the cost?</summary><div class="b">(n−1) + (n−2) + … + 1 = n(n−1)/2, which is O(n²). Half the square is still quadratic.</div></details>
+  <details class="d" data-lv="B"><summary><span class="q">06</span>What does space complexity count? Does the input count?</summary><div class="b">The extra memory the algorithm needs as n grows (auxiliary space): new arrays, collections, and the recursion stack. The input is usually not counted; say "O(1) extra space". Mention the output if you must build one.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">07</span>What is amortized O(1)? Give an example.</summary><div class="b">The average cost per operation over a long sequence. ArrayList.add: when full it copies everything into a larger array (O(n)), but the gaps between copies grow geometrically, so n adds cost O(n) in total, O(1) each on average.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">08</span>Is HashMap.get always O(1)?</summary><div class="b">O(1) on average, assuming a good hash function spreads keys out. If many keys collide in one bucket it degrades; since Java 8 a crowded bucket becomes a balanced tree, so the worst case is O(log n) instead of O(n). D02 explains.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">09</span>How much space does a recursive function use?</summary><div class="b">O(maximum depth) stack frames, plus whatever each call allocates. Naive fib(n) makes O(2ⁿ) calls but is only n deep, so O(n) space. Too deep a recursion throws StackOverflowError.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">10</span>The problem says n ≤ 10⁵. What complexity do you aim for?</summary><div class="b">O(n log n) or better: n² = 10¹⁰ steps is about 100 seconds at 10⁸ steps per second, while n log n ≈ 1.7 million is instant. Say it out loud before coding.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">11</span>Give an example of trading space for time.</summary><div class="b">Duplicate detection: every pair is O(n²) time with O(1) space; a HashSet of seen values is O(n) time with O(n) space. Two Sum with a HashMap is the same trade. Caching and precomputed tables are the general form.</div></details>
+  <details class="d" data-lv="I"><summary><span class="q">12</span>Why is building a String with + in a loop slow?</summary><div class="b">Strings are immutable, so each + creates a new String and copies all characters so far: 1 + 2 + … + n = O(n²). StringBuilder appends into a growable buffer: amortized O(1) per append, O(n) total.</div></details>
+</section>
+
+<!-- 18 -->
+<section id="d0-review">
+  <span class="num">18</span><h2>Review</h2>
+  <h3>5 takeaways</h3><ul class="takeaways"><li>Complexity counts <b>steps</b> (time) and <b>extra memory</b> (space) as a function of n, not seconds.</li><li>Big-O keeps the growth shape for large n: drop constants, keep the biggest term, and give each input its own letter.</li><li>Loops in a row add, nested loops multiply, halving gives log n; a library call inside a loop multiplies by its own cost.</li><li>Quote the worst case. Space includes new collections and the recursion stack, not the input. Amortized = averaged over many operations.</li><li>Read the constraint first (about 10⁸ steps per second), then pick the technique; trading memory for time (a HashSet or HashMap) is the most common optimisation.</li></ul>
+  <h3>Cheat sheet</h3>
+  <div class="tw"><table><thead><tr><th>Class</th><th>n = 10⁶ steps</th><th>Where you meet it</th></tr></thead><tbody>
+    <tr><td>O(1)</td><td>1</td><td>array index, HashMap get/put (avg), formula</td></tr>
+    <tr><td>O(log n)</td><td>≈ 20</td><td>binary search, balanced tree, heap push/pop</td></tr>
+    <tr><td>O(√n)</td><td>1,000</td><td>prime check by trial division</td></tr>
+    <tr><td>O(n)</td><td>10⁶</td><td>one pass, two pointers, sliding window, hashing</td></tr>
+    <tr><td>O(n log n)</td><td>≈ 2 × 10⁷</td><td>sorting, n heap operations</td></tr>
+    <tr><td>O(n²)</td><td>10¹²</td><td>every pair, simple DP on two strings</td></tr>
+    <tr><td>O(2ⁿ) / O(n!)</td><td>impossible</td><td>all subsets / all orders (only for tiny n)</td></tr>
+  </tbody></table></div>
+  <h3>Check yourself</h3>
+  <p class="small muted">Answer before you look. Each answer locks and explains itself; your answers are saved in this browser.</p>
+  <div class="quiz" data-quiz="d00"><p class="small muted">This quiz needs JavaScript.</p></div>
+  <h3>Recall prompts</h3>
+  <p class="small muted">Come back after 1, 3 and 7 days and answer out loud before opening each one.</p>
+  <div id="rcp"></div>
+  <h3>Your feedback</h3>
+  <div id="rates"></div>
+  <textarea id="fbt" placeholder="What should change, and is it clear enough to move on to D01 Arrays?"></textarea>
+  <p><button class="btn pri" id="fbc">Copy feedback</button> <span id="fbm" class="small" style="color:var(--good)"></span></p>
+</section>
+
+<button id="totop" aria-label="Back to top">↑</button>
+<footer>DSA: Zero to Interview · every Java program run on JDK 25 · company tags from public LeetCode tag mirrors</footer>
+</div>
+
+<script src="../../assets/data/dsa-index.js?v=6ce29755"></script>
+<script src="../../assets/data/quiz-data.js?v=4e390e4d"></script>
+<script src="../../assets/data/qz-dsa-d00.js?v=3a3449af"></script>
+<script src="../../assets/js/course.js?v=eb8d4f99"></script>
+<script src="../../assets/js/pg-viz.js?v=9f596af9"></script>
+<script type="text/zl-lazy" src="../../assets/labs/dsa/labs-dsa.js?v=4e376eec"></script>
+<script type="text/zl-lazy" src="../../assets/labs/dsa/labs-dsa-cxdrill.js?v=6cdf78d7"></script>
+<script src="../../assets/js/run-java.js?v=51dab4ef"></script>
+
+<!-- free sample lesson (lock.mjs PUBLIC_SAMPLES, kb/lock/access-lock.md → §17) -->
+<style>.smp-bar{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:2147482000;width:min(760px,calc(100% - 24px));box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 12px 10px 16px;border-radius:14px;background:var(--surface,#fff);color:var(--text,#0f172a);border:1px solid var(--line,#e3e7ef);box-shadow:0 10px 30px rgba(0,0,0,.18);font:500 14px/1.4 Inter,system-ui,sans-serif}
+.smp-bar p{margin:0;flex:1 1 260px;min-width:0}.smp-bar b{font-weight:700}
+.smp-bar a{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid var(--line,#e3e7ef);color:inherit;background:transparent}
+.smp-bar a.smp-go{background:var(--accent,#4f46e5);border-color:var(--accent,#4f46e5);color:#fff}
+.smp-bar button{min-width:38px;min-height:38px;border:0;border-radius:10px;background:transparent;color:inherit;font-size:18px;cursor:pointer}
+.smp-bar a:focus-visible,.smp-bar button:focus-visible{outline:2px solid var(--accent,#4f46e5);outline-offset:2px}
+body{padding-bottom:96px}@media (max-width:560px){body{padding-bottom:150px}}@media print{.smp-bar{display:none}}</style>
+<div class="smp-bar" id="smpBar" role="region" aria-label="Free sample lesson"><p><b>Free sample lesson.</b> Create a free account to open every course, keep your progress on all your devices and take the mock interviews.</p><a class="smp-go" href="../../login.html#register">Create a free account</a><a href="../../index.html">All courses</a><button type="button" aria-label="Hide this bar" onclick="this.parentNode.remove();document.body.style.paddingBottom='0'">×</button></div>
 </body>
 </html>

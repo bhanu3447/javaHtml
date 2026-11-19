@@ -306,6 +306,34 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
 :root[data-theme="dawn"]{--bg:#fbf5f2;--surface:#fffbf9;--soft:#f6ebe8;--text:#2b1f2a;--muted:#6a5664;--line:#ecdcdc;--accent:#b23a2b;--accent-2:#6d3fae;--accent-soft:#fbe6e1;--accent-fill:#b03a2c;--accent-2-fill:#6d3fae;--shadow:0 1px 2px rgba(40,30,20,.05),0 6px 20px rgba(40,30,20,.07);color-scheme:light;--hi:rgba(255,255,255,.6)}
 :root[data-theme="momentum"]{--bg:#0d0b1f;--surface:#14112b;--soft:#1b1738;--text:#ebe8ff;--muted:#a59fcf;--line:#2a2550;--accent:#9585f7;--accent-2:#2dd4bf;--accent-soft:#221c4a;--accent-fill:#6d28d9;--accent-2-fill:#0f766e;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 28px rgba(0,0,0,.3);color-scheme:dark;--hi:rgba(255,255,255,.06)}
 </style>
+<style>/* F24 public hub + F22 request pills (2026-11-19, kb/lock/access-lock.md → §17). Guest = not logged in, lock on: the hero with the
+   value headline and the 3 sample lessons replaces the header; the personal panels (they read this browser's progress) are hidden. */
+.gst{order:0;padding:40px 0 30px}
+.gst h1{font-size:clamp(32px,5vw,54px);margin:0 0 12px}
+.gst .lead{font-size:17px;max-width:680px}
+.gst .cta .btn{display:inline-flex}
+.gst h2{font:700 1.05rem "Inter Tight",Inter,sans-serif;letter-spacing:-.01em;margin:30px 0 12px}
+.gst-s{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.gst-c{display:grid;grid-template-columns:40px minmax(0,1fr);column-gap:12px;row-gap:4px;align-content:start;padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow);color:inherit;text-decoration:none;transition:transform .15s,border-color .15s}
+.gst-c:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--c) 45%,var(--line))}
+.gst-c:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.gst-c .ic{grid-row:span 2;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;font:800 18px/1 "Inter Tight",Inter,sans-serif;color:#fff;background:linear-gradient(135deg,var(--c),var(--c2))}
+.gst-c b{font-size:15px;line-height:1.3}
+.gst-c small{color:var(--muted);font-size:13px;line-height:1.45}
+.gst-c.java{--c:#f97316;--c2:#ef4444}.gst-c.sql{--c:#0ea5e9;--c2:#6366f1}.gst-c.dsa{--c:#10b981;--c2:#3b82f6}
+.gst-how{list-style:none;display:flex;flex-wrap:wrap;gap:10px 22px;padding:0;margin:22px 0 0;color:var(--muted);font-size:14px}
+.gst-how li{display:flex;align-items:center;gap:8px}
+.gst-how b{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-size:12px}
+html.au-guest body>.wrap>header,html.au-guest #reviewBar,html.au-guest #today,html.au-guest #plan,html.au-guest #ready,html.au-guest #jdp,html.au-guest #dash{display:none}
+.gst[hidden]{display:none}
+.course .au-ask{font:600 11px/1 Inter,sans-serif;letter-spacing:.04em;padding:6px 10px;border-radius:999px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent);cursor:pointer;justify-self:start;grid-column:1/-1;min-height:28px}
+.course .au-ask:hover{background:var(--accent);color:#fff}
+.course .au-ask:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.course .au-ask:disabled{opacity:.6;cursor:default}
+@media (max-width:860px){.gst-s{grid-template-columns:minmax(0,1fr)}.gst{padding:26px 0 22px}}
+@media (pointer:coarse){.course .au-ask{min-height:40px}}
+@media (prefers-reduced-motion:reduce){.gst-c{transition:none}.gst-c:hover{transform:none}}
+</style>
 </head>
 <body>
 <script src="assets/js/loader.js?v=c0618dcd"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Checking your sign-in",steps:false});</script>
@@ -351,6 +379,21 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
   <a class="gh" id="auAcct" href="login.html" hidden>Log in</a>
 </div></nav>
 <div class="wrap">
+<!-- F24 public hub (2026-11-19, kb/lock/access-lock.md → §17): shown to a visitor who is not logged in (the lock script below),
+     with the value headline, the sign-up route and the 3 public sample lessons (lock.mjs PUBLIC_SAMPLES) -->
+<section class="gst" id="gst" hidden aria-labelledby="gstH">
+  <div class="tag">FREE ACCOUNT · APPROVED BY THE COURSE OWNER</div>
+  <h1 id="gstH">Clear your first <span class="grad">Java backend interview</span></h1>
+  <p class="lead">Java, SQL, Spring, DSA, system design and more in one place: short lessons, a visual lab for every idea, real code you can run, quizzes, spaced review and mock interviews.</p>
+  <div class="cta"><a class="btn pri" href="login.html#register">Create a free account <span aria-hidden="true">→</span></a><a class="btn" href="login.html?next=index.html">Log in</a></div>
+  <h2 id="gstSamples">Try a full lesson now, no account needed</h2>
+  <div class="gst-s">
+    <a class="gst-c java" href="courses/java/lessons/01-strings.html"><span class="ic" aria-hidden="true">J</span><b>Java L01 · What is a String?</b><small>Why a String never changes, the string pool, == vs equals, with editors you can run.</small></a>
+    <a class="gst-c sql" href="courses/sql/00-foundations.html"><span class="ic" aria-hidden="true">S</span><b>SQL S00 · Databases, DBMS and SQL</b><small>What a database really is and your first queries, run in the browser.</small></a>
+    <a class="gst-c dsa" href="courses/dsa/00-complexity.html"><span class="ic" aria-hidden="true">D</span><b>DSA D00 · Time and space complexity</b><small>Big-O from the ground up, with step-through visual drills.</small></a>
+  </div>
+  <ol class="gst-how"><li><b>1</b><span>Register with a quick selfie</span></li><li><b>2</b><span>The owner approves you<span id="gstEta"></span></span></li><li><b>3</b><span>Learn, and log in with your face</span></li></ol>
+</section>
 <header>
   <div class="tag">INTERVIEW PREPARATION · ZERO TO ADVANCED</div>
   <h1>Pick a <span class="grad">course</span></h1>
@@ -391,10 +434,18 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
 <!-- Review today for every course (study.js hubBar, drawn by STUDY.cards(); hidden until the review deck has a card) -->
 <div class="sd-rv" id="reviewBar" role="region" aria-label="Review today" hidden></div>
 
-<!-- Today's 15 minutes: one review round, one DSA Judge problem, one design prompt (assets/js/daily.js; pools in plan-outline.js) -->
+<!-- Adaptive daily plan ("Do this today · about 45 min"): review, today's lesson, weak fixes, one practice task, picked from what
+     this browser already stores (assets/js/daily.js; pools in plan-outline.js). Before 2026-11-19: "Today's 15 minutes". -->
 <section id="today" aria-labelledby="todayH" hidden>
-  <h2 id="todayH">Today's 15 minutes</h2>
+  <h2 id="todayH">Do this today</h2>
   <div id="todayIn"></div>
+</section>
+
+<!-- Learning tracks (F21/F28 + the F26 daily reminder, 2026-11-19): 5 ordered tracks with week targets, "Start this track" seeds the
+     study plan; data in assets/js/tracks-data.js, view in assets/js/tracks.js (signed-in / local use; hidden in the public view) -->
+<section id="tracks" aria-labelledby="tracksH">
+  <h2 id="tracksH">Learning tracks</h2>
+  <div id="tracksIn"></div>
 </section>
 
 <section id="plan" aria-labelledby="planH">
@@ -425,7 +476,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <span class="ic" aria-hidden="true">S</span>
     <b>SQL: Zero to Advanced</b>
     <p>From the start, in learning order: databases and DBMS, SQL vs NoSQL, every kind of key, 1:1 / 1:N / M:N, and the five sublanguages (DDL, DML, DQL, TCL, DCL); then each one in depth, design, performance, backend scale, MongoDB and the interview problem set. Every query runs live in the page, plus SQL Studio, your own saved database.</p>
-    <span class="st"><span><b>18</b> lessons</span><span><b>155</b> visual labs</span><span><b>195</b> graded challenges</span><span><b>217</b> interview questions</span><span><b>216</b> quiz questions</span></span>
+    <span class="st"><span><b>18</b> lessons</span><span><b>179</b> visual labs</span><span><b>195</b> graded challenges</span><span><b>217</b> interview questions</span><span><b>220</b> quiz questions</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course spring" href="courses/spring/index.html">
@@ -446,21 +497,21 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <span class="ic" aria-hidden="true">N</span>
     <b>n8n Automation: Zero to Selling Flows</b>
     <p>No coding needed to start. Watch data move through a live mini n8n canvas for every idea: triggers, items, expressions, APIs, logic, AI agents and production. Then build real client flows and learn to price, pitch and hand them over.</p>
-    <span class="st"><span><b>17</b> lessons</span><span><b>17</b> live</span><span><b>4</b> visual labs</span></span>
+    <span class="st"><span><b>17</b> lessons</span><span><b>17</b> live</span><span><b>78</b> visual labs</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course dsa" href="courses/dsa/index.html">
     <span class="ic" aria-hidden="true">D</span>
     <b>DSA: Zero to Interview</b>
     <p>Data structures and algorithms in Java, in learning order: Big-O, arrays, hashing, two pointers, sliding window, recursion, sorting, binary search, lists, stacks, trees, heaps, graphs, greedy and dynamic programming. Every algorithm is animated step by step, and every problem goes from brute force to optimal. An optional D21 adds segment and Fenwick trees, KMP, tree DP, SCCs and reservoir sampling.</p>
-    <span class="st"><span><b>22</b> lessons</span><span><b>22</b> live</span><span><b>174</b> visual labs</span><span><b>75</b>-problem interview set</span></span>
+    <span class="st"><span><b>22</b> lessons</span><span><b>22</b> live</span><span><b>177</b> visual labs</span><span><b>75</b>-problem interview set</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course redis" href="courses/redis/index.html">
     <span class="ic" aria-hidden="true">R</span>
     <b>Redis: Zero to Production</b>
     <p>Redis in learning order for backend interviews and real services: live consoles that answer like redis-cli, with a board that shows every key and its timer, and animated labs for one thread, expiry, caching, locks, rate limiters, persistence and cluster.</p>
-    <span class="st"><span><b>21</b> lessons</span><span><b>21</b> live</span><span><b>337</b> labs</span></span>
+    <span class="st"><span><b>21</b> lessons</span><span><b>21</b> live</span><span><b>332</b> labs</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course kafka" href="courses/kafka/index.html">
@@ -474,7 +525,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     <span class="ic" aria-hidden="true">G</span>
     <b>NGINX: Zero to Production</b>
     <p>NGINX in learning order for backend interviews and real deployments: the event loop, config and location matching, reverse proxy in front of Spring Boot, load balancing, TLS, caching, rate limiting, logs and tuning, with a live console that lights up the server, location and upstream every request takes.</p>
-    <span class="st"><span><b>14</b> lessons</span><span><b>14</b> live</span><span><b>228</b> labs</span></span>
+    <span class="st"><span><b>14</b> lessons</span><span><b>14</b> live</span><span><b>214</b> labs</span></span>
     <span class="go" aria-hidden="true">→</span>
   </a>
   <a class="course sysdesign" href="courses/sysdesign/index.html">
@@ -646,7 +697,7 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
   el.textContent="";el.appendChild(document.createTextNode("Last: "));el.appendChild(b);el.appendChild(document.createTextNode(" · "+Math.round(+r.avg||0)+"% · "+new Date(+r.t).toLocaleDateString(undefined,{day:"numeric",month:"short"})));}catch(e){}})();
 </script>
 
-<footer>Zero to Advanced · <a href="https://github.com/bhanu3447/javaHtml">source</a> · every Java program was run on JDK 25, every SQL query in SQLite</footer>
+<footer>Zero to Advanced · <a href="https://github.com/bhanu3447/javaHtml">source</a> · <a href="privacy.html">Privacy</a> · every Java program was run on JDK 25, every SQL query in SQLite</footer>
 </div>
 <script>
 /* Continue button: the course used last (js1-course, written by the course switcher in every nav); theme follows the courses' js1-theme */
@@ -677,34 +728,52 @@ html.no-motion .btn:hover:not([aria-disabled="true"]),html.no-motion .btn:active
     else if(e.key==="ArrowUp"){e.preventDefault();if(!m.hidden)it[(i-1+it.length)%it.length].focus();}});
   w.addEventListener("focusout",function(e){if(!w.contains(e.relatedTarget))open(false);});})();
 </script>
-<script src="assets/js/study.js?v=b8f4e4f5"></script>
-<script src="assets/js/plan-outline.js?v=3d92f233"></script>
+<script src="assets/js/study.js?v=1ee26531"></script>
+<script src="assets/js/plan-outline.js?v=09f2aebc"></script>
 <script src="assets/js/plan.js?v=04a26b04"></script>
-<script src="assets/js/daily.js?v=3a3d9b93"></script>
+<script src="assets/js/daily.js?v=091641d1"></script>
 <script src="assets/js/course-logos.js?v=7343c8f7"></script>
-<script src="assets/js/ready.js?v=e4b140d3"></script>
-<script src="assets/js/genai.js?v=f175f9f1"></script>
+<script src="assets/js/ready.js?v=78211100"></script>
+<script src="assets/js/genai.js?v=332c2ec5"></script>
 <script src="assets/js/planner.js?v=bd299544"></script>
+<script src="assets/js/tracks-data.js?v=6cda7c0d"></script>
+<script src="assets/js/tracks.js?v=278383da"></script>
 <script>
 /* progress dashboard (2026-11-04): every course from the summaries the course pages keep in this browser (study.js → js1-sum);
    shown only once there is something to show. Interview readiness (2026-11-08, ready.js) always shows (0 % with "start here").
    window.hubPaint() redraws all three after the progress sync pulled this account's data from another device. */
 window.hubPaint=function(){
   try{if(window.READY)READY.render(document.getElementById("readyIn"));}catch(e){}
+  try{if(window.TRACKUI)TRACKUI.render();}catch(e){}   /* learning tracks (tracks.js): lesson states after a sync pull */
   try{if(window.STUDY&&STUDY.cards)STUDY.cards();}catch(e){}   /* home dash v1: progress bar + "Last opened" on each started course's card */
   try{if(window.STUDY&&Object.keys(JSON.parse(localStorage.getItem("js1-sum")||"{}")).length){
     var d=document.getElementById("dash");STUDY.dash(document.getElementById("dashIn"));d.hidden=false;}}catch(e){}};
 hubPaint();
 </script>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="assets/js/auth.js?v=a3ac6dc3"></script>
+<script>
+/* hub wait v1 (F36, 2026-11-19): a visitor with no saved sign-in has nothing to check, so the guest hub opens now instead of after
+   the supabase-js download below (a parser-blocking script on a slow link held the loader for up to 12 s). The lock script further
+   down still runs and reaches the same state; anyone with a saved session still waits for the real check. */
+(function(){try{var C=window.AUTH_CFG||{};if(!(C.url&&C.anonKey&&String(C.url).indexOf("YOUR-")<0))return;
+  for(var i=0;i<localStorage.length;i++)if(/^sb-.+-auth-token/.test(localStorage.key(i)))return;
+  var g=document.getElementById("gst");if(!g)return;
+  document.documentElement.classList.add("au-guest");g.hidden=false;document.documentElement.classList.remove("au-wait");
+  if(window.ZLc){ZLc.leave();window.ZLc=null;}}catch(e){}})();
+</script>
+<script src="assets/js/supabase-2.45.4.min.js?v=cde32431"></script><script>window.supabase||document.write('<scr'+'ipt src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></scr'+'ipt>')</script>
+<script src="assets/js/auth.js?v=e8ceb818"></script>
 <script>
 /* hub lock v2: logged-in people only, account link + one status pill per course card; does nothing while the lock is not set up (kb/lock/access-lock.md) */
 (async function(){var show=function(){document.documentElement.classList.remove("au-wait");if(window.ZLc){ZLc.leave();window.ZLc=null;}};
   if(!window.AUTH||!AUTH.on){show();return;}   /* lock off (file:// use): open as before */
   /* never leave the hub blank: if the check fails or hangs, show it (the cards hold no lesson content) */
   var fail=setTimeout(show,8000),acct=document.getElementById("auAcct"),me=null;
+  /* F36 (2026-11-19): no stored supabase session in this browser = logged out for certain; go to the login at once instead of
+     waiting for the client (getSession) and the network. supabase-js keeps the session under sb-<project ref>-auth-token. */
+  var noSess=false;try{var ref=((window.AUTH_CFG||{}).url||"").match(/^https:\/\/([^.]+)\./);
+    noSess=!!ref&&localStorage.getItem("sb-"+ref[1]+"-auth-token")===null&&!/access_token|[?&]code=/.test(location.hash+location.search);}catch(e){}
+  if(noSess){clearTimeout(fail);location.replace("login.html?next=index.html");return;}
   try{me=await AUTH.me();}catch(e){clearTimeout(fail);show();return;}
   clearTimeout(fail);acct.hidden=false;
   /* offline hub (2026-11-18, to-do F12): with no network the face check cannot be read; keep the person signed in and open the hub
@@ -716,14 +785,28 @@ hubPaint();
     var hdr=document.querySelector("body>.wrap>header");if(hdr)hdr.before(ob);else document.body.prepend(ob);
     addEventListener("online",function(){location.reload();},{once:true});return;}
   if(me&&!me.face){await AUTH.signOut(true);me=null;}   /* a login without the face check counts as logged out */
-  if(!me){location.replace("login.html?next=index.html");return;}   /* logged-in people only */
+  /* F24 public hub (2026-11-19): a visitor who is not logged in sees the hub (no lesson content here) with the value headline, the
+     sign-up route and the 3 public sample lessons, instead of being sent to login.html */
+  if(!me){document.documentElement.classList.add("au-guest");document.getElementById("gst").hidden=false;show();
+    acct.textContent="Log in";acct.href="login.html?next=index.html";
+    AUTH.approvalEta().then(function(eta){if(eta)document.getElementById("gstEta").textContent=" (usually within "+eta+")";});return;}
+  /* §17: an account that has not agreed to the biometric consent yet does that first, on login.html */
+  if(me.needConsent){location.replace("login.html?next=index.html");return;}
   show();
   /* progress sync: bring in what this account did on other devices, then redraw the plan, readiness and progress */
   AUTH.syncPull().then(function(n){if(n){try{if(window.PLAN)PLAN.render();}catch(e){}hubPaint();}AUTH.syncPush();AUTH.syncWatch();});
   var LABEL={approved:"OPEN",pending:"WAITING",rejected:"NOT APPROVED",none:"LOCKED",account:"ACCOUNT PENDING"};
   document.querySelectorAll(".course[href]").forEach(function(a){var c=a.getAttribute("href").replace(/^courses\//,"").split("/")[0];
-    var s=me?(me.approved?(me.access[c]||"none"):"account"):"none",p=document.createElement("span");p.className="pill au-st";p.setAttribute("data-s",s);p.textContent=LABEL[s];a.appendChild(p);});
-  if(!me){acct.textContent="Log in";return;}
+    var s=me.approved?(me.access[c]||"none"):"account",p=document.createElement("span");p.className="pill au-st";p.setAttribute("data-s",s);p.textContent=LABEL[s];
+    if(s==="rejected"&&me.notes&&me.notes[c])p.title="Not approved: "+me.notes[c];
+    a.appendChild(p);
+    /* F22 (2026-11-19): ask for a locked course right from its card (approved accounts only; the request_course rule) */
+    if((s==="none"||s==="rejected")&&AUTH.COURSES[c]){var q=document.createElement("button");q.type="button";q.className="au-ask";q.textContent=s==="rejected"?"Ask again":"Request access";
+      q.setAttribute("aria-label",(s==="rejected"?"Ask again for ":"Request access to ")+AUTH.COURSES[c]);
+      q.onclick=async function(e){e.preventDefault();e.stopPropagation();q.disabled=true;q.textContent="Sending…";var r=await AUTH.request(c);
+        if(r.error){q.disabled=false;q.textContent="Failed, try again";q.title=r.error;return;}
+        var st=r.status==="approved"?"approved":"pending";p.setAttribute("data-s",st);p.textContent=LABEL[st];p.removeAttribute("title");q.remove();};
+      a.appendChild(q);}});
   acct.textContent="Log out ("+(me.profile.name||me.profile.email)+")";acct.href="#";
   acct.onclick=async function(e){e.preventDefault();await AUTH.signOut();location.reload();};
   if(me.admin)document.getElementById("auAdmin").hidden=false;})();
