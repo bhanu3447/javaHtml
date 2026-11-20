@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="../../assets/css/course.css?v=5692b58c">
 <link rel="stylesheet" href="../../assets/css/course-dsa.css?v=ba07518f">
 <link rel="stylesheet" href="../../assets/css/course-dsa--labs-dsa.css?v=7164a38b">
-<link rel="stylesheet" href="../../assets/css/course.late.css?v=4f40e6db">
+<link rel="stylesheet" href="../../assets/css/course.late.css?v=acd0b7e3">
 <link rel="stylesheet" href="../../assets/css/course-dsa.late.css?v=1b3b063e">
 </head>
 <body data-page="d00" data-course="dsa" data-name="D00 · Time and Space Complexity" data-short="D00">
@@ -796,6 +796,99 @@ public class BestTimeToSell {             // runs first: java BestTimeToSell.jav
   <textarea id="fbt" placeholder="What should change, and is it clear enough to move on to D01 Arrays?"></textarea>
   <p><button class="btn pri" id="fbc">Copy feedback</button> <span id="fbm" class="small" style="color:var(--good)"></span></p>
 </section>
+
+<template id="cheatsheet"><div class="cs-grid">
+  <div class="cs-card wide"><h3>In one line</h3><p>Complexity counts <span class="cs-a">steps (and extra memory), not seconds, as a function of the input size n</span>; every interview answer ends with "O(...) time and O(...) space".</p></div>
+  <div class="cs-card wide"><h3>Must-know facts</h3><ul>
+    <li>Count steps because <span class="cs-a">the count is the same on every machine; seconds = steps x time per step</span>. The question to ask: <span class="cs-a">what happens to the steps when n doubles?</span></li>
+    <li>Big-O rules: <span class="cs-a">drop constant factors (3n + 5 is O(n)) and keep the biggest term (n^2 + n is O(n^2))</span>; different inputs keep different letters: <span class="cs-a">O(n + m), not O(n)</span>.</li>
+    <li>Formal: f(n) is O(g(n)) if <span class="cs-a">beyond some n, f(n) &lt;= c * g(n) for some constant c</span>.</li>
+    <li>Rough speed: about <span class="cs-a">10^8 simple steps per second</span>.</li>
+    <li>Powers to remember: 2^10 = <span class="cs-a">1,024</span>, 2^20 about a million, 2^30 about a billion; log2 of a thousand / million / billion = <span class="cs-a">about 10 / 20 / 30</span>.</li>
+    <li>Staircase: 1 + 2 + ... + n = <span class="cs-a">n(n+1)/2, about n^2/2</span>; doubling sum: 1 + 2 + 4 + ... + n is <span class="cs-a">less than 2n</span>.</li>
+  </ul></div>
+  <div class="cs-card wide"><h3>The seven growth classes</h3><div class="cs-tw"><table><tr><th>Class</th><th>Name</th><th>Typical code</th></tr>
+    <tr><td>O(1)</td><td>constant</td><td><span class="cs-a">a[i], a formula</span></td></tr>
+    <tr><td>O(log n)</td><td>logarithmic</td><td><span class="cs-a">binary search; each step discards a fixed fraction</span></td></tr>
+    <tr><td>O(n)</td><td>linear</td><td><span class="cs-a">one loop</span></td></tr>
+    <tr><td>O(n log n)</td><td>linearithmic</td><td><span class="cs-a">Arrays.sort</span></td></tr>
+    <tr><td>O(n^2)</td><td>quadratic</td><td><span class="cs-a">two nested loops</span></td></tr>
+    <tr><td>O(2^n)</td><td>exponential</td><td><span class="cs-a">a method that calls itself twice (naive fib)</span></td></tr>
+    <tr><td>O(n!)</td><td>factorial</td><td><span class="cs-a">all permutations</span></td></tr></table></div></div>
+  <div class="cs-card wide"><h3>Counting loops: the eight shapes</h3><div class="cs-tw"><table><tr><th>Shape</th><th>Steps</th><th>Big-O</th></tr>
+    <tr><td>for i &lt; n</td><td>n</td><td><span class="cs-a">O(n)</span></td></tr>
+    <tr><td>two loops one after another</td><td>n + n</td><td><span class="cs-a">O(n)</span></td></tr>
+    <tr><td>a loop inside a loop</td><td>n x n</td><td><span class="cs-a">O(n^2)</span></td></tr>
+    <tr><td>inner loop starts at j = i + 1</td><td>n(n-1)/2</td><td><span class="cs-a">O(n^2)</span></td></tr>
+    <tr><td>i *= 2 or i /= 2</td><td>log2 n</td><td><span class="cs-a">O(log n)</span></td></tr>
+    <tr><td>i * i &lt;= n</td><td>sqrt n</td><td><span class="cs-a">O(sqrt n)</span></td></tr>
+    <tr><td>two inputs: after / nested</td><td>n + m / n x m</td><td><span class="cs-a">O(n + m) / O(n * m)</span></td></tr>
+    <tr><td>loop with break when found</td><td>1 to n</td><td><span class="cs-a">O(n) worst case</span></td></tr></table></div>
+    <p>Loops one after another <span class="cs-a">add</span>; loops inside each other <span class="cs-a">multiply</span>. A loop that calls a method costs <span class="cs-a">loop count x cost of the method</span>.</p></div>
+  <div class="cs-card"><h3>Best, average, worst; O, Omega, Theta</h3><ul>
+    <li>Interviews quote <span class="cs-a">the worst case</span> unless told otherwise; an early exit changes <span class="cs-a">the best case, not the worst</span>.</li>
+    <li>O = <span class="cs-a">upper bound</span>; Omega = <span class="cs-a">lower bound</span>; Theta = <span class="cs-a">both, a tight bound</span>.</li>
+    <li>Linear search: <span class="cs-a">O(n) never worse than n checks; Omega(1); worst case Theta(n)</span>.</li>
+  </ul></div>
+  <div class="cs-card"><h3>Space complexity</h3><ul>
+    <li>Counts <span class="cs-a">extra (auxiliary) memory beyond the input</span>; a few variables = <span class="cs-a">O(1)</span>; a new array or set of n items = <span class="cs-a">O(n)</span>.</li>
+    <li>Recursion: <span class="cs-a">one stack frame per call still waiting, so n deep is O(n) space</span>; too deep gives <span class="cs-a">StackOverflowError</span>.</li>
+    <li>Naive fib(n): <span class="cs-a">O(2^n) calls but only O(n) stack space</span>.</li>
+    <li>Returning a new array: say <span class="cs-a">"O(n) for the output, O(1) besides"</span>.</li>
+  </ul></div>
+  <div class="cs-card"><h3>Amortized O(1): the doubling array</h3><ul>
+    <li>ArrayList add when full: <span class="cs-a">allocate a bigger array and copy, that one add is O(n)</span>.</li>
+    <li>Total copying for n adds: <span class="cs-a">under 2n (the doubling sum), so amortized O(1) per add</span>.</li>
+    <li>Real ArrayList grows by <span class="cs-a">1.5x</span>; any constant factor above 1 gives the same result.</li>
+  </ul></div>
+  <div class="cs-card wide"><h3>Hidden costs in everyday Java</h3><div class="cs-tw"><table><tr><th>Operation</th><th>Cost</th><th>Why</th></tr>
+    <tr><td>a[i], list.get(i)</td><td><span class="cs-a">O(1)</span></td><td>address arithmetic</td></tr>
+    <tr><td>list.add(x) at the end</td><td><span class="cs-a">O(1) amortized</span></td><td>doubling</td></tr>
+    <tr><td>list.add(0, x), list.remove(0)</td><td><span class="cs-a">O(n)</span></td><td>every element shifts</td></tr>
+    <tr><td>list.contains, indexOf</td><td><span class="cs-a">O(n)</span></td><td>walks the list</td></tr>
+    <tr><td>HashSet / HashMap add, contains, get, put</td><td><span class="cs-a">O(1) average</span></td><td>computed position</td></tr>
+    <tr><td>s + t, substring</td><td><span class="cs-a">O(length)</span></td><td>Strings never change, a new one is built</td></tr>
+    <tr><td>sb.append (StringBuilder)</td><td><span class="cs-a">O(1) amortized</span></td><td>growable char array</td></tr>
+    <tr><td>Arrays.sort, Collections.sort</td><td>O(n log n)</td><td>D06</td></tr>
+    <tr><td>Arrays.copyOf, clone, new int[n]</td><td><span class="cs-a">O(n)</span></td><td>every slot is written</td></tr></table></div></div>
+  <div class="cs-card wide"><h3>Read the constraints: what complexity do you need?</h3><div class="cs-tw"><table><tr><th>Largest n</th><th>Slowest that fits</th><th>Technique</th></tr>
+    <tr><td>up to 10</td><td><span class="cs-a">O(n!)</span></td><td>permutations</td></tr>
+    <tr><td>up to 20</td><td><span class="cs-a">O(2^n)</span></td><td>subsets, backtracking</td></tr>
+    <tr><td>up to 500</td><td><span class="cs-a">O(n^3)</span></td><td>three nested loops, some DP</td></tr>
+    <tr><td>up to 5,000</td><td><span class="cs-a">O(n^2)</span></td><td>every pair, 2D DP</td></tr>
+    <tr><td>up to 10^5 to 10^6</td><td><span class="cs-a">O(n log n)</span></td><td>sorting, heaps, binary search</td></tr>
+    <tr><td>up to 10^8</td><td><span class="cs-a">O(n)</span></td><td>one pass, two pointers, hashing</td></tr>
+    <tr><td>above 10^8</td><td><span class="cs-a">O(log n) or O(1)</span></td><td>binary search on the answer, a formula</td></tr></table></div></div>
+  <div class="cs-card"><h3>Trade memory for time</h3><ul>
+    <li>Duplicate check, every pair: <span class="cs-a">O(n^2) time, O(1) space (about 5 billion comparisons at 1 lakh)</span>.</li>
+    <li>With a HashSet of seen values: <span class="cs-a">O(n) time, O(n) space</span>.</li>
+    <li>Contains Duplicate, three answers: <span class="cs-a">every pair O(n^2) / O(1); sort and compare neighbours O(n log n); HashSet O(n) / O(n)</span>. Memory tight: <span class="cs-a">sort in place</span>.</li>
+  </ul></div>
+  <div class="cs-card"><h3>Classic problems</h3><ul>
+    <li>Two Sum: <span class="cs-a">HashMap value to index, partner is target - p; O(n) time, O(n) space</span>; sorted input: <span class="cs-a">two pointers, O(1) space</span>.</li>
+    <li>Missing Number (0..n): <span class="cs-a">n(n+1)/2 minus the actual sum; O(n) time, O(1) space; use long or XOR to avoid overflow</span>.</li>
+    <li>Best Time to Buy and Sell Stock: <span class="cs-a">track the cheapest price so far; one pass, O(1) space</span>.</li>
+  </ul></div>
+  <div class="cs-card"><h3>Traps</h3><ul>
+    <li>Timing one run with a stopwatch: <span class="cs-a">machine- and input-dependent; count steps and ask how they grow</span>.</li>
+    <li><code>for (i = 1; i &lt; n; i *= 2) for (j &lt; i; j++)</code>: <span class="cs-a">O(n), not O(n log n) (doubling sum)</span>.</li>
+    <li><code>for i &lt; n, for j &lt; n { c++; break; }</code>: <span class="cs-a">O(n); the break leaves the inner loop after one step</span>.</li>
+    <li><code>while (!list.isEmpty()) list.remove(0)</code>: <span class="cs-a">O(n^2) (staircase)</span>.</li>
+    <li>Substrings of every suffix into a set: <span class="cs-a">O(n^2) time and space</span>.</li>
+    <li>n names of up to L letters, sort each: <span class="cs-a">O(n * L log L), keep both letters</span>.</li>
+  </ul></div>
+
+  <div class="cs-card wide"><h3>30-second answers</h3><ul>
+    <li>What is time complexity? <span class="cs-a">How the number of basic steps grows with input size n, not seconds; space complexity is the same for extra memory.</span></li>
+    <li>Why drop constants and lower terms? <span class="cs-a">The shape of growth decides which method survives a large n; constants depend on how you count and on the machine.</span></li>
+    <li>What is amortized O(1)? <span class="cs-a">Averaged over many operations: ArrayList doubling makes one add O(n) but n adds copy under 2n in total.</span></li>
+    <li>Harmonic loop <code>for i in 1..n, for j = 0; j &lt; n; j += i</code>? <span class="cs-a">O(n log n): n(1 + 1/2 + 1/3 + ... ) and the harmonic sum grows like log n (the sieve pattern).</span></li>
+    <li>f(n/2) after a loop of n steps, recursively? <span class="cs-a">O(n) time (n + n/2 + n/4 + ... is under 2n) and O(log n) stack space.</span></li>
+    <li>How do constraints guide the solution? <span class="cs-a">At about 10^8 steps per second, n up to 10^5-10^6 needs O(n log n), up to 5,000 allows O(n^2), up to 20 allows 2^n.</span></li>
+  </ul></div>
+
+  <div class="cs-card wide"><h3>Jump to the lesson</h3><p class="cs-links"><a href="#d0-start">1 What "fast" means: count steps, not…</a> <a href="#d0-why">2 The problem: a search that times out</a> <a href="#d0-math">3 The only maths you need</a> <a href="#d0-growth">4 The growth classes, from fast to…</a> <a href="#d0-rules">5 Big-O and its two rules</a> <a href="#d0-loops">6 Counting loops: the eight shapes</a> <a href="#d0-log">7 What O(log n) looks like</a> <a href="#d0-cases">8 Best, average and worst case; O, Ω and Θ</a> <a href="#d0-space">9 Space complexity</a> <a href="#d0-amortized">10 Amortized O(1): the doubling array</a> <a href="#d0-trade">11 The fix: trade memory for time</a> <a href="#d0-limits">12 Read the constraints: what complexity…</a> <a href="#d0-hidden">13 Hidden costs in everyday Java</a> <a href="#d0-company">14 Asked at companies</a> <a href="#d0-practice">15 Practice: 15 problems and the speed…</a> <a href="#d0-bank">16 Problem bank: 35 problems</a> <a href="#d0-mistakes">17 Common mistakes</a> <a href="#d0-qa">18 12 interview questions</a> <a href="#d0-review">19 Review</a></p></div>
+</div></template>
 
 <button id="totop" aria-label="Back to top">↑</button>
 <footer>DSA: Zero to Interview · every Java program run on JDK 25 · company tags from public LeetCode tag mirrors</footer>
