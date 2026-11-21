@@ -365,7 +365,7 @@
     if(D.faceMode){var live=D.faceMode!=="photo";
       fmode=sec("adm-face","Face check at login",live?"live":"photo",'<b>Live</b>: look straight, then turn the head left and right (about 7 s, stops a printed photo). <b>Photo</b>: one straight picture (about 2 s, faster). Both check the face against the account and run the anti-spoofing model. Applies to registrations and to everyone set to “Face: default” in People and courses; pick Live or Photo there to set one person apart.',
         '<div class="au-chips"><button class="au-chip" data-s="'+(live?"approved":"none")+'" data-fmode="live" aria-pressed="'+live+'">'+(live?"✓ ":"")+'Live (head turns)</button><button class="au-chip" data-s="'+(live?"none":"approved")+'" data-fmode="photo" aria-pressed="'+!live+'">'+(live?"":"✓ ")+'Photo (one picture)</button></div>');}
-    zlDone();app.innerHTML=h+prog+'<div class="adm-duo">'+fmode+tags+'</div>'+pre+errs;idyAdminFill();sfbAdminFill();healthFill();
+    zlDone();app.innerHTML=h+prog+'<div class="adm-duo">'+fmode+tags+'</div>'+pre+errs;idyAdminFill();dslAdminFill();sfbAdminFill();healthFill();
     document.getElementById("inv").onsubmit=invite;
     document.getElementById("pplQ").oninput=function(){Q=this.value;filter();};filter();idleFilter();aiCount();
   }
@@ -514,6 +514,7 @@
     if(M.length)sb+='<div class="adm-sub"><h3>Most-missed quiz questions</h3><div class="au-rows">'+M.map(function(m){return '<div class="au-row"><div class="au-who"><b>'+esc(String(m.q||missLabel(m.id)).replace(/<[^>]*>/g,"").slice(0,300))+'</b><small>missed by '+m.u+' learner'+(m.u===1?'':'s')+'</small></div></div>';}).join("")+'</div>'+'</div>';
     if(!list.length)h+='<div class="au-empty info">No learner has synced progress yet.</div>';
     sb+=idyAdminSlot();   /* Interview Day results: its own block, filled by idyAdminFill() */
+    sb+=dslAdminSlot();   /* DSA Lab: its own block, filled by dslAdminFill() */
     if(sb)h+='<div class="adm-subs">'+sb+'</div>';
     return h+'</section>';}
   /* Interview Day results (2026-11-18, kb/interview/interview-day.md): each learner's synced js1-iloop-hist through the optional RPC
@@ -638,6 +639,34 @@
     el.hidden=false;}
   function idyAdminFill(){if(IDYA){idyAdminDraw();return;}if(IDYA===false||!document.getElementById("adm-idy"))return;IDYA=false;
     try{AUTH.sb.rpc("iday_overview").then(function(r){if(r&&!r.error&&Array.isArray(r.data)){IDYA=r.data;try{idyAdminDraw();}catch(e){}}},function(){});}catch(e){}}
+  /* DSA Lab (2026-11-21, kb/dsa/lab-admin.md, I16): learners' synced js1-dl-* / js1-dbk-* keys through the optional RPC dsalab_overview()
+     (end of supabase/setup.sql). dslAgg(rows) is PURE (tested in scripts/unit-checks/dsalab-admin.test.mjs): rows = [{solved, tried,
+     nb:[{b,p,t,d,n,r}]}]; every field is type-checked because it comes from learners' browsers. Without the RPC, with no rows or on any
+     error the block stays hidden; everything shown goes through esc(). */
+  function dslAgg(rows){
+    var num=function(x){x=+x;return isFinite(x)&&x>0?Math.floor(x):0;},str=function(x,m){return typeof x==="string"?x.replace(/[\u0000-\u001f]/g," ").slice(0,m):"";};
+    var P=Object.create(null),D=Object.create(null),L=[],tot={mis:0,open:0},bk=[0,0,0,0,0];/* no-prototype maps: a learner-chosen class like "__proto__" must not hit Object.prototype */
+    (Array.isArray(rows)?rows:[]).forEach(function(r){if(!r||typeof r!=="object")return;
+      var sv=num(r.solved);L.push(sv);bk[sv===0?0:sv<10?1:sv<50?2:sv<150?3:4]++;
+      var seen={},seenD={};(Array.isArray(r.nb)?r.nb:[]).forEach(function(i){if(!i||typeof i!=="object")return;var b=str(i.b,24),p=str(i.p,60);if(!b||!p)return;
+        var k=b+"/"+p,n=Math.max(1,num(i.n)),res=num(i.r)>0,o=P[k]=P[k]||{k:k,b:b,p:p,t:"",u:0,n:0,open:0};
+        if(!o.t)o.t=str(i.t,80);o.n+=n;tot.mis+=n;if(!seen[k]){seen[k]=1;o.u++;}if(!res){o.open++;tot.open++;}
+        var d=str(i.d,30)||"unknown",q=D[d]=D[d]||{d:d,n:0,u:0};q.n+=n;if(!seenD[d]){seenD[d]=1;q.u++;}});});
+    L.sort(function(a,b){return a-b;});var m=L.length?(L.length%2?L[(L.length-1)/2]:Math.round((L[L.length/2-1]+L[L.length/2])/2)):0;
+    return {learners:L.length,failed:Object.keys(P).map(function(k){return P[k];}).sort(function(a,b){return b.u-a.u||b.n-a.n||(a.k<b.k?-1:1);}).slice(0,10),
+      classes:Object.keys(D).map(function(k){return D[k];}).sort(function(a,b){return b.n-a.n||(a.d<b.d?-1:1);}).slice(0,8),
+      reach:{buckets:bk,median:m,max:L.length?L[L.length-1]:0,started:L.length-bk[0]},mistakes:tot.mis,open:tot.open};}
+  var DSLA=null;
+  function dslAdminSlot(){return '<div class="adm-sub" id="adm-dsl" hidden></div>';}
+  function dslAdminDraw(){var el=document.getElementById("adm-dsl");if(!el||!Array.isArray(DSLA)||!DSLA.length)return;var a=dslAgg(DSLA);if(!a.learners)return;
+    var BN=["No problem solved","1 to 9 solved","10 to 49 solved","50 to 149 solved","150 or more solved"],row=function(b,s){return '<div class="au-row"><div class="au-who"><b>'+b+'</b><small>'+s+'</small></div></div>';};
+    var h='<h3>DSA Lab</h3><p>From the learners’ synced Lab data: '+a.learners+' learner'+(a.learners===1?'':'s')+' with Lab or bank activity, '+a.mistakes+' recorded mistake'+(a.mistakes===1?'':'s')+', '+a.open+' not yet fixed. Typed inputs are never read.</p>';
+    h+='<h4>How far learners get</h4><div class="au-rows">'+a.reach.buckets.map(function(n,i){return row(BN[i],n+' learner'+(n===1?'':'s'));}).join("")+row('Median / best',a.reach.median+' / '+a.reach.max+' problems solved ('+a.reach.started+' started)')+'</div>';
+    if(a.failed.length)h+='<h4>Most-failed problems</h4><div class="au-rows">'+a.failed.map(function(f){return row(esc(f.t||f.p),esc(f.b)+' / '+esc(f.p)+' · '+f.u+' learner'+(f.u===1?'':'s')+' · '+f.n+' miss'+(f.n===1?'':'es')+' · '+f.open+' open');}).join("")+'</div>';
+    if(a.classes.length)h+='<h4>Common bug classes</h4><div class="au-rows">'+a.classes.map(function(c){return row(esc(c.d),c.n+' miss'+(c.n===1?'':'es')+' · '+c.u+' learner'+(c.u===1?'':'s'));}).join("")+'</div>';
+    el.innerHTML=h;el.hidden=false;}
+  function dslAdminFill(){if(DSLA){dslAdminDraw();return;}if(DSLA===false||!document.getElementById("adm-dsl"))return;DSLA=false;
+    try{AUTH.sb.rpc("dsalab_overview").then(function(r){if(r&&!r.error&&Array.isArray(r.data)){DSLA=r.data;try{dslAdminDraw();}catch(e){}}},function(){});}catch(e){}}
   function idleFilter(){var rows=document.querySelectorAll("#prgRows .adm-lp");if(!rows.length&&!document.getElementById("prgRows"))return;var n=0;
     rows.forEach(function(r){var d=+r.dataset.idle,hit=IDF==="all"||(IDF==="today"&&r.dataset.today==="1")||(IDF==="never"&&r.dataset.never==="1")||
       (IDF==="i3"&&d>=3)||(IDF==="i7"&&d>=7)||(IDF==="i14"&&d>=14);r.hidden=!hit;if(hit)n++;});
