@@ -51,6 +51,7 @@
     <li>The <b>face server</b> (Render) receives each picture only to compute the 512 numbers and check that it is a real, live face. It does not keep the picture.</li>
     <li>When you use an AI feature (tutor, AI interviewer, planner), the text it needs (your question or answer and the lesson's text) is sent to <b>Google's Gemini API</b>, without your name or email.</li>
     <li><b>Microphone (Interview Day, only when you press Record):</b> the recording and the live transcript stay in your browser's memory and are never uploaded or saved; only a few numbers (pace, filler words, key points covered) are kept in your results. The live transcript uses your browser's own speech service (Chrome and Edge send the audio to the browser maker for this); other browsers show no transcript.</li>
+    <li><b>DSA Lab, explain your approach (only when you press Record):</b> your recording stays in the tab's memory and is never uploaded. In Chrome the live transcript is made by the browser's speech service, which may send the audio to Google. Only counts (words, pace, fillers, key points) are saved with your study progress; the transcript is dropped once scored. Your notes are saved on this device only. A share link contains your code inside the link itself; nothing is uploaded.</li>
     <li>Emails are sent through a <b>mail delivery service</b> that works for the course owner. It receives your email address, your first name and the mail itself: fixed sentences, a few counts (for example how many sections you finished this week) and links to this site. It never receives your selfie, your face data, your answers or the reason for a decision.</li>
     <li>Your browser keeps a copy of your progress and, for 7 days, the lessons you opened, so they work offline. Logging out deletes them from that browser.</li>
   </ul>
@@ -76,7 +77,7 @@
 </main>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="assets/js/supabase-2.45.4.min.js?v=cde32431"></script><script>window.supabase||document.write('<scr'+'ipt src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></scr'+'ipt>')</script>
-<script src="assets/js/auth.js?v=e8ceb818"></script>
+<script src="assets/js/auth.js?v=b11254cb"></script>
 <script>
 /* self-service delete (2026-11-19, kb/lock/access-lock.md → §17; to-do F23): signed in with a face login of the last hour, tick,
    type the username, Delete → AUTH.deleteAccount (selfie file, then rpc delete_my_account, then this browser is wiped). */
