@@ -109,7 +109,7 @@ html.no-motion .cs-new::after,html.no-motion .cs-new .cs-rays,html.no-motion .cs
 .cs-card{min-width:0;border:1px solid var(--line,#e3e7ef);border-radius:14px;padding:12px 14px;background:var(--bg,#f7f8fb)}.cs-card.wide{grid-column:1/-1}
 .cs-card h3{margin:0 0 8px;font:700 .7rem "JetBrains Mono",monospace;letter-spacing:.06em;text-transform:uppercase;color:var(--accent,#4f46e5)}
 .cs-card p{margin:0;font-size:.92rem;line-height:1.55}.cs-card ul{margin:0;padding-left:18px}.cs-card li{margin:5px 0;font-size:.88rem;line-height:1.5}
-.cs-card code{font-family:"JetBrains Mono",monospace;font-size:.86em}
+.cs-card p,.cs-card li,.cs-card td,.cs-card th,.cs-card code,.cs-a{overflow-wrap:anywhere}.cs-card pre,.cs-card pre code,.cs-card pre .cs-a{overflow-wrap:normal}.cs-card li code,.cs-card p code,.cs-card td code{font-size:.86em}.cs-card th{font-size:.8rem}.cs-card th code,.cs-card h3 code{font-size:1em}.cs-card h3 code{text-transform:none}.cs-card code{font-family:"JetBrains Mono",monospace;font-size:.86em}
 .cs-card pre{margin:6px 0 0;overflow-x:auto;padding:10px 12px;border-radius:10px;background:var(--code-bg,#0f1320);color:var(--code-text,#e6e9f0);font:.78rem/1.55 "JetBrains Mono",monospace}
 .cs-card pre code{font-size:1em}.cs-card pre .cs-a{color:#7ee2a8}
 .cs-tw{overflow-x:auto}.cs-card table{width:100%;border-collapse:collapse;font-size:.82rem;margin:0}
