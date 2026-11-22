@@ -21,7 +21,9 @@
 /* admin v2 (2026-11-11): admin-only layout, scoped to body.adm (auth.css stays shared with login). Theme tokens from auth.css only.
    Summary strip with jump links, the two queues side by side, compact people rows (actions on the right, Remove user set apart,
    courses in a collapsible list), progress sub-lists in a grid, settings/moderation panels in pairs, clearer empty/error/busy states. */
-.adm .au-top{position:sticky;top:0;z-index:20;max-width:none;padding:10px max(24px,calc((100% - 1280px)/2 + 24px));background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+/* admin v3 (2026-11-22, owner: "full screen is not there, right and left screen is wasted"): the workspace uses the whole window (no 1280px cap); the top bar and the content share the same side gutter */
+.adm .au-wrap{max-width:none;padding-left:clamp(16px,2.5vw,40px);padding-right:clamp(16px,2.5vw,40px)}
+.adm .au-top{position:sticky;top:0;z-index:20;max-width:none;padding:10px clamp(16px,2.5vw,40px);background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .adm .au-top small{max-width:40ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .adm .au-wrap>h1{margin:18px 0 2px}
 .adm .au-wrap>p{max-width:80ch;font-size:14px}
@@ -130,6 +132,7 @@
   .adm-duo>:only-child{grid-column:1/-1}
   .adm-subs{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 }
+@media (min-width:1700px){.adm-subs{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:720px){
   .adm .au-top{padding:8px 16px}
   .adm .au-top small{display:none}
@@ -174,18 +177,18 @@
 </head>
 <body class="au adm">
 <div class="au-top"><a class="au-brand" href="index.html"><i><svg class="inf-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 12c-2-2.6-3.6-4-5.5-4a4 4 0 0 0 0 8c1.9 0 3.5-1.4 5.5-4zm0 0c2 2.6 3.6 4 5.5 4a4 4 0 0 0 0-8c-1.9 0-3.5 1.4-5.5 4z"/></svg></i> Zero to Advanced</a><span class="au-sp"></span><a class="au-btn sm" href="index.html">All courses</a><small id="who"></small><button class="au-btn sm" type="button" id="out" hidden>Log out</button></div>
-<script src="assets/js/loader.js?v=c0618dcd"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Loading the admin panel",steps:false});</script>
+<script src="assets/js/loader.js?v=90c4f743"></script><script>window.ZLc=window.ZL&&ZL.mount({msg:"Loading the admin panel",steps:false});</script>
 <main class="au-wrap" id="app"></main>
 <script src="assets/js/auth-config.js?v=e1142d0a"></script>
 <script src="assets/js/supabase-2.45.4.min.js?v=cde32431"></script><script>window.supabase||document.write('<scr'+'ipt src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></scr'+'ipt>')</script>
-<script src="assets/js/auth.js?v=b11254cb"></script><script src="assets/js/plan-outline.js?v=09f2aebc"></script>
+<script src="assets/js/auth.js?v=75010dcb"></script><script src="assets/js/plan-outline.js?v=06463767"></script>
 <script>
 /* admin v1: course requests, approved photos (invites), people, roles. Owner and admins only; the database checks every action again. */
 (function(){
   
   var app=document.getElementById("app"),esc=AUTH.esc,C=AUTH.COURSES,ME=null,D={people:[],access:[],invites:[]};
   /* registry:begin short */
-  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",microservices:"Microservices",observability:"Observability",websec:"Web Security",mongodb:"MongoDB",hardware:"Hardware",distsys:"Distributed Systems",networks:"Networks",dbms:"DBMS",lld:"LLD",genai:"Gen AI",python:"Python",resume:"Resume",qbank:"Question Bank",interview:"Interview Day"};
+  var SHORT={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",microservices:"Microservices",observability:"Observability",websec:"Web Security",mongodb:"MongoDB",hardware:"Hardware",distsys:"Distributed Systems",networks:"Networks",dbms:"DBMS",lld:"LLD",genai:"Gen AI",python:"Python",fe:"Frontend",resume:"Resume",qbank:"Question Bank",interview:"Interview Day"};
   /* registry:end short */
   function zlDone(){if(window.ZLc){ZLc.leave();window.ZLc=null;}}   /* the loader leaves at the first render or card */
   function card(t,actions,icon){zlDone();app.innerHTML='<div class="au-center" style="min-height:60vh"><div class="au-card"><span class="au-lock" aria-hidden="true">'+(icon||"🔒")+'</span><h1>Admin</h1><p>'+t+'</p><div class="au-acts">'+(actions||"")+'</div></div></div>';}
@@ -415,7 +418,7 @@
      returns each learner's synced js1-sum, js1-days, quiz-miss questions and interview-day rounds. Optional: hidden until the
      progress part of supabase/setup.sql has run. */
   /* registry:begin cn */
-  var CN={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",microservices:"Microservices",observability:"Observability",websec:"Web Security",mongodb:"MongoDB",hardware:"Hardware",distsys:"Distributed Systems",networks:"Networks",dbms:"DBMS",lld:"LLD",genai:"Gen AI",python:"Python",resume:"Resume",qbank:"Question Bank",interview:"Interview Day"};
+  var CN={java:"Java",sql:"SQL",spring:"Spring",patterns:"Patterns",n8n:"n8n",dsa:"DSA",redis:"Redis",kafka:"Kafka",nginx:"NGINX",sysdesign:"System Design",behavioural:"Behavioural",docker:"Docker",api:"REST API",cicd:"CI/CD",os:"OS",cloud:"Cloud",linux:"Linux",git:"Git",kubernetes:"Kubernetes",microservices:"Microservices",observability:"Observability",websec:"Web Security",mongodb:"MongoDB",hardware:"Hardware",distsys:"Distributed Systems",networks:"Networks",dbms:"DBMS",lld:"LLD",genai:"Gen AI",python:"Python",fe:"Frontend",resume:"Resume",qbank:"Question Bank",interview:"Interview Day"};
   /* registry:end cn */
   function dstr(t){var d=new Date(t);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
   function streakOf(days){var s=new Set(days||[]),n=0,t=Date.now();if(!s.has(dstr(t)))t-=864e5;while(s.has(dstr(t))){n++;t-=864e5;}return n;}
