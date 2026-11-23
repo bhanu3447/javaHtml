@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bhanu3447.github.io/javaHtml/sitemap.xml
